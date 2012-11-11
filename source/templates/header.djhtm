@@ -31,7 +31,7 @@
     <div class="span2 offset1">
         <div class="kf_big-header-button">
             {% if request.user.is_authenticated %}
-                <a href="{% url pledger.views.donations_overview %}">
+                <a href="{% url pledger.views.donations_overview %}" class="kf_checkout">
                     <span class="kf_vertical_align">
                         <div class="kf_text">checkout</div>
                     </span>
