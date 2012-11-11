@@ -1,0 +1,162 @@
+{% extends "base.djhtm" %}
+
+{% block title %} donations checkout {% endblock %}
+
+{% block pagescripts %}
+$(document).ready(function(){
+	var donations_update_timeouts = {};
+	var donations_update_step_project = .5;
+	var donations_update_step_total = 1;
+	var donation_cart_id = 0;
+	var timeout 		 = 500;
+	
+	$('.kf_project_item .kf_pledge_up, .kf_project_item .kf_pledge_down').click(function(){
+		donation_cart_id = $(this).attr('value');
+		
+		if ($(this).hasClass('kf_pledge_up')) {
+			var shift = donations_update_step_project;
+		} else {
+			var shift = donations_update_step_project * (-1);
+		}
+		
+		if (donations_update_timeouts[donation_cart_id]) {
+			clearTimeout(donations_update_timeouts[donation_cart_id]);
+			donations_update_timeouts[donation_cart_id] = false;
+		}
+		
+		var new_field_value = parseFloat($(this).parents('.kf_project_item').find('input[type="text"]').attr('value'))+parseFloat(shift);
+		$(this).parents('.kf_project_item').find('input[type="text"]').attr('value', new_field_value);
+		donations_update_timeouts[donation_cart_id] = setTimeout(sendUpdate,timeout);
+	});
+
+	$('.kf_totals .kf_pledge_up, .kf_totals .kf_pledge_down').click(function(){
+		donation_cart_id = $(this).attr('value');
+		
+		if ($(this).hasClass('kf_pledge_up')) {
+			var shift = donations_update_step_total;
+		} else {
+			var shift = donations_update_step_total * (-1);
+		}
+		
+		if (donations_update_timeouts[donation_cart_id]) {
+			clearTimeout(donations_update_timeouts[donation_cart_id]);
+			donations_update_timeouts[donation_cart_id] = false;
+		}
+		
+		var new_field_value = parseFloat($('.kf_totals .kf_total_pledged input[type="text"]').attr('value'))+parseFloat(shift);
+		$('.kf_totals .kf_total_pledged input[type="text"]').attr('value', new_field_value);
+		donations_update_timeouts[donation_cart_id] = setTimeout(sendUpdate,timeout);
+	});
+
+
+	$('.kf_project_item input[type="text"], .kf_totals .kf_total_pledged input[type="text"]').keyup(function(){
+		donation_cart_id = $(this).parents('.kf_project_item').find('input[id*="donation_cart_id"]').attr('value');
+		donations_update_timeouts[donation_cart_id]  = setTimeout(sendUpdate,timeout);
+	
+	});	
+
+
+	function sendUpdate(){
+		donations_update_timeouts[donation_cart_id]['timer'] = false;
+		var form_data = {}
+		$("#donations_form input").each(function() {
+			form_data[$(this).attr('name')] = $(this).attr('value');	
+		});
+		
+		$.ajax({
+		  url: "{% url pledger.views.donations_update %}",
+		  data: form_data,
+		  type: 'POST',
+		  context: document.body
+		}).done(function(data) { 
+			if (data.error) {
+				//window.location.reload(); 	
+			} else {
+				
+				for (var i in data.donations_list) {
+					$('.kf_project_item input[id*="donation_cart_id"][value='+i+']').parents('.kf_project_item').find('input[type="text"]').attr('value',data.donations_list[i]);
+					$('.kf_totals .kf_total_pledged input[type="text"]').attr('value',data.donations_total);
+				}
+			}
+		});	
+		
+	}
+
+
+});
+
+
+{% endblock %}
+
+{% block content %}
+{% load widget_tweaks %}
+
+<div class="kf_pledger-views-donations_overview">
+
+<div class="row">
+	<div class="span12"><h1>Checkout your pledges</h1></div>
+</div>
+
+
+<form method="post" action="" id="donations_form">
+{% csrf_token %}
+
+    {{ projects_formset.management_form }}
+        {% for form in projects_formset %}
+<div class="row kf_project_item">
+	<div class="span6">
+                <a href="{% url project.views.view project_key=form.initial.project_key %}">{{ form.initial.project_title }}</a> <br />
+                <div class="kf_project_description">{{ form.initial.project_description }}</div>   
+    </div>
+    <div class="span2 kf_needs_goals_count">
+    	<a href="{% url project.views.support project_key=form.initial.project_key %}">
+{% if form.initial.project_support_needs_count  %}{{ form.initial.project_support_needs_count }} need{{ form.initial.project_support_needs_count|pluralize }}{% if form.initial.project_support_needs_count and form.initial.project_support_goals_count  %},{% endif %}{% endif %} 
+{% if form.initial.project_support_goals_count  %}{{ form.initial.project_support_goals_count }} goal{{ form.initial.project_support_goals_count|pluralize }}	{% endif %} 
+    	</a>
+    </div>
+    <div class="span1">
+    		{{ form.support_total|add_class:"kf_support_total"  }}  
+                {{ form.donation_cart_id }}
+    </div>
+    <div class="span3">
+    	<span class="kf_pledge_up kf_center" value="{{ form.donation_cart_id.value }}"><span>+</span></span>
+    	<span class="kf_pledge_down kf_center" value="{{ form.donation_cart_id.value }}"><span>&mdash;</span></span>
+    </div>
+</div>
+        {% endfor %}
+
+<div class="row">
+    <div class="span12 kf_subheader">
+        <div>
+            <hr />
+        </div>
+    </div>
+</div>
+
+<div class="row kf_totals">
+	<div class="span6 kf_total_needsngoals">
+    	{{ totals_form.amount.errors }}
+    	<b>Totally {{ projects_count }} projects 
+    </div>
+    <div class="span2 kf_needs_goals_count">
+{% if projects_total_needs_count  %}{{ projects_total_needs_count }} need{{ projects_total_needs_count|pluralize }}{% if projects_total_needs_count and projects_total_goals_count  %},{% endif %}{% endif %} 
+{% if projects_total_goals_count  %}{{ projects_total_goals_count }} goal{{ projects_total_goals_count|pluralize }}	{% endif %} 
+    </div> 
+    <div class="span2 kf_total_pledged">
+    	{{ totals_form.support_total }}
+    </div>		
+    <div class="span2">
+    	<span class="kf_pledge_up kf_center"><span>+</span></span>
+    	<span class="kf_pledge_down kf_center"><span>&mdash;</span></span>
+    </div>
+</div>
+
+<div class="row">
+	<div class="span12 kf_checkout kf_center">
+		<a href="{% url pledger.views.checkout %}"><div>confirm and send payments</div></a>
+	</div>
+</div>
+</form>
+
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="span3 kf_logo">
+        <a href="{% url bitfund.views.index %}"></a>        
+    </div>
+    <div class="span3 offset3">
+        <div class="kf_support-summary">
+        {% if request.user.is_authenticated %}
+            You currently pledging:
+            <ul>
+                <li>
+                    ${{ projects_donations_monthly_total }} monthly  
+                    {% if projects_donations_monthly_count %}
+                        <br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url pledger.views.donations_overview %}">{{ projects_donations_monthly_count }} project{{ projects_donations_monthly_count|pluralize }}</a>
+                    {% else %}
+                        <br /><br />
+                    {% endif %}
+                </li>
+                
+                <li>
+                    ${{ projects_donations_onetime_total }} today 
+                    {% if projects_donations_onetime_count %}
+                        <br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url pledger.views.donations_overview %}">{{ projects_donations_onetime_count }} project{{ projects_donations_onetime_count|pluralize  }}</a>
+                    {% endif %}
+                </li>
+            </ul>
+        {% endif %}
+        </div>
+    </div>
+    <div class="span2 offset1">
+        <div class="kf_big-header-button">
+            {% if request.user.is_authenticated %}
+                <a href="{% url pledger.views.donations_overview %}">
+                    <span class="kf_vertical_align">
+                        <div class="kf_text">checkout</div>
+                    </span>
+                </a>
+            {% else %}
+                <a href="{% url bitfund.views.register %}">
+                    <span class="kf_vertical_align">
+                        <div class="kf_text">create backer account</div>
+                    </span>
+                </a>
+            {% endif %}
+        </div>  
+        <div class="kf_account_links">
+            {% if request.user.is_authenticated and not user_is_stranger %}
+           		<a href="{% url bitfund.views.logout %}">log out</a> 
+            {% else %}
+                <a href="{% url bitfund.views.login %}">log in</a> 
+            {% endif %}
+        </div>
+    </div>
+</div>

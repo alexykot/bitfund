@@ -1,0 +1,466 @@
+{% extends "base.djhtm" %}
+
+{% block title %}{{ project.title }}{% endblock %}
+
+
+{% block pagescripts %}
+$(document).ready(function(){
+
+    var otherRadiant   = {{other_sources_radiant}};
+    var pledgesRadiant = {{donationhistory_radiant}};
+
+  var backgroundSeries = [['a',100], ['b',100]];
+  var backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
+      grid: {
+            drawBorder: false,
+            drawGridlines: false,
+            background: 'rgba(0,0,0,0)',
+            shadow:false,
+        },
+    seriesColors: [ "#EDEBEA", "#EDEBEA" ],
+    seriesDefaults: {
+      renderer:$.jqplot.DonutRenderer,
+      rendererOptions:{
+        thickness: 4,
+        sliceMargin: 0,
+        startAngle: -90,
+        ringMargin: -14,
+        diameter: 94,
+        showDataLabels: false,
+        shadow:false,
+        highlightMouseOver: false,
+      }
+    },
+  });
+
+
+
+  var otherSeries = [['c',(otherRadiant+pledgesRadiant)], ['d',(360-(otherRadiant+pledgesRadiant))]];
+  var otherDonut = $.jqplot('chartdiv', [otherSeries], {
+      grid: {
+            drawBorder: false,
+            drawGridlines: false,
+            background: 'rgba(0,0,0,0)',
+            shadow:false,
+        },
+    seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
+    seriesDefaults: {
+      renderer:$.jqplot.DonutRenderer,
+      rendererOptions:{
+        thickness: 8,
+        sliceMargin: 0,
+        startAngle: -90,
+        ringMargin: -14,
+        diameter: 98,
+        showDataLabels: false,
+        shadow:false,
+        highlightMouseOver: false,
+      }
+    },
+  });
+
+
+
+  var pledgesSeries = [['a',(pledgesRadiant)], ['b',360-pledgesRadiant]];
+  var pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
+      grid: {
+            drawBorder: false,
+            drawGridlines: false,
+            background: 'rgba(0,0,0,0)',
+            shadow:false,
+        },
+    seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
+    seriesDefaults: {
+      renderer:$.jqplot.DonutRenderer,
+      rendererOptions:{
+        thickness: 14,
+        sliceMargin: 0,
+        startAngle: -90,
+        ringMargin: -14,
+        diameter: 105,
+        showDataLabels: false,
+        shadow:false,
+        highlightMouseOver: false,
+      }
+    },
+  });
+
+
+
+
+
+
+
+
+
+
+  var goal0BackgroundSeries = [['a',1],['b',1]];
+  var goal0BackgroundDonut = $.jqplot('goal-1-chart', [goal0BackgroundSeries], {
+      grid: {
+            drawBorder: false,
+            drawGridlines: false,
+            background: 'rgba(0,0,0,0)',
+            shadow:false,
+        },
+    seriesColors: [ "#EDEBEA", "#EDEBEA" ],
+    seriesDefaults: {
+      renderer:$.jqplot.DonutRenderer,
+      rendererOptions:{
+        thickness: 2,
+        sliceMargin: 0,
+        startAngle: -90,
+        ringMargin: -14,
+        diameter: 40,
+        showDataLabels: false,
+        shadow:false,
+        highlightMouseOver: false,
+      }
+    },
+  });
+
+
+  var goal0OtherSeries = [['c',250], ['d',110]];
+  var goal0OtherDonut = $.jqplot('goal-1-chart', [goal0OtherSeries], {
+      grid: {
+            drawBorder: false,
+            drawGridlines: false,
+            background: 'rgba(0,0,0,0)',
+            shadow:false,
+        },
+    seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
+    seriesDefaults: {
+      renderer:$.jqplot.DonutRenderer,
+      rendererOptions:{
+        thickness: 4,
+        sliceMargin: 0,
+        startAngle: -90,
+        ringMargin: -14,
+        diameter: 42,
+        showDataLabels: false,
+        shadow:false,
+        highlightMouseOver: false,
+      }
+    },
+  });
+
+
+  var goal0PledgesSeries = [['a',160], ['b',200]];
+  var goal0PledgesDonut = $.jqplot('goal-1-chart', [goal0PledgesSeries], {
+      grid: {
+            drawBorder: false,
+            drawGridlines: false,
+            background: 'rgba(0,0,0,0)',
+            shadow:false,
+        },
+    seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
+    seriesDefaults: {
+      renderer:$.jqplot.DonutRenderer,
+      rendererOptions:{
+        thickness: 6,
+        sliceMargin: 0,
+        startAngle: -90,
+        ringMargin: -14,
+        diameter: 45,
+        showDataLabels: false,
+        shadow:false,
+        highlightMouseOver: false,
+      }
+    },
+  });
+
+
+
+});
+{% endblock %}
+
+
+{% block content %}
+
+<div class="kf_project-views-view">
+    
+    
+<div class="row kf_project_title">
+    <div class="span1 kf_project_logo">
+        {% load thumbnail %}
+        {% thumbnail project.logo "62x62" as logo %}
+        {% endthumbnail %}
+        {% if logo %}
+            <a href="{% url project.views.view project_key=project.key %}"><img src="{{ logo.url }}" /></a>
+        {% elif project.logo %}
+            <a href="{% url project.views.view project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
+        {% endif %}
+    </div>
+    <div class="span11">
+        <h1><a href="{% url project.views.view project_key=project.key %}">{{ project.title }}</a></h1>
+    </div>
+</div>
+<div class="row">
+    <div class="span6">
+        <div class="row kf_project_brief">
+            <div class="span6">
+                {{ project.description }}
+            </div>        
+        </div>
+        <div class="row kf_project_people">
+            <div class="span1 kf_project_people_avatar">
+                {% if maintainer_profile.avatar %}
+                	<img src="{{ maintainer_profile.avatar.url }}" /> 
+                {% endif %}
+                
+            </div>
+            <div class="span2 kf_user_text">
+                <p><a href="#" class="kf_person_name">
+                    {% if project.maintainer.first_name and project.maintainer.last_name %}
+                        {{ project.maintainer.first_name }} {{ project.maintainer.last_name }}
+                    {% else %} 
+                        {{ project.maintainer.username }}
+                    {% endif %}
+                </a></p>
+                <p class="kf_person_role">Repositary Maintainer</p>
+            </div>
+            <div class="span1 kf_project_people_avatar">
+                <img src="{{ MEDIA_URL }}user_avatar/trollface.png" />
+            </div>
+            <div class="span2 kf_user_text">
+                <p><a href="#" class="kf_person_name"> 
+                    John Doe
+                </a></p>
+                <p class="kf_person_role">Leading Developer</p>
+            </div>
+        </div>
+        <div class="row kf_project_buttons kf_center">
+    		<ul>
+				<li>About</li>    			
+				<li class="kf_spacer"></li>    			
+				<li>Team</li>    			
+				<li class="kf_spacer"></li>    			
+				<li>Blog</li>    			
+				<li class="kf_spacer"></li>    			
+				<li>Contribute</li>    			
+    		</ul>
+        </div>
+    </div> 
+
+    <div class="span6">
+{% if project_needs_count or project_goals_count %}
+
+        <div class="span2 kf_chart">
+            <div class="row kf_month kf_center">
+                <span>{{ today|date:"F Y" }}</span>
+            </div>
+            <div class="row">
+                <div id="chartdiv" class="kf_center">
+                    <span class="kf_percent">{{ total_gained_percent }}%</span>
+                </div>
+            </div>
+            <div class="row kf_legend">
+                <span class="kf_backer"></span> Backer Support <br />
+                <span class="kf_other"></span> Other Sources
+            </div>
+        </div> 
+        <div class="span4">
+            <div class="row kf_pledged">
+                <div class="span3">
+                    ${{ donations_total_sum }}<br />
+                    <span class="kf_small">pledged</span>
+                </div>
+                <div class="span1 kf_right">
+                    {{ donations_total_pledgers }}<br />
+                    <span class="kf_small">backer{{ donations_total_pledgers|pluralize }}</span>
+                </div>
+            </div>
+            <div class="row kf_other">
+                <div class="span4"> ${{ project.other_sources }} gained from other sources </div>
+            </div>
+                    
+            <div class="row kf_details">
+                <div class="span4"> 
+                    <div class="row">
+                        <div class="span4 kf_needed"> 
+                            <h4> ${{ project_needsngoals_total }} asked this month for:</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span4"> 
+                            {# goals&needs list#}
+                            <ul>
+                                {% for need_or_goal in needsngoals_list %}
+                                <li> <a href="{% url project.views.support project_key=project.key support_type='monthly' %}">- {{ need_or_goal.title }}</a></li>
+                                {% endfor %}
+                            </ul>                    
+                            {% if project_needs_count_to_show %}
+                                <a href="{% url project.views.support project_key=project.key %}">{{ project_needs_count_to_show }} totally</a> 
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span4"> 
+            
+                            {# buttons&history start #}
+                            {% if user.id == project.maintainer.id %}
+                                <a href="{% url project.views.edit project_key=project.key %}">edit project details</a>
+                                &nbsp;&nbsp;&nbsp;
+                                <a href="{% url project.views.edit_needs project_key=project.key %}">edit project needs</a>   
+                                &nbsp;&nbsp;&nbsp;
+                                <a href="{% url project.views.edit_goals project_key=project.key %}">edit project goals</a>   
+                            
+                            {% elif donation_cart or donation_subscription %}
+                                You're supporting:
+                                <br />            
+                                {% if donation_cart_needs_onetime_count or donation_cart_goals_count %}
+                                    {% if donation_cart_needs_onetime_count %} 
+                                        ${{ donation_cart_needs_onetime_sum }} today for {{ donation_cart_needs_onetime_count }} need{{ donation_cart_needs_onetime_count|pluralize }}
+                                        &nbsp;&nbsp;&nbsp; <a href="{% url project.views.support project_key=project.key %}" >change</a>
+                                        <br />            
+                                    {% endif %}
+                                    {% if donation_cart_goals_count %}
+                                        ${{ donation_cart_goals_sum }} today for {{ donation_cart_goals_count }} goal{{ donation_cart_goals_count|pluralize }}
+                                        &nbsp;&nbsp;&nbsp; <a href="{% url project.views.support project_key=project.key %}" >change</a>
+                                        <br />        
+                                    {% endif %}
+                                {% endif %}
+                                 
+                                {% if donation_cart_needs_monthly_count %}
+                                    ${{ donation_cart_needs_monthly_sum }} monthly for {{ donation_cart_needs_monthly_count }} need{{ donation_cart_needs_monthly_count|pluralize }}
+                                    &nbsp;&nbsp;&nbsp; <a href="{% url project.views.support project_key=project.key %}" >change</a>
+                                    <br />   
+                                {% endif %}
+                                {% if donation_subscription %}
+                                    ${{ donation_subscription_needs_sum }} monthly for {{ donation_subscription_needs_count }} need{{ donation_subscription_needs_count|pluralize }}
+                                    &nbsp;&nbsp;&nbsp; <a href="{% url project.views.support project_key=project.key %}" >change</a>
+                                    <br />
+                                {% endif %}
+                                
+                                <a href="{% url project.views.drop_support project_key=project.key %}" onclick="confirm('are you sure?')">cancel all</a>
+                            {% else %}
+                                
+                                <a href="{% url project.views.support project_key=project.key support_type='monthly' %}" class="button">Support Monthly</a>
+                                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}" class="button">Support Once</a>
+                                
+                            {% endif %}
+                            
+                            {% if donation_history_newest_needsngoals_sum %}
+                                <br />
+                                You've supported earlier:<br />    
+                                ${{ donation_history_newest_needsngoals_sum }} for {{ donation_history_newest_needsngoals_count }} needs and goals on {{ donation_history_newest.datetime_sent }}<br />
+                            {% endif %}
+                            {# buttons&history end #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% else %}
+    
+    {# buttons if no needs or goals #}
+    {% if user.id == project.maintainer.id %}
+        <a href="{% url project.views.edit project_key=project.key %}">edit project details</a>
+        &nbsp;&nbsp;&nbsp;
+        <a href="{% url project.views.edit_needs project_key=project.key %}">edit project needs</a>   
+        &nbsp;&nbsp;&nbsp;
+        <a href="{% url project.views.edit_goals project_key=project.key %}">edit project goals</a>   
+    {% else %}
+        This project has no needs of goals, but you can still offer them your support.
+        <a href="#">offer support</a>
+    {% endif %}
+
+{% endif %}
+
+
+    </div>
+</div>
+<div class="row">
+    <div class="span12 kf_subheader">
+        <div>
+            <hr /> <h2><span>Project Timeline</span></h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12 kf_timeline kf_center">
+        <img src="{{ STATIC_URL }}img/fake_timeline.png" />    
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12 kf_subheader">
+        <div>
+            <hr /> <h2>Project Goals</h2>
+        </div> 
+    </div>
+</div>
+
+<div class="row">
+    <div class="span6 kf_goal">
+        <div class="row">
+            <div class="span3 kf_media">
+				                
+            </div>    
+            <div class="span3 kf_details">
+                <div class="row">
+                    <div class="span3 kf_title">
+                        <a href="#">Go to GUADEC</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="span3 kf_description">
+                        We desperately want to go to GUADEC conference in Koruna, Spain. Please help us be there! 
+                    </div>
+                </div>
+                <div class="row kf_figures">
+            
+                    <div class="span1 kf_chart_container">
+                        <div id="goal-1-chart"></div>
+                        <span class="kf_chart_percent">70%</span>
+                    </div>
+                    <div class="span1 kf_pledged">
+                        $250 <br />
+                        <span class="kf_small">pledged</span>
+                    </div>
+                    <div class="span1 kf_time">
+                        26 <br />
+                        <span class="kf_small">days to go</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--
+    <div class="span6 kf_goal">
+        <div class="row">
+            <div class="span3 kf_media">
+                
+            </div>    
+            <div class="span3 kf_details">
+                <div class="row">
+                    <div class="span3 kf_title">
+                        <a href="#">Convert Linus back to GNOME</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="span3 kf_description">
+                        More opensource for the god of opensource!  
+                    </div>
+                </div>
+                <div class="row kf_figures">
+                    <div class="span1" id="goal-0-chart"></div>
+                    <div class="span1 kf_pledged">
+                        $250 <br />
+                        <span class="kf_small">pledged</span>
+                    </div>
+                    <div class="span1 kf_time">
+                        26 <br />
+                        <span class="kf_small">days to go</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+-->
+</div>
+
+
+</div>
+
+{% endblock %}

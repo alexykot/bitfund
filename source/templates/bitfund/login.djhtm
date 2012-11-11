@@ -1,0 +1,33 @@
+{% extends "base.djhtm" %}
+{% load crispy_forms_tags %}
+
+{% block title %}login{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12 center">
+
+            {% if login_error %}
+            {{ login_error }}
+            {% endif  %} 
+            
+            <form method="post" action="" class="login_form">
+                {% csrf_token %}
+                
+                <table>
+                {{ form|crispy }}
+                
+                <tr><th></th><td>
+                    <div class="register_link">
+                        <input type="submit" value="Submit" class="button" />
+                    </div> 
+                    <div class="register_link">
+                        <a href="{% url bitfund.views.register %}">register</a>
+                    </div>
+                </td></tr>
+                </table>
+            
+            </form>
+    </div>
+</div>
+{% endblock %}

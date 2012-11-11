@@ -1,0 +1,50 @@
+* html .u4_mouseOver {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u4_mouseOver.png");
+}
+
+* html .u4_disabled {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u4_disabled.png");
+}
+
+* html .u4_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u4_normal.png");
+}
+
+* html .u6_mouseOver {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u6_mouseOver.png");
+}
+
+* html .u6_disabled {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u6_disabled.png");
+}
+
+* html .u6_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u6_normal.png");
+}
+
+* html .u9_mouseOver {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u4_mouseOver.png");
+}
+
+* html .u9_disabled {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u4_disabled.png");
+}
+
+* html .u9_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/button_u4_normal.png");
+}
+
+* html .u11_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="Homepage_files/image_u11_normal.png");
+}
+

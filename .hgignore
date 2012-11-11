@@ -1,0 +1,13 @@
+syntax: glob
+source/.settings/*
+source/uploads/*
+logs/*
+settings_server.py
+
+syntax: regexp
+
+\.pyc$
+\.orig$
+^\.project$
+^\.pydevproject$
+

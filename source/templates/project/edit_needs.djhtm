@@ -1,0 +1,100 @@
+{% extends "base.djhtm" %}
+
+{% block title %}register pledger{% endblock %}
+
+{% block pagescripts %}
+$(function() {
+
+    {% if not need_id and needs_list.count > 0 %}
+        $('#add_need_button').click(function () {
+            $('#add_need_form').toggle()
+        });
+    {% endif %}
+
+});
+{% endblock %}
+
+{% block content %}
+
+    {% if needs_list.count > 0 %}
+        <h2>Current project needs</h2>
+        <ul>
+            {% for need in needs_list %}
+            <li>
+                {{ need.title }}, ${{ need.amount }}/month 
+                &nbsp;&nbsp;&nbsp;<a href="{% url project.views.edit_needs project_key=project.key need_id=need.id%}">edit</a>
+                &nbsp;&nbsp;<a href="{% url project.views.delete_need project_key=project.key need_id=need.id%}" onclick="return confirm('Are you sure?')">delete</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>no project needs entered at the moment</h2>
+    {% endif %}
+    
+    {% if allow_add_need %}
+        {% if need_id %}
+            <h2>{{ need.title }} - edit need</h2>
+            <form method="post" action="" id="add_need_form">
+                {% csrf_token %}
+                <ul>
+                    {{ need_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save need" />  &nbsp;&nbsp;&nbsp;<a href="{% url project.views.edit_needs project_key=project.key %}">cancel</a>
+                    </li>
+            
+                </ul>
+            </form>
+        {% elif needs_list.count == 0 %}
+            <h2>Add need</h2>
+            <form method="post" action="" id="add_need_form">
+                {% csrf_token %}
+                <ul>
+                    {{ need_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save need" />
+                    </li>
+            
+                </ul>
+            </form>
+        {% elif request.method == 'POST' %}
+            <h2>Add need</h2>
+            <form method="post" action="" id="add_need_form"> &nbsp;&nbsp;&nbsp;<a href="{% url project.views.edit_needs project_key=project.key %}">cancel</a>
+                {% csrf_token %}
+                <ul>
+                    {{ need_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save need" />
+                    </li>
+            
+                </ul>
+            </form>
+        {% else %}
+            <button id="add_need_button">
+                Add need
+            </button>
+            <form method="post" action="" id="add_need_form" style="display:none;">
+                {% csrf_token %}
+                <ul>
+                    {{ need_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save need" />
+                    </li>
+            
+                </ul>
+            </form>
+        {% endif %}
+    {% endif %}
+    
+    <br />
+    <a href="{% url project.views.edit project_key=project.key %}">edit project details</a>
+    &nbsp;&nbsp;&nbsp;
+    edit project needs
+    &nbsp;&nbsp;&nbsp;
+    <a href="{% url project.views.edit_goals project_key=project.key %}">edit project goals</a>
+    <br />
+    <br />
+    <br />
+    
+    <a href="{% url project.views.view project_key=project.key %}">back</a>
+
+{% endblock %}
