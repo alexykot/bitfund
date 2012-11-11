@@ -55,6 +55,7 @@ urlpatterns += patterns('pledger.views',
     (r'^pledger/donations_update/{0,}$', 'donations_update'),
     (r'^pledger/checkout/{0,}$', 'checkout'),
     (r'^pledger/checkout_success/{0,}$', 'checkout_success'),
+    (r'^pledger/donations_success/{0,}$', 'donations_success'),
     (r'^pledger/fake_external_checkout/{0,}$', 'fake_external_checkout'),
 )
 

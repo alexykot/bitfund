@@ -8,10 +8,10 @@
 
 <DIV id="u2container" style="position:absolute; left:201px; top:182px; width:704px; height:344px; overflow:visible">
 
-    This is a fake external checkout page. <br /> 
-    Payable to: <b>{{ request.REQUEST.authority_name   }}</b> <br />
-    Paid by: <b>{{ request.REQUEST.username }} &lt;{{ request.REQUEST.email }}&gt;</b> <br />
-    Ammount to be paid is: <b>${{ request.REQUEST.amount }}</b> <br />
+    <h1>This is a fake external checkout page.</h1>  
+    <p>Payable to: <b>{{ request.REQUEST.authority_name   }}</b> </p>
+    <p>Paid by: <b>{{ request.REQUEST.username }} &lt;{{ request.REQUEST.email }}&gt;</b> </p>
+    <p>Ammount to be paid is: <b>${{ request.REQUEST.amount }}</b> </p>
     <form method="post" action="">
         {% csrf_token %}
         <input type="submit" value="confirm payment" /> <a href="{% url pledger.views.donations_overview %}">cancel</a>

@@ -9,7 +9,7 @@ from django.utils import simplejson
 from project.models import *
 from pledger.models import *
 from pledger.forms import *
-from bitfund.custom_configs import FAKE_CHECKOUT_SYSTEM_URL
+from bitfund.settings_custom import FAKE_CHECKOUT_SYSTEM_URL
 
 import urllib
 import urllib2
@@ -203,9 +203,14 @@ def fake_external_checkout(request):
 def checkout_success(request):
     donations = DonationCart.objects.filter(user=request.user.id).prefetch_related('project')
     
+    request.session['recent_donations'] = {}
+        
     for donation in donations :
         donation_history      = False
         donation_subscription = False
+        project_id              = donation.project.id
+        project_total_donation  = 0
+        
         donation_cart_needs = DonationCartNeeds.objects.filter(donation_cart=donation).prefetch_related('need') 
         for donation_cart_need in donation_cart_needs :
             if donation_cart_need.donation_type == 'onetime' :
@@ -227,7 +232,7 @@ def checkout_success(request):
                 donation_history_need.amount           = donation_cart_need.amount
                 donation_history_need.donation_type    = donation_cart_need.donation_type
                 donation_history_need.save()
-                 
+                
             elif donation_cart_need.donation_type == 'monthly' :
                 if not donation_subscription :
                     donation_subscription = DonationSubscription()
@@ -240,6 +245,8 @@ def checkout_success(request):
                 donation_subscription_need.donation_subscription = donation_subscription
                 donation_subscription_need.need   = donation_cart_need.need
                 donation_subscription_need.amount = donation_cart_need.amount
+                
+            project_total_donation = project_total_donation + donation_cart_need.amount
                 
             donation_cart_need.delete()
     
@@ -264,9 +271,35 @@ def checkout_success(request):
             donation_history_goal.goal_date_ending    = donation_cart_goal.goal.date_ending
             donation_history_goal.save()
             
+            project_total_donation = project_total_donation + donation_cart_goal.amount
+            
             donation_cart_goal.delete()
+        
+        request.session['recent_donations'][project_id] = project_total_donation    
         
         donation.delete()
     
-    return HttpResponseRedirect(reverse('bitfund.views.index'))
+    return HttpResponseRedirect(reverse('pledger.views.donations_success'))
 
+
+@login_required
+def donations_success(request):
+    
+    if not request.session['recent_donations']:
+        return HttpResponseRedirect(reverse('bitfund.views.index'))
+    
+    
+    recent_donations = {}
+    index = 0
+    for recent_donation_project_id in request.session['recent_donations']:
+        index = index + 1
+        recent_donations[index] = {'project_title':    Project.objects.get(pk=recent_donation_project_id).title,
+                                   'donation_amount':  request.session['recent_donations'][recent_donation_project_id],
+                                                        }
+        
+        
+    
+    return render_to_response('pledger/donations_success.djhtm', {'request' : request, 
+                                                                  'recent':  recent_donations,
+                                                                  'projects_count':index, 
+                                                                  }, context_instance=RequestContext(request))
