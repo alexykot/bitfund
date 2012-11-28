@@ -1,7 +1,12 @@
 # custom bitfund settings
+PROTOTYPE_HIDDEN_ENTRANCE                       = 'hidden-entrance'
+PROTOTYPE_LANDING_PAGE_URL                      = '/index.htm'
+
 
 DEFAULT_PASSWORD                                = 'asdasdasd' #default password set to semianonimous users
 ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME   = 'renew-registration' 
+ 
+
 
 MAX_NEEDS_PER_PROJECT = 10
 MAX_GOALS_PER_PROJECT = 10

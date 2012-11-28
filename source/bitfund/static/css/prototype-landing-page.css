@@ -1,0 +1,23 @@
+/* prototype-landing-page */
+.prototype-landing-page h1 {
+    color: #000000;
+    font-size: 1.6em;
+    font-weight:normal;
+}
+
+.prototype-landing-page p{
+    color: #747271;
+    font-size: 1em;
+}
+
+.prototype-landing-page .kf_cofounder{
+    font-weight: bold;
+}    
+
+
+
+.prototype-landing-page .kf_form input, .prototype-landing-page .kf_form textarea{
+    width:460px;
+}
+
+

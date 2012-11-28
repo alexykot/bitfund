@@ -10,12 +10,13 @@ from django.contrib.auth.models import Group
 from django.template import RequestContext
 from django.db.models import Q
 from django.core.validators import validate_email
+from django.core.mail import send_mail
 
 from bitfund.models import *
 from bitfund.forms import *
 from project.forms import *
-from bitfund.custom_configs import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME
-
+from bitfund.settings_custom import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROTOTYPE_LANDING_PAGE_URL, PROTOTYPE_HIDDEN_ENTRANCE
+ 
 
 def index(request):
     public_projects_list    = Project.objects.filter(Q(is_public = True) | Q(maintainer_id=request.user.id))
@@ -142,3 +143,31 @@ def register(request):
         return render_to_response('bitfund/register.djhtm', {'form'     : form,
                                                          'request'  : request,
                                                          }, context_instance=RequestContext(request))
+
+
+def landing(request):
+    if request.method == 'POST':
+        print '!!!'
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            email   = form.cleaned_data['email']
+            message = form.cleaned_data['message']
+            
+            send_mail('Message from bitfund.org', message, email, ['info@bitfund.org'], fail_silently=False)
+            
+            return render_to_response('bitfund/landing.djhtm', {'form'         : form,
+                                                                'message_sent' : True,
+                                                                'request'      : request,
+                                                                }, context_instance=RequestContext(request))
+        else :
+            return render_to_response('bitfund/landing.djhtm', {'form'     : form,
+                                                                'request'  : request,
+                                                                }, context_instance=RequestContext(request))
+             
+    else :            
+        form = ContactForm()
+
+    return render_to_response('bitfund/landing.djhtm', {'form'      : form,
+                                                        'request'   : request,
+                                                        }, context_instance=RequestContext(request))
+    

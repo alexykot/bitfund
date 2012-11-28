@@ -7,7 +7,7 @@
 
 /* document-wide */
  html,body{
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAICAIAAABVpBlvAAAAA3NCSVQICAjb4U/gAAAAI0lEQVQImWP8//8/AypgYsAAUKHPnz9//vyZkCoCQoxE2QgAhGkLu3yg3FEAAAAASUVORK5CYII=);
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAICAYAAADaxo44AAAAA3NCSVQICAjb4U/gAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAnSURBVBhXY/wPBAxYABM2QZAYXOL3bwYGEIYBwjrQjcSpg5FkVwEA9nsL88Pgr4YAAAAASUVORK5CYII=);
     font-family: Tahoma, sans-serif;
 }
 
@@ -18,7 +18,11 @@ ul {list-style-type: none;}
 #kf_header-n-content {
     background-color:   #FFFFFF;
     width:              980px;
-    box-shadow: -5px 0px 15px #DFDFDF, 5px 0px 15px #DFDFDF;
+    box-shadow: 0 0 10px #DFDFDF, 0 0 10px #DFDFDF;
+}
+
+.kf_header{
+    height: 125px;
 }
 
 #kf_footer {

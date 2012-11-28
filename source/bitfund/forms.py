@@ -12,6 +12,8 @@ class LoginForm(forms.Form):
     username = forms.CharField(max_length=255, label=_('username or email'))
     password = forms.CharField(max_length=255, widget = forms.PasswordInput)
 
+
+
 class RegistrationForm(forms.Form):
     username              = forms.CharField(max_length=255)
     password              = forms.CharField(max_length=255, widget = forms.PasswordInput)
@@ -53,3 +55,9 @@ class RegistrationForm(forms.Form):
                 del cleaned_data["email"]
         
         return cleaned_data
+
+
+class ContactForm(forms.Form):
+    email = forms.EmailField()
+    message = forms.CharField(widget = forms.Textarea)
+

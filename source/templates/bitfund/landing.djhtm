@@ -1,0 +1,95 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BitFund prototype</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="imagetoolbar" content="no"/>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jqplot.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jqplot.donutRenderer.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap.min.css"/>
+<!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-responsive.min.css"/>-->
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery.jqplot.min.css"/>
+    
+    
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bitfund.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/prototype-landing-page.css"/>
+
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png"/>
+
+
+
+
+<script type="text/javascript">
+
+
+</script>
+
+</head>
+<body>
+    
+<div id="kf_header-n-content">
+    <div class="kf_blueline"></div>
+    
+    <div class="container kf_header">
+        <div class="row">
+            <div class="span3 kf_logo">
+                <a href="/"></a>        
+            </div>
+        </div>
+    </div>    
+    
+    <div class="kf_dotline"></div>
+    <div id="kf_content">
+        <div class="container prototype-landing-page">
+            {% if message_sent %}
+            
+            <div class="row">
+                <div class="span3"></div>
+                <div class="span6">
+                    <h1>BitFund.org prototype</h1>
+                    <p class="kf_message">Message sent, thank you. We'll be in contact soon.</p>
+                </div>
+            </div>
+            
+            {% else %}
+            <div class="row">
+                <div class="span3"></div>
+                <div class="span6">
+                    <h1>BitFund.org prototype</h1>
+                    <p class="kf_message">BitFund.org is a project implementing crowdfunding service for opensource software developers and users. This is a private prototype.</p> 
+                    <p class="kf_message kf_cofounder">Important! BitFund.org is looking for second technical cofounder.</p>
+                    <p class="kf_message">Send message through the form or to <a href="mailto:info@bitfund.org">info@bitfund.org</a> to get in contact.</p>
+                    
+                    
+                </div>
+            </div>
+            <div class="row kf_form">
+                <div class="span3"></div>
+                <div class="span6">
+                                        
+                    <form method="post" action="">
+                    {% csrf_token %}
+                    
+                    {{ form|crispy }}
+                      <div class="clearfix control-group">  
+                        <input type="submit" value="Submit" class="button" />
+                      </div>
+                    </form>                     
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div id="kf_push_footer"></div>
+</div>
+
+
+</body>

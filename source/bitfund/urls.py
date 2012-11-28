@@ -16,17 +16,16 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/{0,}', include(admin.site.urls)),
-    
 )
 
 urlpatterns += patterns('bitfund.views',
+    (r'^index.htm', 'landing'),
     (r'^/{0,}$', 'index'),
     (r'^projects{0,}/{0,}$', redirect_to, {'url': '/'}),
     (r'^pledger{0,}/{0,}$', redirect_to, {'url': '/'}),
     (r'^login/{0,}$', 'login'),
     (r'^logout/{0,}$', 'logout'),
     (r'^register/{0,}$', 'register'),
-    
 )
 
 urlpatterns += patterns('project.views',

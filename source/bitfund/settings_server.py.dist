@@ -93,3 +93,9 @@ TEMPLATE_DIRS = (
 INTERNAL_IPS = ('127.0.0.1','192.168.51.120')
 
 
+EMAIL_HOST          = 'localhost'
+EMAIL_PORT          = '25' 
+EMAIL_HOST_USER     = 'root'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS       = False
+
