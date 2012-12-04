@@ -7,7 +7,7 @@ class HiddenEntranceMiddleware(object):
             return None;
         elif PROTOTYPE_HIDDEN_ENTRANCE in request.GET: 
             request.session[PROTOTYPE_HIDDEN_ENTRANCE] = True
-            return None;
+            return HttpResponseRedirect('/')
         elif PROTOTYPE_HIDDEN_ENTRANCE in request.session:
             return None;
         else : 

@@ -153,7 +153,7 @@ def landing(request):
             email   = form.cleaned_data['email']
             message = form.cleaned_data['message']
             
-            send_mail('Message from bitfund.org', message, email, ['info@bitfund.org'], fail_silently=False)
+            send_mail('Message at bitfund.org from '+email, message, email, ['alexykot@gmail.com'], fail_silently=False)
             
             return render_to_response('bitfund/landing.djhtm', {'form'         : form,
                                                                 'message_sent' : True,

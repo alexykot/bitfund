@@ -1,8 +1,12 @@
-<div class="row">
+<div class="container">
+<div class="row kf_header">
     <div class="span3 kf_logo">
-        <a href="{% url bitfund.views.index %}"></a>        
+        <a href="{% url bitfund.views.index %}">
+            <span class="kf_bit">Bit</span>
+            <span class="kf_fund">Fund</span>
+        </a>        
     </div>
-    <div class="span3 offset3">
+    <div class="span3 offset1">
         <div class="kf_support-summary">
         {% if request.user.is_authenticated %}
             You currently pledging:
@@ -28,6 +32,15 @@
         {% endif %}
         </div>
     </div>
+    <div class="span2">
+        <div class="kf_account_links">
+            {% if request.user.is_authenticated and not user_is_stranger %}
+                <a href="{% url bitfund.views.logout %}">log out</a> 
+            {% else %}
+                <a href="{% url bitfund.views.login %}">log in</a> 
+            {% endif %}
+        </div>
+    </div>
     <div class="span2 offset1">
         <div class="kf_big-header-button">
             {% if request.user.is_authenticated %}
@@ -44,12 +57,6 @@
                 </a>
             {% endif %}
         </div>  
-        <div class="kf_account_links">
-            {% if request.user.is_authenticated and not user_is_stranger %}
-           		<a href="{% url bitfund.views.logout %}">log out</a> 
-            {% else %}
-                <a href="{% url bitfund.views.login %}">log in</a> 
-            {% endif %}
-        </div>
     </div>
 </div>
+</div>    

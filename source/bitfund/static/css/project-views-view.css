@@ -5,7 +5,7 @@
 }
 .kf_project-views-view .kf_project_title h1{
     color: #000000;
-    font-size: 1.6em;
+    font-size: 2.6em;
     font-weight:normal;
 }
 
@@ -58,6 +58,7 @@
 	line-height: 20px;
 	padding: 5px 0;
 	cursor: pointer;
+	border-radius: 5px;
 }
 .kf_project-views-view .kf_project_buttons li.kf_spacer{
 	width:1px;

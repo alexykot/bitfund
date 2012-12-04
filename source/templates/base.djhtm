@@ -33,14 +33,12 @@
 <body>
     
 <div id="kf_header-n-content">
-    <div class="kf_blueline"></div>
-    
-    <div class="container">
-        {% include "header.djhtm" %}
-    </div>    
-    
+    {% include "header.djhtm" %}
+    <!--
     <div class="kf_dotline"></div>
+    -->
     <div id="kf_content">
+        <div class="kf_greenline"></div>
         <div class="container">
             {% block content %}{% endblock %}
         </div>
@@ -51,7 +49,9 @@
 
 
 <div id="kf_footer">
+    <!--
     <div class="kf_dotline"></div>
+    -->
     {% include "footer.djhtm" %}
 </div>
 
