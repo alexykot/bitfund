@@ -29,6 +29,9 @@
     border-top: 1px solid #DFDFDF;
     border-bottom: 1px solid #DFDFDF;
 }
+.kf_project-views-view .kf_project_menuline .nav{
+    margin-bottom:0px;
+}
 
 .kf_project-views-view .kf_project_people {
     padding: 20px 0 0 0;

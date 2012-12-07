@@ -208,6 +208,28 @@ $(document).ready(function(){
 </div>
 <div class="row">
     <div class="span12 kf_project_menuline">
+        <ul class="nav nav-pills">
+            <li><a href="#">About</a></li>
+            <li><a href="#">Team</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">History</a></li>
+            <li><a href="#">Expenses</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" id="dLabel" data-toggle="dropdown" data-target="#" href="#">More<b class="caret"></b></a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    <li><a href="#">Pledge</a></li>
+                    <li><a href="#">Contribute</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Linked Projects</a></li>
+                </ul>
+            
+            </li>
+        </ul>    
+
+
+
+        <!--
         <div class="btn-group">
             <a href="#" class="btn btn-link">About</a>
             <a href="#" class="btn btn-link">Team</a>
@@ -219,7 +241,6 @@ $(document).ready(function(){
             <a href="#" class="btn btn-link">Linked Projects</a>
             <a href="#" class="btn btn-link">Contact</a>
         </div>
-        <!--
         <span class="label label-success">releases</span>
         <span class="label label-warning">social</span>
         <span class="label label-info">finance</span>
