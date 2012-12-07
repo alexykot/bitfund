@@ -5,34 +5,15 @@
 @import url('pledger-views-donations_success.css');
 
 
-/* document-wide */
- html,body{
+/* layout */
+html,body{
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAICAYAAADaxo44AAAAA3NCSVQICAjb4U/gAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAnSURBVBhXY/wPBAxYABM2QZAYXOL3bwYGEIYBwjrQjcSpg5FkVwEA9nsL88Pgr4YAAAAASUVORK5CYII=);
     font-family: Tahoma, sans-serif;
 }
-
-a, a:visited {color: #074585;}
-a:hover, a:active {color: #2aa112;}
-ul {list-style-type: none;}
-
-#kf_header-n-content {
-    width:              980px;
-}
-
-.kf_header{
-}
-
-#kf_footer {
-    line-height: 40px;
-    width: 980px;    
-}
-
-/* layout */
-* {margin: 0;}
-
 html,body, #kf_header-n-content{height:100%;}
 
 #kf_header-n-content {
+    width:              980px;
     min-height: 100%;
     height: auto !important;
     height: 100%;
@@ -42,6 +23,12 @@ html,body, #kf_header-n-content{height:100%;}
 #kf_content{
     background-color:   #FFFFFF;
     box-shadow: 0 0 10px #DFDFDF, 0 0 10px #DFDFDF;
+    padding-bottom: 20px;
+}
+
+#kf_footer {
+    line-height: 40px;
+    width: 980px;    
 }
 
 #kf_footer, #kf_push_footer {
@@ -52,6 +39,11 @@ html,body, #kf_header-n-content{height:100%;}
 
 
 /* general */
+* {margin: 0;}
+
+a, a:visited {color: #074585;}
+a:hover, a:active {color: #2aa112;}
+ul {list-style-type: none;}
 
 input.button {    background-color: #074585;
     color: #FFFFFF;

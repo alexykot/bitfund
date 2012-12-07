@@ -1,7 +1,7 @@
 /* project.views.view */
 
 .kf_project-views-view .kf_project_title {
-    padding: 20px 0;
+    padding: 15px 0;
 }
 .kf_project-views-view .kf_project_title h1{
     color: #000000;
@@ -18,6 +18,16 @@
 .kf_project-views-view .kf_project_brief{
     color: #747271;
     font-size: 14px;
+}
+
+.kf_project-views-view .kf_project_meta{
+    color: #747271;
+    font-size: 0.8em;
+}
+
+.kf_project-views-view .kf_project_menuline{
+    border-top: 1px solid #DFDFDF;
+    border-bottom: 1px solid #DFDFDF;
 }
 
 .kf_project-views-view .kf_project_people {

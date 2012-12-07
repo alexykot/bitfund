@@ -190,8 +190,41 @@ $(document).ready(function(){
             <a href="{% url project.views.view project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
         {% endif %}
     </div>
-    <div class="span11">
+    <div class="span7">
         <h1><a href="{% url project.views.view project_key=project.key %}">{{ project.title }}</a></h1>
+    </div>
+    <div class="span4 kf_project_meta">
+        <div class="row">
+            <div class="span2">
+                category: media <br />
+                last update: 10 days ago
+            </div>
+            <div class="span2">
+                team: six geeks <br />
+                last release: v0.22
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="span12 kf_project_menuline">
+        <div class="btn-group">
+            <a href="#" class="btn btn-link">About</a>
+            <a href="#" class="btn btn-link">Team</a>
+            <a href="#" class="btn btn-link">Blog</a>
+            <a href="#" class="btn btn-link">History</a>
+            <a href="#" class="btn btn-link">Expenses</a>
+            <a href="#" class="btn btn-link">Pledge</a>
+            <a href="#" class="btn btn-link">Contribute</a>
+            <a href="#" class="btn btn-link">Linked Projects</a>
+            <a href="#" class="btn btn-link">Contact</a>
+        </div>
+        <!--
+        <span class="label label-success">releases</span>
+        <span class="label label-warning">social</span>
+        <span class="label label-info">finance</span>
+        <span class="label label">sources</span>
+        -->
     </div>
 </div>
 <div class="row">
@@ -334,8 +367,8 @@ $(document).ready(function(){
                                 <a href="{% url project.views.drop_support project_key=project.key %}" onclick="confirm('are you sure?')">cancel all</a>
                             {% else %}
                                 
-                                <a href="{% url project.views.support project_key=project.key support_type='monthly' %}" class="button">Support Monthly</a>
-                                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}" class="button">Support Once</a>
+                                <a href="{% url project.views.support project_key=project.key support_type='monthly' %}" class="button">Pledge Monthly</a>
+                                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}" class="button">Pledge Once</a>
                                 
                             {% endif %}
                             

@@ -1,6 +1,15 @@
 /* prototype-landing-page */
+.kf_header{
+    height:4.5em;
+}
+
 .prototype-landing-page h1 {
-    color: #000000;
+    color: #074585;
+    font-size: 2.6em;
+    font-weight:normal;
+}
+
+.prototype-landing-page h2 {
     font-size: 1.6em;
     font-weight:normal;
 }
@@ -20,4 +29,10 @@
     width:460px;
 }
 
+#cut{
+    display:none;
+}
 
+.prototype-landing-page ul{
+    list-style: disc;
+}
