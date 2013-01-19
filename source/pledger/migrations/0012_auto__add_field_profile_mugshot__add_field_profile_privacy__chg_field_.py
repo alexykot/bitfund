@@ -8,24 +8,30 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'Profile.logo'
-        db.delete_column('pledger_profile', 'logo')
-
-        # Adding field 'Profile.avatar'
-        db.add_column('pledger_profile', 'avatar',
-                      self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True),
+        # Adding field 'Profile.mugshot'
+        db.add_column('pledger_profile', 'mugshot',
+                      self.gf('django.db.models.fields.files.ImageField')(default=datetime.datetime(2013, 1, 19, 0, 0), max_length=100, blank=True),
                       keep_default=False)
 
+        # Adding field 'Profile.privacy'
+        db.add_column('pledger_profile', 'privacy',
+                      self.gf('django.db.models.fields.CharField')(default='registered', max_length=15),
+                      keep_default=False)
+
+
+        # Changing field 'Profile.user'
+        db.alter_column('pledger_profile', 'user_id', self.gf('django.db.models.fields.related.OneToOneField')(unique=True, to=orm['auth.User']))
 
     def backwards(self, orm):
-        # Adding field 'Profile.logo'
-        db.add_column('pledger_profile', 'logo',
-                      self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True),
-                      keep_default=False)
+        # Deleting field 'Profile.mugshot'
+        db.delete_column('pledger_profile', 'mugshot')
 
-        # Deleting field 'Profile.avatar'
-        db.delete_column('pledger_profile', 'avatar')
+        # Deleting field 'Profile.privacy'
+        db.delete_column('pledger_profile', 'privacy')
 
+
+        # Changing field 'Profile.user'
+        db.alter_column('pledger_profile', 'user_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], unique=True))
 
     models = {
         'auth.group': {
@@ -66,7 +72,7 @@ class Migration(SchemaMigration):
         },
         'pledger.donationcart': {
             'Meta': {'object_name': 'DonationCart'},
-            'datetime_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 11, 0, 28, 41, 6)'}),
+            'datetime_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 19, 16, 39, 49, 5)'}),
             'goals': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['project.ProjectGoal']", 'through': "orm['pledger.DonationCartGoals']", 'symmetrical': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'needs': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['project.ProjectNeed']", 'through': "orm['pledger.DonationCartNeeds']", 'symmetrical': 'False'}),
@@ -90,7 +96,7 @@ class Migration(SchemaMigration):
         },
         'pledger.donationhistory': {
             'Meta': {'object_name': 'DonationHistory'},
-            'datetime_sent': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 11, 0, 28, 41, 6)'}),
+            'datetime_sent': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 19, 16, 39, 49, 5)'}),
             'donation_subscription': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['pledger.DonationSubscription']", 'null': 'True', 'on_delete': 'models.SET_NULL'}),
             'email': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'goals': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['project.ProjectGoal']", 'through': "orm['pledger.DonationHistoryGoals']", 'symmetrical': 'False'}),
@@ -142,11 +148,13 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Profile'},
             'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'mugshot': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
+            'privacy': ('django.db.models.fields.CharField', [], {'default': "'registered'", 'max_length': '15'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'my_profile'", 'unique': 'True', 'to': "orm['auth.User']"})
         },
         'project.project': {
             'Meta': {'object_name': 'Project'},
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 11, 0, 28, 41, 6)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 19, 16, 39, 49, 5)'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -159,7 +167,7 @@ class Migration(SchemaMigration):
         'project.projectgoal': {
             'Meta': {'object_name': 'ProjectGoal'},
             'amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '12', 'decimal_places': '0'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 11, 0, 28, 41, 6)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 19, 16, 39, 49, 5)'}),
             'date_ending': ('django.db.models.fields.DateField', [], {}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -170,7 +178,7 @@ class Migration(SchemaMigration):
         'project.projectneed': {
             'Meta': {'object_name': 'ProjectNeed'},
             'amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '12', 'decimal_places': '0'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 11, 0, 28, 41, 6)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 19, 16, 39, 49, 5)'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'max_length': '80', 'null': 'True', 'blank': 'True'}),

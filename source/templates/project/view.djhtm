@@ -181,9 +181,6 @@ $(document).ready(function(){
     
 <div class="row kf_project_title">
     <div class="span1 kf_project_logo">
-        {% load thumbnail %}
-        {% thumbnail project.logo "62x62" as logo %}
-        {% endthumbnail %}
         {% if logo %}
             <a href="{% url project.views.view project_key=project.key %}"><img src="{{ logo.url }}" /></a>
         {% elif project.logo %}

@@ -63,11 +63,11 @@ INSTALLED_APPS = (
     
     
     # proejct apps
-    'bitfund',            # bitfund core 
+    'bitfund',          # bitfund core 
     'pledger',          # pledger account
     'project',          # project
-    #'core',             # core
-
+    'accounts',         # project
+    
     # installed thirdparty apps
     # utilities 
     'south',            # DB migrations  
@@ -76,8 +76,11 @@ INSTALLED_APPS = (
     # functionality extensions
     'crispy_forms',     # bootstrap based forms styling   
     'django_cleanup',   # autodelete old files for FileField
-    'sorl.thumbnail',   # image thumbnails
+    #'sorl.thumbnail',   # image thumbnails
     'widget_tweaks',    # easy CSS stryling for forms  
+    'userena',          # user accounts enhanced
+    'guardian',         # object permissions checking
+    'easy_thumbnails',  # easier thumbnailing
 )
 
 # A sample logging configuration. The only tangible logging
@@ -110,19 +113,23 @@ LOGGING = {
 }
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-                # django defaults
-                "django.contrib.auth.context_processors.auth",
-                "django.core.context_processors.debug",
-                "django.core.context_processors.i18n",
-                "django.core.context_processors.media",
-                "django.core.context_processors.static",
-                "django.core.context_processors.tz",
-                "django.contrib.messages.context_processors.messages",
-                
-                
-                #custom processors
-                'bitfund.context_processors.frontend_header_template_data',
-                'bitfund.context_processors.user_is_stranger',
-                
-                )
+    # django defaults
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    
+    
+    #custom processors
+    'bitfund.context_processors.frontend_header_template_data',
+    'bitfund.context_processors.user_is_stranger',
+)
 
+AUTHENTICATION_BACKENDS = (
+    'userena.backends.UserenaAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)

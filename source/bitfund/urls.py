@@ -16,6 +16,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/{0,}', include(admin.site.urls)),
+    (r'^accounts/', include('userena.urls')),
 )
 
 urlpatterns += patterns('bitfund.views',

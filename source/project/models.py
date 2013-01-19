@@ -8,6 +8,12 @@ DONATION_TYPES_CHOICES = (
     ('monthly', 'Monthly'),
 )
 
+PROJECT_USER_ROLES = (
+    ('treasurer', 'Treasurer'),
+    ('maintainer', 'Maintainer'),
+    ('developer', 'Developer'),
+)
+
 
 class Project(models.Model):
     key           = models.CharField(max_length=80, unique=True)
@@ -44,6 +50,11 @@ class ProjectFeatureRequest(models.Model):
     project       = models.ForeignKey(Project)
     title         = models.CharField(max_length=200)
     description   = models.TextField()
+    
+class ProjectUserRole(models.Model):
+    user          = models.ForeignKey(User)
+    project       = models.ForeignKey(Project)
+    user_role     = models.CharField(max_length=10, choices=PROJECT_USER_ROLES, null=True, blank=True)
 
 
 """

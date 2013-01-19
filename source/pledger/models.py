@@ -1,13 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.datetime_safe import datetime
-from project.models import * 
+from django.utils.translation import ugettext_lazy as _
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
 
+from userena.models import UserenaBaseProfile
 
-class Profile(models.Model):
-    user          = models.ForeignKey(User, unique=True)
+from project.models import * 
+
+
+class Profile(UserenaBaseProfile):
+    user          = models.OneToOneField(User,
+                                         unique=True,
+                                         verbose_name=_('user'),
+                                         related_name='my_profile')
     avatar        = models.ImageField(null=True, blank=True, upload_to='user_avatar/')
 
 
@@ -287,12 +294,4 @@ class DonationHistoryGoals(models.Model):
     goal_date_ending            = models.DateField('date ending')
     amount                      = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-"""
-SELECT 
-    DISTINCT project_id 
-FROM pledger_donationcart 
-    LEFT JOIN pledger_donationcartneeds ON pledger_donationcartneeds.donation_cart_id = pledger_donationcart.id 
-    LEFT JOIN pledger_donationcartgoals ON pledger_donationcartgoals.donation_cart_id = pledger_donationcart.id 
-WHERE 1 AND pledger_donationcart.user_id='16' AND (pledger_donationcartneeds.id AND pledger_donationcartneeds.donation_type='onetime')
                                                    
-"""                                                   
