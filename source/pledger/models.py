@@ -7,15 +7,14 @@ from django.shortcuts import get_object_or_404
 
 from userena.models import UserenaBaseProfile
 
-from project.models import * 
+from project.models import Project, ProjectNeed, ProjectGoal, ProjectUserRole
 
 
 class Profile(UserenaBaseProfile):
-    user          = models.OneToOneField(User,
-                                         unique=True,
-                                         verbose_name=_('user'),
-                                         related_name='my_profile')
-    avatar        = models.ImageField(null=True, blank=True, upload_to='user_avatar/')
+    user                    = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
+    github_profile          = models.CharField(max_length=255, null=True, blank=True) 
+    bitbucket_profile       = models.CharField(max_length=255, null=True, blank=True)
+    sourceforge_profile     = models.CharField(max_length=255, null=True, blank=True)
 
 
 #donations cart, storing donations data until confirmed 

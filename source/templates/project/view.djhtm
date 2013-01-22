@@ -211,14 +211,14 @@ $(document).ready(function(){
             <li><a href="#">Blog</a></li>
             <li><a href="#">History</a></li>
             <li><a href="#">Expenses</a></li>
+            <li><a href="#">Pledge</a></li>
             <li class="dropdown">
                 <a class="dropdown-toggle" id="dLabel" data-toggle="dropdown" data-target="#" href="#">More<b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    <li><a href="#">Pledge</a></li>
                     <li><a href="#">Contribute</a></li>
                     <li><a href="#">Contact</a></li>
                     <li class="divider"></li>
-                    <li><a href="#">Linked Projects</a></li>
+                    <li><a href="#">Dependencies</a></li>
                 </ul>
             
             </li>
@@ -253,6 +253,13 @@ $(document).ready(function(){
             </div>        
         </div>
         <div class="row kf_project_people">
+            !!!{{ project_users.count }}!!!
+            {% for project_user_role in project_users %}
+                !!!<a href="#">{{ project_user_role.user.username }}</a>
+            {% endfor %}
+
+
+            {% comment %}
             <div class="span1 kf_project_people_avatar">
                 {% if maintainer_profile.avatar %}
                 	<img src="{{ maintainer_profile.avatar.url }}" /> 
@@ -278,6 +285,7 @@ $(document).ready(function(){
                 </a></p>
                 <p class="kf_person_role">Leading Developer</p>
             </div>
+            {% endcomment %}
         </div>
         <div class="row kf_project_buttons kf_center">
     		<ul>

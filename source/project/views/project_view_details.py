@@ -6,11 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 
 from datetime import date
+
 from project.models import *
 from pledger.models import *
 from project.forms import *
 from project.decorators import *
-from bitfund.custom_configs import MAX_NEEDS_N_GOALS_ON_PROJECT_PAGE
+from bitfund.settings_custom import MAX_NEEDS_N_GOALS_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE
 
 
 def view(request, project_key):
@@ -21,13 +22,16 @@ def view(request, project_key):
                      'today'   : date.today(),
                      }
     
-    template_data['maintainer_profile']         = Profile.objects.get(user_id=project.maintainer_id)
+    template_data['project_users'] = ProjectUserRole.objects.select_related().filter(project=project).order_by('sort_order')[:MAX_USERS_ON_PROJECT_PAGE]
+    print template_data['project_users']
+    
+    #template_data['maintainer_profile']         = Profile.objects.get(user_id=project.maintainer_id)
      
     project_needs       = ProjectNeed.objects.filter(project=project.id)
     project_needs_count = project_needs.count()
     project_goals       = ProjectGoal.objects.filter(project=project.id)
     project_goals_count = project_goals.count()
-    template_data['project_needs']              = project_needs 
+    template_data['project_needs']              = project_needs
     template_data['project_goals']              = project_goals
     template_data['project_needs_count']        = project_needs_count 
     template_data['project_goals_count']        = project_goals_count

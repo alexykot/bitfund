@@ -76,7 +76,6 @@ INSTALLED_APPS = (
     # functionality extensions
     'crispy_forms',     # bootstrap based forms styling   
     'django_cleanup',   # autodelete old files for FileField
-    #'sorl.thumbnail',   # image thumbnails
     'widget_tweaks',    # easy CSS stryling for forms  
     'userena',          # user accounts enhanced
     'guardian',         # object permissions checking

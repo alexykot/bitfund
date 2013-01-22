@@ -15,7 +15,14 @@ DEFAULT_MONTHLY_DONATION_AMOUNT                 = 2 # default donation in $
 DEFAULT_ONETIME_DONATION_AMOUNT                 = 5 # default donation in $
 
 MAX_NEEDS_N_GOALS_ON_PROJECT_PAGE               = 5 # max needs and goals to show in the list 
+MAX_USERS_ON_PROJECT_PAGE                       = 4 # max users to show in the list
 
 DATE_INPUT_FORMATS = ('%d %b %Y', '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y', '%b %d, %Y', '%d %b, %Y', '%B %d %Y', '%B %d, %Y', '%d %B %Y', '%d %B, %Y')
 
 FAKE_CHECKOUT_SYSTEM_URL = '/pledger/fake_external_checkout'
+
+PROJECT_USER_ROLES_WEIGHTS = (
+    ('treasurer', 50),
+    ('maintainer', 30),
+    ('developer', 15),
+)
