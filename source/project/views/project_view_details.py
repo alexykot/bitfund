@@ -23,7 +23,6 @@ def view(request, project_key):
                      }
     
     template_data['project_users'] = ProjectUserRole.objects.select_related().filter(project=project).order_by('sort_order')[:MAX_USERS_ON_PROJECT_PAGE]
-    print template_data['project_users']
     
     #template_data['maintainer_profile']         = Profile.objects.get(user_id=project.maintainer_id)
      

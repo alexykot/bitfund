@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404
 
 from userena.models import UserenaBaseProfile
 
-from project.models import Project, ProjectNeed, ProjectGoal, ProjectUserRole
+from project.models import *
+from project.lists import *
 
 
 class Profile(UserenaBaseProfile):

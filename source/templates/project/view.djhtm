@@ -253,9 +253,22 @@ $(document).ready(function(){
             </div>        
         </div>
         <div class="row kf_project_people">
-            !!!{{ project_users.count }}!!!
             {% for project_user_role in project_users %}
-                !!!<a href="#">{{ project_user_role.user.username }}</a>
+	            <div class="span1 kf_project_people_avatar">
+	                {% if project_user_role.profile.mugshot %}
+	                	<img src="{{ project_user_role.profile.mugshot.url }}" /> 
+	                {% endif %}
+	            </div>
+	            <div class="span2 kf_user_text">
+	                <p><a href="#" class="kf_person_name">
+	                    {% if project_user_role.profile.user.first_name and project_user_role.profile.user.last_name %}
+	                        {{ project_user_role.profile.user.first_name }} {{ project_user_role.profile.user.last_name }}
+	                    {% else %} 
+	                        {{ project_user_role.profile.user.username }}
+	                    {% endif %}
+	                </a></p>
+	                <p class="kf_person_role">{{ project_user_role.user_role_title }}</p>
+	            </div>
             {% endfor %}
 
 

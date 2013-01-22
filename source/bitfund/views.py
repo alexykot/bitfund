@@ -19,7 +19,7 @@ from bitfund.settings_custom import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAM
  
 
 def index(request):
-    public_projects_list    = Project.objects.filter(Q(is_public = True) | Q(maintainer_id=request.user.id))
+    public_projects_list    = Project.objects.filter(Q(is_public = True))
     
     return render_to_response('bitfund/index.djhtm', {'public_projects_list' : public_projects_list,
                                                   'request'               : request,

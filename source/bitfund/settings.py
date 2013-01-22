@@ -1,7 +1,6 @@
 # Django settings for bitfund project.
 
 
-
 #this is server related settings like DB access and local paths
 from settings_server import *
 
