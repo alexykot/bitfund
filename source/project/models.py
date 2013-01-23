@@ -27,25 +27,29 @@ class Project(models.Model):
 
 class ProjectNeed(models.Model):
     project       = models.ForeignKey(Project)
-    key           = models.CharField(max_length=80, null=True, blank=True)
+    key           = models.CharField(max_length=80)
     title         = models.CharField(max_length=255)
     description   = models.CharField(max_length=255, null=True, blank=True)
     amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
+    other_sources = models.DecimalField(decimal_places=2, max_digits=12, default=0)
     date_added    = models.DateTimeField('date added', default=datetime.now())
     is_public     = models.BooleanField(default=True)
+    sort_order    = models.IntegerField(default=0)
 
 class ProjectGoal(models.Model):
     project       = models.ForeignKey(Project)
-    key           = models.CharField(max_length=80, null=True, blank=True)
+    key           = models.CharField(max_length=80)
     title         = models.CharField(max_length=255)
-    brief         = models.CharField(max_length=255, null=True, blank=True)
+    brief         = models.CharField(max_length=255)
     description   = models.TextField(null=True, blank=True)
     image         = models.ImageField(upload_to='project_goals/', null=True, blank=True)
     video_url     = models.CharField(max_length=255, null=True, blank=True)
     amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
-    date_ending   = models.DateField('date ending')
+    other_sources = models.DecimalField(decimal_places=2, max_digits=12, default=0)
+    date_ending   = models.DateTimeField('date ending')
     date_added    = models.DateTimeField('date added', default=datetime.now())
     is_public     = models.BooleanField(default=True)
+    sort_order    = models.IntegerField(default=0)
     
 class ProjectUserRole(models.Model):
     from pledger.models import Profile
@@ -60,32 +64,54 @@ class ProjectUserRole(models.Model):
 class ProjectOutlink(models.Model):
     project         = models.ForeignKey(Project)
     type            = models.CharField(max_length=50, choices=PROJECT_OUTLINK_TYPES)
+    title           = models.CharField(max_length=50)
     address         = models.TextField()
     date_added      = models.DateTimeField('date added', default = datetime.now())
+    is_public       = models.BooleanField(default=True)
+    sort_order      = models.IntegerField(default=0)
 
 class ProjectContact(models.Model):
     project         = models.ForeignKey(Project)
     type            = models.CharField(max_length=50, choices=PROJECT_CONTACT_TYPES)
     data            = models.TextField()
     date_added      = models.DateTimeField('date added', default = datetime.now())
+    is_public       = models.BooleanField(default=True)
+    sort_order      = models.IntegerField(default=0)
 
-class ProjectDependency(models.Model):
-    depending_project   = models.ForeignKey(Project, related_name='depending') # the one that depends
-    depended_project    = models.ForeignKey(Project, related_name='depended') # the one that is depended on
+class Project_Dependencies(models.Model):
+    idependon_project   = models.ForeignKey(Project, related_name='idependon') # the one that depends
+    dependonme_project  = models.ForeignKey(Project, related_name='dependonme') # the one that is depended on
     brief               = models.TextField(null=True, blank=True)
     redonation_percent  = models.DecimalField(decimal_places=0, max_digits=2, null=True, blank=True)
     redonation_amount   = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
     date_added          = models.DateTimeField('date added', default = datetime.now())
+    is_public           = models.BooleanField(default=True)
+    sort_order          = models.IntegerField(default=0)
+    
+    class Meta:
+        unique_together = (("idependon_project", "dependonme_project"),)
+    
+
+class ProjectRelease(models.Model):
+    project             = models.ForeignKey(Project) 
+    version             = models.CharField(max_length=50, null=True, blank=True)
+    title               = models.CharField(max_length=255, null=True, blank=True)
+    brief               = models.TextField(null=True, blank=True)
+    date_released       = models.DateTimeField('date released')
+    previous_version    = models.ForeignKey('self', null=True, blank=True)
+    date_added          = models.DateTimeField('date added', default = datetime.now())
+    is_public           = models.BooleanField(default=True)
 
 class ProjectOtherSource(models.Model):
-    project       = models.ForeignKey(Project)
-    title         = models.CharField(max_length=255)
-    brief         = models.TextField(null=True, blank=True)
-    amount        = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
-    is_monthly    = models.BooleanField(default=True)
-    date_received = models.DateTimeField('date received')
-    date_added    = models.DateTimeField('date added', default = datetime.now())
-    is_public     = models.BooleanField(default=True)
+    project         = models.ForeignKey(Project)
+    title           = models.CharField(max_length=255)
+    brief           = models.TextField(null=True, blank=True)
+    amount_sum      = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
+    amount_percent  = models.DecimalField(decimal_places=0, max_digits=3, null=True, blank=True)
+    is_monthly      = models.BooleanField(default=True)
+    date_received   = models.DateTimeField('date received', null=True, blank=True)
+    date_added      = models.DateTimeField('date added', default = datetime.now())
+    is_public       = models.BooleanField(default=True)
 
 
 """

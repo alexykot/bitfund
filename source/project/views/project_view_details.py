@@ -1,17 +1,20 @@
+import datetime
+import math
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse 
 from django.shortcuts import render_to_response, get_object_or_404 
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
-
-from datetime import date
+from django.utils.timezone import utc, now 
 
 from project.models import *
 from pledger.models import *
 from project.forms import *
 from project.decorators import *
-from bitfund.settings_custom import MAX_NEEDS_N_GOALS_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE
+from bitfund.settings_custom import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
+from bitfund.settings import TIME_ZONE
 
 
 def view(request, project_key):
@@ -19,19 +22,59 @@ def view(request, project_key):
 
     template_data = {'project' : project,
                      'request' : request,
-                     'today'   : date.today(),
+                     'today'   : datetime.utcnow().replace(tzinfo=utc).today(),
                      }
     
-    template_data['project_users'] = ProjectUserRole.objects.select_related().filter(project=project).order_by('sort_order')[:MAX_USERS_ON_PROJECT_PAGE]
+    #GENERAL PROJECT DATA
+    template_data['project_users']          = ProjectUserRole.objects.select_related().filter(project=project).order_by('sort_order')[:MAX_USERS_ON_PROJECT_PAGE]
+    template_data['project_outlinks']       = ProjectOutlink.objects.filter(project=project).filter(is_public=True).order_by('sort_order')
+    template_data['project_categories']     = project.categories.all()
+    template_data['project_latest_release'] = ProjectRelease.objects.filter(project=project).filter(is_public=True).order_by('-date_released')[:1]
+    if (template_data['project_latest_release'].count) :
+        template_data['project_latest_release'] = template_data['project_latest_release'][0]
+    else :
+        template_data['project_latest_release'] = False
     
-    #template_data['maintainer_profile']         = Profile.objects.get(user_id=project.maintainer_id)
-     
+    template_data['projects_idependedon_count'] = Project_Dependencies.objects.filter(idependon_project=project).count()
+    template_data['projects_dependonme_count']  = Project_Dependencies.objects.filter(dependonme_project=project).count()
+
+
+    #GOALS LIST
+    project_goals                               = ProjectGoal.objects.filter(project=project).filter(is_public=True).filter(date_ending__gt=now()).order_by('sort_order')[:MAX_GOALS_ON_PROJECT_PAGE]
+    template_data['project_goals']              = []
+                   
+    for goal in project_goals:
+        donations_amount             = DonationHistoryGoals.objects.filter(goal=goal).aggregate(Sum('amount'))['amount__sum']
+        donations_radiant            = min(360, round(360*(donations_amount / goal.amount)))
+        other_sources_radiant        = min(360, round(360*(goal.other_sources / goal.amount)))
+        total_percent                = int(math.ceil(((donations_amount+goal.other_sources)*100) / goal.amount))
+        
+        if not (donations_radiant or other_sources_radiant) :
+            donations_radiant     = 2
+            other_sources_radiant = 1
+        
+        template_data['project_goals'].append({'id'                     : goal.id,
+                                               'key'                    : goal.key,
+                                               'title'                  : goal.title,
+                                               'brief'                  : goal.brief,
+                                               'video_url'              : goal.video_url,
+                                               'image'                  : goal.image,
+                                               'amount'                 : goal.amount,
+                                               'other_sources'          : goal.other_sources,
+                                               'description'            : goal.description,
+                                               'date_ending'            : goal.date_ending,
+                                               'days_to_end'            : (goal.date_ending - now()).days,
+                                               'donations_amount'       : donations_amount,
+                                               'donations_radiant'      : donations_radiant,
+                                               'other_sources_radiant'  : other_sources_radiant,
+                                               'total_percent'          : total_percent,
+                                                })
+        
+    #BUDGET DATA    
     project_needs       = ProjectNeed.objects.filter(project=project.id)
     project_needs_count = project_needs.count()
-    project_goals       = ProjectGoal.objects.filter(project=project.id)
+    project_goals       = ProjectGoal.objects.filter(project=project.id).filter(date_ending__gt=now())
     project_goals_count = project_goals.count()
-    template_data['project_needs']              = project_needs
-    template_data['project_goals']              = project_goals
     template_data['project_needs_count']        = project_needs_count 
     template_data['project_goals_count']        = project_goals_count
     if project_needs_count :
@@ -47,22 +90,22 @@ def view(request, project_key):
     needsngoals_list = []
     index = 0
     for need in project_needs:
-        if (index >= MAX_NEEDS_N_GOALS_ON_PROJECT_PAGE) :
+        if (index >= MAX_EXPENSES_ON_PROJECT_PAGE) :
             break 
         needsngoals_list.append({'title' : need.title})
         index = index+1 
     
     for goal in project_goals:
-        if (index >= MAX_NEEDS_N_GOALS_ON_PROJECT_PAGE) :
+        if (index >= MAX_EXPENSES_ON_PROJECT_PAGE) :
             break 
         needsngoals_list.append({'title' : goal.title})
         index = index+1 
     
     template_data['needsngoals_list'] = needsngoals_list
-    if project_needs_count+project_goals_count > MAX_NEEDS_N_GOALS_ON_PROJECT_PAGE :
+    if project_needs_count+project_goals_count > MAX_EXPENSES_ON_PROJECT_PAGE :
         template_data['project_needs_count_to_show'] = project_needs_count+project_goals_count
     
-    
+    ##BUDGET DATA - current user donations 
     if (request.user.is_authenticated) :
         donation_cart    = DonationCart.objects.filter(user=request.user.id).filter(project=project.id)  
         if donation_cart.count() :
@@ -92,11 +135,11 @@ def view(request, project_key):
     
     template_data['donations_total_pledgers']  = (DonationHistory.objects
                                                                  .filter(project=project)
-                                                                 .filter(datetime_sent__gte=date(date.today().year, date.today().month, 1))
+                                                                 .filter(datetime_sent__gte=datetime(now().year, now().month, 1))
                                                                  .aggregate(Count('user', distinct=True))['user__count'])    
     donation_histories = (DonationHistory.objects
                                          .filter(project=project)
-                                         .filter(datetime_sent__gte=date(date.today().year, date.today().month, 1))
+                                         .filter(datetime_sent__gte=datetime(now().year, now().month, 1))
                                          .select_related('donationhistoryneeds'))    
 
     donationhistory_total_sum = 0
@@ -113,17 +156,36 @@ def view(request, project_key):
     if donationhistorygoals_sum :
         donationhistory_total_sum = donationhistory_total_sum + donationhistorygoals_sum        
       
+
     other_sources_amount = 0
-    if project.other_sources :
-        other_sources_amount = project.other_sources       
+    project_other_sources_monthly = ProjectOtherSource.objects.filter(project=project).filter(is_public=True).filter(is_monthly=True) 
+    for other_source in project_other_sources_monthly:
+        if other_source.amount_sum > 0:
+            other_sources_amount = other_sources_amount + other_source.amount_sum
+        elif other_source.amount_percent > 0 :
+            other_sources_amount = other_sources_amount + ((template_data['project_needsngoals_total']/100)*other_source.amount_percent)
+
+    project_other_sources_onetime = (ProjectOtherSource.objects.filter(project=project)
+                                                               .filter(is_public=True)
+                                                               .filter(is_monthly=False)
+                                                               .filter(date_received__gte=datetime(now().year, now().month, 1))
+                                                               .filter(date_received__lte=now())
+                                                               )
+    for other_source in project_other_sources_onetime:
+        if other_source.amount_sum != 0 :
+            other_sources_amount = other_sources_amount + other_source.amount_sum
+        elif other_source.amount_percent != 0 :
+            other_sources_amount = other_sources_amount + ((donationhistory_total_sum/100)*other_source.amount_percent)
+
 
     template_data['donations_total_sum']  = donationhistory_total_sum
 
-    template_data['donationhistory_radiant']  = round(360*(donationhistory_total_sum / template_data['project_needsngoals_total']))
-    template_data['other_sources_radiant']    = round(360*(other_sources_amount / template_data['project_needsngoals_total']))
+    template_data['donationhistory_radiant']  = min(360,round(360*(donationhistory_total_sum / template_data['project_needsngoals_total'])))
+    template_data['other_sources_radiant']    = min(360,round(360*(other_sources_amount / template_data['project_needsngoals_total'])))
+    
     template_data['total_gained_percent']     = int(round(((donationhistory_total_sum+other_sources_amount)*100) / template_data['project_needsngoals_total'])) 
 
-    if not (template_data['donationhistory_radiant'] and template_data['other_sources_radiant']) :
+    if not (template_data['donationhistory_radiant'] or template_data['other_sources_radiant']) :
         template_data['donationhistory_radiant'] = 2
         template_data['other_sources_radiant']   = 1
     
@@ -133,3 +195,52 @@ def view(request, project_key):
     
     return render_to_response('project/view.djhtm', template_data, context_instance=RequestContext(request))
 
+def linked_projects(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    template_data = {'project' : project,
+                     'request' : request,
+                     'today'   : datetime.utcnow().replace(tzinfo=utc).today(),
+                     }
+
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def linked_project_view(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def goals(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def need_goal_view(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def contribute(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def about(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def team(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def timeline(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))
+
+def blog(request, project_key, need_goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    template_data = {'project' : project,'request' : request,'today'   : datetime.utcnow().replace(tzinfo=utc).today(),}
+    return render_to_response('project/default.djhtm', template_data, context_instance=RequestContext(request))

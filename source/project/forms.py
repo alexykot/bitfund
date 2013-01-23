@@ -18,7 +18,7 @@ class CreateProjectForm(forms.ModelForm):
             'key',
             'is_public',
             'logo',
-            'description',
+            'brief',
             ]
     
     def clean_key(self):
@@ -36,7 +36,7 @@ class CreateProjectForm(forms.ModelForm):
     
     class Meta:
         model   = Project
-        fields  = {'key', 'title', 'description', 'logo', 'is_public'}
+        fields  = {'key', 'title', 'brief', 'logo', 'is_public'}
         widgets = {
                    'is_public'    : forms.RadioSelect(choices=YES_NO_CHOICES),
                    }

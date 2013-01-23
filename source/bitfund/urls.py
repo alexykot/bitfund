@@ -1,9 +1,9 @@
-from django.conf.urls import patterns, include, url
-from django.views.generic.simple import redirect_to
 from django.conf import settings
+from django.conf.urls import patterns, include, url
+from django.contrib import admin
+from django.views.generic.simple import redirect_to
 
 # Uncomment the next two lines to enable the admin:
-from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -30,23 +30,37 @@ urlpatterns += patterns('bitfund.views',
 )
 
 urlpatterns += patterns('project.views',
-    (r'^project/create$', 'create'),
+    (r'^projects/create$', 'create'),
 
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'view'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'view'),
     (r'^(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'view'),
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit/{0,}$', 'edit'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit/{0,}$', 'edit'),
 
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_needs/{0,}$', 'edit_needs'),
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_needs/(?P<need_id>[0-9]{1,})/{0,}$', 'edit_needs'),
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/delete_need/(?P<need_id>[0-9]{1,})/{0,}$', 'delete_need'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_needs/{0,}$', 'edit_needs'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_needs/(?P<need_id>[0-9]{1,})/{0,}$', 'edit_needs'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/delete_need/(?P<need_id>[0-9]{1,})/{0,}$', 'delete_need'),
 
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goals/{0,}$', 'edit_goals'),
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goals/(?P<goal_id>[0-9]{1,})/{0,}$', 'edit_goals'),
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/delete_goal/(?P<goal_id>[0-9]{1,})/{0,}$', 'delete_goal'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goals/{0,}$', 'edit_goals'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goals/(?P<goal_id>[0-9]{1,})/{0,}$', 'edit_goals'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/delete_goal/(?P<goal_id>[0-9]{1,})/{0,}$', 'delete_goal'),
    
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/support/{0,}$', 'support'),
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/support/(?P<support_type>(onetime|monthly))/{0,}$', 'support'),
-    (r'^project/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/drop_support/{0,}$', 'drop_support'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/support/{0,}$', 'support'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/support/(?P<support_type>(onetime|monthly))/{0,}$', 'support'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/drop_support/{0,}$', 'drop_support'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goals/{0,}$', 'goals'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<need_goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'need_goal_view'),
+
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/(?P<linked_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'linked_project_view'),
+    
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/about/{0,}$', 'about'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/contribute/{0,}$', 'contribute'),
+
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/team/{0,}$', 'team'),
+
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/timeline/{0,}$', 'timeline'),
+
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/blog/{0,}$', 'blog'),
 
 )
 

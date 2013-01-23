@@ -7,168 +7,59 @@
 $(document).ready(function(){
 
     var otherRadiant   = {{other_sources_radiant}};
-    var pledgesRadiant = {{donationhistory_radiant}};
+    var donationsRadiant = {{donationhistory_radiant}};
 
-  var backgroundSeries = [['a',100], ['b',100]];
-  var backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
-      grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            background: 'rgba(0,0,0,0)',
-            shadow:false,
-        },
-    seriesColors: [ "#EDEBEA", "#EDEBEA" ],
-    seriesDefaults: {
-      renderer:$.jqplot.DonutRenderer,
-      rendererOptions:{
-        thickness: 4,
-        sliceMargin: 0,
-        startAngle: -90,
-        ringMargin: -14,
-        diameter: 94,
-        showDataLabels: false,
-        shadow:false,
-        highlightMouseOver: false,
-      }
-    },
-  });
+    var backgroundSeries = [['a',100], ['b',100]];
+    var backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
+        grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
+        seriesColors: [ "#EDEBEA", "#EDEBEA" ],
+        seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 4,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 94,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
+    });
+
+    var otherSeries = [['c',(otherRadiant+donationsRadiant)], ['d',(360-(otherRadiant+donationsRadiant))]];
+    var otherDonut = $.jqplot('chartdiv', [otherSeries], {
+        grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
+        seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
+        seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 8,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 98,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
+    });
+
+    var donationsSeries = [['a',(donationsRadiant)], ['b',360-donationsRadiant]];
+    var donationsDonut = $.jqplot('chartdiv', [donationsSeries], {
+        grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
+        seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
+        seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 14,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 105,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
+    });
 
 
+    {{project_goals.count}}
+    {% for goal in project_goals %}
+        var goal{{goal.id}}OtherRadiant     = {{goal.other_sources_radiant}};
+        var goal{{goal.id}}DonationsRadiant = {{goal.donations_radiant}};
 
-  var otherSeries = [['c',(otherRadiant+pledgesRadiant)], ['d',(360-(otherRadiant+pledgesRadiant))]];
-  var otherDonut = $.jqplot('chartdiv', [otherSeries], {
-      grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            background: 'rgba(0,0,0,0)',
-            shadow:false,
-        },
-    seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
-    seriesDefaults: {
-      renderer:$.jqplot.DonutRenderer,
-      rendererOptions:{
-        thickness: 8,
-        sliceMargin: 0,
-        startAngle: -90,
-        ringMargin: -14,
-        diameter: 98,
-        showDataLabels: false,
-        shadow:false,
-        highlightMouseOver: false,
-      }
-    },
-  });
+        var goal{{goal.id}}BackgroundSeries = [['a',100],['b',100]];
+        var goal{{goal.id}}BackgroundDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}BackgroundSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow:false,},
+            seriesColors: [ "#EDEBEA", "#EDEBEA" ],
+            seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 2,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 40,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
+        });
 
+        var goal{{goal.id}}OtherSeries = [['c',(goal{{goal.id}}OtherRadiant+goal{{goal.id}}DonationsRadiant)], ['d',(360-(goal{{goal.id}}OtherRadiant+goal{{goal.id}}DonationsRadiant))]];
+        var goal{{goal.id}}OtherDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}OtherSeries], {
+                grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
+            seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
+            seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 4,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 42,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
+        });
 
-
-  var pledgesSeries = [['a',(pledgesRadiant)], ['b',360-pledgesRadiant]];
-  var pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
-      grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            background: 'rgba(0,0,0,0)',
-            shadow:false,
-        },
-    seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
-    seriesDefaults: {
-      renderer:$.jqplot.DonutRenderer,
-      rendererOptions:{
-        thickness: 14,
-        sliceMargin: 0,
-        startAngle: -90,
-        ringMargin: -14,
-        diameter: 105,
-        showDataLabels: false,
-        shadow:false,
-        highlightMouseOver: false,
-      }
-    },
-  });
-
-
-
-
-
-
-
-
-
-
-  var goal0BackgroundSeries = [['a',1],['b',1]];
-  var goal0BackgroundDonut = $.jqplot('goal-1-chart', [goal0BackgroundSeries], {
-      grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            background: 'rgba(0,0,0,0)',
-            shadow:false,
-        },
-    seriesColors: [ "#EDEBEA", "#EDEBEA" ],
-    seriesDefaults: {
-      renderer:$.jqplot.DonutRenderer,
-      rendererOptions:{
-        thickness: 2,
-        sliceMargin: 0,
-        startAngle: -90,
-        ringMargin: -14,
-        diameter: 40,
-        showDataLabels: false,
-        shadow:false,
-        highlightMouseOver: false,
-      }
-    },
-  });
-
-
-  var goal0OtherSeries = [['c',250], ['d',110]];
-  var goal0OtherDonut = $.jqplot('goal-1-chart', [goal0OtherSeries], {
-      grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            background: 'rgba(0,0,0,0)',
-            shadow:false,
-        },
-    seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
-    seriesDefaults: {
-      renderer:$.jqplot.DonutRenderer,
-      rendererOptions:{
-        thickness: 4,
-        sliceMargin: 0,
-        startAngle: -90,
-        ringMargin: -14,
-        diameter: 42,
-        showDataLabels: false,
-        shadow:false,
-        highlightMouseOver: false,
-      }
-    },
-  });
-
-
-  var goal0PledgesSeries = [['a',160], ['b',200]];
-  var goal0PledgesDonut = $.jqplot('goal-1-chart', [goal0PledgesSeries], {
-      grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            background: 'rgba(0,0,0,0)',
-            shadow:false,
-        },
-    seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
-    seriesDefaults: {
-      renderer:$.jqplot.DonutRenderer,
-      rendererOptions:{
-        thickness: 6,
-        sliceMargin: 0,
-        startAngle: -90,
-        ringMargin: -14,
-        diameter: 45,
-        showDataLabels: false,
-        shadow:false,
-        highlightMouseOver: false,
-      }
-    },
-  });
-
-
+        var goal{{goal.id}}DonationsSeries = [['a',(goal{{goal.id}}DonationsRadiant)], ['b',360-goal{{goal.id}}DonationsRadiant]];    
+        var goal{{goal.id}}DonationsDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}DonationsSeries], {
+                grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
+            seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
+            seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 6,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 45,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
+        });
+        
+        
+        
+    {% endfor %}
 
 });
 {% endblock %}
@@ -187,24 +78,60 @@ $(document).ready(function(){
             <a href="{% url project.views.view project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
         {% endif %}
     </div>
-    <div class="span7">
+    <div class="span6">
         <h1><a href="{% url project.views.view project_key=project.key %}">{{ project.title }}</a></h1>
     </div>
-    <div class="span4 kf_project_meta">
+    <div class="span5 kf_project_meta">
         <div class="row">
-            <div class="span2">
-                category: media <br />
-                last update: 10 days ago
+            <div class="span3">
+                {% if project_categories %}
+                    category: 
+                    {% for category in project_categories %}
+                         <a href={{ category.key }}>{{ category.title }}</a> 
+                    {% endfor %}
+                    <br />
+                {% endif %}
+                
+                {% if projects_idependedon_count or projects_dependedonme_count %}
+                    <a href="{% url project.views.linked_projects project_key=project.key %}">Linked Projects:
+                    {% if projects_idependedon_count %}
+                        <span>{{projects_idependedon_count}}</span>
+                    {% endif %}    
+                    {% if projects_dependonme_count %}
+                        <span>{{projects_dependonme_count}}</span>
+                    {% endif %}    
+                    </a>
+                    <br />
+                {% endif %}
+                
+                {% if project_latest_release %}
+                    last release: {{project_latest_release.version}}, 
+                    {% if project_latest_release.title %}
+                        {{ project_latest_release.title }},
+                    {% endif %}
+                    {{project_latest_release.date_released|timesince}}
+                {% endif %}
             </div>
             <div class="span2">
-                team: six geeks <br />
-                last release: v0.22
+                {% for outlink in project_outlinks %}
+                    <a href="{{ outlink.address }}" target="_blank">{{outlink.title}}</a><br />
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="span12 kf_project_menuline">
+        <ul class="nav nav-pills">
+            <li><a href="{% url project.views.team project_key=project.key %}">Team</a></li>
+            <li><a href="{% url project.views.timeline project_key=project.key %}">Timeline</a></li>
+            <li><a href="{% url project.views.about project_key=project.key %}">About</a></li>
+            <li><a href="{% url project.views.blog project_key=project.key %}">Blog</a></li>
+            <li><a href="{% url project.views.support project_key=project.key support_type='onetime' %}">Expenses</a></li>
+            <li><a href="{% url project.views.goals project_key=project.key %}">Goals</a></li>
+        </ul>    
+
+        <!--
         <ul class="nav nav-pills">
             <li><a href="#">About</a></li>
             <li><a href="#">Team</a></li>
@@ -223,25 +150,6 @@ $(document).ready(function(){
             
             </li>
         </ul>    
-
-
-
-        <!--
-        <div class="btn-group">
-            <a href="#" class="btn btn-link">About</a>
-            <a href="#" class="btn btn-link">Team</a>
-            <a href="#" class="btn btn-link">Blog</a>
-            <a href="#" class="btn btn-link">History</a>
-            <a href="#" class="btn btn-link">Expenses</a>
-            <a href="#" class="btn btn-link">Pledge</a>
-            <a href="#" class="btn btn-link">Contribute</a>
-            <a href="#" class="btn btn-link">Linked Projects</a>
-            <a href="#" class="btn btn-link">Contact</a>
-        </div>
-        <span class="label label-success">releases</span>
-        <span class="label label-warning">social</span>
-        <span class="label label-info">finance</span>
-        <span class="label label">sources</span>
         -->
     </div>
 </div>
@@ -270,46 +178,6 @@ $(document).ready(function(){
 	                <p class="kf_person_role">{{ project_user_role.user_role_title }}</p>
 	            </div>
             {% endfor %}
-
-
-            {% comment %}
-            <div class="span1 kf_project_people_avatar">
-                {% if maintainer_profile.avatar %}
-                	<img src="{{ maintainer_profile.avatar.url }}" /> 
-                {% endif %}
-                
-            </div>
-            <div class="span2 kf_user_text">
-                <p><a href="#" class="kf_person_name">
-                    {% if project.maintainer.first_name and project.maintainer.last_name %}
-                        {{ project.maintainer.first_name }} {{ project.maintainer.last_name }}
-                    {% else %} 
-                        {{ project.maintainer.username }}
-                    {% endif %}
-                </a></p>
-                <p class="kf_person_role">Repositary Maintainer</p>
-            </div>
-            <div class="span1 kf_project_people_avatar">
-                <img src="{{ MEDIA_URL }}user_avatar/trollface.png" />
-            </div>
-            <div class="span2 kf_user_text">
-                <p><a href="#" class="kf_person_name"> 
-                    John Doe
-                </a></p>
-                <p class="kf_person_role">Leading Developer</p>
-            </div>
-            {% endcomment %}
-        </div>
-        <div class="row kf_project_buttons kf_center">
-    		<ul>
-				<li>About</li>    			
-				<li class="kf_spacer"></li>    			
-				<li>Team</li>    			
-				<li class="kf_spacer"></li>    			
-				<li>Blog</li>    			
-				<li class="kf_spacer"></li>    			
-				<li>Contribute</li>    			
-    		</ul>
         </div>
     </div> 
 
@@ -464,72 +332,44 @@ $(document).ready(function(){
 </div>
 
 <div class="row">
+    {% for goal in project_goals %}
     <div class="span6 kf_goal">
         <div class="row">
             <div class="span3 kf_media">
-				                
+            {% if goal.image %}
+                <img src="{{ goal.image.url }}" />
+            {% endif %}
             </div>    
             <div class="span3 kf_details">
                 <div class="row">
                     <div class="span3 kf_title">
-                        <a href="#">Go to GUADEC</a>
+                        <a href="{% url project.views.need_goal_view project_key=project.key need_goal_key=goal.key %}">{{goal.title}}</a>
                     </div>
                 </div>
                 <div class="row">
                     <div class="span3 kf_description">
-                        We desperately want to go to GUADEC conference in Koruna, Spain. Please help us be there! 
+                        {{goal.brief}} 
                     </div>
                 </div>
                 <div class="row kf_figures">
-            
                     <div class="span1 kf_chart_container">
-                        <div id="goal-1-chart"></div>
-                        <span class="kf_chart_percent">70%</span>
+                        <div id="goal-{{goal.id}}-chart"></div>
+                        <span class="kf_chart_percent">{{goal.total_percent}}%</span>
                     </div>
                     <div class="span1 kf_pledged">
-                        $250 <br />
+                        ${{goal.donations_amount}} <br />
                         <span class="kf_small">pledged</span>
                     </div>
                     <div class="span1 kf_time">
-                        26 <br />
+                        {{goal.days_to_end}} <br />
                         <span class="kf_small">days to go</span>
                     </div>
                 </div>
+                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}" class="button">Pledge</a>
             </div>
         </div>
     </div>
-<!--
-    <div class="span6 kf_goal">
-        <div class="row">
-            <div class="span3 kf_media">
-                
-            </div>    
-            <div class="span3 kf_details">
-                <div class="row">
-                    <div class="span3 kf_title">
-                        <a href="#">Convert Linus back to GNOME</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="span3 kf_description">
-                        More opensource for the god of opensource!  
-                    </div>
-                </div>
-                <div class="row kf_figures">
-                    <div class="span1" id="goal-0-chart"></div>
-                    <div class="span1 kf_pledged">
-                        $250 <br />
-                        <span class="kf_small">pledged</span>
-                    </div>
-                    <div class="span1 kf_time">
-                        26 <br />
-                        <span class="kf_small">days to go</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
--->
+    {% endfor %}
 </div>
 
 
