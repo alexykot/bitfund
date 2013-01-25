@@ -79,12 +79,9 @@ $(document).ready(function(){
 {% block content %}
 <div class="kf_project-views-support">
 {% load widget_tweaks %}
-{% load thumbnail %}
 
 <div class="row kf_project_title">
     <div class="span1">
-        {% thumbnail project.logo "62x62" as logo %}
-        {% endthumbnail %}
         {% if logo %}
             <a href="{% url project.views.view project_key=project.key %}"><img src="{{ logo.url }}" /></a>
         {% elif project.logo %}

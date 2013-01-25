@@ -24,6 +24,49 @@ class Project(models.Model):
     
     def __unicode__(self):
         return self.title
+    
+    @classmethod
+    def getProjectActualNeedsGoalsOrderedList(self, project):
+        return self.objects.raw("""
+                        SELECT 
+                                joined_list.* 
+                        FROM 
+                                ((SELECT 
+                                        `id`,
+                                        'need' AS 'type',
+                                        `key`,
+                                        `title`,
+                                        `amount`,
+                                        `sort_order`
+                                 FROM
+                                        project_projectneed 
+                                 WHERE
+                                        1
+                                        AND project_id=%s
+                                        AND is_public
+                                ) 
+                                        UNION
+                                 (SELECT 
+                                        `id`,
+                                        'goal' AS 'type',
+                                        `key`,
+                                        `title`,
+                                        `amount`,
+                                        `sort_order`
+                                 FROM
+                                        project_projectgoal 
+                                 WHERE
+                                        1
+                                        AND project_id=%s
+                                        AND is_public
+                                        AND NOW() BETWEEN date_starting AND date_ending
+                                        AND date_ending <= LAST_DAY(NOW())
+                                        )) AS joined_list       
+                        ORDER BY
+                            joined_list.sort_order
+                                
+                        """, [str(project.id), str(project.id)])
+    
 
 class ProjectNeed(models.Model):
     project       = models.ForeignKey(Project)
@@ -31,7 +74,6 @@ class ProjectNeed(models.Model):
     title         = models.CharField(max_length=255)
     description   = models.CharField(max_length=255, null=True, blank=True)
     amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
-    other_sources = models.DecimalField(decimal_places=2, max_digits=12, default=0)
     date_added    = models.DateTimeField('date added', default=datetime.now())
     is_public     = models.BooleanField(default=True)
     sort_order    = models.IntegerField(default=0)
@@ -45,8 +87,8 @@ class ProjectGoal(models.Model):
     image         = models.ImageField(upload_to='project_goals/', null=True, blank=True)
     video_url     = models.CharField(max_length=255, null=True, blank=True)
     amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
-    other_sources = models.DecimalField(decimal_places=2, max_digits=12, default=0)
     date_ending   = models.DateTimeField('date ending')
+    date_starting = models.DateTimeField('date starting', default=datetime.now())
     date_added    = models.DateTimeField('date added', default=datetime.now())
     is_public     = models.BooleanField(default=True)
     sort_order    = models.IntegerField(default=0)

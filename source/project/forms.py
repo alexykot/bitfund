@@ -51,6 +51,14 @@ class SupportProjectForm(forms.Form):
     need        = forms.IntegerField(widget=forms.HiddenInput, required=False)
     goal        = forms.IntegerField(widget=forms.HiddenInput, required=False)
     is_monthly  = forms.BooleanField(required=False)
+
+class ProjectNeedsGoalsListForm(forms.Form):
+    needsgoals = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, project_needsgoals_choices, *args, **kw):
+        super(forms.Form, self).__init__(*args, **kw)
+        
+        self.fields['needsgoals'].choices = project_needsgoals_choices
     
 
 class CreateProjectNeedForm(forms.ModelForm):
@@ -58,6 +66,7 @@ class CreateProjectNeedForm(forms.ModelForm):
 
     def __init__(self, *args, **kw):
         super(forms.ModelForm, self).__init__(*args, **kw)
+
         self.fields.keyOrder = [
             'title',
             'amount',
