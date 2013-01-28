@@ -1,6 +1,6 @@
 {% extends "base.djhtm" %}
 
-{% block title %}{{ project.title }}{% endblock %}
+{% block title %}{{ project.title }} - {{ project.brief }}{% endblock title %}
 
 
 {% block pagescripts %}
@@ -31,7 +31,6 @@ $(document).ready(function(){
     });
 
 
-    {{project_goals.count}}
     {% for goal in project_goals %}
         var goal{{goal.id}}OtherRadiant     = {{goal.other_sources_radiant}};
         var goal{{goal.id}}DonationsRadiant = {{goal.donations_radiant}};
@@ -70,102 +69,20 @@ $(document).ready(function(){
 		
 
 });
-{% endblock %}
+{% endblock pagescripts %}
 
 
 {% block content %}
 
 <div class="kf_project-views-view">
     
-    
-<div class="row kf_project_title">
-    <div class="span1 kf_project_logo">
-        {% if logo %}
-            <a href="{% url project.views.view project_key=project.key %}"><img src="{{ logo.url }}" /></a>
-        {% elif project.logo %}
-            <a href="{% url project.views.view project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
-        {% endif %}
-    </div>
-    <div class="span6">
-        <h1><a href="{% url project.views.view project_key=project.key %}">{{ project.title }}</a></h1>
-    </div>
-    <div class="span5 kf_project_meta">
-        <div class="row">
-            <div class="span3">
-                {% if project_categories %}
-                    category: 
-                    {% for category in project_categories %}
-                         <a href={{ category.key }}>{{ category.title }}</a> 
-                    {% endfor %}
-                    <br />
-                {% endif %}
-                
-                {% if projects_idependedon_count or projects_dependedonme_count %}
-                    <a href="{% url project.views.linked_projects project_key=project.key %}">Linked Projects:
-                    {% if projects_idependedon_count %}
-                        <span>{{projects_idependedon_count}}</span>
-                    {% endif %}    
-                    {% if projects_dependonme_count %}
-                        <span>{{projects_dependonme_count}}</span>
-                    {% endif %}    
-                    </a>
-                    <br />
-                {% endif %}
-                
-                {% if project_latest_release %}
-                    last release: {{project_latest_release.version}}, 
-                    {% if project_latest_release.title %}
-                        {{ project_latest_release.title }},
-                    {% endif %}
-                    {{project_latest_release.date_released|timesince}}
-                {% endif %}
-            </div>
-            <div class="span2">
-                {% for outlink in project_outlinks %}
-                    <a href="{{ outlink.address }}" target="_blank">{{outlink.title}}</a><br />
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="span12 kf_project_menuline">
-        <ul class="nav nav-pills">
-            <li><a href="{% url project.views.team project_key=project.key %}">Team</a></li>
-            <li><a href="{% url project.views.timeline project_key=project.key %}">Timeline</a></li>
-            <li><a href="{% url project.views.about project_key=project.key %}">About</a></li>
-            <li><a href="{% url project.views.blog project_key=project.key %}">Blog</a></li>
-            <li><a href="{% url project.views.support project_key=project.key support_type='onetime' %}">Expenses</a></li>
-            <li><a href="{% url project.views.goals project_key=project.key %}">Goals</a></li>
-        </ul>    
+{% include "project/project-header.djhtm" %}
 
-        <!--
-        <ul class="nav nav-pills">
-            <li><a href="#">About</a></li>
-            <li><a href="#">Team</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">History</a></li>
-            <li><a href="#">Expenses</a></li>
-            <li><a href="#">Pledge</a></li>
-            <li class="dropdown">
-                <a class="dropdown-toggle" id="dLabel" data-toggle="dropdown" data-target="#" href="#">More<b class="caret"></b></a>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    <li><a href="#">Contribute</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Dependencies</a></li>
-                </ul>
-            
-            </li>
-        </ul>    
-        -->
-    </div>
-</div>
 <div class="row">
     <div class="span6">
         <div class="row kf_project_brief">
             <div class="span6">
-                {{ project.description }}
+                {{ project.brief }}
             </div>        
         </div>
         <div class="row kf_project_people">
@@ -193,7 +110,6 @@ $(document).ready(function(){
 {% if project_needs_count or project_goals_count %}
 
 	<form method="get" action="{% url project.views.support project_key=project.key support_type='monthly' %}" id="pledgeForm">
-    {% csrf_token %}
         <div class="span2 kf_chart">
             <div class="row kf_month kf_center">
                 <span>{{ today|date:"F Y" }}</span>
@@ -353,7 +269,7 @@ $(document).ready(function(){
             <div class="span3 kf_details">
                 <div class="row">
                     <div class="span3 kf_title">
-                        <a href="{% url project.views.need_goal_view project_key=project.key need_goal_key=goal.key %}">{{goal.title}}</a>
+                        <a href="{% url project.views.goal_view project_key=project.key goal_key=goal.key %}">{{goal.title}}</a>
                     </div>
                 </div>
                 <div class="row">
@@ -385,4 +301,4 @@ $(document).ready(function(){
 
 </div>
 
-{% endblock %}
+{% endblock content %}

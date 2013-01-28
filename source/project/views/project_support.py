@@ -79,7 +79,7 @@ def support(request, project_key, support_type='onetime'):
         initial_data_needs.append({  'amount'           : amount,
                                      'need'             : need.id,
                                      'need_title'       : need.title,
-                                     'need_description' : need.description,
+                                     'need_brief'       : need.brief,
                                      'is_monthly'       : (support_type=='monthly') 
                                        })
 
@@ -103,7 +103,7 @@ def support(request, project_key, support_type='onetime'):
         initial_data_goals.append({  'amount'           : amount,
                                      'goal'             : goal.id,
                                      'goal_title'       : goal.title,
-                                     'goal_description' : goal.description,
+                                     'goal_brief'       : goal.brief,
                                      'goal_date_ending' : goal.date_ending,
                                      
                                      })

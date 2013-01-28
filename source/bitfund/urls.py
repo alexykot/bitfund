@@ -48,7 +48,7 @@ urlpatterns += patterns('project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/support/(?P<support_type>(onetime|monthly))/{0,}$', 'support'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/drop_support/{0,}$', 'drop_support'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goals/{0,}$', 'goals'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<need_goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'need_goal_view'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goals/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/(?P<linked_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'linked_project_view'),

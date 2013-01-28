@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.datetime_safe import datetime
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import utc, now 
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
 
@@ -274,7 +275,7 @@ class DonationHistory(models.Model):
     project_key                 = models.CharField(max_length=80)
     project_title               = models.CharField(max_length=255)
     donation_subscription       = models.ForeignKey(DonationSubscription, on_delete=models.SET_NULL, null=True) 
-    datetime_sent               = models.DateTimeField('date sent', default = datetime.now())
+    datetime_sent               = models.DateTimeField('date sent', default = now())
     needs                       = models.ManyToManyField(ProjectNeed, through='DonationHistoryNeeds')
     goals                       = models.ManyToManyField(ProjectGoal, through='DonationHistoryGoals')
 

@@ -71,12 +71,12 @@ class CreateProjectNeedForm(forms.ModelForm):
             'title',
             'amount',
             'key',
-            'description',
+            'brief',
             ]
 
     class Meta:
         model   = ProjectNeed
-        fields  = {'key', 'title', 'amount', 'description', }
+        fields  = {'key', 'title', 'amount', 'brief', }
 
     
 class CreateProjectGoalForm(forms.ModelForm):
@@ -89,12 +89,12 @@ class CreateProjectGoalForm(forms.ModelForm):
             'amount',
             'date_ending',
             'key',
-            'description',
+            'brief',
             ]
 
     class Meta:
         model   = ProjectGoal
-        fields  = {'key', 'title', 'date_ending', 'amount', 'description', }
+        fields  = {'key', 'title', 'date_ending', 'amount', 'brief', }
         
         
         

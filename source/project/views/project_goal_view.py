@@ -11,12 +11,11 @@ from django.utils.timezone import utc, now
 
 from bitfund.settings_custom import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
 from bitfund.settings import TIME_ZONE
-from pledger.models import *
-
 from project.models import *
 from project.forms import *
 from project.lists import PROJECT_USER_ROLES
 from project.decorators import *
+from pledger.models import *
 
 
 def view(request, project_key):
@@ -40,7 +39,7 @@ def view(request, project_key):
     template_data['projects_idependedon_count'] = Project_Dependencies.objects.filter(idependon_project=project).count()
     template_data['projects_dependonme_count']  = Project_Dependencies.objects.filter(dependonme_project=project).count()
 
-    template_data['project_edit_access'] = project.userEditAccess(request.user)
+    template_data['project_edit_access'] = (request.user.is_authenticated() and ProjectUserRole.objects.filter(project=project).filter(profile=request.user.id).filter(user_role__in=['treasurer', 'maintainer']).count() > 0)
 
 
     #GENERAL BUDGET DATA    
@@ -56,7 +55,7 @@ def view(request, project_key):
     project_goals_count         = project_goals.count()
     project_goals_total         = (project_goals.aggregate(Sum('amount'))['amount__sum']) or 0
 
-    needsgoals_ordered = project.getProjectActualNeedsGoalsOrderedList(project)
+    needsgoals_ordered = Project.getProjectActualNeedsGoalsOrderedList(project)
     needsgoals_list = []
     for needgoal in needsgoals_ordered :
         needsgoals_list.append((needgoal.type+'_'+str(needgoal.id), needgoal.title))
@@ -64,7 +63,7 @@ def view(request, project_key):
     template_data['needsgoals_form']                        = ProjectNeedsGoalsListForm(project_needsgoals_choices=needsgoals_list) 
     template_data['project_needs_count']                    = project_needs_count 
     template_data['project_goals_count']                    = project_goals_count
-    template_data['project_needsngoals_total']              = project_needs_total+project_goals_total  #GOALS should be removed frmo here
+    template_data['project_needsngoals_total']              = project_needs_total+project_goals_total
     template_data['project_needsngoals_to_show_initially']  = MAX_EXPENSES_ON_PROJECT_PAGE 
     template_data['project_moar_needsgoals_count']          = max((project_needs_count+project_goals_count-MAX_EXPENSES_ON_PROJECT_PAGE),0)
     
@@ -98,13 +97,53 @@ def view(request, project_key):
 
     
     #ALL USERS DONATIONS
-    donationhistory_total_sum = project.getTotalMonthlyNeedsDonations() + project.getTotalMonthlyGoalsDonations() 
+    template_data['donations_total_pledgers']  = (DonationHistory.objects
+                                                                 .filter(project=project)
+                                                                 .filter(datetime_sent__gte=datetime(now().year, now().month, 1))
+                                                                 .aggregate(Count('user', distinct=True))['user__count'])    
+    donation_histories = (DonationHistory.objects
+                                         .filter(project=project)
+                                         .filter(datetime_sent__gte=datetime(now().year, now().month, 1))
+                                         .select_related('donationhistoryneeds'))    
+
+    donationhistory_total_sum = 0
+
+    donationhistoryneeds_sum = (DonationHistoryNeeds.objects
+                                                    .filter(donation_history__in=donation_histories)
+                                                    .aggregate(Sum('amount'))['amount__sum'])
+    if donationhistoryneeds_sum :
+        donationhistory_total_sum = donationhistory_total_sum + donationhistoryneeds_sum        
+    
+    donationhistorygoals_sum = (DonationHistoryGoals.objects
+                                                    .filter(donation_history__in=donation_histories)
+                                                    .aggregate(Sum('amount'))['amount__sum'])
+    if donationhistorygoals_sum :
+        donationhistory_total_sum = donationhistory_total_sum + donationhistorygoals_sum        
+
     template_data['donations_total_sum']      = donationhistory_total_sum
-    template_data['donations_total_pledgers'] = project.getTotalMonthlyBackers()
       
       
     #OTHER SOURCES
-    other_sources_total_sum  = project.getTotalMonthlyOtherSources()
+    other_sources_total_sum  = 0
+    project_other_sources_monthly = ProjectOtherSource.objects.filter(project=project).filter(is_public=True).filter(is_monthly=True) 
+    for other_source in project_other_sources_monthly:
+        if other_source.amount_sum > 0:
+            other_sources_amount = other_sources_total_sum + other_source.amount_sum
+        elif other_source.amount_percent > 0 :
+            other_sources_amount = other_sources_total_sum + ((template_data['project_needsngoals_total']/100)*other_source.amount_percent)
+
+    project_other_sources_onetime = (ProjectOtherSource.objects.filter(project=project)
+                                                               .filter(is_public=True)
+                                                               .filter(is_monthly=False)
+                                                               .filter(date_received__gte=datetime(now().year, now().month, 1))
+                                                               .filter(date_received__lte=datetime(now().year, now().month+1, 1)))
+    for other_source in project_other_sources_onetime:
+        if other_source.amount_sum != 0 :
+            other_sources_total_sum = other_sources_total_sum + other_source.amount_sum
+        elif other_source.amount_percent != 0 :
+            other_sources_total_sum = other_sources_total_sum + ((donationhistory_total_sum/100)*other_source.amount_percent)
+
+
     template_data['other_sources_total_sum']  = other_sources_total_sum
     other_sources_per_needgoal_amount         = int(round(other_sources_total_sum/(project_goals_count+project_needs_count)))
 
@@ -142,6 +181,7 @@ def view(request, project_key):
                                                'image'                  : goal.image,
                                                'amount'                 : goal.amount,
                                                'other_sources'          : other_sources_per_needgoal_amount,
+                                               'description'            : goal.description,
                                                'date_ending'            : goal.date_ending,
                                                'days_to_end'            : (goal.date_ending - now()).days,
                                                'donations_amount'       : donations_amount,

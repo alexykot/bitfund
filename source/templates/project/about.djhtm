@@ -1,0 +1,33 @@
+{% extends "base.djhtm" %}
+
+{% block title %}About {{ project.title }}{% endblock title %}
+
+
+{% block pagescripts %}
+$(document).ready(function(){
+
+		
+
+});
+{% endblock pagescripts %}
+
+
+{% block content %}
+
+<div class="kf_project-views-view">
+    
+{% include "project/project-header.djhtm" %}
+
+<div class="row">
+    <div class="span6">
+        <div class="row kf_project_brief">
+            <div class="span6">
+                {{ project.about|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+{% endblock content %}

@@ -1,6 +1,6 @@
 {% extends "base.djhtm" %}
 
-{% block title %}back {{ project.title }}{% endblock %}
+{% block title %}Pledge to {{ project.title }}{% endblock %}
 
 {% block pagescripts %}
 $(document).ready(function(){
@@ -120,7 +120,7 @@ $(document).ready(function(){
         <div class="row kf_need_item">
         	<div class="span4">
         	{{form.initial.need_title}} <br />   
-                <p class="kf_details">{{form.initial.need_description}}</p>
+                <p class="kf_details">{{form.initial.need_brief}}</p>
             </div>
         	<div class="span5">
             	<ul class="kf_amount_buttons" id="kf_amount_buttons-{{ form.need.value }}">
@@ -166,11 +166,11 @@ $(document).ready(function(){
 </div>
 
     {{ formset_goals.management_form }}
-        <div class="row kf_goal_item">
         {% for form in formset_goals %}
+        <div class="row kf_goal_item">
         	<div class="span4">
         	{{form.initial.goal_title}}, till {{form.initial.goal_date_ending}} <br />   
-                <p class="kf_details">{{form.initial.goal_description}}</p>
+                <p class="kf_details">{{form.initial.goal_brief}}</p>
             </div>
         	<div class="span5">
             	<ul class="kf_amount_buttons" id="kf_amount_buttons-{{ form.goal.value }}">
