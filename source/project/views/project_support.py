@@ -19,9 +19,30 @@ from project.decorators import *
 
 
 @user_is_not_project_maintainer
-def support(request, project_key, support_type='onetime'):#
+def support(request, project_key, support_type='onetime'):
     project = get_object_or_404(Project, key=project_key)
 
+    #PASRING PRESELECTED
+    needsgoals_ordered = Project.getProjectActualNeedsGoalsOrderedList(project)
+    needsgoals_list = []
+    for needgoal in needsgoals_ordered :
+        needsgoals_list.append((needgoal.type+'_'+str(needgoal.id), needgoal.title))
+
+    preselected_form = ProjectNeedsGoalsListForm(project_needsgoals_choices=needsgoals_list, data=request.GET)
+    preselected_needs = []
+    preselected_goals = []
+    if preselected_form.is_valid() :
+        have_preselected = True
+        for needgoal in preselected_form.cleaned_data['needsgoals'] :
+            if (needgoal.split('_')[0] == 'need') :
+                preselected_needs.append(int(needgoal.split('_')[1]))
+            else :
+                preselected_goals.append(int(needgoal.split('_')[1]))
+    else :
+        have_preselected = False
+
+    
+    #FETCHING DONATIONS CART AND SUBSCRIPTIONS DATA            
     if DonationCart.objects.filter(project=project).filter(user=request.user.id).count() == 1 :
         donation_cart = DonationCart.objects.filter(project=project).filter(user=request.user.id)[0]
     else :
@@ -33,47 +54,62 @@ def support(request, project_key, support_type='onetime'):#
     else :
         donation_subscription = False
 
+
+    #DEFINING NEEDS FORMSET DATA
     SupportNeedsFormSet = formset_factory(SupportProjectForm, extra=0)
     initial_data_needs  = []
-    project_needs       = ProjectNeed.objects.filter(project=project) 
-    for i in project_needs :
+    project_needs       = ProjectNeed.objects.filter(project=project)
+    print preselected_needs 
+    for need in project_needs :
         if donation_cart.id :
-            if DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(need=i.id).count() :
-                amount = DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(need=i.id)[0].amount
+            if DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(need=need.id).count() :
+                amount = DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(need=need.id)[0].amount
+            elif have_preselected and need.id in preselected_needs : 
+                amount = DEFAULT_MONTHLY_DONATION_AMOUNT
             else :
-                amount = 0
-        elif donation_subscription and DonationSubscriptionNeeds.objects.filter(donation_subscription=donation_subscription).filter(need=i).count() :
-             amount = DonationSubscriptionNeeds.objects.filter(donation_subscription=donation_subscription).filter(need=i)[0].amount
-        else :
+                amount = '0'
+        elif donation_subscription and DonationSubscriptionNeeds.objects.filter(donation_subscription=donation_subscription).filter(need=need).count() :
+            amount = DonationSubscriptionNeeds.objects.filter(donation_subscription=donation_subscription).filter(need=need)[0].amount
+        elif (have_preselected and need.id in preselected_needs) or not have_preselected :
             amount = DEFAULT_MONTHLY_DONATION_AMOUNT
+        else :
+            amount = '0'    
+            
         
         initial_data_needs.append({  'amount'           : amount,
-                                     'need'             : i.id,
-                                     'need_title'       : i.title,
-                                     'need_description' : i.description,
+                                     'need'             : need.id,
+                                     'need_title'       : need.title,
+                                     'need_description' : need.description,
                                      'is_monthly'       : (support_type=='monthly') 
                                        })
 
+    #DEFINING GOALS FORMSET DATA
     SupportGoalsFormSet = formset_factory(SupportProjectForm, extra=0)
     initial_data_goals  = []
     project_goals       = ProjectGoal.objects.filter(project=project)
-    for i in project_goals :
+    for goal in project_goals :
         if donation_cart.id : 
-            if DonationCartGoals.objects.filter(donation_cart=donation_cart).filter(goal=i.id).count() :
-                amount = DonationCartGoals.objects.filter(donation_cart=donation_cart).filter(goal=i.id)[0].amount
+            if DonationCartGoals.objects.filter(donation_cart=donation_cart).filter(goal=goal.id).count() :
+                amount = DonationCartGoals.objects.filter(donation_cart=donation_cart).filter(goal=goal.id)[0].amount
+            elif have_preselected and goal.id in preselected_goals : 
+                amount = DEFAULT_ONETIME_DONATION_AMOUNT
             else :
                 amount = 0    
-        else :
+        elif (have_preselected and goal.id in preselected_goals) or not have_preselected :
             amount = DEFAULT_ONETIME_DONATION_AMOUNT
+        else :
+            amount = 0
         
         initial_data_goals.append({  'amount'           : amount,
-                                     'goal'             : i.id,
-                                     'goal_title'       : i.title,
-                                     'goal_description' : i.description,
-                                     'goal_date_ending' : i.date_ending,
+                                     'goal'             : goal.id,
+                                     'goal_title'       : goal.title,
+                                     'goal_description' : goal.description,
+                                     'goal_date_ending' : goal.date_ending,
                                      
                                      })
     
+    
+    #VALIDATINGAND SAVING SUBMITTED PLEDGES
     if request.method == 'POST':
         formset_needs = SupportNeedsFormSet(request.POST, initial=initial_data_needs, prefix='needs') 
         formset_goals = SupportGoalsFormSet(request.POST, initial=initial_data_goals, prefix='goals')

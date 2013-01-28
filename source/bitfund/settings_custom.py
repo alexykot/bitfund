@@ -9,7 +9,7 @@ ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME   = 'renew-registration'
 MAX_NEEDS_PER_PROJECT = 10
 MAX_GOALS_PER_PROJECT = 10
 
-DEFAULT_MONTHLY_DONATION_AMOUNT                 = 2 # default donation in $
+DEFAULT_MONTHLY_DONATION_AMOUNT                 = 1 # default donation in $
 DEFAULT_ONETIME_DONATION_AMOUNT                 = 5 # default donation in $
 
 MAX_EXPENSES_ON_PROJECT_PAGE                    = 3 # max needs and goals to show in the list near Pledge button 
@@ -21,7 +21,7 @@ DATE_INPUT_FORMATS = ('%d %b %Y', '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y'
 FAKE_CHECKOUT_SYSTEM_URL = '/pledger/fake_external_checkout'
 
 PROJECT_USER_ROLES_WEIGHTS = (
-    ('treasurer', 50),
+    ('treasurer',  50),
     ('maintainer', 30),
-    ('developer', 15),
+    ('developer',  15),
 )

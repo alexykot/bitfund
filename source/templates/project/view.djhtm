@@ -61,6 +61,14 @@ $(document).ready(function(){
         
     {% endfor %}
 
+	$('#mainPledgeButtonMonthly, #mainPledgeButtonOnetime').click(function(event){
+		event.preventDefault();
+		$('#pledgeForm').attr('action', $(this).attr('href'));
+		$('#pledgeForm').submit();		
+	});
+		
+		
+
 });
 {% endblock %}
 
@@ -184,6 +192,8 @@ $(document).ready(function(){
     <div class="span6">
 {% if project_needs_count or project_goals_count %}
 
+	<form method="get" action="{% url project.views.support project_key=project.key support_type='monthly' %}" id="pledgeForm">
+    {% csrf_token %}
         <div class="span2 kf_chart">
             <div class="row kf_month kf_center">
                 <span>{{ today|date:"F Y" }}</span>
@@ -274,10 +284,8 @@ $(document).ready(function(){
                                 
                                 <a href="{% url project.views.drop_support project_key=project.key %}" onclick="confirm('are you sure?')">cancel all</a>
                             {% else %}
-                                
-                                <a href="{% url project.views.support project_key=project.key support_type='monthly' %}" class="button">Pledge Monthly</a>
-                                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}" class="button">Pledge Once</a>
-                                
+                                <a href="{% url project.views.support project_key=project.key support_type='monthly' %}" id="mainPledgeButtonMonthly" class="button">Pledge Monthly</a>
+                                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}" id="mainPledgeButtonOnetime" class="button">Pledge Once</a>
                             {% endif %}
                             
                             {% if donation_history_newest_needsngoals_sum %}
@@ -291,6 +299,7 @@ $(document).ready(function(){
                 </div>
             </div>
         </div>
+    </form>    
 {% else %}
     
     {# buttons if no needs or goals #}

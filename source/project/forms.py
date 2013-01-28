@@ -55,7 +55,7 @@ class SupportProjectForm(forms.Form):
 class ProjectNeedsGoalsListForm(forms.Form):
     needsgoals = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
 
-    def __init__(self, project_needsgoals_choices, *args, **kw):
+    def __init__(self, project_needsgoals_choices=[], *args, **kw):
         super(forms.Form, self).__init__(*args, **kw)
         
         self.fields['needsgoals'].choices = project_needsgoals_choices

@@ -66,11 +66,17 @@ $(document).ready(function(){
 
 	$('.kf_green').click(function(){
 		$('div[name|="kf_need_monthly"]').each(function(){
-			$(this).click();
-			
+			$(this).click();			
 		});
 	});	
 
+	$('div.kf_need_item').each(function(){
+		//$(this).find('ul.kf_amount_buttons').find('a[value='+$(this).find('input[type="text"]').attr('value')+']').click();
+	});
+	
+
+	$('#plegeForm').toggle();
+	
 
 });
 {% endblock %}
@@ -105,19 +111,20 @@ $(document).ready(function(){
     </div>
 </div>
 
-<form method="post" action="">
+<form method="post" action="" id="plegeForm" style="display:none;">
 {% csrf_token %}
 
     {{ formset_needs.management_form }}
     
         {% for form in formset_needs %}
         <div class="row kf_need_item">
-        	<div class="span5">
+        	<div class="span4">
         	{{form.initial.need_title}} <br />   
                 <p class="kf_details">{{form.initial.need_description}}</p>
             </div>
-        	<div class="span4">
+        	<div class="span5">
             	<ul class="kf_amount_buttons" id="kf_amount_buttons-{{ form.need.value }}">
+            		<li><a href="javascript:void(0);" value="0">--</a></li>
             		<li><a href="javascript:void(0);" value="2">$2</a></li>
             		<li><a href="javascript:void(0);" value="5">$5</a></li>
             		<li><a href="javascript:void(0);" value="10">$10</a></li>
@@ -161,12 +168,13 @@ $(document).ready(function(){
     {{ formset_goals.management_form }}
         <div class="row kf_goal_item">
         {% for form in formset_goals %}
-        	<div class="span5">
+        	<div class="span4">
         	{{form.initial.goal_title}}, till {{form.initial.goal_date_ending}} <br />   
                 <p class="kf_details">{{form.initial.goal_description}}</p>
             </div>
-        	<div class="span4">
+        	<div class="span5">
             	<ul class="kf_amount_buttons" id="kf_amount_buttons-{{ form.goal.value }}">
+            		<li><a href="javascript:void(0);" value="0">--</a></li>
             		<li><a href="javascript:void(0);" value="2">$2</a></li>
             		<li><a href="javascript:void(0);" value="5">$5</a></li>
             		<li><a href="javascript:void(0);" value="10">$10</a></li>

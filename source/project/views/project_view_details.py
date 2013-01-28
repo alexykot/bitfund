@@ -31,7 +31,7 @@ def view(request, project_key):
     template_data['project_outlinks']       = ProjectOutlink.objects.filter(project=project).filter(is_public=True).order_by('sort_order')
     template_data['project_categories']     = project.categories.all()
     template_data['project_latest_release'] = ProjectRelease.objects.filter(project=project).filter(is_public=True).order_by('-date_released')[:1]
-    if (template_data['project_latest_release'].count) :
+    if (template_data['project_latest_release'].count() > 0) :
         template_data['project_latest_release'] = template_data['project_latest_release'][0]
     else :
         template_data['project_latest_release'] = False
@@ -56,9 +56,9 @@ def view(request, project_key):
     project_goals_total         = (project_goals.aggregate(Sum('amount'))['amount__sum']) or 0
 
     needsgoals_ordered = Project.getProjectActualNeedsGoalsOrderedList(project)
-    needsgoals_list = [('a','b'), ('c','d')]
+    needsgoals_list = []
     for needgoal in needsgoals_ordered :
-        needsgoals_list.append((str(needgoal.id)+needgoal.type, needgoal.title))
+        needsgoals_list.append((needgoal.type+'_'+str(needgoal.id), needgoal.title))
 
     template_data['needsgoals_form']                        = ProjectNeedsGoalsListForm(project_needsgoals_choices=needsgoals_list) 
     template_data['project_needs_count']                    = project_needs_count 
