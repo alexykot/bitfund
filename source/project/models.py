@@ -13,7 +13,7 @@ class ProjectCategory(models.Model):
     title         = models.CharField(max_length=255)
     description   = models.TextField(null=True, blank=True)
     logo          = models.ImageField(upload_to='project_category_logo/', null=True, blank=True)
-    date_added    = models.DateTimeField('date added', default = now())
+    date_added    = models.DateTimeField('date added', default=now())
 
 class Project(models.Model):
     key           = models.CharField(max_length=80, unique=True)
@@ -23,56 +23,15 @@ class Project(models.Model):
     about         = models.TextField(null=True, blank=True)
     contribute    = models.TextField(null=True, blank=True)
     logo          = models.ImageField(upload_to='project_logo/', null=True, blank=True)
-    date_added    = models.DateTimeField('date added', default = now())
+    date_added    = models.DateTimeField('date added', default=now())
     is_public     = models.BooleanField(default=True)
     
     def __unicode__(self):
         return self.title
     
-    @classmethod
-    def getProjectActualNeedsGoalsOrderedList(self, project):
-        return self.objects.raw("""
-                        SELECT 
-                                joined_list.* 
-                        FROM 
-                                ((SELECT 
-                                        `id`,
-                                        'need' AS 'type',
-                                        `key`,
-                                        `title`,
-                                        `amount`,
-                                        `sort_order`
-                                 FROM
-                                        project_projectneed 
-                                 WHERE
-                                        1
-                                        AND project_id=%s
-                                        AND is_public
-                                ) 
-                                        UNION
-                                 (SELECT 
-                                        `id`,
-                                        'goal' AS 'type',
-                                        `key`,
-                                        `title`,
-                                        `amount`,
-                                        `sort_order`
-                                 FROM
-                                        project_projectgoal 
-                                 WHERE
-                                        1
-                                        AND project_id=%s
-                                        AND is_public
-                                        AND NOW() BETWEEN date_starting AND date_ending
-                                        )) AS joined_list       
-                        ORDER BY
-                            joined_list.sort_order
-                                
-                        """, [str(project.id), str(project.id)])
-        
     def getTotalMonthlyBackers(self, monthdate=None):
         import datetime
-        from django.utils.timezone import utc, now
+        from django.utils.timezone import now
         from django.db.models import Count, Sum 
         from pledger.models import DonationHistory 
             
@@ -81,14 +40,14 @@ class Project(models.Model):
             
         return (DonationHistory.objects
                                  .filter(project=self)
-                                 .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1))
+                                 .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                                  .aggregate(Count('user', distinct=True))['user__count']
                                  )
         
         
     def getTotalMonthlyNeedsDonations(self, monthdate=None):
         import datetime
-        from django.utils.timezone import utc, now
+        from django.utils.timezone import now
         from django.db.models import Count, Sum 
         from pledger.models import DonationHistory, DonationHistoryNeeds 
 
@@ -98,7 +57,7 @@ class Project(models.Model):
         donation_histories = (DonationHistory.objects
                                              .filter(project=self)
                                              .filter(datetime_sent__lte=now())
-                                             .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1))
+                                             .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                                              .select_related('donationhistoryneeds'))    
         
         donations_sum = (DonationHistoryNeeds.objects
@@ -121,7 +80,7 @@ class Project(models.Model):
 
         donation_histories = (DonationHistory.objects
                                              .filter(project=self)
-                                             .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1))
+                                             .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo) )
                                              .select_related('donationhistoryneeds'))    
         
         return ((DonationHistoryGoals.objects
@@ -147,8 +106,8 @@ class Project(models.Model):
         project_other_sources_onetime = (ProjectOtherSource.objects.filter(project=self)
                                                                    .filter(is_public=True)
                                                                    .filter(is_monthly=False)
-                                                                   .filter(date_received__gte=datetime.datetime(now().year, now().month, 1))
-                                                                   .filter(date_received__lte=datetime.datetime(now().year, now().month+1, 1)))
+                                                                   .filter(date_received__gte=datetime.datetime(now().year, now().month, 1, tzinfo=now().tzinfo))
+                                                                   .filter(date_received__lte=datetime.datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo)))
         for other_source in project_other_sources_onetime:
             if other_source.amount_sum != 0 :
                 other_sources_total_sum = other_sources_total_sum + other_source.amount_sum
@@ -166,7 +125,7 @@ class Project(models.Model):
         return (ProjectGoal.objects.filter(project=self.id)
                                   .filter(is_public=True)
                                   .filter(date_ending__gt=now())
-                                  .filter(date_ending__lt=datetime.datetime(now().year, now().month+1, 1))
+                                  .filter(date_ending__lt=datetime.datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo))
                                   .filter(date_starting__lt=now())
                                   .count()
                                   )
@@ -182,9 +141,12 @@ class ProjectNeed(models.Model):
     title         = models.CharField(max_length=255)
     brief         = models.CharField(max_length=255, null=True, blank=True)
     amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
-    date_added    = models.DateTimeField('date added', default=datetime.now())
+    date_added    = models.DateTimeField('date added', default=now())
     is_public     = models.BooleanField(default=True)
     sort_order    = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return self.title
     
     class Meta:
         unique_together = (("project", "key"),)
@@ -204,6 +166,9 @@ class ProjectGoal(models.Model):
     date_added    = models.DateTimeField('date added', default=now())
     is_public     = models.BooleanField(default=True)
     sort_order    = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return self.title
     
     class Meta:
         unique_together = (("project", "key"),)
@@ -216,22 +181,28 @@ class ProjectUserRole(models.Model):
     user_role       = models.CharField(max_length=10, choices=PROJECT_USER_ROLES, null=True, blank=True)
     user_role_title = models.CharField(max_length=255, null=True, blank=True)
     sort_order      = models.IntegerField(default=0)
-    date_added      = models.DateTimeField('date added', default = datetime.now())
+    date_added      = models.DateTimeField('date added', default=now())
+
+    def __unicode__(self):
+        return self.user_role_title
 
 class ProjectOutlink(models.Model):
     project         = models.ForeignKey(Project)
     type            = models.CharField(max_length=50, choices=PROJECT_OUTLINK_TYPES)
     title           = models.CharField(max_length=50)
     address         = models.TextField()
-    date_added      = models.DateTimeField('date added', default = datetime.now())
+    date_added      = models.DateTimeField('date added', default=now())
     is_public       = models.BooleanField(default=True)
     sort_order      = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return self.project.title
 
 class ProjectContact(models.Model):
     project         = models.ForeignKey(Project)
     type            = models.CharField(max_length=50, choices=PROJECT_CONTACT_TYPES)
     data            = models.TextField()
-    date_added      = models.DateTimeField('date added', default = datetime.now())
+    date_added      = models.DateTimeField('date added', default=now())
     is_public       = models.BooleanField(default=True)
     sort_order      = models.IntegerField(default=0)
 
@@ -241,7 +212,7 @@ class Project_Dependencies(models.Model):
     brief               = models.TextField(null=True, blank=True)
     redonation_percent  = models.DecimalField(decimal_places=0, max_digits=2, null=True, blank=True)
     redonation_amount   = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
-    date_added          = models.DateTimeField('date added', default = datetime.now())
+    date_added          = models.DateTimeField('date added', default=now())
     is_public           = models.BooleanField(default=True)
     sort_order          = models.IntegerField(default=0)
     
@@ -256,8 +227,11 @@ class ProjectRelease(models.Model):
     brief               = models.TextField(null=True, blank=True)
     date_released       = models.DateTimeField('date released')
     previous_version    = models.ForeignKey('self', null=True, blank=True)
-    date_added          = models.DateTimeField('date added', default = datetime.now())
+    date_added          = models.DateTimeField('date added', default=now())
     is_public           = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.version
 
 class ProjectOtherSource(models.Model):
     project         = models.ForeignKey(Project)
@@ -267,21 +241,64 @@ class ProjectOtherSource(models.Model):
     amount_percent  = models.DecimalField(decimal_places=0, max_digits=3, null=True, blank=True)
     is_monthly      = models.BooleanField(default=True)
     date_received   = models.DateTimeField('date received', null=True, blank=True)
-    date_added      = models.DateTimeField('date added', default = datetime.now())
+    date_added      = models.DateTimeField('date added', default=now())
     is_public       = models.BooleanField(default=True)
 
-
-"""
-class Event(models.Model):
-    TASK_SIZES = (
-        (u'XS', u'XSmall'),
-        (u'S', u'Small'),
-        (u'M', u'Medium'),
-        (u'L', u'Large'),
-        (u'XL', u'XLarge'),
-    )
-    task_size  = models.CharField(max_length=2, choices=TASK_SIZES)
-    
     def __unicode__(self):
-        return self.summary
-"""
+        return self.title
+
+
+class ProjectEvent(models.Model):
+    EVENT_BRANCHES = (
+        ('sources', u'Sources'),
+        ('social', u'Social'),
+        ('releases', u'Releases'),
+        ('finances', u'Finances'),
+    )
+    EVENT_TYPES = (
+        (u'Sources', (
+            ('commit',            u'Commit'),
+            ('pull_request',      u'Pull request'),
+            ('new_branch',        u'New branch'),
+         )),
+        (u'Social', ( 
+            ('blog_entry',        u'Blog'),
+            ('team_update',       u'Team update'),
+            ('community_update',  u'Community update'),
+         )), 
+        (u'Releases', ( 
+            ('major_release',     u'Major Release'),
+            ('minor_release',     u'Minor Release'),
+            ('release_announce',  u'Release Announce'),
+         )), 
+        (u'Finances', ( 
+            ('goal_added',        u'Goal Added'),
+            ('goal_updated',      u'Goal Updated'),
+            ('goal_removed',      u'Goal Removed'),
+            ('goal_plan',         u'Goal Plan'),
+            ('goal_success',      u'Goal Success'),
+            ('goal_fail',         u'Goal Fail'),
+            ('need_added',        u'Need Added'),
+            ('need_updated',      u'Need Updated'),
+            ('need_removed',      u'Need Removed'),
+            ('need_plan',         u'Need Plan'),
+            ('need_success',      u'Need Success'),
+            ('need_fail',         u'Need Fail'),
+            ('other_added',       u'Other Source Added'),
+            ('other_updated',     u'Other Source Updated'),
+            ('other_removed',     u'Other Source Removed'),
+            ('other_plan',        u'Other Source Plan'),
+            ('other_success',     u'Other Source Success'),
+            ('other_fail',        u'Other Source Fail'),
+         )), 
+    )
+    project         = models.ForeignKey(Project)
+    branch          = models.CharField(max_length=10, choices=EVENT_BRANCHES)
+    type            = models.CharField(max_length=10, choices=EVENT_TYPES)
+    title           = models.CharField(max_length=255)
+    text            = models.TextField(null=True, blank=True)
+    date_published  = models.DateTimeField('date published', default=now(), null=True, blank=True)
+    date_added      = models.DateTimeField('date added', default=now())
+    is_public       = models.BooleanField(default=True)
+    
+

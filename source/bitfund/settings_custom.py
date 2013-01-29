@@ -12,7 +12,7 @@ MAX_GOALS_PER_PROJECT = 10
 DEFAULT_MONTHLY_DONATION_AMOUNT                 = 1 # default donation in $
 DEFAULT_ONETIME_DONATION_AMOUNT                 = 5 # default donation in $
 
-MAX_EXPENSES_ON_PROJECT_PAGE                    = 3 # max needs and goals to show in the list near Pledge button 
+MAX_EXPENSES_ON_PROJECT_PAGE                    = 1 # max needs and goals to show in the list near Pledge button 
 MAX_GOALS_ON_PROJECT_PAGE                       = 2 # max goals to show on the project page
 MAX_USERS_ON_PROJECT_PAGE                       = 4 # max users to show in the Team block
 

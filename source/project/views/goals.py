@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
+from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now 
 
 from project.models import *

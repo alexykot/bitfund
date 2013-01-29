@@ -1,8 +1,12 @@
+import datetime
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse 
 from django.shortcuts import render_to_response, get_object_or_404 
 from django.template import RequestContext
 from django.forms.formsets import formset_factory
+from django.utils.datetime_safe import datetime
+from django.utils.timezone import utc, now 
 
 #from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import authenticate
@@ -23,10 +27,20 @@ def support(request, project_key, support_type='onetime'):
     project = get_object_or_404(Project, key=project_key)
 
     #PASRING PRESELECTED
-    needsgoals_ordered = Project.getProjectActualNeedsGoalsOrderedList(project)
     needsgoals_list = []
-    for needgoal in needsgoals_ordered :
-        needsgoals_list.append((needgoal.type+'_'+str(needgoal.id), needgoal.title))
+    project_needs      = ProjectNeed.objects.filter(project=project.id).filter(is_public=True)
+    for need in project_needs :
+        needsgoals_list.append(('need_'+str(need.id), need.title))
+
+    project_goals               = (ProjectGoal.objects.filter(project=project.id)
+                                                      .filter(is_public=True)
+                                                      .filter(date_ending__gt=now())
+                                                      .filter(date_starting__lt=now())
+                                                      )
+    for goal in project_goals :
+        needsgoals_list.append(('goal_'+str(goal.id), goal.title))
+
+    print needsgoals_list     
 
     preselected_form = ProjectNeedsGoalsListForm(project_needsgoals_choices=needsgoals_list, data=request.GET)
     preselected_needs = []
@@ -86,7 +100,14 @@ def support(request, project_key, support_type='onetime'):
     #DEFINING GOALS FORMSET DATA
     SupportGoalsFormSet = formset_factory(SupportProjectForm, extra=0)
     initial_data_goals  = []
-    project_goals       = ProjectGoal.objects.filter(project=project)
+    project_goals       = (ProjectGoal.objects
+                                        .filter(project=project)
+                                        .filter(is_public=True)
+                                        .filter(date_ending__gt=now())
+                                        .filter(date_starting__lt=now())
+                                        .order_by('sort_order')
+                                        )
+                                                                
     for goal in project_goals :
         if donation_cart.id : 
             if DonationCartGoals.objects.filter(donation_cart=donation_cart).filter(goal=goal.id).count() :

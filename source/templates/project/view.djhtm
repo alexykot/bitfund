@@ -66,6 +66,29 @@ $(document).ready(function(){
 		$('#pledgeForm').submit();		
 	});
 		
+	
+	var project_needs_to_show_initially = {{project_needs_to_show_initially}};
+	var index = 0; 
+	$('#needs_preselection_list ul li').each(function(event){
+        $(this).toggle((project_needs_to_show_initially > index));	    
+	    index++;
+    });
+	    
+    $('#needs_preselection_list ul').toggle(true);	    
+	
+	$('#show_all_needs_preselection').click(function(event){
+	    $('#needs_preselection_list ul li').each(function(){
+	        $(this).toggle(true);
+	    });
+	    $(this).toggle(false);
+    });
+	
+    $('#select_all_needs_preselection').click(function(event){
+        $('#show_all_needs_preselection').click();
+        $('#needs_preselection_list input[type="checkbox"]').each(function(){
+           $(this).attr('checked',true);
+        });
+    });
 		
 
 });
@@ -145,19 +168,21 @@ $(document).ready(function(){
                 <div class="span4"> 
                     <div class="row">
                         <div class="span4 kf_needed"> 
-                            <h4> ${{ project_needsngoals_total }} asked this month for:</h4>
+                            <h4> ${{ project_needs_total }} asked this month for:</h4>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="span4"> 
-                            <ul>
+                        <div class="span4" id="needs_preselection_list"> 
+                            <ul style="display:none;">
                             {% for needgoal in needsgoals_form.needsgoals %}
                                 {{ needgoal }}
                             {% endfor %}
                             </ul>                    
                             {% if project_moar_needsgoals_count %}
-                                <a href="#">and {{ project_moar_needsgoals_count }} more</a> 
+                                <a href="#" id="show_all_needs_preselection">and {{ project_moar_needsgoals_count }} more</a> 
                             {% endif %}
+                                <a href="#" id="select_all_needs_preselection">Select all</a>
+                            
                         </div>
                     </div>
                     <div class="row">
@@ -291,7 +316,7 @@ $(document).ready(function(){
                         <span class="kf_small">days to go</span>
                     </div>
                 </div>
-                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}" class="button">Pledge</a>
+                <a href="{% url project.views.support project_key=project.key support_type='onetime' %}?needsgoals=goal_{{goal.id}}" class="button">Pledge</a>
             </div>
         </div>
     </div>

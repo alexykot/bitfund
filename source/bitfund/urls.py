@@ -83,39 +83,3 @@ if settings.DEBUG:
     urlpatterns += patterns('django.contrib.staticfiles.views',
         url(r'^static/(?P<path>.*)$', 'serve'),
     ) 
-    
-    
-"""
-urlpatterns = patterns('',
-    url(r'^/coorder-details/(?P<pk>\d+)/$',
-        DetailView.as_view(
-            model=Coorder,
-            template_name='core/coorder_details.html')),                                   
-  )
-
-    url(r'^coorder-list/$',
-        ListView.as_view(
-            model=Coorder,                
-            queryset=Coorder.objects.order_by('-pub_date')[:5],
-            context_object_name='latest_coorders_list',
-            template_name='core/view_coorders.html'),
-        name = 'coorders_list'),
-"""
-
-"""
-info_dict = {
-             'queryset' : Coorder.objects.all(),
-             }
-
-
-    (r'^$', 'django.views.generic.list_detail.object_list', info_dict),
-    url(r'^/details/(?P<object_id>\d+)$', 'django.views.generic.list_detail.object_detail', dict(info_dict, template_name='core/coorder_details.html'), 'poll_results'),
-    (r'^/edit/(?P<coorder_id>\d+)$', 'core.views.edit'),
-
-urlpatterns += patterns('polls.views',
-    (r'^$', 'index'),
-    (r'^(?P<poll_id>\d+)/$', 'detail'),
-    (r'^(?P<poll_id>\d+)/results/$', 'results'),
-    (r'^(?P<poll_id>\d+)/vote/$', 'vote'),    
-)
-"""
