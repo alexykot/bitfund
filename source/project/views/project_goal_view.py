@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 from django.utils.timezone import utc, now 
 
-from bitfund.settings_custom import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
+from bitfund.settings_project import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
 from bitfund.settings import TIME_ZONE
 from project.models import *
 from project.forms import *

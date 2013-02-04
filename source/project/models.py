@@ -20,15 +20,40 @@ class Project(models.Model):
     title         = models.CharField(max_length=255)
     brief         = models.CharField(max_length=255, null=True, blank=True)
     categories    = models.ManyToManyField(ProjectCategory)
-    about         = models.TextField(null=True, blank=True)
-    contribute    = models.TextField(null=True, blank=True)
     logo          = models.ImageField(upload_to='project_logo/', null=True, blank=True)
     date_added    = models.DateTimeField('date added', default=now())
     is_public     = models.BooleanField(default=True)
     
     def __unicode__(self):
         return self.title
+
+    #calculates total project budget for given month or current month by default  
+    def getTotalMonthlyBudget(self, monthdate=None):
+        import datetime
+        from django.utils.timezone import now
+        from django.db.models import Count, Sum 
+        from project.models import ProjectNeed 
+            
+        if monthdate is None:
+            monthdate = now()
+            
+        lasting = (ProjectNeed.objects
+                              .filter(project=self.id)
+                              .filter(is_public=True)
+                              .filter(date_ending=None)
+                              .aggregate(Sum('amount'))['amount__sum']
+                              ) or 0
+        limited = (ProjectNeed.objects
+                              .filter(project=self.id)
+                              .filter(is_public=True)
+                              .filter(date_starting__lte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                              .filter(date_ending__gt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
+                              .aggregate(Sum('amount'))['amount__sum']
+                              ) or 0
+                               
+        return limited+lasting
     
+    #calculates total backers amountfor given month or current month by default
     def getTotalMonthlyBackers(self, monthdate=None):
         import datetime
         from django.utils.timezone import now
@@ -45,6 +70,7 @@ class Project(models.Model):
                                  )
         
         
+    #calculates total budget donations amount for given month or current month by default
     def getTotalMonthlyNeedsDonations(self, monthdate=None):
         import datetime
         from django.utils.timezone import now
@@ -87,33 +113,55 @@ class Project(models.Model):
                                     .filter(donation_history__in=donation_histories)
                                     .aggregate(Sum('amount'))['amount__sum']) or 0)
         
+    #calculates total other sources amount for given month or current month by default
     def getTotalMonthlyOtherSources(self, monthdate=now()):
         import datetime
         from django.utils.timezone import utc, now
-        from django.db.models import Count, Sum 
+        from django.db.models import Sum 
         from project.models import ProjectNeed, ProjectOtherSource
         
-        other_sources_total_sum  = 0
-        project_needs_total      = (ProjectNeed.objects.filter(project=self.id).filter(is_public=True).aggregate(Sum('amount'))['amount__sum']) or 0
-        
-        project_other_sources_monthly = ProjectOtherSource.objects.filter(project=self).filter(is_public=True).filter(is_monthly=True) 
-        for other_source in project_other_sources_monthly:
-            if other_source.amount_sum > 0:
-                other_sources_amount = other_sources_total_sum + other_source.amount_sum
-            elif other_source.amount_percent > 0 :
-                other_sources_amount = other_sources_total_sum + ((project_needs_total/100)*other_source.amount_percent)
-    
+        project_other_sources_monthly = (ProjectOtherSource.objects.filter(project=self)
+                                                                   .filter(is_public=True)
+                                                                   .filter(is_monthly=True)
+                                                                   .aggregate(Sum('amount'))['amount__sum']
+                                                                   ) or 0 
         project_other_sources_onetime = (ProjectOtherSource.objects.filter(project=self)
                                                                    .filter(is_public=True)
                                                                    .filter(is_monthly=False)
                                                                    .filter(date_received__gte=datetime.datetime(now().year, now().month, 1, tzinfo=now().tzinfo))
-                                                                   .filter(date_received__lte=datetime.datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo)))
-        for other_source in project_other_sources_onetime:
-            if other_source.amount_sum != 0 :
-                other_sources_total_sum = other_sources_total_sum + other_source.amount_sum
+                                                                   .filter(date_received__lt=datetime.datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo))
+                                                                   .aggregate(Sum('amount'))['amount__sum']
+                                                                   ) or 0
         
-        return other_sources_total_sum
+        return project_other_sources_monthly + project_other_sources_onetime
 
+    def getTotalMonthlyDependantsDonations(self, monthdate=now()):
+        import datetime
+        from django.utils.timezone import utc, now
+        from django.db.models import Sum 
+        from project.models import Project_Dependencies
+
+        
+        dependants_donations_percent_sum  = 0 
+        dependants_donations_percent_list = (Project_Dependencies.objects.filter(dependonme_project=self)
+                                                                         .filter(is_public=True)
+                                                                         .filter(redonation_percent__gt=0)
+                                                                          )
+        
+        for dependants_donation in dependants_donations_percent_list :
+            dependants_project               = Project.objects.get(project=dependants_donation.idependon_project)
+            dependants_donations_percent_sum = dependants_donations_percent_sum + (dependants_project/100)*dependants_donation.redonation_percent 
+             
+        
+        dependants_donations_amount_sum = (Project_Dependencies.objects.filter(dependonme_project=self)
+                                                                       .filter(is_public=True)
+                                                                       .filter(redonation_amount__gt=0)
+                                                                       .aggregate(Sum('redonation_amount'))['redonation_amount__sum']
+                                                                        ) or 0
+         
+        
+        return dependants_donations_amount_sum + dependants_donations_percent_sum
+        
     def getNeedsCount(self):
         from project.models import ProjectNeed
         return ProjectNeed.objects.filter(project=self.id).filter(is_public=True).count()
@@ -141,6 +189,8 @@ class ProjectNeed(models.Model):
     title         = models.CharField(max_length=255)
     brief         = models.CharField(max_length=255, null=True, blank=True)
     amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
+    date_starting = models.DateTimeField('date starting', default=now(), null=True, blank=True)
+    date_ending   = models.DateTimeField('date ending', null=True, blank=True)
     date_added    = models.DateTimeField('date added', default=now())
     is_public     = models.BooleanField(default=True)
     sort_order    = models.IntegerField(default=0)
@@ -161,8 +211,8 @@ class ProjectGoal(models.Model):
     image         = models.ImageField(upload_to='project_goals/', null=True, blank=True)
     video_url     = models.CharField(max_length=255, null=True, blank=True)
     amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
-    date_ending   = models.DateTimeField('date ending')
     date_starting = models.DateTimeField('date starting', default=now())
+    date_ending   = models.DateTimeField('date ending')
     date_added    = models.DateTimeField('date added', default=now())
     is_public     = models.BooleanField(default=True)
     sort_order    = models.IntegerField(default=0)
@@ -198,14 +248,6 @@ class ProjectOutlink(models.Model):
     def __unicode__(self):
         return self.project.title
 
-class ProjectContact(models.Model):
-    project         = models.ForeignKey(Project)
-    type            = models.CharField(max_length=50, choices=PROJECT_CONTACT_TYPES)
-    data            = models.TextField()
-    date_added      = models.DateTimeField('date added', default=now())
-    is_public       = models.BooleanField(default=True)
-    sort_order      = models.IntegerField(default=0)
-
 class Project_Dependencies(models.Model):
     idependon_project   = models.ForeignKey(Project, related_name='idependon') # the one that depends
     dependonme_project  = models.ForeignKey(Project, related_name='dependonme') # the one that is depended on
@@ -220,25 +262,11 @@ class Project_Dependencies(models.Model):
         unique_together = (("idependon_project", "dependonme_project"),)
     
 
-class ProjectRelease(models.Model):
-    project             = models.ForeignKey(Project) 
-    version             = models.CharField(max_length=50, null=True, blank=True)
-    title               = models.CharField(max_length=255, null=True, blank=True)
-    brief               = models.TextField(null=True, blank=True)
-    date_released       = models.DateTimeField('date released')
-    previous_version    = models.ForeignKey('self', null=True, blank=True)
-    date_added          = models.DateTimeField('date added', default=now())
-    is_public           = models.BooleanField(default=True)
-
-    def __unicode__(self):
-        return self.version
-
 class ProjectOtherSource(models.Model):
     project         = models.ForeignKey(Project)
     title           = models.CharField(max_length=255)
     brief           = models.TextField(null=True, blank=True)
-    amount_sum      = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
-    amount_percent  = models.DecimalField(decimal_places=0, max_digits=3, null=True, blank=True)
+    amount          = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
     is_monthly      = models.BooleanField(default=True)
     date_received   = models.DateTimeField('date received', null=True, blank=True)
     date_added      = models.DateTimeField('date added', default=now())
@@ -247,7 +275,32 @@ class ProjectOtherSource(models.Model):
     def __unicode__(self):
         return self.title
 
+class Project_OtherSource_Shares(models.Model):
+    project_need    = models.ForeignKey(ProjectNeed, null=True, blank=True)
+    project_goal    = models.ForeignKey(ProjectGoal, null=True, blank=True)
+    other_source    = models.ForeignKey(ProjectOtherSource)
+    brief           = models.CharField(max_length=255, null=True, blank=True)
+    amount_sum      = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
+    amount_percent  = models.DecimalField(decimal_places=0, max_digits=3, null=True, blank=True)
+    is_monthly      = models.BooleanField(default=True)
+    date_added      = models.DateTimeField('date added', default=now())
 
+    class Meta:
+        unique_together = (("project_need", "project_goal", "other_source"),)
+
+class Project_DependandsDonations_Shares(models.Model):
+    project_need    = models.ForeignKey(ProjectNeed, null=True, blank=True)
+    project_goal    = models.ForeignKey(ProjectGoal, null=True, blank=True)
+    brief           = models.CharField(max_length=255, null=True, blank=True)
+    amount_sum      = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
+    amount_percent  = models.DecimalField(decimal_places=0, max_digits=3, null=True, blank=True)
+    is_monthly      = models.BooleanField(default=True)
+    date_added      = models.DateTimeField('date added', default=now())
+
+
+
+"""
+#timeline is not going to be implemented now. but I'll leave it here, just in case some day it will be needed again.
 class ProjectEvent(models.Model):
     EVENT_BRANCHES = (
         ('sources', u'Sources'),
@@ -300,5 +353,5 @@ class ProjectEvent(models.Model):
     date_published  = models.DateTimeField('date published', default=now(), null=True, blank=True)
     date_added      = models.DateTimeField('date added', default=now())
     is_public       = models.BooleanField(default=True)
-    
+"""    
 

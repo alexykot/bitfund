@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from bitfund.settings_custom import PROTOTYPE_LANDING_PAGE_URL, PROTOTYPE_HIDDEN_ENTRANCE
+from bitfund.settings_project import PROTOTYPE_LANDING_PAGE_URL, PROTOTYPE_HIDDEN_ENTRANCE
 
 class HiddenEntranceMiddleware(object):
     def process_request(self, request):

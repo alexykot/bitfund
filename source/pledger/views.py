@@ -9,7 +9,7 @@ from django.utils import simplejson
 from project.models import *
 from pledger.models import *
 from pledger.forms import *
-from bitfund.settings_custom import FAKE_CHECKOUT_SYSTEM_URL
+from bitfund.settings_project import FAKE_CHECKOUT_SYSTEM_URL
 
 import urllib
 import urllib2

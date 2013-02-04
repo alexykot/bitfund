@@ -10,7 +10,7 @@ from django.db.models import Count, Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now 
 
-from bitfund.settings_custom import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
+from bitfund.settings_project import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
 from bitfund.settings import TIME_ZONE
 from pledger.models import *
 
@@ -163,4 +163,7 @@ def view(request, project_key):
     
     
     return render_to_response('project/view.djhtm', template_data, context_instance=RequestContext(request))
+
+def chart_image(request, project_key):
+    return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
 

@@ -5,7 +5,7 @@
 from settings_server import *
 
 #this is custom project settings not related to django, but used in this project 
-from settings_custom import *
+from settings_project import *
 
 #this is django extensions settings 
 from settings_extensions import *
@@ -79,6 +79,7 @@ INSTALLED_APPS = (
     'userena',          # user accounts enhanced
     'guardian',         # object permissions checking
     'easy_thumbnails',  # easier thumbnailing
+    'tastypie',         # API framework          
 )
 
 # A sample logging configuration. The only tangible logging

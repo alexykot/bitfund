@@ -16,9 +16,8 @@ from project.lists import *
 
 class Profile(UserenaBaseProfile):
     user                    = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
-    github_profile          = models.CharField(max_length=255, null=True, blank=True) 
-    bitbucket_profile       = models.CharField(max_length=255, null=True, blank=True)
-    sourceforge_profile     = models.CharField(max_length=255, null=True, blank=True)
+    token                   = models.CharField(max_length=255, unique=True)
+    donation_is_public      = models.BooleanField(default=True)
 
 
 #donations cart, storing donations data until confirmed 

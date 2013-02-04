@@ -1,4 +1,6 @@
 # custom bitfund settings
+PROJECT_VERSION = '0.1'
+
 PROTOTYPE_HIDDEN_ENTRANCE                       = 'hidden-entrance'
 PROTOTYPE_LANDING_PAGE_URL                      = '/index.htm'
 
@@ -25,3 +27,6 @@ PROJECT_USER_ROLES_WEIGHTS = (
     ('maintainer', 30),
     ('developer',  15),
 )
+
+
+TIME_TO_SHOW_HOURS = 48 #when it's time to show hours instead of days for "time to go" for budget and goals, in hours       

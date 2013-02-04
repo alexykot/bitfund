@@ -3,9 +3,13 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.simple import redirect_to
 
+from bitfund.settings_project import PROJECT_VERSION
+from project.api import *
+
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
 
+#DJANGO USUAL
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'bitfund.views.home', name='home'),
@@ -19,6 +23,14 @@ urlpatterns = patterns('',
     (r'^accounts/', include('userena.urls')),
 )
 
+#API URLS
+urlpatterns += patterns('',
+    (r'^api/', include(ProjectResource().urls)),
+    (r'^api/', include(ProjectNeedResource().urls)),
+    (r'^api/', include(ProjectGoalResource().urls)),
+)
+
+#MISC PAGES
 urlpatterns += patterns('bitfund.views',
     (r'^index.htm', 'landing'),
     (r'^/{0,}$', 'index'),
@@ -29,6 +41,7 @@ urlpatterns += patterns('bitfund.views',
     (r'^register/{0,}$', 'register'),
 )
 
+#PROJECTS
 urlpatterns += patterns('project.views',
     (r'^projects/create$', 'create'),
 
@@ -39,6 +52,9 @@ urlpatterns += patterns('project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_needs/{0,}$', 'edit_needs'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_needs/(?P<need_id>[0-9]{1,})/{0,}$', 'edit_needs'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/delete_need/(?P<need_id>[0-9]{1,})/{0,}$', 'delete_need'),
+    
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
+    
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goals/{0,}$', 'edit_goals'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goals/(?P<goal_id>[0-9]{1,})/{0,}$', 'edit_goals'),
@@ -64,6 +80,7 @@ urlpatterns += patterns('project.views',
 
 )
 
+#USER ACCOUNT
 urlpatterns += patterns('pledger.views',
     (r'^pledger/donations_overview/{0,}$', 'donations_overview'),
     (r'^pledger/donations_update/{0,}$', 'donations_update'),
