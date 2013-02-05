@@ -16,8 +16,23 @@ from project.lists import *
 
 class Profile(UserenaBaseProfile):
     user                    = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
-    token                   = models.CharField(max_length=255, unique=True)
+    api_token               = models.CharField(max_length=255, unique=True)
     donation_is_public      = models.BooleanField(default=True)
+    
+    def getTotalProjectDonations(self, project):
+        from django.db.models import Sum 
+        from pledger.models import DonationHistory, DonationHistoryNeeds, DonationHistoryGoals
+        
+        user_project_donations_history           = DonationHistory.objects.filter(user=self.user).filter(project=project)
+        user_project_donations_history_needs_sum = (DonationHistoryNeeds.objects.filter(donation_history__in=user_project_donations_history)
+                                                                                .aggregate(Sum('amount'))['amount__sum']
+                                                                                ) or 0
+
+        user_project_donations_history_goals_sum = (DonationHistoryGoals.objects.filter(donation_history__in=user_project_donations_history)
+                                                                                .aggregate(Sum('amount'))['amount__sum']
+                                                                                ) or 0
+        
+        return user_project_donations_history_needs_sum + user_project_donations_history_goals_sum
 
 
 #donations cart, storing donations data until confirmed 
@@ -279,6 +294,21 @@ class DonationHistory(models.Model):
     datetime_sent               = models.DateTimeField('date sent', default=now())
     needs                       = models.ManyToManyField(ProjectNeed, through='DonationHistoryNeeds')
     goals                       = models.ManyToManyField(ProjectGoal, through='DonationHistoryGoals')
+
+    def getAmount(self):
+        from django.db.models import Sum 
+        from pledger.models import DonationHistoryNeeds, DonationHistoryGoals
+        
+        user_project_donations_history_needs_sum = (DonationHistoryNeeds.objects.filter(donation_history=self)
+                                                                                .aggregate(Sum('amount'))['amount__sum']
+                                                                                ) or 0
+
+        user_project_donations_history_goals_sum = (DonationHistoryGoals.objects.filter(donation_history=self)
+                                                                                .aggregate(Sum('amount'))['amount__sum']
+                                                                                ) or 0
+
+        return user_project_donations_history_needs_sum + user_project_donations_history_goals_sum
+
 
 class DonationHistoryNeeds(models.Model):
     donation_history            = models.ForeignKey(DonationHistory)

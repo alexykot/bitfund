@@ -29,4 +29,9 @@ PROJECT_USER_ROLES_WEIGHTS = (
 )
 
 
-TIME_TO_SHOW_HOURS = 48 #when it's time to show hours instead of days for "time to go" for budget and goals, in hours       
+TIME_TO_SHOW_HOURS          = 48 #when it's time to show hours instead of days for "time to go" for budget and goals, in hours
+
+API_USER_TOKEN_PARAM_NAME     = 'userToken'       
+API_TARGET_MONTH_PARAM_NAME   = 'targetMonth'
+
+SITE_CURRENCY                 = 'USD'
