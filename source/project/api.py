@@ -9,7 +9,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import defaultfilters as filters
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now, make_aware
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from tastypie import http
 from tastypie.exceptions import ImmediateHttpResponse
@@ -55,49 +56,57 @@ class ProjectResource(ModelResource):
                   'brief', 
                   ]
         allowed_methods = ['get']
-        #include_absolute_url = True
-    
+
     def get_resource_uri(self, bundle_or_obj):
         kwargs = {'resource_name': self._meta.resource_name,}
         if isinstance(bundle_or_obj, Bundle):
-            kwargs['pk'] = bundle_or_obj.obj.key # pk is referenced in ModelResource
+            kwargs['key'] = bundle_or_obj.obj.key # pk is referenced in ModelResource
         else:
-            kwargs['pk'] = bundle_or_obj.key
+            kwargs['key'] = bundle_or_obj.key
         if self._meta.api_name is not None:
             kwargs['api_name'] = self._meta.api_name
-        else :
-            kwargs['api_name'] = 'none'
 
         return self._build_reverse_url('api_dispatch_detail', kwargs = kwargs)
-    
+
     def override_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need$" % self._meta.resource_name, self.wrap_view('get_needs'), name="api_get_needs"),
+            url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need/(?P<need_key>\w[\w/-]*)$" % self._meta.resource_name, self.wrap_view('get_need'), name="api_get_need"),
+            #url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/goals/(?P<key>\w[\w/-]*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_goals'), name="api_get_goals"),
+
+            #url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            #url(r"^(?P<resource_name>%s)/(?P<custom_id>[-_\w\d]+)%s$" % (self._meta.resource_name,trailing_slash()),self.wrap_view('dispatch_detail'),name="api_dispatch_detail"),
         ]
 
-    def dehydrate(self, bundle):
-        ##target month
-        ##monthly budget
-        ##pledgers
-        ##other sources
-        ##dependants donations
-        ##donations total 
-        ##filled percent
-        ##graph image URL 
-        ##outstanding amount
-        ##days to go string
-        ##bitfund profile URL 
-            ##(w/ user token)
-
-        #needs list
+    def get_needs(self, request, **kwargs):
+        obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
         
-        #goals list
+        return ProjectNeedResource().get_list(request, project=obj.pk)
+
+    def get_need(self, request, need_key, **kwargs):
+        return ProjectNeedResource().get_detail(request, key=need_key)
+
+    """    
+    def get_goals(self, request, **kwargs):
+        try:
+            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpGone()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        child_resource = ProjectGoalResource()
+        return child_resource.get_detail(request, project=obj.pk)
+    """    
+    
+    def dehydrate(self, bundle):
+        #supplied data: 
+        ##target month, monthly budget, pledgers,other sources,dependants donations,donations total,filled percent,graph image URL, outstanding amount,days to go string,bitfund profile URL (w/ user token),
+        ##user has donated,user donation type,user donation amount,user donation date,user token ,
+        ##needs list link, goals list link
          
-        ##user has donated
-        ##user donation type
-        ##user donation amount
-        ##user donation date
-        ##user token 
+
          
         request = bundle.request 
         
@@ -132,7 +141,7 @@ class ProjectResource(ModelResource):
             project_budget['budget_monthly']['time_to_end_formatted']   = 'ended'
             
 
-        project_donations_total                                                     = project.getTotalMonthlyNeedsDonations(target_month)
+        project_donations_total                                                     = project.getTotalMonthlyNeedsPledges(target_month)
         project_budget['pledgers_monthly']                                          = {}
         project_budget['pledgers_monthly']['amount']                                = project_donations_total
         project_budget['pledgers_monthly']['currency']                              = SITE_CURRENCY
@@ -180,20 +189,11 @@ class ProjectResource(ModelResource):
         
         
         
-        #PROJECT NEEDS
-        needs_list = ProjectNeed.objects.filter(project=project).filter(is_public=True)
-        project_needs   = {}
-        for need in needs_list :
-            need_resource = ProjectNeedResource()
-            project_needs[need.key] = {}
-            project_needs[need.key]['key']          = need.key
-            project_needs[need.key]['id']           = need.key
-            project_needs[need.key]['resourse_uri'] = need_resource.get_resource_uri(need)
-            #project_needs[need.key]['resourse_uri'] = need_smthn
+        #PROJECT NEEDS LIST URI
+        project_needs = self.get_resource_uri(bundle)+'needs/'  
 
-        #PROJECT GOALS
-        goals_list = ProjectGoal.objects.filter(is_public=True).filter(date_ending__gt=now()).filter(date_starting__lte=now())
-        project_goals   = {}
+        #PROJECT GOALS LIST URI
+        project_goals = self.get_resource_uri(bundle)+'goals/'
         
         
         #USER SPECIFIC DATA, IF VALID TOKEN SUPPLIED
@@ -227,6 +227,7 @@ class ProjectResource(ModelResource):
         
         return bundle
     
+    
     """
     #custom data added to standard item entry in list or details
     def dehydrate(self, bundle):
@@ -257,7 +258,7 @@ class ProjectNeedResource(ModelResource):
     project =  fields.ForeignKey(ProjectResource, 'project')
      
     class Meta:
-        queryset = ProjectNeed.objects.filter(is_public=True)
+        queryset = ProjectNeed.objects.filter(is_public=True).order_by('sort_order')
         fields = ['id', 
                   'key', 
                   'project',
@@ -267,33 +268,91 @@ class ProjectNeedResource(ModelResource):
                   'sort_order',
                   ]
         allowed_methods = ['get']
-
+        filtering = {'project' : ('exact',),
+                     }
+    
     def get_resource_uri(self, bundle_or_obj):
+        #kwargs = {'resource_name': ProjectResource()._meta.resource_name,}
         kwargs = {'resource_name': self._meta.resource_name,}
         if isinstance(bundle_or_obj, Bundle):
-            kwargs['pk'] = bundle_or_obj.obj.key # pk is referenced in ModelResource
+            #kwargs['key']      = bundle_or_obj.obj.project.key
+            #kwargs['need_key'] = bundle_or_obj.obj.key 
+            kwargs['key']      = bundle_or_obj.obj.key
         else:
-            kwargs['pk'] = bundle_or_obj.key
+            #kwargs['key']      = bundle_or_obj.project.key
+            #kwargs['need_key'] = bundle_or_obj.key
+            kwargs['key']      = bundle_or_obj.key
         if self._meta.api_name is not None:
             kwargs['api_name'] = self._meta.api_name#
-        else :    
-            kwargs['api_name'] = 'none'
 
         return self._build_reverse_url('api_dispatch_detail', kwargs = kwargs)
 
     def override_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            #url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need/(?P<need_key>\w[\w/-]*)$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
     
 
-    def dehydrate(self, bundle):
-        #need title 
-        #need brief
-        #need amount
-        #need other sources
+    def dehydrate(self, bundle_or_obj):
+        ##need title
+        ##need brief
+        ##need amount
+        #donations
+        #other sources
+        #dependants donations
+        #donations total
+        #filled percent
+        #graph image URL
+        #outstanding amount
+        #days to go string
+        #pledgers num
+        
+        if isinstance(bundle_or_obj, Bundle):
+            need = bundle_or_obj.obj
+        else :
+            need = bundle_or_obj
 
-        return bundle
+        request = bundle_or_obj.request 
+            
+        target_month     = checkTargetMonth(request.GET.get(API_TARGET_MONTH_PARAM_NAME, None))
+        user_token, user = checkUserToken(request.GET.get(API_USER_TOKEN_PARAM_NAME, None))
+            
+        
+        bundle_or_obj.data['resource_uri'] = self.get_resource_uri(need)
+        
+        need_amount = {}
+        need_amount['amount']     = need.amount  
+        need_amount['currency']   = SITE_CURRENCY
+        need_amount['formatted']  = '$'+filters.floatformat(need.amount, 2)
+        
+        need_pledges_sum = need.getTotalMonthlyPledges(target_month)
+        need_pledges = {}
+        need_pledges['amount']     = need_pledges_sum  
+        need_pledges['currency']   = SITE_CURRENCY
+        need_pledges['formatted']  = '$'+filters.floatformat(need_pledges_sum, 2)
+
+        need_other_sources_sum = need.getTotalMonthlyOtherSources(target_month)
+        need_other_sources = {}
+        need_other_sources['amount']     = need_other_sources_sum  
+        need_other_sources['currency']   = SITE_CURRENCY
+        need_other_sources['formatted']  = '$'+filters.floatformat(need_other_sources_sum, 2)
+
+        need_redonations_sum = need.getTotalMonthlyDependantsDonations(target_month)
+        need_redonations = {}
+        need_redonations['amount']     = need_redonations_sum  
+        need_redonations['currency']   = SITE_CURRENCY
+        need_redonations['formatted']  = '$'+filters.floatformat(need_redonations_sum, 2)
+            
+
+        bundle_or_obj.data['amount']  = need_amount
+        bundle_or_obj.data['pledges'] = need_pledges
+        bundle_or_obj.data['pledges'] = need_other_sources
+        bundle_or_obj.data['pledges'] = need_redonations
+        
+        
+        
+        return bundle_or_obj
 
 
 
@@ -301,7 +360,7 @@ class ProjectGoalResource(ModelResource):
     project =  fields.ForeignKey(ProjectResource, 'project')
      
     class Meta:
-        queryset = ProjectGoal.objects.filter(is_public=True).filter(date_ending__gt=now()).filter(date_starting__lte=now())
+        queryset = ProjectGoal.objects.filter(is_public=True).filter(date_ending__gt=now()).filter(date_starting__lte=now()).order_by('sort_order')
         fields = ['id', 
                   'key', 
                   'project',
@@ -315,9 +374,9 @@ class ProjectGoalResource(ModelResource):
     def get_resource_uri(self, bundle_or_obj):
         kwargs = {'resource_name': self._meta.resource_name,}
         if isinstance(bundle_or_obj, Bundle):
-            kwargs['pk'] = bundle_or_obj.obj.key # pk is referenced in ModelResource
+            kwargs['need_key'] = bundle_or_obj.obj.key # pk is referenced in ModelResource
         else:
-            kwargs['pk'] = bundle_or_obj.key
+            kwargs['need_key'] = bundle_or_obj.key
         if self._meta.api_name is not None:
             kwargs['api_name'] = self._meta.api_name
 
@@ -325,7 +384,7 @@ class ProjectGoalResource(ModelResource):
 
     def override_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need/(?P<need_key>\w[\w/-]*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_need'), name="api_get_need"),
         ]
     
 
@@ -337,7 +396,7 @@ class ProjectGoalResource(ModelResource):
         #goal other sources
         #goal end date
         #goal days to go string
-
+        
         return bundle
 
 
