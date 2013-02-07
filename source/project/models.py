@@ -242,7 +242,7 @@ class ProjectNeed(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Sum 
-        from project.models import ProjectOtherSource
+        from project.models import ProjectOtherSource, Project_OtherSource_Shares
 
         if monthdate is None:
             monthdate = now()
@@ -251,7 +251,7 @@ class ProjectNeed(models.Model):
         project_other_sources_monthly_list = (ProjectOtherSource.objects.filter(project=self.project)
                                                                         .filter(is_public=True)
                                                                         .filter(is_monthly=True)
-                                                                        .filter(other_sources__in=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                                                        .filter(date_received__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                                                                         .filter(date_received__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
                                                                         )
 
@@ -280,6 +280,10 @@ class ProjectNeed(models.Model):
         
         need_dependants_donations_sum  = 0
         need_dependants_donations_share = Project_DependandsDonations_Shares.objects.filter(project_need=self)
+        if need_dependants_donations_share.count() == 1 :
+            need_dependants_donations_share = need_dependants_donations_share[0]
+        else :
+            return 0    
          
         dependants_donations_list = (Project_Dependencies.objects.filter(dependonme_project=self)
                                                                          .filter(is_public=True)
@@ -334,6 +338,32 @@ class ProjectGoal(models.Model):
     
     class Meta:
         unique_together = (("project", "key"),)
+    
+    def getTotalPledges(self):
+        from django.db.models import Sum 
+        from pledger.models import DonationHistoryGoals 
+
+        return DonationHistoryGoals.objects.filter(goal=self).aggregate(Sum('amount'))['amount__sum']
+
+    #NOT IMPLEMENTED PROPERLY, need to be done after with other sources DB redesign
+    def getTotalOtherSources(self):
+        from django.db.models import Sum 
+        from project.models import ProjectOtherSource, Project_OtherSource_Shares
+
+        goal_other_sources_shares_onetime_sum = 0
+        goal_other_sources_shares_monthly_sum = 0
+        
+        return goal_other_sources_shares_onetime_sum + goal_other_sources_shares_monthly_sum
+
+    #NOT IMPLEMENTED PROPERLY, need to be done after with other sources DB redesign
+    def getTotalRedonations(self):
+        from django.db.models import Sum, Q 
+        from project.models import Project_Dependencies, Project_DependandsDonations_Shares
+
+        goal_dependants_donations_sum  = 0
+
+        return goal_dependants_donations_sum
+    
     
 class ProjectUserRole(models.Model):
     from pledger.models import Profile

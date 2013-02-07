@@ -32,11 +32,6 @@ def view(request, project_key):
     template_data['project_users']          = ProjectUserRole.objects.select_related().filter(project=project).order_by('sort_order')[:MAX_USERS_ON_PROJECT_PAGE]
     template_data['project_outlinks']       = ProjectOutlink.objects.filter(project=project).filter(is_public=True).order_by('sort_order')
     template_data['project_categories']     = project.categories.all()
-    template_data['project_latest_release'] = ProjectRelease.objects.filter(project=project).filter(is_public=True).order_by('-date_released')[:1]
-    if (template_data['project_latest_release'].count() > 0) :
-        template_data['project_latest_release'] = template_data['project_latest_release'][0]
-    else :
-        template_data['project_latest_release'] = False
     
     template_data['projects_idependedon_count'] = Project_Dependencies.objects.filter(idependon_project=project).count()
     template_data['projects_dependonme_count']  = Project_Dependencies.objects.filter(dependonme_project=project).count()
@@ -99,7 +94,7 @@ def view(request, project_key):
 
     
     #ALL USERS DONATIONS
-    donationhistory_needs_total_sum           = project.getTotalMonthlyNeedsDonations() 
+    donationhistory_needs_total_sum           = project.getTotalMonthlyNeedsPledges() 
     template_data['donations_total_sum']      = donationhistory_needs_total_sum
     template_data['donations_total_pledgers'] = project.getTotalMonthlyBackers()
       
@@ -164,6 +159,6 @@ def view(request, project_key):
     
     return render_to_response('project/view.djhtm', template_data, context_instance=RequestContext(request))
 
-def chart_image(request, project_key):
+def chart_image(request, project_key, need_key=None, goal_key=None):
     return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
 

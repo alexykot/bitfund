@@ -54,6 +54,10 @@ urlpatterns += patterns('project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/delete_need/(?P<need_id>[0-9]{1,})/{0,}$', 'delete_need'),
     
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<need_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
+    
+    
     
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goals/{0,}$', 'edit_goals'),

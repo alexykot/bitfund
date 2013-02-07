@@ -16,7 +16,7 @@ from tastypie import http
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie import fields
 from tastypie.utils import trailing_slash
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
 from tastypie.bundle import Bundle
 
 from bitfund.settings_project import TIME_TO_SHOW_HOURS, API_USER_TOKEN_PARAM_NAME, API_TARGET_MONTH_PARAM_NAME, SITE_CURRENCY
@@ -56,6 +56,7 @@ class ProjectResource(ModelResource):
                   'brief', 
                   ]
         allowed_methods = ['get']
+        filtering = {'key': ALL_WITH_RELATIONS, }
 
     def get_resource_uri(self, bundle_or_obj):
         kwargs = {'resource_name': self._meta.resource_name,}
@@ -71,8 +72,8 @@ class ProjectResource(ModelResource):
     def override_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need$" % self._meta.resource_name, self.wrap_view('get_needs'), name="api_get_needs"),
-            url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need/(?P<need_key>\w[\w/-]*)$" % self._meta.resource_name, self.wrap_view('get_need'), name="api_get_need"),
+            #url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need$" % self._meta.resource_name, self.wrap_view('get_needs'), name="api_get_needs"),
+            #url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need/(?P<need_key>\w[\w/-]*)$" % self._meta.resource_name, self.wrap_view('get_need'), name="api_get_need"),
             #url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/goals/(?P<key>\w[\w/-]*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_goals'), name="api_get_goals"),
 
             #url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
@@ -129,9 +130,10 @@ class ProjectResource(ModelResource):
         project_budget['budget_monthly']['chart_image_URL']     = 'http://'+request.META['HTTP_HOST']+reverse('project.views.chart_image', kwargs={'project_key':project.key})
         
         
+        project_budget['end_utctimestamp']        = time.mktime(datetime(target_month.year, target_month.month+1, 1, tzinfo=target_month.tzinfo).utctimetuple())-1 #-1 because it's the last second of previous month, not first second of the next one
         if target_month >= datetime(now().year, now().month, 1, tzinfo=now().tzinfo) :
             timedelta_to_end = (datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo) - now())
-            project_budget['budget_monthly']['time_to_end_seconds']     = timedelta_to_end.seconds
+            project_budget['budget_monthly']['time_to_end_seconds']     = timedelta_to_end.seconds+timedelta_to_end.days*86400
             if timedelta_to_end.days*24 > TIME_TO_SHOW_HOURS : 
                 project_budget['budget_monthly']['time_to_end_formatted']   = str(timedelta_to_end.days)+u' days'
             else :
@@ -190,10 +192,10 @@ class ProjectResource(ModelResource):
         
         
         #PROJECT NEEDS LIST URI
-        project_needs = self.get_resource_uri(bundle)+'needs/'  
+        project_needs = '/api/'+ProjectNeedResource()._meta.resource_name+'/?project__key='+project.key  
 
         #PROJECT GOALS LIST URI
-        project_goals = self.get_resource_uri(bundle)+'goals/'
+        project_goals = '/api/'+ProjectGoalResource()._meta.resource_name+'/?project__key='+project.key
         
         
         #USER SPECIFIC DATA, IF VALID TOKEN SUPPLIED
@@ -268,19 +270,13 @@ class ProjectNeedResource(ModelResource):
                   'sort_order',
                   ]
         allowed_methods = ['get']
-        filtering = {'project' : ('exact',),
-                     }
+        filtering = {'project': ALL_WITH_RELATIONS, }
     
     def get_resource_uri(self, bundle_or_obj):
-        #kwargs = {'resource_name': ProjectResource()._meta.resource_name,}
         kwargs = {'resource_name': self._meta.resource_name,}
         if isinstance(bundle_or_obj, Bundle):
-            #kwargs['key']      = bundle_or_obj.obj.project.key
-            #kwargs['need_key'] = bundle_or_obj.obj.key 
             kwargs['key']      = bundle_or_obj.obj.key
         else:
-            #kwargs['key']      = bundle_or_obj.project.key
-            #kwargs['need_key'] = bundle_or_obj.key
             kwargs['key']      = bundle_or_obj.key
         if self._meta.api_name is not None:
             kwargs['api_name'] = self._meta.api_name#
@@ -288,25 +284,11 @@ class ProjectNeedResource(ModelResource):
         return self._build_reverse_url('api_dispatch_detail', kwargs = kwargs)
 
     def override_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-            #url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need/(?P<need_key>\w[\w/-]*)$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-        ]
+        return [url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),]
     
 
     def dehydrate(self, bundle_or_obj):
-        ##need title
-        ##need brief
-        ##need amount
-        #donations
-        #other sources
-        #dependants donations
-        #donations total
-        #filled percent
-        #graph image URL
-        #outstanding amount
-        #days to go string
-        #pledgers num
+        ##values included: need title, need brief,need amount,donations,other sources,dependants donations,donations total,filled percent,graph image URL,outstanding amount,days to go string,pledgers num
         
         if isinstance(bundle_or_obj, Bundle):
             need = bundle_or_obj.obj
@@ -321,35 +303,78 @@ class ProjectNeedResource(ModelResource):
         
         bundle_or_obj.data['resource_uri'] = self.get_resource_uri(need)
         
-        need_amount = {}
-        need_amount['amount']     = need.amount  
-        need_amount['currency']   = SITE_CURRENCY
-        need_amount['formatted']  = '$'+filters.floatformat(need.amount, 2)
+        need_budget_monthly = {}
+        
+        need_budget_monthly['end_utctimestamp']        = time.mktime(datetime(target_month.year, target_month.month+1, 1, tzinfo=target_month.tzinfo).utctimetuple())-1 #-1 because it's the last second of previous month, not first second of the next one
+        if target_month >= datetime(now().year, now().month, 1, tzinfo=now().tzinfo) :
+            timedelta_to_end = (datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo) - now())
+            need_budget_monthly['time_to_end_seconds']     = timedelta_to_end.seconds+timedelta_to_end.days*86400
+            if timedelta_to_end.days*24 > TIME_TO_SHOW_HOURS : 
+                need_budget_monthly['time_to_end_formatted']   = str(timedelta_to_end.days)+u' days'
+            else :
+                need_budget_monthly['time_to_end_formatted']   = str(int(timedelta_to_end.days*24 + math.ceil(timedelta_to_end.seconds/3600)))+u' hours'
+        else :
+            need_budget_monthly['time_to_end_seconds']     = 0
+            need_budget_monthly['time_to_end_formatted']   = 'ended'
+            
+              
+        
+        need_budget_monthly['amount']           = need.amount  
+        need_budget_monthly['currency']         = SITE_CURRENCY
+        need_budget_monthly['formatted']        = '$'+filters.floatformat(need.amount, 2)
+        need_budget_monthly['chart_image_URL']  = 'http://'+request.META['HTTP_HOST']+reverse('project.views.chart_image', kwargs={'project_key':need.project.key, 'need_key':need.key,})
+
+
         
         need_pledges_sum = need.getTotalMonthlyPledges(target_month)
-        need_pledges = {}
+        need_pledges               = {}
         need_pledges['amount']     = need_pledges_sum  
         need_pledges['currency']   = SITE_CURRENCY
         need_pledges['formatted']  = '$'+filters.floatformat(need_pledges_sum, 2)
+        need_pledges['percent']    = round((need_pledges_sum*100)/need.amount, 2)
 
+        donation_histories = (DonationHistory.objects
+                                             .filter(project=need.project)
+                                             .filter(datetime_sent__gte=datetime(target_month.year, target_month.month, 1, tzinfo=target_month.tzinfo))
+                                             .filter(datetime_sent__lt=datetime(target_month.year, target_month.month+1, 1, tzinfo=target_month.tzinfo))
+                                             .select_related('donationhistoryneeds'))    
+        need_pledges['count']      = DonationHistoryNeeds.objects.filter(need=need).filter(donation_history__in=donation_histories).count() 
+        
+        
         need_other_sources_sum = need.getTotalMonthlyOtherSources(target_month)
-        need_other_sources = {}
+        need_other_sources               = {}
         need_other_sources['amount']     = need_other_sources_sum  
         need_other_sources['currency']   = SITE_CURRENCY
         need_other_sources['formatted']  = '$'+filters.floatformat(need_other_sources_sum, 2)
+        need_other_sources['percent']    = filters.floatformat((need_other_sources_sum*100)/need.amount, 2)
 
         need_redonations_sum = need.getTotalMonthlyDependantsDonations(target_month)
-        need_redonations = {}
+        need_redonations               = {}
         need_redonations['amount']     = need_redonations_sum  
         need_redonations['currency']   = SITE_CURRENCY
         need_redonations['formatted']  = '$'+filters.floatformat(need_redonations_sum, 2)
+        need_redonations['percent']    = filters.floatformat((need_redonations_sum*100)/need.amount, 0)+'%'
+
+        need_donations_total_sum = need_pledges_sum+need_other_sources_sum+need_redonations_sum
+        need_donations_total               = {}
+        need_donations_total['amount']     = need_donations_total_sum  
+        need_donations_total['currency']   = SITE_CURRENCY
+        need_donations_total['formatted']  = '$'+filters.floatformat(need_donations_total_sum, 2)
+        need_donations_total['percent']    = filters.floatformat((need_donations_total_sum*100)/need.amount, 0)+'%'
+            
+        need_budget_outstanding               = {}
+        need_budget_outstanding_sum           = need.amount - need_other_sources_sum
+        need_budget_outstanding['amount']     = need_budget_outstanding_sum  
+        need_budget_outstanding['currency']   = SITE_CURRENCY
+        need_budget_outstanding['formatted']  = '$'+filters.floatformat(need_budget_outstanding_sum, 2)
             
 
-        bundle_or_obj.data['amount']  = need_amount
-        bundle_or_obj.data['pledges'] = need_pledges
-        bundle_or_obj.data['pledges'] = need_other_sources
-        bundle_or_obj.data['pledges'] = need_redonations
-        
+        bundle_or_obj.data['budget_monthly']        = need_budget_monthly
+        bundle_or_obj.data['budget_outstanding']    = need_budget_outstanding
+        bundle_or_obj.data['pledges']               = need_pledges
+        bundle_or_obj.data['other_sources']         = need_other_sources
+        bundle_or_obj.data['redonations']           = need_redonations
+        bundle_or_obj.data['donations_total']       = need_donations_total
         
         
         return bundle_or_obj
@@ -370,13 +395,14 @@ class ProjectGoalResource(ModelResource):
                   'sort_order',
                   ]
         allowed_methods = ['get']
+        filtering = {'project': ALL_WITH_RELATIONS, }
 
     def get_resource_uri(self, bundle_or_obj):
         kwargs = {'resource_name': self._meta.resource_name,}
         if isinstance(bundle_or_obj, Bundle):
-            kwargs['need_key'] = bundle_or_obj.obj.key # pk is referenced in ModelResource
+            kwargs['key'] = bundle_or_obj.obj.key 
         else:
-            kwargs['need_key'] = bundle_or_obj.key
+            kwargs['key'] = bundle_or_obj.key
         if self._meta.api_name is not None:
             kwargs['api_name'] = self._meta.api_name
 
@@ -384,20 +410,91 @@ class ProjectGoalResource(ModelResource):
 
     def override_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<key>\w[\w/-]*)/need/(?P<need_key>\w[\w/-]*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_need'), name="api_get_need"),
+            url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
     
 
-    def dehydrate(self, bundle):
-        #goal title 
-        #goal brief
-        #goal URL (w/ user token)
-        #goal amount
-        #goal other sources
-        #goal end date
-        #goal days to go string
+    def dehydrate(self, bundle_or_obj):
+        ##values provided: title, brief,URL (w/ user token),amount,other sources,end date,days to go string,donations,redonations,donations total,filled percent,graph image URL,outstanding amount,pledgers num
         
-        return bundle
+        if isinstance(bundle_or_obj, Bundle):
+            goal = bundle_or_obj.obj
+        else :
+            goal = bundle_or_obj
+
+        request = bundle_or_obj.request 
+            
+        user_token, user = checkUserToken(request.GET.get(API_USER_TOKEN_PARAM_NAME, None))
+            
+        
+        bundle_or_obj.data['resource_uri'] = self.get_resource_uri(goal)
+        
+        goal_budget_total = {}
+        
+        goal_budget_total['end_utctimestamp']                = time.mktime(goal.date_ending.utctimetuple())  
+        if goal.date_ending >= datetime(now().year, now().month, 1, tzinfo=now().tzinfo) :
+            timedelta_to_end = goal.date_ending - now()
+            goal_budget_total['time_to_end_seconds']         = timedelta_to_end.seconds+timedelta_to_end.days*86400
+            if timedelta_to_end.days*24 > TIME_TO_SHOW_HOURS : 
+                goal_budget_total['time_to_end_formatted']   = str(timedelta_to_end.days)+u' days'
+            else :
+                goal_budget_total['time_to_end_formatted']   = str(int(timedelta_to_end.days*24 + math.ceil(timedelta_to_end.seconds/3600)))+u' hours'
+        else :
+            goal_budget_total['time_to_end_seconds']         = 0
+            goal_budget_total['time_to_end_formatted']       = 'ended'
+
+        
+        goal_budget_total['amount']           = goal.amount  
+        goal_budget_total['currency']         = SITE_CURRENCY
+        goal_budget_total['formatted']        = '$'+filters.floatformat(goal.amount, 2)
+        goal_budget_total['chart_image_URL']  = 'http://'+request.META['HTTP_HOST']+reverse('project.views.chart_image', kwargs={'project_key':goal.project.key, 'goal_key':goal.key,})
+
+        goal_pledges_sum = goal.getTotalPledges()
+        goal_pledges               = {}
+        goal_pledges['amount']     = goal_pledges_sum  
+        goal_pledges['currency']   = SITE_CURRENCY
+        goal_pledges['formatted']  = '$'+filters.floatformat(goal_pledges_sum, 2)
+        goal_pledges['percent']    = round((goal_pledges_sum*100)/goal.amount, 2)
+        goal_pledges['count']      = DonationHistoryGoals.objects.filter(goal=goal).count() 
+        
+        
+        goal_other_sources_sum = goal.getTotalOtherSources()
+        goal_other_sources               = {}
+        goal_other_sources['amount']     = goal_other_sources_sum  
+        goal_other_sources['currency']   = SITE_CURRENCY
+        goal_other_sources['formatted']  = '$'+filters.floatformat(goal_other_sources_sum, 2)
+        goal_other_sources['percent']    = filters.floatformat((goal_other_sources_sum*100)/goal.amount, 2)
+
+        goal_redonations_sum = goal.getTotalRedonations()
+        goal_redonations               = {}
+        goal_redonations['amount']     = goal_redonations_sum  
+        goal_redonations['currency']   = SITE_CURRENCY
+        goal_redonations['formatted']  = '$'+filters.floatformat(goal_redonations_sum, 2)
+        goal_redonations['percent']    = filters.floatformat((goal_redonations_sum*100)/goal.amount, 0)+'%'
+
+        goal_donations_total_sum = goal_pledges_sum+goal_other_sources_sum+goal_redonations_sum
+        goal_donations_total               = {}
+        goal_donations_total['amount']     = goal_donations_total_sum  
+        goal_donations_total['currency']   = SITE_CURRENCY
+        goal_donations_total['formatted']  = '$'+filters.floatformat(goal_donations_total_sum, 2)
+        goal_donations_total['percent']    = filters.floatformat((goal_donations_total_sum*100)/goal.amount, 0)+'%'
+            
+        goal_budget_outstanding               = {}
+        goal_budget_outstanding_sum           = goal.amount - goal_other_sources_sum
+        goal_budget_outstanding['amount']     = goal_budget_outstanding_sum  
+        goal_budget_outstanding['currency']   = SITE_CURRENCY
+        goal_budget_outstanding['formatted']  = '$'+filters.floatformat(goal_budget_outstanding_sum, 2)
+            
+
+        bundle_or_obj.data['goal_profile_URL']      = 'http://'+request.META['HTTP_HOST']+reverse('project.views.goal_view', kwargs={'project_key':goal.project.key, 'goal_key':goal.key,})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token
+        bundle_or_obj.data['goal_budget']           = goal_budget_total
+        bundle_or_obj.data['goal_outstanding']      = goal_budget_outstanding
+        bundle_or_obj.data['pledges']               = goal_pledges
+        bundle_or_obj.data['other_sources']         = goal_other_sources
+        bundle_or_obj.data['redonations']           = goal_redonations
+        bundle_or_obj.data['donations_total']       = goal_donations_total
+        
+        return bundle_or_obj
 
 
 
