@@ -13,6 +13,12 @@ from userena.models import UserenaBaseProfile
 from project.models import *
 from project.lists import *
 
+DONATION_TRANSACTION_TYPES_CHOICES = (
+    ('pledge', u'Pledge'),
+    ('other_source', u'Other Source'),
+    ('redonation', u'Redonation'),
+)
+
 
 class Profile(UserenaBaseProfile):
     user                    = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
@@ -21,14 +27,14 @@ class Profile(UserenaBaseProfile):
     
     def getTotalProjectDonations(self, project):
         from django.db.models import Sum 
-        from pledger.models import DonationHistory, DonationHistoryNeeds, DonationHistoryGoals
+        from pledger.models import DonationTransaction, DonationTransactionNeeds, DonationTransactionGoals
         
-        user_project_donations_history           = DonationHistory.objects.filter(user=self.user).filter(project=project)
-        user_project_donations_history_needs_sum = (DonationHistoryNeeds.objects.filter(donation_history__in=user_project_donations_history)
+        user_project_donations_history           = DonationTransaction.objects.filter(user=self.user).filter(project=project)
+        user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history__in=user_project_donations_history)
                                                                                 .aggregate(Sum('amount'))['amount__sum']
                                                                                 ) or 0
 
-        user_project_donations_history_goals_sum = (DonationHistoryGoals.objects.filter(donation_history__in=user_project_donations_history)
+        user_project_donations_history_goals_sum = (DonationTransactionGoals.objects.filter(donation_history__in=user_project_donations_history)
                                                                                 .aggregate(Sum('amount'))['amount__sum']
                                                                                 ) or 0
         
@@ -283,43 +289,61 @@ class DonationSubscriptionNeeds(models.Model):
 
      
 #donation history, storing all past donation transactions, for both onetime and monthly donations      
-class DonationHistory(models.Model):
-    user                        = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    username                    = models.CharField(max_length=30)
-    email                       = models.CharField(max_length=255)
-    project                     = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
-    project_key                 = models.CharField(max_length=80)
-    project_title               = models.CharField(max_length=255)
-    donation_subscription       = models.ForeignKey(DonationSubscription, on_delete=models.SET_NULL, null=True) 
-    datetime_sent               = models.DateTimeField('date sent', default=now())
-    needs                       = models.ManyToManyField(ProjectNeed, through='DonationHistoryNeeds')
-    goals                       = models.ManyToManyField(ProjectGoal, through='DonationHistoryGoals')
+class DonationTransaction(models.Model):
+    transaction_type                = models.CharField(max_length=50, choices=DONATION_TRANSACTION_TYPES_CHOICES)
+    transaction_hash                = models.CharField(max_length=64, unique=True)
+    
+    pledge_user                     = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    pledge_donation_subscription    = models.ForeignKey(DonationSubscription, on_delete=models.SET_NULL, null=True, blank=True) 
+
+    #other_source                    = models.ForeignKey(ProjectOtherSource, on_delete=models.SET_NULL, null=True, blank=True)
+
+    redonation_transaction          = models.ForeignKey('self', on_delete=models.PROTECT, null=True, blank=True)
+    redonation_project              = models.ForeignKey(Project, related_name='redonation_project', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    accepting_project               = models.ForeignKey(Project, related_name='accepting_project', on_delete=models.SET_NULL, null=True, blank=True)
+    accepting_project_key           = models.CharField(max_length=80)
+    accepting_project_title         = models.CharField(max_length=255)
+    datetime_sent                   = models.DateTimeField('date sent', default=now())
+    needs                           = models.ManyToManyField(ProjectNeed, through='DonationTransactionNeeds')
+    goals                           = models.ManyToManyField(ProjectGoal, through='DonationTransactionGoals')
 
     def getAmount(self):
         from django.db.models import Sum 
-        from pledger.models import DonationHistoryNeeds, DonationHistoryGoals
+        from pledger.models import DonationTransactionNeeds, DonationTransactionGoals
         
-        user_project_donations_history_needs_sum = (DonationHistoryNeeds.objects.filter(donation_history=self)
+        user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history=self)
                                                                                 .aggregate(Sum('amount'))['amount__sum']
                                                                                 ) or 0
 
-        user_project_donations_history_goals_sum = (DonationHistoryGoals.objects.filter(donation_history=self)
+        user_project_donations_history_goals_sum = (DonationTransactionGoals.objects.filter(donation_history=self)
                                                                                 .aggregate(Sum('amount'))['amount__sum']
                                                                                 ) or 0
 
         return user_project_donations_history_needs_sum + user_project_donations_history_goals_sum
 
+class DonationTransactionDetails(models.Model):
+    donation_transaction            = models.OneToOneField(DonationTransaction)
+    pledge_username                 = models.CharField(max_length=30, null=True, blank=True)
+    pledge_email                    = models.CharField(max_length=255, null=True, blank=True)
 
-class DonationHistoryNeeds(models.Model):
-    donation_history            = models.ForeignKey(DonationHistory)
+    other_source_title              = models.CharField(max_length=255, null=True, blank=True)
+    
+    redonation_project_key          = models.CharField(max_length=80, null=True, blank=True)
+    redonation_project_title        = models.CharField(max_length=80, null=True, blank=True)
+
+
+
+class DonationTransactionNeeds(models.Model):
+    donation_history            = models.ForeignKey(DonationTransaction)
     need                        = models.ForeignKey(ProjectNeed, on_delete=models.SET_NULL, null=True)
     need_title                  = models.CharField(max_length=255)
     need_key                    = models.CharField(max_length=80, null=True, blank=True)
     amount                      = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     donation_type               = models.CharField(max_length=7, choices=DONATION_TYPES_CHOICES, default='onetime')
      
-class DonationHistoryGoals(models.Model):
-    donation_history            = models.ForeignKey(DonationHistory)
+class DonationTransactionGoals(models.Model):
+    donation_history            = models.ForeignKey(DonationTransaction)
     goal                        = models.ForeignKey(ProjectGoal, on_delete=models.SET_NULL, null=True)
     goal_title                  = models.CharField(max_length=255)
     goal_key                    = models.CharField(max_length=80, null=True, blank=True)
