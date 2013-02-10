@@ -31,7 +31,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    #project custom middleware 
     'bitfund.middleware.HiddenEntranceMiddleware',
+    'bitfund.middleware.SaveUserTokenMiddleware',
+    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     

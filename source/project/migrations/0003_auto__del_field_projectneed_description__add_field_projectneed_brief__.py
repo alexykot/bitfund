@@ -8,14 +8,40 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting field 'ProjectNeed.description'
+        db.delete_column('project_projectneed', 'description')
 
-        # Changing field 'ProjectGoal.date_ending'
-        db.alter_column('project_projectgoal', 'date_ending', self.gf('django.db.models.fields.DateTimeField')())
+        # Adding field 'ProjectNeed.brief'
+        db.add_column('project_projectneed', 'brief',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'ProjectNeed.date_starting'
+        db.add_column('project_projectneed', 'date_starting',
+                      self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 2, 9, 0, 0), null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'ProjectNeed.date_ending'
+        db.add_column('project_projectneed', 'date_ending',
+                      self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
+                      keep_default=False)
+
 
     def backwards(self, orm):
+        # Adding field 'ProjectNeed.description'
+        db.add_column('project_projectneed', 'description',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'ProjectGoal.date_ending'
-        db.alter_column('project_projectgoal', 'date_ending', self.gf('django.db.models.fields.DateField')())
+        # Deleting field 'ProjectNeed.brief'
+        db.delete_column('project_projectneed', 'brief')
+
+        # Deleting field 'ProjectNeed.date_starting'
+        db.delete_column('project_projectneed', 'date_starting')
+
+        # Deleting field 'ProjectNeed.date_ending'
+        db.delete_column('project_projectneed', 'date_ending')
+
 
     models = {
         'auth.group': {
@@ -56,21 +82,18 @@ class Migration(SchemaMigration):
         },
         'pledger.profile': {
             'Meta': {'object_name': 'Profile'},
-            'bitbucket_profile': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'github_profile': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'api_token': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
+            'donation_is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mugshot': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
             'privacy': ('django.db.models.fields.CharField', [], {'default': "'registered'", 'max_length': '15'}),
-            'sourceforge_profile': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'my_profile'", 'unique': 'True', 'to': "orm['auth.User']"})
         },
         'project.project': {
             'Meta': {'object_name': 'Project'},
-            'about': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'brief': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'categories': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['project.ProjectCategory']", 'symmetrical': 'False'}),
-            'contribute': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
@@ -80,7 +103,7 @@ class Migration(SchemaMigration):
         'project.project_dependencies': {
             'Meta': {'unique_together': "(('idependon_project', 'dependonme_project'),)", 'object_name': 'Project_Dependencies'},
             'brief': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'dependonme_project': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'dependonme'", 'to': "orm['project.Project']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'idependon_project': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'idependon'", 'to': "orm['project.Project']"}),
@@ -91,59 +114,50 @@ class Migration(SchemaMigration):
         },
         'project.projectcategory': {
             'Meta': {'object_name': 'ProjectCategory'},
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
             'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
-        'project.projectcontact': {
-            'Meta': {'object_name': 'ProjectContact'},
-            'data': ('django.db.models.fields.TextField', [], {}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['project.Project']"}),
-            'sort_order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'type': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
         'project.projectgoal': {
-            'Meta': {'object_name': 'ProjectGoal'},
+            'Meta': {'unique_together': "(('project', 'key'),)", 'object_name': 'ProjectGoal'},
             'amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '12', 'decimal_places': '0'}),
-            'brief': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
+            'brief': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'date_ending': ('django.db.models.fields.DateTimeField', [], {}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'date_starting': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'other_sources': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '12', 'decimal_places': '2'}),
+            'long_text': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['project.Project']"}),
+            'short_text': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'sort_order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'video_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
         },
         'project.projectneed': {
-            'Meta': {'object_name': 'ProjectNeed'},
+            'Meta': {'unique_together': "(('project', 'key'),)", 'object_name': 'ProjectNeed'},
             'amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '12', 'decimal_places': '0'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
-            'description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'brief': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
+            'date_ending': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'date_starting': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'other_sources': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '12', 'decimal_places': '2'}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['project.Project']"}),
             'sort_order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'project.projectothersource': {
             'Meta': {'object_name': 'ProjectOtherSource'},
-            'amount_percent': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '3', 'decimal_places': '0', 'blank': 'True'}),
-            'amount_sum': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '6', 'decimal_places': '2', 'blank': 'True'}),
+            'amount': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '6', 'decimal_places': '2', 'blank': 'True'}),
             'brief': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'date_received': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_monthly': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -154,7 +168,7 @@ class Migration(SchemaMigration):
         'project.projectoutlink': {
             'Meta': {'object_name': 'ProjectOutlink'},
             'address': ('django.db.models.fields.TextField', [], {}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['project.Project']"}),
@@ -162,21 +176,9 @@ class Migration(SchemaMigration):
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'type': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        'project.projectrelease': {
-            'Meta': {'object_name': 'ProjectRelease'},
-            'brief': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
-            'date_released': ('django.db.models.fields.DateTimeField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'previous_version': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['project.ProjectRelease']", 'null': 'True', 'blank': 'True'}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['project.Project']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'version': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'})
-        },
         'project.projectuserrole': {
             'Meta': {'object_name': 'ProjectUserRole'},
-            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 23, 19, 1, 4, 2)'}),
+            'date_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 9, 0, 0)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['pledger.Profile']"}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['project.Project']"}),

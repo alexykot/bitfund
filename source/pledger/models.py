@@ -19,6 +19,12 @@ DONATION_TRANSACTION_TYPES_CHOICES = (
     ('redonation', u'Redonation'),
 )
 
+DONATION_TRANSACTION_STATUSES_CHOICES = (
+    ('unpaid', u'Confirmed, Unpaid'),
+    ('paid', u'Paid'),
+    ('rejected', u'Rejected'),
+)
+
 
 class Profile(UserenaBaseProfile):
     user                    = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
@@ -290,11 +296,12 @@ class DonationSubscriptionNeeds(models.Model):
      
 #donation history, storing all past donation transactions, for both onetime and monthly donations      
 class DonationTransaction(models.Model):
-    transaction_type                = models.CharField(max_length=50, choices=DONATION_TRANSACTION_TYPES_CHOICES)
+    transaction_type                = models.CharField(max_length=64, choices=DONATION_TRANSACTION_TYPES_CHOICES)
     transaction_hash                = models.CharField(max_length=64, unique=True)
+    transaction_status              = models.CharField(max_length=64, choices=DONATION_TRANSACTION_STATUSES_CHOICES)
     
-    pledge_user                     = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    pledge_donation_subscription    = models.ForeignKey(DonationSubscription, on_delete=models.SET_NULL, null=True, blank=True) 
+    pledger_user                    = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    pledger_donation_subscription   = models.ForeignKey(DonationSubscription, on_delete=models.SET_NULL, null=True, blank=True) 
 
     #other_source                    = models.ForeignKey(ProjectOtherSource, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -304,12 +311,36 @@ class DonationTransaction(models.Model):
     accepting_project               = models.ForeignKey(Project, related_name='accepting_project', on_delete=models.SET_NULL, null=True, blank=True)
     accepting_project_key           = models.CharField(max_length=80)
     accepting_project_title         = models.CharField(max_length=255)
-    datetime_sent                   = models.DateTimeField('date sent', default=now())
+    accepting_amount                = models.CharField(max_length=255)
+    datetime_added                  = models.DateTimeField('date sent', default=now())
     needs                           = models.ManyToManyField(ProjectNeed, through='DonationTransactionNeeds')
     goals                           = models.ManyToManyField(ProjectGoal, through='DonationTransactionGoals')
 
+    def generateHash(self):
+        transaction_date                  = str(self.datetime_added.isoformat())
+        transaction_type                  = str(self.transaction_type)
+        transaction_username              = str(self.accepting_project_key)
+        transaction_other_source          = str(self.other_source.id)
+        transaction_redonation_project    = str(self.redonation_project.id)
+        transaction_accepting_project_key = str(self.accepting_project_key)
+        transaction_accepting_amount      = str(self.accepting_amount)
+        
+        import hashlib
+
+        hash_source = (transaction_date
+                       +'_'+transaction_type
+                       +'_'+transaction_username
+                       +'_'+transaction_other_source
+                       +'_'+transaction_redonation_project
+                       +'_'+transaction_accepting_project_key
+                       +'_'+transaction_accepting_amount
+                       )  
+                
+        return hashlib.sha512(hash_source).hexdigest()
+        
+
     def getAmount(self):
-        from django.db.models import Sum 
+        from django.db.models import Sum
         from pledger.models import DonationTransactionNeeds, DonationTransactionGoals
         
         user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history=self)
@@ -324,8 +355,8 @@ class DonationTransaction(models.Model):
 
 class DonationTransactionDetails(models.Model):
     donation_transaction            = models.OneToOneField(DonationTransaction)
-    pledge_username                 = models.CharField(max_length=30, null=True, blank=True)
-    pledge_email                    = models.CharField(max_length=255, null=True, blank=True)
+    pledger_username                 = models.CharField(max_length=30, null=True, blank=True)
+    pledger_email                    = models.CharField(max_length=255, null=True, blank=True)
 
     other_source_title              = models.CharField(max_length=255, null=True, blank=True)
     

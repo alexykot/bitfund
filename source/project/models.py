@@ -16,6 +16,8 @@ class ProjectCategory(models.Model):
     logo          = models.ImageField(upload_to='project_category_logo/', null=True, blank=True)
     date_added    = models.DateTimeField('date added', default=now())
 
+
+
 class Project(models.Model):
     key           = models.CharField(max_length=80, unique=True)
     title         = models.CharField(max_length=255)
@@ -33,21 +35,22 @@ class Project(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Count, Sum 
-        from pledger.models import DonationHistory 
+        from pledger.models import DonationTransaction
             
         if monthdate is None:
             monthdate = now()
             
-        return (DonationHistory.objects
-                                 .filter(project=self)
-                                 .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                 .aggregate(Count('user', distinct=True))['user__count']
+        return (DonationTransaction.objects
+                                 .filter(accepting_project=self)
+                                 .filter(transaction_type='pledge')
+                                 .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                 .aggregate(Count('pledger_user', distinct=True))['pledger_user__count']
                                  )
         
 
     #calculates total donations from all sources accounting for the budget income (goals pledges excluded) 
     def getTotalMonthlyDonations(self, monthdate=None):
-        return self.getTotalMonthlyNeedsPledges(monthdate) + self.getTotalMonthlyOtherSources(monthdate) + self.getTotalMonthlyDependantsDonations(monthdate) 
+        return self.getPledgesMonthlyTotal(monthdate) + self.getOtherSourcesMonthlyTotal(monthdate) + self.getRedonationsMonthlyTotal(monthdate) 
 
     #calculates total project budget (goals excluded)  
     def getTotalMonthlyBudget(self, monthdate=None):
@@ -76,106 +79,52 @@ class Project(models.Model):
         return limited+lasting
     
         
-    #calculates total backers pledges accounting for the budget income (goals pledges excluded)
-    def getTotalMonthlyNeedsPledges(self, monthdate=None):
+    def getTotalMonthlyNeedsByType(self, transaction_type, monthdate=None):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Count, Sum 
-        from pledger.models import DonationHistory, DonationHistoryNeeds 
+        from pledger.models import DonationTransaction, DonationTransactionNeeds 
 
         if monthdate is None:
             monthdate = now()
             
-        donation_histories = (DonationHistory.objects
-                                             .filter(project=self)
-                                             .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                             .filter(datetime_sent__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                             .select_related('donationhistoryneeds'))    
+        donation_histories = (DonationTransaction.objects
+                                             .filter(accepting_project=self)
+                                             .filter(transaction_type=transaction_type)
+                                             .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                             .filter(datetime_added__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
+                                             .select_related(depth=1))    
         
-        donations_sum = (DonationHistoryNeeds.objects
-                                    .filter(donation_history__in=donation_histories)
-                                    .aggregate(Sum('amount'))['amount__sum']) 
-        if (donations_sum > 0) :
-            return donations_sum
-        else :
-            return 0
-        
-    #calculates total backers pledges accounting for the goals (budget pledges excluded)         
-    def getTotalMonthlyGoalsPledges(self, monthdate=None):
+        return (DonationTransactionNeeds.objects.filter(donation_history__in=donation_histories).aggregate(Sum('amount'))['amount__sum']) or 0 
+
+    def getTotalMonthlyGoalsByType(self, transaction_type, monthdate=None):
         import datetime
-        from django.db.models import Count, Sum
-        from django.utils.timezone import utc, now 
-        from pledger.models import DonationHistory, DonationHistoryGoals 
-        
+        from django.utils.timezone import now
+        from django.db.models import Count, Sum 
+        from pledger.models import DonationTransaction, DonationTransactionGoals 
 
         if monthdate is None:
             monthdate = now()
-
-        donation_histories = (DonationHistory.objects
-                                             .filter(project=self)
-                                             .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo) )
-                                             .filter(datetime_sent__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo) )
-                                             .select_related('donationhistoryneeds'))    
+            
+        donation_histories = (DonationTransaction.objects
+                                             .filter(accepting_project=self)
+                                             .filter(transaction_type=transaction_type)
+                                             .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                             .filter(datetime_added__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
+                                             .select_related(depth=1))    
         
-        return ((DonationHistoryGoals.objects
-                                    .filter(donation_history__in=donation_histories)
-                                    .aggregate(Sum('amount'))['amount__sum']) or 0)
+        return (DonationTransactionGoals.objects.filter(donation_history__in=donation_histories).aggregate(Sum('amount'))['amount__sum']) or 0
 
-        
-    #calculates total other sources amount accounting for both budget and goals #must be splited into two functions - for needs and goals separately
+
+    def getTotalMonthlyPledges(self, monthdate=None):
+        return self.getTotalMonthlyNeedsByType('pledge', monthdate), self.getTotalMonthlyGoalsByType('pledge', monthdate)
+
     def getTotalMonthlyOtherSources(self, monthdate=None):
-        import datetime
-        from django.utils.timezone import utc, now
-        from django.db.models import Sum 
-        from project.models import ProjectNeed, ProjectOtherSource
-        
-        if monthdate is None:
-            monthdate = now()
-        
-        project_other_sources_monthly = (ProjectOtherSource.objects.filter(project=self)
-                                                                   .filter(is_public=True)
-                                                                   .filter(is_monthly=True)
-                                                                   .aggregate(Sum('amount'))['amount__sum']
-                                                                   ) or 0 
-        project_other_sources_onetime = (ProjectOtherSource.objects.filter(project=self)
-                                                                   .filter(is_public=True)
-                                                                   .filter(is_monthly=False)
-                                                                   .filter(date_received__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                                                   .filter(date_received__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                                                   .aggregate(Sum('amount'))['amount__sum']
-                                                                   ) or 0
-        
-        return project_other_sources_monthly + project_other_sources_onetime
+        return self.getTotalMonthlyNeedsByType('other_source', monthdate), self.getTotalMonthlyGoalsByType('other_source', monthdate)
 
-    #calculates total dependants donations amount accounting for both budget and goals #must be splited into two functions - for needs and goals separately
-    def getTotalMonthlyDependantsDonations(self, monthdate=None):
-        import datetime
-        from django.utils.timezone import utc, now
-        from django.db.models import Sum 
-        from project.models import Project_Dependencies
-
-        if monthdate is None:
-            monthdate = now()
-        
-        dependants_donations_percent_sum  = 0 
-        dependants_donations_percent_list = (Project_Dependencies.objects.filter(dependonme_project=self)
-                                                                         .filter(is_public=True)
-                                                                         .filter(redonation_percent__gt=0)
-                                                                          )
-        
-        for dependants_donation in dependants_donations_percent_list :
-            dependants_project               = Project.objects.get(project=dependants_donation.idependon_project)
-            dependants_donations_percent_sum = dependants_donations_percent_sum + (dependants_project.getTotalMonthlyDonations()/100)*dependants_donation.redonation_percent 
-             
-        
-        dependants_donations_amount_sum = (Project_Dependencies.objects.filter(dependonme_project=self)
-                                                                       .filter(is_public=True)
-                                                                       .filter(redonation_amount__gt=0)
-                                                                       .aggregate(Sum('redonation_amount'))['redonation_amount__sum']
-                                                                        ) or 0
-         
-        
-        return dependants_donations_amount_sum + dependants_donations_percent_sum
+    #calculates total redonations amount accounting for budget and goals, returned separately
+    def getTotalMonthlyRedonations(self, monthdate=None):
+        return self.getTotalMonthlyNeedsByType('redonation', monthdate), self.getTotalMonthlyGoalsByType('redonation', monthdate)
         
     def getNeedsCount(self):
         from project.models import ProjectNeed
@@ -198,6 +147,8 @@ class Project(models.Model):
         
         return (user.is_authenticated() and ProjectUserRole.objects.filter(project=self).filter(profile=user.id).filter(user_role__in=['treasurer', 'maintainer']).count() > 0)
 
+
+
 class ProjectNeed(models.Model):
     project       = models.ForeignKey(Project)
     key           = models.CharField(max_length=80)
@@ -217,104 +168,59 @@ class ProjectNeed(models.Model):
         unique_together = (("project", "key"),)
 
 
-    def getTotalMonthlyPledges(self, monthdate=None):
+    def getMonthlyTotalByType(self, transaction_type, monthdate=None):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Sum 
-        from pledger.models import DonationHistory, DonationHistoryNeeds 
+        from pledger.models import DonationTransaction, DonationTransactionNeeds 
 
         if monthdate is None:
             monthdate = now()
         
-        donation_histories = (DonationHistory.objects
-                                             .filter(project=self.project)
-                                             .filter(datetime_sent__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                             .filter(datetime_sent__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                             .select_related('donationhistoryneeds'))    
+        donation_transactions = (DonationTransaction.objects
+                                             .filter(accepting_project=self.project)
+                                             .filter(transaction_type=transaction_type)
+                                             .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                             .filter(datetime_added__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
+                                             .select_related(depth=1)
+                                             )    
         
-        donations_sum = (DonationHistoryNeeds.objects
+        return (DonationTransactionNeeds.objects
                                     .filter(need=self)
-                                    .filter(donation_history__in=donation_histories)
-                                    .aggregate(Sum('amount'))['amount__sum']) 
-        return donations_sum
+                                    .filter(donation_history__in=donation_transactions)
+                                    .aggregate(Sum('amount'))['amount__sum']) or 0 
 
-    def getTotalMonthlyOtherSources(self, monthdate=None):
+
+    def getPledgesMonthlyTotal(self, monthdate=None):
+        return self.getMonthlyTotalByType('pledge', monthdate)
+
+    def getOtherSourcesMonthlyTotal(self, monthdate=None):
+        return self.getMonthlyTotalByType('other_source', monthdate)
+
+    def getRedonationsMonthlyTotal(self, monthdate=None):
+        return self.getMonthlyTotalByType('redonation', monthdate)
+
+    def getPledgesMonthlyCount(self, monthdate=None):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Sum 
-        from project.models import ProjectOtherSource, Project_OtherSource_Shares
+        from pledger.models import DonationTransaction, DonationTransactionNeeds 
 
         if monthdate is None:
             monthdate = now()
-        
-        project_other_sources_onetime_list = ProjectOtherSource.objects.filter(project=self.project).filter(is_public=True).filter(is_monthly=False)
-        project_other_sources_monthly_list = (ProjectOtherSource.objects.filter(project=self.project)
-                                                                        .filter(is_public=True)
-                                                                        .filter(is_monthly=True)
-                                                                        .filter(date_received__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                                                        .filter(date_received__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                                                        )
 
-        need_other_sources_shares_onetime_sum = (Project_OtherSource_Shares.objects
-                                                                           .filter(project_need=self)
-                                                                           .filter(other_source__in=project_other_sources_onetime_list)
-                                                                           .aggregate(Sum('amount_sum'))['amount_sum__sum']
-                                                                           ) or 0
-
-        need_other_sources_shares_monthly_sum = (Project_OtherSource_Shares.objects
-                                                                           .filter(project_need=self)
-                                                                           .filter(other_source__in=project_other_sources_monthly_list)
-                                                                           .aggregate(Sum('amount_sum'))['amount_sum__sum']
-                                                                           ) or 0
+        donation_transactions = (DonationTransaction.objects
+                                             .filter(accepting_project=self.project)
+                                             .filter(transaction_type='pledge')
+                                             .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                             .filter(datetime_added__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
+                                             .select_related(depth=1)
+                                             )    
         
-        return need_other_sources_shares_onetime_sum + need_other_sources_shares_monthly_sum
-
-    def getTotalMonthlyDependantsDonations(self, monthdate=None):
-        import datetime
-        from django.utils.timezone import now
-        from django.db.models import Sum, Q 
-        from project.models import Project_Dependencies, Project_DependandsDonations_Shares
-
-        if monthdate is None:
-            monthdate = now()
-        
-        need_dependants_donations_sum  = 0
-        need_dependants_donations_share = Project_DependandsDonations_Shares.objects.filter(project_need=self)
-        if need_dependants_donations_share.count() == 1 :
-            need_dependants_donations_share = need_dependants_donations_share[0]
-        else :
-            return 0    
-         
-        dependants_donations_list = (Project_Dependencies.objects.filter(dependonme_project=self)
-                                                                         .filter(is_public=True)
-                                                                         .filter(Q(redonation_amount__gt=0) | Q(redonation_percent__gt=0))
-                                                                         .select_related('idependon_project')
-                                                                          )
-        
-        if need_dependants_donations_share.amount_percent > 0 :
-            for dependants_donation in dependants_donations_list :
-                redonation_amount = 0
-                dependants_project_actual_own_donations = dependants_donation.idependon_project.getTotalMonthlyDependantsDonations(monthdate)
-                if dependants_donation.redonation_percent > 0 :
-                    redonation_amount = (dependants_project_actual_own_donations/100)*dependants_donation.redonation_percent
-                elif dependants_donation.redonation_amount > 0 :
-                    redonation_amount = min(dependants_project_actual_own_donations, dependants_donation.redonation_amount)
-                    
-                need_dependants_donations_sum = need_dependants_donations_sum + (redonation_amount/100)*need_dependants_donations_share.amount_percent     
-        
-        elif need_dependants_donations_share.amount_sum > 0 : 
-                redonation_amount = 0
-                dependants_project_actual_own_donations = dependants_donation.idependon_project.getTotalMonthlyDependantsDonations(monthdate)
-                if dependants_donation.redonation_percent > 0 :
-                    redonation_amount = (dependants_project_actual_own_donations/100)*dependants_donation.redonation_percent
-                elif dependants_donation.redonation_amount > 0 :
-                    redonation_amount = min(dependants_project_actual_own_donations, dependants_donation.redonation_amount)
-                
-                if need_dependants_donations_sum < need_dependants_donations_share.amount_sum :
-                    need_dependants_donations_sum = need_dependants_donations_sum + redonation_amount 
-                     
-            
-        return need_dependants_donations_sum
+        return (DonationTransactionNeeds.objects
+                                    .filter(need=self)
+                                    .filter(donation_history__in=donation_transactions)
+                                    .count()) 
 
 
 class ProjectGoal(models.Model):
@@ -338,31 +244,32 @@ class ProjectGoal(models.Model):
     
     class Meta:
         unique_together = (("project", "key"),)
+
+    def getTotalByType(self, transaction_type):
+        from django.db.models import Sum 
+        from pledger.models import DonationTransaction, DonationTransactionGoals 
+
+        donation_histories = (DonationTransaction.objects
+                                             .filter(accepting_project=self.project)
+                                             .filter(transaction_type=transaction_type)
+                                             .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                             .filter(datetime_added__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
+                                             .select_related(depth=1)
+                                             )    
+        
+        return (DonationTransactionGoals.objects
+                                    .filter(goal=self)
+                                    .filter(donation_history__in=donation_histories)
+                                    .aggregate(Sum('amount'))['amount__sum']) or 0 
     
     def getTotalPledges(self):
-        from django.db.models import Sum 
-        from pledger.models import DonationHistoryGoals 
+        return self.getTotalByType('pledge')
 
-        return DonationHistoryGoals.objects.filter(goal=self).aggregate(Sum('amount'))['amount__sum']
-
-    #NOT IMPLEMENTED PROPERLY, need to be done after with other sources DB redesign
     def getTotalOtherSources(self):
-        from django.db.models import Sum 
-        from project.models import ProjectOtherSource, Project_OtherSource_Shares
+        return self.getTotalByType('other_sources')
 
-        goal_other_sources_shares_onetime_sum = 0
-        goal_other_sources_shares_monthly_sum = 0
-        
-        return goal_other_sources_shares_onetime_sum + goal_other_sources_shares_monthly_sum
-
-    #NOT IMPLEMENTED PROPERLY, need to be done after with other sources DB redesign
     def getTotalRedonations(self):
-        from django.db.models import Sum, Q 
-        from project.models import Project_Dependencies, Project_DependandsDonations_Shares
-
-        goal_dependants_donations_sum  = 0
-
-        return goal_dependants_donations_sum
+        return self.getTotalByType('redonations')
     
     
 class ProjectUserRole(models.Model):
@@ -391,8 +298,8 @@ class ProjectOutlink(models.Model):
         return self.project.title
 
 class Project_Dependencies(models.Model):
-    idependon_project   = models.ForeignKey(Project, related_name='idependon') # the one that depends
-    dependonme_project  = models.ForeignKey(Project, related_name='dependonme') # the one that is depended on
+    depender_project   = models.ForeignKey(Project, related_name='depender') # the one that depends
+    dependee_project  = models.ForeignKey(Project, related_name='dependee') # the one that is depended on
     brief               = models.TextField(null=True, blank=True)
     redonation_percent  = models.DecimalField(decimal_places=0, max_digits=2, null=True, blank=True)
     redonation_amount   = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
@@ -401,7 +308,7 @@ class Project_Dependencies(models.Model):
     sort_order          = models.IntegerField(default=0)
     
     class Meta:
-        unique_together = (("idependon_project", "dependonme_project"),)
+        unique_together = (("depender_project", "dependee_project"),)
     
 
 class ProjectOtherSource(models.Model):
@@ -417,6 +324,8 @@ class ProjectOtherSource(models.Model):
     def __unicode__(self):
         return self.title
 
+"""
+#commented out until full implementation
 class Project_OtherSource_Shares(models.Model):
     project_need    = models.ForeignKey(ProjectNeed, null=True, blank=True)
     project_goal    = models.ForeignKey(ProjectGoal, null=True, blank=True)
@@ -429,7 +338,10 @@ class Project_OtherSource_Shares(models.Model):
 
     class Meta:
         unique_together = (("project_need", "project_goal", "other_source"),)
+"""
 
+"""
+#commented out until full implementation
 class Project_DependandsDonations_Shares(models.Model):
     project_need    = models.ForeignKey(ProjectNeed, null=True, blank=True)
     project_goal    = models.ForeignKey(ProjectGoal, null=True, blank=True)
@@ -441,7 +353,7 @@ class Project_DependandsDonations_Shares(models.Model):
 
     class Meta:
         unique_together = (("project_need", "project_goal"),)
-
+"""
 
 """
 #timeline is not going to be implemented now. but I'll leave it here, just in case some day it will be needed again.

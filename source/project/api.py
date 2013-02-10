@@ -11,6 +11,7 @@ from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now, make_aware
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.db.models.query_utils import Q
 
 from tastypie import http
 from tastypie.exceptions import ImmediateHttpResponse
@@ -103,7 +104,7 @@ class ProjectResource(ModelResource):
     
     def dehydrate(self, bundle):
         #supplied data: 
-        ##target month, monthly budget, pledgers,other sources,dependants donations,donations total,filled percent,graph image URL, outstanding amount,days to go string,bitfund profile URL (w/ user token),
+        ##target month, monthly budget, pledgers,other sources, redonations,donations total,filled percent,graph image URL, outstanding amount,days to go string,bitfund profile URL (w/ user token),
         ##user has donated,user donation type,user donation amount,user donation date,user token ,
         ##needs list link, goals list link
          
@@ -143,7 +144,8 @@ class ProjectResource(ModelResource):
             project_budget['budget_monthly']['time_to_end_formatted']   = 'ended'
             
 
-        project_donations_total                                                     = project.getTotalMonthlyNeedsPledges(target_month)
+        project_donations_needs_total, project_donations_goals_total                = project.getTotalMonthlyPledges(target_month)
+        project_donations_total                                                     = project_donations_needs_total + project_donations_goals_total 
         project_budget['pledgers_monthly']                                          = {}
         project_budget['pledgers_monthly']['amount']                                = project_donations_total
         project_budget['pledgers_monthly']['currency']                              = SITE_CURRENCY
@@ -153,7 +155,8 @@ class ProjectResource(ModelResource):
         else :  
             project_budget['pledgers_monthly']['contributed_percent']               = -1
         
-        project_other_sources_total                                                 = project.getTotalMonthlyOtherSources(target_month)
+        project_other_sources_needs_total, project_other_sources_goals_total        = project.getTotalMonthlyOtherSources(target_month)
+        project_other_sources_total                                                 = project_other_sources_needs_total + project_other_sources_goals_total
         project_budget['other_sources_monthly']                                     = {}
         project_budget['other_sources_monthly']['amount']                           = project_other_sources_total
         project_budget['other_sources_monthly']['currency']                         = SITE_CURRENCY
@@ -163,17 +166,18 @@ class ProjectResource(ModelResource):
         else :
             project_budget['other_sources_monthly']['contributed_percent']          = -1
         
-        project_dependants_donations_total                                          = project.getTotalMonthlyDependantsDonations(target_month)
-        project_budget['dependants_donations_monthly']                              = {}
-        project_budget['dependants_donations_monthly']['amount']                    = project_dependants_donations_total
-        project_budget['dependants_donations_monthly']['currency']                  = SITE_CURRENCY
-        project_budget['dependants_donations_monthly']['formatted']                 = '$'+filters.floatformat(project_dependants_donations_total, 2)
+        project_redonations_needs_total, project_redonations_goals_total            = project.getTotalMonthlyRedonations(target_month)
+        project_redonations_total                                                   = project_redonations_needs_total + project_redonations_goals_total
+        project_budget['redonations_monthly']                                       = {}
+        project_budget['redonations_monthly']['amount']                             = project_redonations_total
+        project_budget['redonations_monthly']['currency']                           = SITE_CURRENCY
+        project_budget['redonations_monthly']['formatted']                          = '$'+filters.floatformat(project_redonations_total, 2)
         if project_budget_total > 0 :
-            project_budget['dependants_donations_monthly']['contributed_percent']   = round((project_dependants_donations_total*100)/project_budget_total, 2) 
+            project_budget['redonations_monthly']['contributed_percent']            = round((project_redonations_total*100)/project_budget_total, 2) 
         else : 
-            project_budget['dependants_donations_monthly']['contributed_percent']   = -1
+            project_budget['redonations_monthly']['contributed_percent']            = -1
         
-        project_donations_monthly_total                                             = project_donations_total+project_other_sources_total+project_dependants_donations_total
+        project_donations_monthly_total                                             = project_donations_total+project_other_sources_total+project_redonations_total
         project_budget['total_donations_monthly']                                   = {}
         project_budget['total_donations_monthly']['amount']                         = project_donations_monthly_total 
         project_budget['total_donations_monthly']['currency']                       = SITE_CURRENCY
@@ -192,11 +196,27 @@ class ProjectResource(ModelResource):
         
         
         #PROJECT NEEDS LIST URI
-        project_needs = '/api/'+ProjectNeedResource()._meta.resource_name+'/?project__key='+project.key  
+        project_needs = {}
+        project_needs['count']        = (ProjectNeed.objects
+                                                    .filter(is_public=True)
+                                                    .filter(date_starting__lte=now())
+                                                    .filter(Q(date_ending__gt=now()) | Q(date_ending=None))
+                                                    .filter(project=project)
+                                                    .count()
+                                                    ) 
+        project_needs['resource_uri'] = '/api/'+ProjectNeedResource()._meta.resource_name+'/?project__key='+project.key  
 
         #PROJECT GOALS LIST URI
-        project_goals = '/api/'+ProjectGoalResource()._meta.resource_name+'/?project__key='+project.key
-        
+        project_goals = {}
+        project_goals['count']        = (ProjectGoal.objects
+                                                    .filter(is_public=True)
+                                                    .filter(date_starting__gte=now())
+                                                    .filter(date_ending__lt=now())
+                                                    .filter(project=project)
+                                                    .count()
+                                                    ) 
+        project_goals['resource_uri'] = '/api/'+ProjectGoalResource()._meta.resource_name+'/?project__key='+project.key  
+
         
         #USER SPECIFIC DATA, IF VALID TOKEN SUPPLIED
         project_user_data = {}
@@ -206,9 +226,9 @@ class ProjectResource(ModelResource):
             user_profile = Profile.objects.get(user=user)
             project_user_data['user_known']            = True
             project_user_data['total_donations_sum']   = user_profile.getTotalProjectDonations(project)
-            project_user_data['total_donations_count'] = DonationHistory.objects.filter(user=user).filter(project=project).count()
+            project_user_data['total_donations_count'] = DonationTransaction.objects.filter(user=user).filter(project=project).count()
             if project_user_data['total_donations_count'] > 0 :
-                latest_donation        = (DonationHistory.objects.filter(user=user).filter(project=project).order_by('-datetime_sent')[:1])[0]
+                latest_donation        = (DonationTransaction.objects.filter(user=user).filter(project=project).order_by('-datetime_sent')[:1])[0]
                 latest_donation_amount = latest_donation.getAmount()
                 project_user_data['latest_donation']                      = {}
                 project_user_data['latest_donation']['date_utctimestamp'] = time.mktime(latest_donation.datetime_sent.utctimetuple()) 
@@ -288,7 +308,7 @@ class ProjectNeedResource(ModelResource):
     
 
     def dehydrate(self, bundle_or_obj):
-        ##values included: need title, need brief,need amount,donations,other sources,dependants donations,donations total,filled percent,graph image URL,outstanding amount,days to go string,pledgers num
+        ##values included: need title, need brief,need amount,donations,other sources,redonations,donations total,filled percent,graph image URL,outstanding amount,days to go string,pledgers num
         
         if isinstance(bundle_or_obj, Bundle):
             need = bundle_or_obj.obj
@@ -326,36 +346,31 @@ class ProjectNeedResource(ModelResource):
 
 
         
-        need_pledges_sum = need.getTotalMonthlyPledges(target_month)
+        need_pledges_sum           = need.getPledgesMonthlyTotal(target_month)
         need_pledges               = {}
         need_pledges['amount']     = need_pledges_sum  
         need_pledges['currency']   = SITE_CURRENCY
         need_pledges['formatted']  = '$'+filters.floatformat(need_pledges_sum, 2)
         need_pledges['percent']    = round((need_pledges_sum*100)/need.amount, 2)
 
-        donation_histories = (DonationHistory.objects
-                                             .filter(project=need.project)
-                                             .filter(datetime_sent__gte=datetime(target_month.year, target_month.month, 1, tzinfo=target_month.tzinfo))
-                                             .filter(datetime_sent__lt=datetime(target_month.year, target_month.month+1, 1, tzinfo=target_month.tzinfo))
-                                             .select_related('donationhistoryneeds'))    
-        need_pledges['count']      = DonationHistoryNeeds.objects.filter(need=need).filter(donation_history__in=donation_histories).count() 
+        need_pledges['count']      = need.getPledgesMonthlyCount(target_month) 
         
         
-        need_other_sources_sum = need.getTotalMonthlyOtherSources(target_month)
+        need_other_sources_sum           = need.getOtherSourcesMonthlyTotal(target_month)
         need_other_sources               = {}
         need_other_sources['amount']     = need_other_sources_sum  
         need_other_sources['currency']   = SITE_CURRENCY
         need_other_sources['formatted']  = '$'+filters.floatformat(need_other_sources_sum, 2)
         need_other_sources['percent']    = filters.floatformat((need_other_sources_sum*100)/need.amount, 2)
 
-        need_redonations_sum = need.getTotalMonthlyDependantsDonations(target_month)
+        need_redonations_sum           = need.getRedonationsMonthlyTotal(target_month)
         need_redonations               = {}
         need_redonations['amount']     = need_redonations_sum  
         need_redonations['currency']   = SITE_CURRENCY
         need_redonations['formatted']  = '$'+filters.floatformat(need_redonations_sum, 2)
         need_redonations['percent']    = filters.floatformat((need_redonations_sum*100)/need.amount, 0)+'%'
 
-        need_donations_total_sum = need_pledges_sum+need_other_sources_sum+need_redonations_sum
+        need_donations_total_sum           = need_pledges_sum+need_other_sources_sum+need_redonations_sum
         need_donations_total               = {}
         need_donations_total['amount']     = need_donations_total_sum  
         need_donations_total['currency']   = SITE_CURRENCY

@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from bitfund.settings_project import PROTOTYPE_LANDING_PAGE_URL, PROTOTYPE_HIDDEN_ENTRANCE
+from bitfund.settings_project import PROTOTYPE_LANDING_PAGE_URL, PROTOTYPE_HIDDEN_ENTRANCE, API_USER_TOKEN_PARAM_NAME 
 
 class HiddenEntranceMiddleware(object):
     def process_request(self, request):
@@ -13,3 +13,10 @@ class HiddenEntranceMiddleware(object):
         else : 
             return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
         
+        
+class SaveUserTokenMiddleware(object):
+    def process_request(self, request):
+        if API_USER_TOKEN_PARAM_NAME in request.GET :
+            request.session[API_USER_TOKEN_PARAM_NAME] = request.GET[API_USER_TOKEN_PARAM_NAME] 
+        
+        return None;

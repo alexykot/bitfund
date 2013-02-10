@@ -206,7 +206,7 @@ def checkout_success(request):
     request.session['recent_donations'] = {}
         
     for donation in donations :
-        donation_history      = False
+        donation_transaction      = False
         donation_subscription = False
         project_id              = donation.project.id
         project_total_donation  = 0
@@ -214,24 +214,33 @@ def checkout_success(request):
         donation_cart_needs = DonationCartNeeds.objects.filter(donation_cart=donation).prefetch_related('need') 
         for donation_cart_need in donation_cart_needs :
             if donation_cart_need.donation_type == 'onetime' :
-                if not donation_history :
-                    donation_history = DonationHistory()
-                    donation_history.user                   = request.user
-                    donation_history.username               = request.user.username
-                    donation_history.email                  = request.user.email
-                    donation_history.project                = donation.project
-                    donation_history.project_key            = donation.project.key
-                    donation_history.project_title          = donation.project.title
-                    donation_history.save()
+                if not donation_transaction :
+                    donation_transaction                            = DonationTransaction()
+                    donation_transaction.transaction_type           = 'pledger'
+                    donation_transaction.user                       = request.user
+                    donation_transaction.accepting_project          = donation.project
+                    donation_transaction.accepting_project_key      = donation.project.key
+                    donation_transaction.accepting_project_title    = donation.project.title
+                    donation_transaction.save()
+                    
+                    donation_transaction.transaction_hash           = donation_transaction.generateHash()
+                    donation_transaction.save()
 
-                donation_history_need = DonationHistoryNeeds()
-                donation_history_need.donation_history = donation_history
-                donation_history_need.need             = donation_cart_need.need 
-                donation_history_need.need_title       = donation_cart_need.need.title 
-                donation_history_need.need_key         = donation_cart_need.need.key
-                donation_history_need.amount           = donation_cart_need.amount
-                donation_history_need.donation_type    = donation_cart_need.donation_type
-                donation_history_need.save()
+                    donation_transaction_details                        = DonationTransactionDetails()
+                    donation_transaction_details.donation_transaction   = donation_transaction
+                    donation_transaction_details.username               = request.user.username
+                    donation_transaction_details.email                  = request.user.email
+                    donation_transaction_details.save()
+
+
+                donation_transaction_need                       = DonationTransactionNeeds()
+                donation_transaction_need.donation_transaction  = donation_transaction
+                donation_transaction_need.need                  = donation_cart_need.need 
+                donation_transaction_need.need_title            = donation_cart_need.need.title 
+                donation_transaction_need.need_key              = donation_cart_need.need.key
+                donation_transaction_need.amount                = donation_cart_need.amount
+                donation_transaction_need.donation_type         = donation_cart_need.donation_type
+                donation_transaction_need.save()
                 
             elif donation_cart_need.donation_type == 'monthly' :
                 if not donation_subscription :
@@ -252,24 +261,24 @@ def checkout_success(request):
     
         donation_cart_goals = DonationCartGoals.objects.filter(donation_cart=donation).prefetch_related('goal') 
         for donation_cart_goal in donation_cart_goals :
-            if not donation_history :
-                donation_history = DonationHistory()
-                donation_history.user                   = request.user
-                donation_history.username               = request.user.username
-                donation_history.email                  = request.user.email
-                donation_history.project                = donation.project
-                donation_history.project_key            = donation.project.key
-                donation_history.project_title          = donation.project.title
-                donation_history.save()
+            if not donation_transaction :
+                donation_transaction = DonationTransaction()
+                donation_transaction.user                   = request.user
+                donation_transaction.username               = request.user.username
+                donation_transaction.email                  = request.user.email
+                donation_transaction.project                = donation.project
+                donation_transaction.project_key            = donation.project.key
+                donation_transaction.project_title          = donation.project.title
+                donation_transaction.save()
             
-            donation_history_goal = DonationHistoryGoals()
-            donation_history_goal.donation_history    = donation_history
-            donation_history_goal.goal                = donation_cart_goal.goal 
-            donation_history_goal.goal_title          = donation_cart_goal.goal.title 
-            donation_history_goal.goal_key            = donation_cart_goal.goal.key
-            donation_history_goal.amount              = donation_cart_goal.amount
-            donation_history_goal.goal_date_ending    = donation_cart_goal.goal.date_ending
-            donation_history_goal.save()
+            donation_transaction_goal = DonationTransactionGoals()
+            donation_transaction_goal.donation_transaction    = donation_transaction
+            donation_transaction_goal.goal                = donation_cart_goal.goal 
+            donation_transaction_goal.goal_title          = donation_cart_goal.goal.title 
+            donation_transaction_goal.goal_key            = donation_cart_goal.goal.key
+            donation_transaction_goal.amount              = donation_cart_goal.amount
+            donation_transaction_goal.goal_date_ending    = donation_cart_goal.goal.date_ending
+            donation_transaction_goal.save()
             
             project_total_donation = project_total_donation + donation_cart_goal.amount
             
