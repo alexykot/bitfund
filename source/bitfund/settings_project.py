@@ -22,13 +22,6 @@ DATE_INPUT_FORMATS = ('%d %b %Y', '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y'
 
 FAKE_CHECKOUT_SYSTEM_URL = '/pledger/fake_external_checkout'
 
-PROJECT_USER_ROLES_WEIGHTS = (
-    ('treasurer',  50),
-    ('maintainer', 30),
-    ('developer',  15),
-)
-
-
 TIME_TO_SHOW_HOURS          = 48 #when it's time to show hours instead of days for "time to go" for budget and goals, in hours
 
 API_USER_TOKEN_PARAM_NAME     = 'userToken'       

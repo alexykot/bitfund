@@ -4,9 +4,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now
-from django.db.models import Count, Sum 
+from django.db.models import Count, Sum
 
-from project.lists import * 
+from project.lists import *
 from django.db.models.query_utils import select_related_descend
 
 class ProjectCategory(models.Model):
@@ -16,9 +16,8 @@ class ProjectCategory(models.Model):
     logo          = models.ImageField(upload_to='project_category_logo/', null=True, blank=True)
     date_added    = models.DateTimeField('date added', default=now())
 
-
-
 class Project(models.Model):
+    maintainer_id = models.ForeignKey(User)
     key           = models.CharField(max_length=80, unique=True)
     title         = models.CharField(max_length=255)
     brief         = models.CharField(max_length=255, null=True, blank=True)
@@ -26,7 +25,9 @@ class Project(models.Model):
     logo          = models.ImageField(upload_to='project_logo/', null=True, blank=True)
     date_added    = models.DateTimeField('date added', default=now())
     is_public     = models.BooleanField(default=True)
-    
+    status        = models.CharField(max_length=80, choices=PROJECT_STATUS_CHOICES)
+
+
     def __unicode__(self):
         return self.title
 
@@ -42,7 +43,7 @@ class Project(models.Model):
             
         return (DonationTransaction.objects
                                  .filter(accepting_project=self)
-                                 .filter(transaction_type='pledge')
+                                 .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
                                  .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                                  .aggregate(Count('pledger_user', distinct=True))['pledger_user__count']
                                  )
@@ -53,6 +54,7 @@ class Project(models.Model):
         return self.getPledgesMonthlyTotal(monthdate) + self.getOtherSourcesMonthlyTotal(monthdate) + self.getRedonationsMonthlyTotal(monthdate) 
 
     #calculates total project budget (goals excluded)  
+
     def getTotalMonthlyBudget(self, monthdate=None):
         import datetime
         from django.utils.timezone import now
@@ -77,8 +79,7 @@ class Project(models.Model):
                               ) or 0
                                
         return limited+lasting
-    
-        
+
     def getTotalMonthlyNeedsByType(self, transaction_type, monthdate=None):
         import datetime
         from django.utils.timezone import now
@@ -115,7 +116,6 @@ class Project(models.Model):
         
         return (DonationTransactionGoals.objects.filter(donation_history__in=donation_histories).aggregate(Sum('amount'))['amount__sum']) or 0
 
-
     def getTotalMonthlyPledges(self, monthdate=None):
         return self.getTotalMonthlyNeedsByType('pledge', monthdate), self.getTotalMonthlyGoalsByType('pledge', monthdate)
 
@@ -147,19 +147,32 @@ class Project(models.Model):
         
         return (user.is_authenticated() and ProjectUserRole.objects.filter(project=self).filter(profile=user.id).filter(user_role__in=['treasurer', 'maintainer']).count() > 0)
 
+    def toggleGratefulUser(self, user):
+        if ProjectGratefulUsers.objects.filter(project=self, user=user).count() > 0 :
+            ProjectGratefulUsers.objects.filter(project=self, user=user).delete()
+        else :
+            grateful = ProjectGratefulUsers()
+            grateful.project = self
+            grateful.user = user
+            grateful.save()
 
+
+
+class ProjectGratefulUsers(models.Model):
+    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
 
 class ProjectNeed(models.Model):
-    project       = models.ForeignKey(Project)
-    key           = models.CharField(max_length=80)
-    title         = models.CharField(max_length=255)
-    brief         = models.CharField(max_length=255, null=True, blank=True)
-    amount        = models.DecimalField(decimal_places=0, max_digits=12, default=0)
+    project = models.ForeignKey(Project)
+    key = models.CharField(max_length=80)
+    title = models.CharField(max_length=255)
+    brief = models.CharField(max_length=255, null=True, blank=True)
+    amount = models.DecimalField(decimal_places=0, max_digits=12, default=0)
     date_starting = models.DateTimeField('date starting', default=now(), null=True, blank=True)
-    date_ending   = models.DateTimeField('date ending', null=True, blank=True)
-    date_added    = models.DateTimeField('date added', default=now())
-    is_public     = models.BooleanField(default=True)
-    sort_order    = models.IntegerField(default=0)
+    date_ending = models.DateTimeField('date ending', null=True, blank=True)
+    date_added = models.DateTimeField('date added', default=now())
+    is_public = models.BooleanField(default=True)
+    sort_order = models.IntegerField(default=0)
 
     def __unicode__(self):
         return self.title
@@ -211,7 +224,7 @@ class ProjectNeed(models.Model):
 
         donation_transactions = (DonationTransaction.objects
                                              .filter(accepting_project=self.project)
-                                             .filter(transaction_type='pledge')
+                                             .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
                                              .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                                              .filter(datetime_added__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
                                              .select_related(depth=1)
@@ -271,32 +284,6 @@ class ProjectGoal(models.Model):
     def getTotalRedonations(self):
         return self.getTotalByType('redonations')
     
-    
-class ProjectUserRole(models.Model):
-    from pledger.models import Profile
-
-    profile         = models.ForeignKey(Profile)
-    project         = models.ForeignKey(Project)
-    user_role       = models.CharField(max_length=10, choices=PROJECT_USER_ROLES, null=True, blank=True)
-    user_role_title = models.CharField(max_length=255, null=True, blank=True)
-    sort_order      = models.IntegerField(default=0)
-    date_added      = models.DateTimeField('date added', default=now())
-
-    def __unicode__(self):
-        return self.user_role_title
-
-class ProjectOutlink(models.Model):
-    project         = models.ForeignKey(Project)
-    type            = models.CharField(max_length=50, choices=PROJECT_OUTLINK_TYPES)
-    title           = models.CharField(max_length=50)
-    address         = models.TextField()
-    date_added      = models.DateTimeField('date added', default=now())
-    is_public       = models.BooleanField(default=True)
-    sort_order      = models.IntegerField(default=0)
-
-    def __unicode__(self):
-        return self.project.title
-
 class Project_Dependencies(models.Model):
     depender_project   = models.ForeignKey(Project, related_name='depender') # the one that depends
     dependee_project  = models.ForeignKey(Project, related_name='dependee') # the one that is depended on
@@ -323,6 +310,22 @@ class ProjectOtherSource(models.Model):
 
     def __unicode__(self):
         return self.title
+
+"""
+# I doubt this will ever be used, but let it stay here for now
+class ProjectOutlink(models.Model):
+    project         = models.ForeignKey(Project)
+    type            = models.CharField(max_length=50, choices=PROJECT_OUTLINK_TYPES)
+    title           = models.CharField(max_length=50)
+    address         = models.TextField()
+    date_added      = models.DateTimeField('date added', default=now())
+    is_public       = models.BooleanField(default=True)
+    sort_order      = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return self.project.title
+"""
+
 
 """
 #commented out until full implementation

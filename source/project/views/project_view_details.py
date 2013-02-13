@@ -16,7 +16,6 @@ from pledger.models import *
 
 from project.models import *
 from project.forms import *
-from project.lists import PROJECT_USER_ROLES
 from project.decorators import *
 
 

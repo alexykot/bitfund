@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import simplejson
 
 from project.models import *
+from project.lists import *
 from pledger.models import *
 from pledger.forms import *
 from bitfund.settings_project import FAKE_CHECKOUT_SYSTEM_URL
@@ -206,17 +207,19 @@ def checkout_success(request):
     request.session['recent_donations'] = {}
         
     for donation in donations :
-        donation_transaction      = False
+        donation_transaction = False
         donation_subscription = False
-        project_id              = donation.project.id
-        project_total_donation  = 0
-        
+        project_id = donation.project.id
+        project_total_donation = 0
+
+        transaction_total_amount = 0
+
         donation_cart_needs = DonationCartNeeds.objects.filter(donation_cart=donation).prefetch_related('need') 
         for donation_cart_need in donation_cart_needs :
             if donation_cart_need.donation_type == 'onetime' :
                 if not donation_transaction :
                     donation_transaction                            = DonationTransaction()
-                    donation_transaction.transaction_type           = 'pledger'
+                    donation_transaction.transaction_type           = DONATION_TRANSACTION_TYPES_CHOICES.pledge
                     donation_transaction.user                       = request.user
                     donation_transaction.accepting_project          = donation.project
                     donation_transaction.accepting_project_key      = donation.project.key
@@ -241,6 +244,8 @@ def checkout_success(request):
                 donation_transaction_need.amount                = donation_cart_need.amount
                 donation_transaction_need.donation_type         = donation_cart_need.donation_type
                 donation_transaction_need.save()
+
+                transaction_total_amount = transaction_total_amount + donation_cart_need.amount
                 
             elif donation_cart_need.donation_type == 'monthly' :
                 if not donation_subscription :
@@ -254,8 +259,8 @@ def checkout_success(request):
                 donation_subscription_need.donation_subscription = donation_subscription
                 donation_subscription_need.need   = donation_cart_need.need
                 donation_subscription_need.amount = donation_cart_need.amount
-                
-            project_total_donation = project_total_donation + donation_cart_need.amount
+
+            transaction_total_amount = transaction_total_amount + donation_cart_need.amount
                 
             donation_cart_need.delete()
     
@@ -279,12 +284,12 @@ def checkout_success(request):
             donation_transaction_goal.amount              = donation_cart_goal.amount
             donation_transaction_goal.goal_date_ending    = donation_cart_goal.goal.date_ending
             donation_transaction_goal.save()
-            
-            project_total_donation = project_total_donation + donation_cart_goal.amount
+
+            transaction_total_amount = transaction_total_amount + donation_cart_goal.amount
             
             donation_cart_goal.delete()
         
-        request.session['recent_donations'][project_id] = project_total_donation    
+        request.session['recent_donations'][project_id] = transaction_total_amount
         
         donation.delete()
     

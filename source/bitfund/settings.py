@@ -77,13 +77,14 @@ INSTALLED_APPS = (
     'debug_toolbar',    # debug toolbar
 
     # functionality extensions
-    'crispy_forms',     # bootstrap based forms styling   
-    'django_cleanup',   # autodelete old files for FileField
-    'widget_tweaks',    # easy CSS stryling for forms  
-    'userena',          # user accounts enhanced
-    'guardian',         # object permissions checking
-    'easy_thumbnails',  # easier thumbnailing
-    'tastypie',         # API framework          
+    'crispy_forms',         # bootstrap based forms styling
+    'django_cleanup',       # autodelete old files for FileField
+    'widget_tweaks',        # easy CSS stryling for forms
+    'userena',              # user accounts enhanced
+    'guardian',             # object permissions checking
+    'easy_thumbnails',      # easier thumbnailing
+    'tastypie',             # API framework
+    'model_utils',          # models utilities
 )
 
 # A sample logging configuration. The only tangible logging

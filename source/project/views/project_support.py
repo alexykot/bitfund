@@ -221,3 +221,13 @@ def drop_support(request, project_key):
         
     return HttpResponseRedirect(reverse('project.views.view', args=(project.key,)))
 
+
+@user_is_not_project_maintainer
+@login_required
+def toggle_grateful(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    project.toggleGratefulUser(request.user)
+
+    return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
+

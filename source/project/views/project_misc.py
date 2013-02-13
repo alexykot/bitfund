@@ -13,7 +13,6 @@ from bitfund.settings_project import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_
 from bitfund.settings import TIME_ZONE
 from project.models import *
 from project.forms import *
-from project.lists import PROJECT_USER_ROLES
 from project.decorators import *
 from pledger.models import *
 
