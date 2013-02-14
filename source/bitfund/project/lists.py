@@ -1,14 +1,13 @@
-DONATION_TYPES_CHOICES = (
-    ('onetime', u'One time'),
+from model_utils import Choices
+
+DONATION_TYPES_CHOICES = Choices(
+    ('onetime', u'Onetime'),
     ('monthly', u'Monthly'),
 )
 
-PROJECT_USER_ROLES = (
-    ('treasurer', u'Treasurer'),
-    ('maintainer', u'Maintainer'),
-    ('developer', u'Developer'),
-)
+PROJECT_STATUS_CHOICES = Choices('unclaimed', 'active', 'inactive', 'archived')
 
+"""
 PROJECT_OUTLINK_TYPES = (
     ('site', u'Project website'),
     ('wiki', u'Project wiki'),
@@ -36,5 +35,5 @@ PROJECT_CONTACT_TYPES = (
     ('jabber', u'Jabber'),
     ('postal-address', u'Postal address'),
 )
-
+"""
 

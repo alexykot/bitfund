@@ -83,6 +83,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',  # easier thumbnailing
     'tastypie',         # API framework
     'social_auth'       # authentication via various big name sites
+    'model_utils',      # models utilities
 )
 
 # A sample logging configuration. The only tangible logging

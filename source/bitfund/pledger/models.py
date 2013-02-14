@@ -8,27 +8,37 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
 
+from model_utils import Choices
+
 from bitfund.project.models import *
 from bitfund.project.lists import *
 
-DONATION_TRANSACTION_TYPES_CHOICES = (
+DONATION_TRANSACTION_TYPES_CHOICES = Choices(
     ('pledge', u'Pledge'),
     ('other_source', u'Other Source'),
     ('redonation', u'Redonation'),
 )
 
-DONATION_TRANSACTION_STATUSES_CHOICES = (
+DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
     ('unpaid', u'Confirmed, Unpaid'),
     ('paid', u'Paid'),
     ('rejected', u'Rejected'),
 )
 
+USER_PROJECT_STATUS_CHOICES = Choices(
+    ('sole_developer', u'Sole Developer'),
+    ('benevolent_dictator', u'Benevolent Dictator'),
+    ('foundation', u'Foundation'),
+    ('community_ambassador', u'Community Ambassador'),
+    )
 
 class Profile(User):
-    user                    = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
-    api_token               = models.CharField(max_length=255, unique=True)
-    donation_is_public      = models.BooleanField(default=True)
-    
+    user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
+    api_token = models.CharField(max_length=255, unique=True)
+    donation_is_public = models.BooleanField(default=True)
+    status_in_project = models.CharField(max_length=80, choices=USER_PROJECT_STATUS_CHOICES,
+                                         default=USER_PROJECT_STATUS_CHOICES.sole_developer)
+
     def getTotalProjectDonations(self, project):
         from django.db.models import Sum 
         from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds, DonationTransactionGoals
@@ -294,7 +304,7 @@ class DonationSubscriptionNeeds(models.Model):
      
 #donation history, storing all past donation transactions, for both onetime and monthly donations
 class DonationTransaction(models.Model):
-    transaction_type                = models.CharField(max_length=64, choices=DONATION_TRANSACTION_TYPES_CHOICES)
+    transaction_type                = models.CharField(max_length=64, choices=DONATION_TRANSACTION_TYPES_CHOICES, default=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
     transaction_hash                = models.CharField(max_length=64, unique=True)
     transaction_status              = models.CharField(max_length=64, choices=DONATION_TRANSACTION_STATUSES_CHOICES)
     
@@ -336,11 +346,10 @@ class DonationTransaction(models.Model):
                 
         return hashlib.sha512(hash_source).hexdigest()
         
-
     def getAmount(self):
         from django.db.models import Sum
         from bitfund.pledger.models import DonationTransactionNeeds, DonationTransactionGoals
-        
+
         user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history=self)
                                                                                 .aggregate(Sum('amount'))['amount__sum']
                                                                                 ) or 0
@@ -378,4 +387,3 @@ class DonationTransactionGoals(models.Model):
     goal_key                    = models.CharField(max_length=80, null=True, blank=True)
     goal_date_ending            = models.DateField('date ending')
     amount                      = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-
