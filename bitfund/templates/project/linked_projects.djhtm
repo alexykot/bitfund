@@ -1,0 +1,64 @@
+{% extends "base.djhtm" %}
+
+{% block title %}Linked projects - {{ project.title }}{% endblock title %}
+
+
+{% block pagescripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+    </script>
+{% endblock pagescripts %}
+
+
+{% block content %}
+
+    <div class="kf_project-views-view">
+
+    {% include "project/project-header.djhtm" %}
+
+    <div class="row">
+
+        <div class="span5">
+            {% if projects_depending_on_me_count %}
+                <h2>Projects depending on {{ project.title }}:</h2>
+                <ul>
+                    {% for project_depending_on_me in projects_depending_on_me %}
+                        <li><a href="{% url bitfund.project.views.view project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a> -
+                            {% if project_depending_on_me.amount_sum %}
+                                {{ site_currency_sign }}{{ project_depending_on_me.amount_sum|floatformat:2 }}
+                            {% elif project_depending_on_me.amount_percent %}
+                                {{ project_depending_on_me.amount_percent|floatformat }}%
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <h2>No projects depend on {{ project.title }}:</h2>
+            {% endif %}
+        </div>
+
+        <div class="span5">
+            {% if projects_i_depend_on_count %}
+                <h2>Projects {{ project.title }} depends on:</h2>
+                <ul>
+                    {% for project_i_depend_on in projects_i_depend_on %}
+                        <li><a href="{% url bitfund.project.views.view project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a> -
+                            {% if project_i_depend_on.amount_sum > 0 %}
+                                {{ site_currency_sign }}{{ project_i_depend_on.amount_sum|floatformat:2 }}
+                            {% elif project_i_depend_on.amount_percent > 0 %}
+                                {{ project_i_depend_on.amount_percent|floatformat }}%
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <h2>{{ project.title }} doesn't depend on any projects</h2>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{% endblock content %}

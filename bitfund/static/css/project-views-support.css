@@ -1,0 +1,237 @@
+/* project.views.support */
+.kf_project-views-support .kf_project_title {
+    padding: 20px 0;
+}
+.kf_project-views-support .kf_project_title h1{
+    color: #000000;
+    font-size: 1.6em;
+    font-weight:normal;
+}
+
+.kf_project-views-support .kf_project_title img{
+    display: inline;
+}
+
+.kf_project-views-support .kf_big_call{
+	overflow: visible;
+}
+
+.kf_project-views-support .kf_big_call .kf_label{
+	padding: 9px;
+	font-size: 0.75em; 
+	background-color: #FFF195;
+	box-shadow:  1px 6px 6px #DFDFDF;
+	position: relative;
+	font-weight:bold;
+	width:500px;
+}
+
+.kf_project-views-support .kf_big_call .kf_triangle{
+	width: 0; 
+	height: 0; 
+	border-top: 0px solid transparent;
+	border-bottom: 17px solid transparent;
+	border-left: 37px solid #DCC855;
+	position: relative;
+	top:0px;
+	left:480px;
+}    
+    
+
+.kf_project-views-support .kf_green{
+	color: #2AA112;
+}
+
+.kf_project-views-support .kf_need_item .kf_details, .kf_project-views-support .kf_goal_item .kf_details{
+	font-size: .6em;
+	font-style: italic;
+}
+
+
+.kf_project-views-support .kf_amount_buttons li{
+    display: inline;
+    float:left;
+    margin-right: 10px;
+    text-align: center;
+}
+
+
+
+.kf_project-views-support .kf_amount_buttons li a{
+	display: block;
+	width:40px;
+	height:20px;
+	font-size: 10pt; 
+	color: #FFFFFF;
+	background-color: #AECCEB;
+}	
+
+.kf_project-views-support .kf_amount_buttons li a:hover, .kf_project-views-support .kf_amount_buttons li a.kf_selected{
+    background-color:#2aa112;
+    text-decoration: none;
+}	
+
+.kf_project-views-support .kf_need_amount, .kf_project-views-support .kf_goal_amount{
+	width:35px;
+	height:11px;
+	border:1px solid #AECCEB;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+.kf_project-views-support .kf_need_item .kf_currency, .kf_project-views-support .kf_goal_item .kf_currency{
+	vertical-align: top;
+	color: #555555;
+}
+
+.kf_project-views-support .kf_need_monthly, .kf_project-views-support .kf_need_monthly_hover, .kf_project-views-support .kf_need_monthly_selected{
+	cursor: pointer;
+}
+
+.kf_project-views-support .kf_need_monthly .kf_text {
+	font-size: 8pt;
+	line-height: 1;
+	color: #E8E6E6;
+	display: inline-block;
+}
+
+.kf_project-views-support .kf_need_monthly_hover .kf_text{
+	font-size: 8pt;
+	line-height: 1;
+	color: #AECCEB;
+	display: inline-block;
+}
+.kf_project-views-support .kf_need_monthly_selected .kf_text{
+	font-size: 8pt;
+	line-height: 1;
+	color: #2aa112;
+	display: inline-block;
+}
+
+.kf_project-views-support .kf_need_monthly .kf_need_monthly_check, .kf_project-views-support .kf_need_monthly_hover .kf_need_monthly_check, .kf_project-views-support .kf_need_monthly_selected .kf_need_monthly_check{
+	border-radius: 50%;
+	background-color: transparent;
+	width:22px;
+	height:22px;
+	display: inline-block;
+	text-align: center;
+	position:relative;
+	top:-7px;
+}
+
+.kf_project-views-support .kf_need_monthly .kf_need_monthly_check {
+	border:2px solid #E8E6E6;
+}
+.kf_project-views-support .kf_need_monthly_hover .kf_need_monthly_check {
+	border:2px solid #AECCEB;
+}
+.kf_project-views-support .kf_need_monthly_selected .kf_need_monthly_check {
+	border:2px solid #2aa112;
+}
+
+.kf_project-views-support .kf_need_monthly .kf_need_monthly_check span, .kf_project-views-support .kf_need_monthly_hover .kf_need_monthly_check span, .kf_project-views-support .kf_need_monthly_selected .kf_need_monthly_check span{
+	border-radius: 50%;
+	width:16px;
+	height:16px;
+	display: inline-block;
+	position: relative;
+	top:3px;
+}
+
+.kf_project-views-support .kf_need_monthly .kf_need_monthly_check span {
+	background-color: #E8E6E6;
+}
+.kf_project-views-support .kf_need_monthly_hover .kf_need_monthly_check span {
+	background-color: #AECCEB;
+}
+.kf_project-views-support .kf_need_monthly_selected .kf_need_monthly_check span {
+	background-color: #2aa112;
+}
+
+.kf_project-views-support .kf_need_monthly input, .kf_project-views-support .kf_need_monthly_selected input, .kf_project-views-support .kf_need_monthly_hover input{
+visibility: hidden;
+}
+
+
+.kf_project-views-support .kf_subheader div{
+    margin: 20px auto;
+    width:800px;
+    text-align: center;
+}
+
+.kf_project-views-support .kf_subheader hr{
+    width:100%;
+    display: inline-block;
+    border: 0px;
+    border-bottom: 1px dashed #747271;
+    padding: 0;
+    margin: 0;
+}
+
+.kf_project-views-support .kf_subheader h2{
+    display: inline;
+    color: #747271;
+    font-size: 18px;
+    font-weight:normal;
+    width: 300px;
+    position: relative;
+    background-color:#FFFFFF;
+    top:-15px;
+    line-height: 0;
+    margin: 0;
+    padding: 0 20px;
+}
+
+.kf_project-views-support .kf_subheader h2 span{
+    margin: auto;
+}    
+
+
+.kf_project-views-support .kf_submit{
+	padding-top: 20px;
+}    
+.kf_project-views-support .kf_email_field label{
+	color: #747271;
+	font-size: .75em;
+	display: inline;
+}
+.kf_project-views-support .kf_email_field input{
+	width:200px;
+	height:11px;
+	border:1px solid #AECCEB;
+	font-size: .75em;
+	font-weight: bold;
+}
+.kf_project-views-support .kf_email_field .errorlist{
+	display: inline-block;
+	font-size: .75em;
+	color: red;
+	vertical-align: top;
+}
+
+.kf_project-views-support .kf_submit_button{
+	padding-top: 35px; 
+}
+.kf_project-views-support .kf_submit_button input{
+	width:150px;	
+} 
+	
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -1,0 +1,156 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BitFund prototype</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="imagetoolbar" content="no"/>
+    
+    <meta http-equiv="description" content=" Follow opensource, all in one place. Support opensource, all in one place."/>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jqplot.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jqplot.donutRenderer.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap.min.css"/>
+<!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-responsive.min.css"/>-->
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery.jqplot.min.css"/>
+    
+    
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bitfund.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/prototype-landing-page.css"/>
+
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png"/>
+
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#show_use_case').click(function(){
+        $('#cut').toggle();
+    });
+    
+});
+</script>
+
+</head>
+<body>
+    
+<div id="kf_header-n-content">
+    
+    <div class="container kf_header">
+        <div class="row">
+            <div class="span3 kf_logo">
+                <a href="{% url bitfund.core.views.index %}">
+                    <span class="kf_bit">Bit</span>
+                    <span class="kf_fund">Fund</span>
+                </a>        
+            </div>
+        </div>
+    </div>    
+    
+    <div id="kf_content">
+        <div class="kf_greenline"></div>
+        <div class="container prototype-landing-page">
+            {% if message_sent %}
+            
+            <div class="row">
+                <div class="span6 offset3">
+                    <h1>BitFund.org prototype</h1>
+                    <p class="kf_message">Message sent, thank you. We'll be in contact soon.</p>
+                </div>
+            </div>
+            
+            {% else %}
+            <div class="row">
+                <div class="span6 offset3">
+                    <h1>BitFund.org prototype</h1>
+                    <p class="kf_message">BitFund.org is a project implementing crowdfunding service for opensource software developers and users. This is a private prototype.</p> 
+                </div>
+            </div>
+<br />
+<!-- unknown curious viewer, forgive me for this ugly br, I'm too busy to study proper modern CSS :( -->
+            <div class="row">
+                <div class="span12">
+                    
+<p class="kf_message">
+It's going to be a <b>kickstarter for opensource</b>, an online service for crowdfunding of the opensource projects. It's aimed at the established mid-sized opensource projects with steady users community around. 
+</p>
+
+
+<p class="kf_message">
+<b>So this will be a service for:</b>
+<ul>
+<li>end users, to support all their favorite projects from one place, to track donations history and to reach the teams easily,</li>
+<li>developers, to show their inner kitchen, to lower the entry level for project contributions, to eliminate the hassle of "project site" hosting and creation, and of course to have a simple and effective way to gather donations.</li>
+</ul>
+</p>
+<p class="kf_message">
+In fact it's <b>not exactly like the the Kickstarter</b>, as it will not use "all or nothing in limited time" model, instead it will use a rolling monthly budget and donation subscriptions, more suitable for the long-lasting opensource projects.
+</p>                    
+
+<h2><a href="#" id="show_use_case">show explanatory use case</a></h2>
+<div id="cut">
+    <p class="kf_message">
+    <ol>
+    <li>assume there is an opensource project with established development community and userbase (there are plenty of them in fact out there).</li>
+    <li>the project is free and opensource, so donations are welcome.</li>
+    <li>there is a service, called BitFund.org, that hosts public project profile team's plans, current team members bio, project history timeline, team blog, ways to collaborate etc.</li> 
+    <li>developers place link to "meet the team" inside their software, on the downloads page on github etc where they can.</li>
+    <li>software users are interested and come to BitFund to see their favorite software piece's team faces, follow the plans and updates, comment on the blog etc.</li>
+    <li>inside BitFund.org the team places monthly budget they need to run the project, states current financial goals and outlines where the money is coming from now.</li>
+    <li>software users coming to BitFund see the budget, some of them donate once, some of them subscribe to donate a small amount every month.</li>
+    <li>steady donations flow is created, a humble 5% gathered by the BitFund.org. Developers getting donations, users getting free and open software, service owners getting profit, everybody's pleased!</li>
+    </ol>
+    </p>
+</div>                    
+                    
+                </div>
+            </div>
+<br />
+<br />
+<!-- and these too :) -->
+            <div class="row">
+                <div class="span6 offset3">
+                    <p class="kf_message kf_cofounder">BitFund.org is looking for a cofounder.</p>
+                    <p class="kf_message">Send message through the form or to <a href="mailto:info@bitfund.org">info@bitfund.org</a> to get in contact.</p>
+                </div>
+            </div>
+            <div class="row kf_form">
+                <div class="span6 offset3">
+                                        
+                    <form method="post" action="">
+                    {% csrf_token %}
+                    
+                    {{ form|crispy }}
+                      <div class="clearfix control-group">  
+                        <input type="submit" value="Submit" class="btn btn-success" />
+                      </div>
+                    </form>                     
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div id="kf_push_footer"></div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36664541-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>

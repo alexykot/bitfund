@@ -1,0 +1,104 @@
+{% extends "base.djhtm" %}
+
+{% block title %}register pledger{% endblock %}
+
+{% block pagescripts %}
+$(function() {
+
+    $( "#id_date_ending" ).datepicker();
+    $( "#id_date_ending" ).datepicker( "option", "dateFormat", 'yy-mm-dd' );
+    
+    {% if not goal_id %}
+        $('#add_goal_button').click(function () {
+            $('#add_goal_form').toggle()
+        });
+    {% endif %}
+
+
+});
+{% endblock %}
+
+{% block content %}
+
+    {% if goals_list.count > 0 %}
+        <h2>Current project goals</h2>
+        <ul>
+            {% for goal in goals_list %}
+            <li>
+                {{ goal.title }}, ${{ goal.amount }}, until {{ goal.date_ending }}  
+                &nbsp;&nbsp;&nbsp;<a href="{% url bitfund.project.views.edit_goals project_key=project.key goal_id=goal.id%}">edit</a>
+                &nbsp;&nbsp;<a href="{% url bitfund.project.views.delete_goal project_key=project.key goal_id=goal.id%}" onclick="return confirm('Are you sure?')">delete</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>no project goals entered at the moment</h2>
+    {% endif %}
+    
+    {% if allow_add_goal %}
+        {% if goal_id %}
+            <h2>{{ goal.title }} - edit goal</h2>
+            <form method="post" action="" id="add_goal_form">
+                {% csrf_token %}
+                <ul>
+                    {{ goal_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save goal" />  &nbsp;&nbsp;&nbsp;<a href="{% url bitfund.project.views.edit_goals project_key=project.key %}">cancel</a>
+                    </li>
+            
+                </ul>
+            </form>
+        {% elif goals_list.count == 0 %}
+            <h2>Add goal</h2>
+            <form method="post" action="" id="add_goal_form">
+                {% csrf_token %}
+                <ul>
+                    {{ goal_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save goal" />  
+                    </li>
+            
+                </ul>
+            </form>
+        {% elif request.method == 'POST' %}
+            <h2>Add goal</h2>
+            <form method="post" action="" id="add_goal_form">
+                {% csrf_token %}
+                <ul>
+                    {{ goal_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save goal" />  &nbsp;&nbsp;&nbsp;<a href="{% url bitfund.project.views.edit_goals project_key=project.key %}">cancel</a>
+                    </li>
+            
+                </ul>
+            </form>
+        {% else %}
+            <button id="add_goal_button">
+                Add goal
+            </button>
+            <form method="post" action="" id="add_goal_form" style="display:none;">
+                {% csrf_token %}
+                <ul>
+                    {{ goal_form.as_ul }}
+                    <li>
+                        <input type="submit" value="Save goal" />  &nbsp;&nbsp;&nbsp;<a href="/" onclick="javascript:$('#add_goal_form').toggle(); return false;">cancel</a>
+                    </li>
+            
+                </ul>
+            </form>
+        {% endif %}
+    {% endif %}
+    
+    <br />
+    <a href="{% url bitfund.project.views.edit project_key=project.key %}">edit project details</a>
+    &nbsp;&nbsp;&nbsp;
+    <a href="{% url bitfund.project.views.edit_needs project_key=project.key %}">edit project needs</a>
+    &nbsp;&nbsp;&nbsp;
+    edit project goals
+    <br />
+    <br />
+    <br />
+    
+    <a href="{% url bitfund.project.views.view project_key=project.key %}">back</a>
+
+{% endblock %}

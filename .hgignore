@@ -1,9 +1,10 @@
 syntax: glob
-source/.settings/*
-source/uploads/*
+bitfund/web/.settings/*
+bitfund/web/uploads/*
+bitfund/web/static/*
 logs/*
 .idea/*
-settings_server.py
+bitfund/core/settings/server.py
 
 syntax: regexp
 
