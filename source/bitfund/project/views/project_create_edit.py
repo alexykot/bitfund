@@ -4,10 +4,10 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
-from project.models import *
-from project.forms import *
-from project.decorators import *
-from bitfund.custom_configs import MAX_GOALS_PER_PROJECT, MAX_NEEDS_PER_PROJECT
+from bitfund.settings_project import MAX_GOALS_PER_PROJECT, MAX_NEEDS_PER_PROJECT
+from bitfund.project.models import *
+from bitfund.project.forms import *
+from bitfund.project.decorators import *
 
 #from django.conf.locale import fa
 from django.utils.translation import to_locale, get_language
@@ -21,7 +21,7 @@ def create(request):
             project.maintainer_id   = request.user.id
             form.save()
             
-            return HttpResponseRedirect(reverse('project.views.view', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
         else :
             data = {}
             for key in request.POST : 
@@ -50,7 +50,7 @@ def edit(request, project_key):
         if form.is_valid():
             form.save()
             
-            return HttpResponseRedirect(reverse('project.views.view', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
         else :
             data = {}
             for key in request.POST : 
@@ -91,7 +91,7 @@ def edit_needs(request, project_key, need_id = False):
             need.amount = form.cleaned_data['amount'] 
             form.save()
             
-            return HttpResponseRedirect(reverse('project.views.edit_needs', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.edit_needs', args=(project.key,)))
         else :
             return render_to_response('project/edit_needs.djhtm', {   'request'        : request, 
                                                                       'project'        : project,
@@ -125,7 +125,7 @@ def delete_need(request, project_key, need_id = False):
     need = get_object_or_404(ProjectNeed, pk=need_id)
     need.delete()
     
-    return HttpResponseRedirect(reverse('project.views.edit_needs', args=(project_key,)))
+    return HttpResponseRedirect(reverse('bitfund.project.views.edit_needs', args=(project_key,)))
 
 @login_required
 @user_is_project_maintainer
@@ -146,7 +146,7 @@ def edit_goals(request, project_key, goal_id = False):
             goal.amount = form.cleaned_data['amount'] 
             form.save()
             
-            return HttpResponseRedirect(reverse('project.views.edit_goals', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.edit_goals', args=(project.key,)))
         else :
             form = CreateProjectGoalForm(request.POST)
             return render_to_response('project/edit_goals.djhtm', {   'request'        : request, 
@@ -183,4 +183,4 @@ def delete_goal(request, project_key, goal_id = False):
     goal = get_object_or_404(ProjectGoal, pk=goal_id)
     goal.delete()
     
-    return HttpResponseRedirect(reverse('project.views.edit_goals', args=(project_key,)))
+    return HttpResponseRedirect(reverse('bitfund.project.views.edit_goals', args=(project_key,)))

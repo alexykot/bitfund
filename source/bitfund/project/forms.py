@@ -6,9 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from bitfund.models import *
-from pledger.models import *
-from project.models import *
-from bitfund.custom_configs import DATE_INPUT_FORMATS
+from bitfund.project.models import *
+from bitfund.settings_project import DATE_INPUT_FORMATS
+from bitfund.pledger.models import *
 
 class CreateProjectForm(forms.ModelForm):
     def __init__(self, *args, **kw):

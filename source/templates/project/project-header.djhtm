@@ -49,6 +49,7 @@
     </div>
 </div>
 
+<!--
 <div class="row">
     <div class="span12 kf_project_menuline">
         <ul class="nav nav-pills">
@@ -61,7 +62,6 @@
             <li><a href="{% url project.views.goals project_key=project.key %}">Goals</a></li>
         </ul>    
 
-        <!--
         <ul class="nav nav-pills">
             <li><a href="#">About</a></li>
             <li><a href="#">Team</a></li>
@@ -80,6 +80,6 @@
             
             </li>
         </ul>    
-        -->
     </div>
 </div>
+-->

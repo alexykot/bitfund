@@ -6,9 +6,9 @@ from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.utils import simplejson
 
-from project.models import *
-from pledger.models import *
-from pledger.forms import *
+from bitfund.project.models import *
+from bitfund.pledger.models import *
+from bitfund.pledger.forms import *
 from bitfund.settings_project import FAKE_CHECKOUT_SYSTEM_URL
 
 import urllib

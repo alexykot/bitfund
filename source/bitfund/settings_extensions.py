@@ -1,5 +1,5 @@
 
-# isntalled apps settings
+# installed apps settings
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
     'debug_toolbar.panels.timer.TimerDebugPanel',
@@ -25,7 +25,4 @@ DEBUG_TOOLBAR_CONFIG = {
 ANONYMOUS_USER_ID   = -1
 AUTH_PROFILE_MODULE = 'pledger.Profile'
 
-#userena
-LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
-LOGIN_URL          = '/accounts/signin/'
-LOGOUT_URL         = '/accounts/signout/'
+TASTYPIE_FULL_DEBUG = True

@@ -24,10 +24,8 @@
 {% block extrahead %}
 {% endblock extrahead %}
 
-<script type="text/javascript">
 {% block pagescripts %}
 {% endblock pagescripts %}
-</script>
 
 </head>
 <body>

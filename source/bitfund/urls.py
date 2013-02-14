@@ -20,7 +20,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/{0,}', include(admin.site.urls)),
-    (r'^accounts/', include('userena.urls')),
 )
 
 #API URLS
@@ -42,7 +41,7 @@ urlpatterns += patterns('bitfund.views',
 )
 
 #PROJECTS
-urlpatterns += patterns('project.views',
+urlpatterns += patterns('bitfund.project.views',
     (r'^projects/create$', 'create'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'view'),
@@ -85,7 +84,7 @@ urlpatterns += patterns('project.views',
 )
 
 #USER ACCOUNT
-urlpatterns += patterns('pledger.views',
+urlpatterns += patterns('bitfund.pledger.views',
     (r'^pledger/donations_overview/{0,}$', 'donations_overview'),
     (r'^pledger/donations_update/{0,}$', 'donations_update'),
     (r'^pledger/checkout/{0,}$', 'checkout'),

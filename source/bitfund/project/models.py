@@ -4,10 +4,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now
-from django.db.models import Count, Sum 
-
-from project.lists import * 
+from django.db.models import Count, Sum
 from django.db.models.query_utils import select_related_descend
+
+from bitfund.project.lists import *
 
 class ProjectCategory(models.Model):
     key           = models.CharField(max_length=80, unique=True)
@@ -35,7 +35,7 @@ class Project(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Count, Sum 
-        from pledger.models import DonationTransaction
+        from bitfund.pledger.models import DonationTransaction
             
         if monthdate is None:
             monthdate = now()
@@ -57,7 +57,7 @@ class Project(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Count, Sum 
-        from project.models import ProjectNeed 
+        from bitfund.project.models import ProjectNeed
             
         if monthdate is None:
             monthdate = now()
@@ -83,7 +83,7 @@ class Project(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Count, Sum 
-        from pledger.models import DonationTransaction, DonationTransactionNeeds 
+        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds
 
         if monthdate is None:
             monthdate = now()
@@ -93,7 +93,8 @@ class Project(models.Model):
                                              .filter(transaction_type=transaction_type)
                                              .filter(datetime_added__gte=datetime.datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                                              .filter(datetime_added__lt=datetime.datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                             .select_related(depth=1))    
+                                             .select_related(depth=1)
+                            )
         
         return (DonationTransactionNeeds.objects.filter(donation_history__in=donation_histories).aggregate(Sum('amount'))['amount__sum']) or 0 
 
@@ -101,7 +102,7 @@ class Project(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Count, Sum 
-        from pledger.models import DonationTransaction, DonationTransactionGoals 
+        from bitfund.pledger.models import DonationTransaction, DonationTransactionGoals
 
         if monthdate is None:
             monthdate = now()
@@ -127,15 +128,15 @@ class Project(models.Model):
         return self.getTotalMonthlyNeedsByType('redonation', monthdate), self.getTotalMonthlyGoalsByType('redonation', monthdate)
         
     def getNeedsCount(self):
-        from project.models import ProjectNeed
+        from bitfund.project.models import ProjectNeed
         return ProjectNeed.objects.filter(project=self.id).filter(is_public=True).count()
         
     def getGoalsCount(self):
         import datetime
         from django.utils.timezone import utc, now
-        from project.models import ProjectGoal
+        from bitfund.project.models import ProjectGoal
         return (ProjectGoal.objects.filter(project=self.id)
-                                  .filter(is_public=True)
+                                   .filter(is_public=True)
                                   .filter(date_ending__gt=now())
                                   .filter(date_ending__lt=datetime.datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo))
                                   .filter(date_starting__lt=now())
@@ -143,7 +144,7 @@ class Project(models.Model):
                                   )
     
     def userEditAccess(self, user):
-        from project.models import ProjectUserRole
+        from bitfund.project.models import ProjectUserRole
         
         return (user.is_authenticated() and ProjectUserRole.objects.filter(project=self).filter(profile=user.id).filter(user_role__in=['treasurer', 'maintainer']).count() > 0)
 
@@ -172,7 +173,7 @@ class ProjectNeed(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Sum 
-        from pledger.models import DonationTransaction, DonationTransactionNeeds 
+        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds
 
         if monthdate is None:
             monthdate = now()
@@ -204,7 +205,7 @@ class ProjectNeed(models.Model):
         import datetime
         from django.utils.timezone import now
         from django.db.models import Sum 
-        from pledger.models import DonationTransaction, DonationTransactionNeeds 
+        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds
 
         if monthdate is None:
             monthdate = now()
@@ -247,7 +248,7 @@ class ProjectGoal(models.Model):
 
     def getTotalByType(self, transaction_type):
         from django.db.models import Sum 
-        from pledger.models import DonationTransaction, DonationTransactionGoals 
+        from bitfund.pledger.models import DonationTransaction, DonationTransactionGoals
 
         donation_histories = (DonationTransaction.objects
                                              .filter(accepting_project=self.project)
@@ -273,7 +274,7 @@ class ProjectGoal(models.Model):
     
     
 class ProjectUserRole(models.Model):
-    from pledger.models import Profile
+    from bitfund.pledger.models import Profile
 
     profile         = models.ForeignKey(Profile)
     project         = models.ForeignKey(Project)
@@ -309,7 +310,7 @@ class Project_Dependencies(models.Model):
     
     class Meta:
         unique_together = (("depender_project", "dependee_project"),)
-    
+
 
 class ProjectOtherSource(models.Model):
     project         = models.ForeignKey(Project)
@@ -409,5 +410,13 @@ class ProjectEvent(models.Model):
     date_published  = models.DateTimeField('date published', default=now(), null=True, blank=True)
     date_added      = models.DateTimeField('date added', default=now())
     is_public       = models.BooleanField(default=True)
-"""    
+
+    "Traceback (most recent call last):\n\n
+
+
+}
+
+"""
+
+
 

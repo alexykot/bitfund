@@ -1,10 +1,12 @@
 from functools import wraps
+
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.decorators import available_attrs
-from project.forms import *
-from project.lists import PROJECT_USER_ROLES
+
+from bitfund.project.forms import *
+from bitfund.project.lists import PROJECT_USER_ROLES
 
 """
 def user_is_project_maintainer(request):

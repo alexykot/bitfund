@@ -35,3 +35,4 @@ API_USER_TOKEN_PARAM_NAME     = 'userToken'
 API_TARGET_MONTH_PARAM_NAME   = 'targetMonth'
 
 SITE_CURRENCY                 = 'USD'
+

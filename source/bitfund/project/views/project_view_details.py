@@ -12,12 +12,12 @@ from django.utils.timezone import utc, now
 
 from bitfund.settings_project import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
 from bitfund.settings import TIME_ZONE
-from pledger.models import *
+from bitfund.pledger.models import *
 
-from project.models import *
-from project.forms import *
-from project.lists import PROJECT_USER_ROLES
-from project.decorators import *
+from bitfund.project.models import *
+from bitfund.project.forms import *
+from bitfund.project.lists import PROJECT_USER_ROLES
+from bitfund.project.decorators import *
 
 
 def view(request, project_key):
@@ -33,9 +33,6 @@ def view(request, project_key):
     template_data['project_outlinks']       = ProjectOutlink.objects.filter(project=project).filter(is_public=True).order_by('sort_order')
     template_data['project_categories']     = project.categories.all()
     
-    template_data['projects_idependedon_count'] = Project_Dependencies.objects.filter(idependon_project=project).count()
-    template_data['projects_dependonme_count']  = Project_Dependencies.objects.filter(dependonme_project=project).count()
-
     template_data['project_edit_access'] = project.userEditAccess(request.user)
 
 
@@ -66,6 +63,7 @@ def view(request, project_key):
     
 
     #CURRENT USER DONATIONS
+    """
     if (request.user.is_authenticated) :
         donation_cart    = DonationCart.objects.filter(user=request.user.id).filter(project=project.id)  
         if donation_cart.count() :
@@ -91,46 +89,59 @@ def view(request, project_key):
             template_data['donation_subscription']             = donation_subscription[0] 
             template_data['donation_subscription_needs_count'] = donation_subscription.needs.all().count()
             template_data['donation_subscription_needs_sum']   = donation_subscription.needs.all().aggregate(Sum('amount'))['amount__sum']
+    """
 
-    
     #ALL USERS DONATIONS
-    donationhistory_needs_total_sum           = project.getTotalMonthlyNeedsPledges() 
-    template_data['donations_total_sum']      = donationhistory_needs_total_sum
+    pledges_needs_total_sum, pledges_goals_total_sum           = project.getTotalMonthlyPledges()
+    template_data['donations_total_sum']      = pledges_needs_total_sum
     template_data['donations_total_pledgers'] = project.getTotalMonthlyBackers()
-      
-      
+
+
+    #REDONATIONS
+    redonations_needs_total_sum, redonations_goals_total_sum  = project.getTotalMonthlyRedonations()
+    template_data['redonations_needs_total_sum']  = redonations_needs_total_sum
+    template_data['redonations_goals_total_sum']  = redonations_goals_total_sum
+
     #OTHER SOURCES
-    other_sources_total_sum  = project.getTotalMonthlyOtherSources()
+    other_sources_needs_total_sum, other_sources_goals_total_sum  = project.getTotalMonthlyOtherSources()
+    other_sources_total_sum = other_sources_needs_total_sum + other_sources_goals_total_sum
     template_data['other_sources_total_sum']  = other_sources_total_sum
     other_sources_per_needgoal_amount         = int(round(other_sources_total_sum/(project_goals_count+project_needs_count))) #this needs to be replaced with direct budget assignment
 
 
     #DONUT CHART RADIANTS
-    template_data['donationhistory_radiant']  = min(360,round(360*(donationhistory_needs_total_sum / template_data['project_needs_total'])))
-    template_data['other_sources_radiant']    = min(360,round(360*(other_sources_total_sum / template_data['project_needs_total'])))
-    
-    template_data['total_gained_percent']     = int(round(((donationhistory_needs_total_sum+other_sources_total_sum)*100) / template_data['project_needs_total'])) 
+    template_data['pledges_radiant'] = min(360, round(
+        360 * (redonations_needs_total_sum / template_data['project_needs_total'])))
+    template_data['redonations_radiant'] = min(360, round(
+        360 * (redonations_needs_total_sum / template_data['project_needs_total'])))
+    template_data['other_sources_radiant'] = min(360, round(
+        360 * (other_sources_total_sum / template_data['project_needs_total'])))
 
-    if not (template_data['donationhistory_radiant'] or template_data['other_sources_radiant']) :
-        template_data['donationhistory_radiant'] = 2
-        template_data['other_sources_radiant']   = 1
-    
-    
+    template_data['total_gained_percent'] = int(round(
+        ((redonations_needs_total_sum + other_sources_total_sum) * 100) / template_data['project_needs_total']))
+
+    if not (template_data['pledges_radiant']  or template_data['redonations_radiant'] or template_data['other_sources_radiant']) :
+        template_data['pledges_radiant'] = 2
+        template_data['redonations_radiant'] = 1
+        template_data['other_sources_radiant'] = 1
+
+
     #GOALS DETAILS LIST
-    project_goals                               = (ProjectGoal.objects
-                                                                .filter(project=project)
-                                                                .filter(is_public=True)
-                                                                .filter(date_ending__gt=now())
-                                                                .filter(date_starting__lt=now())
-                                                                .order_by('sort_order')[:MAX_GOALS_ON_PROJECT_PAGE]
-                                                                )
-    template_data['project_goals']              = []
-                   
+    project_goals = (ProjectGoal.objects
+                     .filter(project=project)
+                     .filter(is_public=True)
+                     .filter(date_ending__gt=now())
+                     .filter(date_starting__lt=now())
+                     .order_by('sort_order')[:MAX_GOALS_ON_PROJECT_PAGE]
+    )
+    template_data['project_goals'] = []
+
     for goal in project_goals:
-        donations_amount             = DonationHistoryGoals.objects.filter(goal=goal).aggregate(Sum('amount'))['amount__sum']
-        donations_radiant            = min(360, round(360*(donations_amount / goal.amount)))
-        other_sources_radiant        = min(360, round(360*(other_sources_per_needgoal_amount / goal.amount)))
-        total_percent                = int(math.ceil(((donations_amount+other_sources_per_needgoal_amount)*100) / goal.amount))
+        donations_amount             = (DonationTransactionGoals.objects.filter(goal=goal)
+                                        .aggregate(Sum('amount'))['amount__sum']) or 0
+        donations_radiant            = min(360, round(360 * (donations_amount/goal.amount)))
+        other_sources_radiant        = min(360, round(360 * (other_sources_per_needgoal_amount/goal.amount)))
+        total_percent                = int(math.ceil(((donations_amount+other_sources_per_needgoal_amount) * 100) / goal.amount))
         
         if not (donations_radiant or other_sources_radiant) :
             donations_radiant     = 2

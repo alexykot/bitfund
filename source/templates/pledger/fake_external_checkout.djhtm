@@ -14,7 +14,7 @@
     <p>Ammount to be paid is: <b>${{ request.REQUEST.amount }}</b> </p>
     <form method="post" action="">
         {% csrf_token %}
-        <input type="submit" value="confirm payment" /> <a href="{% url pledger.views.donations_overview %}">cancel</a>
+        <input type="submit" value="confirm payment" /> <a href="{% url bitfund.pledger.views.donations_overview %}">cancel</a>
     </form>
     
 

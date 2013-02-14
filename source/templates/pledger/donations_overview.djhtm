@@ -64,7 +64,7 @@ $(document).ready(function(){
 		});
 		
 		$.ajax({
-		  url: "{% url pledger.views.donations_update %}",
+		  url: "{% url bitfund.pledger.views.donations_update %}",
 		  data: form_data,
 		  type: 'POST',
 		  context: document.body
@@ -153,7 +153,7 @@ $(document).ready(function(){
 
 <div class="row">
 	<div class="span12 kf_checkout kf_center">
-		<a href="{% url pledger.views.checkout %}"><div>confirm and send payments</div></a>
+		<a href="{% url bitfund.pledger.views.checkout %}"><div>confirm and send payments</div></a>
 	</div>
 </div>
 </form>

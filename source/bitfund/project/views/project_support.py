@@ -15,11 +15,11 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 
-from bitfund.custom_configs import DEFAULT_PASSWORD, DEFAULT_MONTHLY_DONATION_AMOUNT, DEFAULT_ONETIME_DONATION_AMOUNT
-from project.models import *
-from pledger.models import *
-from project.forms import *
-from project.decorators import *
+from bitfund.settings_project import DEFAULT_PASSWORD, DEFAULT_MONTHLY_DONATION_AMOUNT, DEFAULT_ONETIME_DONATION_AMOUNT
+from bitfund.project.models import *
+from bitfund.project.forms import *
+from bitfund.project.decorators import *
+from bitfund.pledger.models import *
 
 
 @user_is_not_project_maintainer
@@ -143,7 +143,7 @@ def support(request, project_key, support_type='onetime'):
                 if (User.objects.filter(username=email).count() or User.objects.filter(email=email).count()) :
                     user = User.objects.get(email=email_form.cleaned_data['user_email'])
                     if not user.groups.filter(name='strangers').count() :
-                        return redirect_to_login(reverse('project.views.support', args=(project.key, support_type,)))
+                        return redirect_to_login(reverse('bitfund.project.views.support', args=(project.key, support_type,)))
                 else :
                     user = User.objects.create_user(email_form.cleaned_data['user_email'], email_form.cleaned_data['user_email'], DEFAULT_PASSWORD)
                     user.save()
@@ -183,7 +183,7 @@ def support(request, project_key, support_type='onetime'):
                     donation_cart_goal.goal          = ProjectGoal.objects.filter(project=project).get(pk=goal_form.cleaned_data['goal'])
                     donation_cart_goal.save()
 
-            return HttpResponseRedirect(reverse('project.views.view', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
         else :
             return render_to_response('project/support.djhtm', {'project'        : project,
                                                                 'request'        : request,
@@ -219,5 +219,5 @@ def drop_support(request, project_key):
             
         donation_cart_list.delete()
         
-    return HttpResponseRedirect(reverse('project.views.view', args=(project.key,)))
+    return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
 

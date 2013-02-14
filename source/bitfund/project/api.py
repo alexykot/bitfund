@@ -21,8 +21,8 @@ from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
 from tastypie.bundle import Bundle
 
 from bitfund.settings_project import TIME_TO_SHOW_HOURS, API_USER_TOKEN_PARAM_NAME, API_TARGET_MONTH_PARAM_NAME, SITE_CURRENCY
-from project.models import *
-from pledger.models import *
+from bitfund.project.models import *
+from bitfund.pledger.models import *
 
 
 def checkUserToken(user_token):
@@ -110,8 +110,8 @@ class ProjectResource(ModelResource):
          
 
          
-        request = bundle.request 
-        
+        request = bundle.request
+
         project = get_object_or_404(Project, key=bundle.data['key'])
         
         #GENERAL BUDGET DATA
@@ -121,14 +121,14 @@ class ProjectResource(ModelResource):
         user_token, user = checkUserToken(request.GET.get(API_USER_TOKEN_PARAM_NAME, None))
         
         bundle.data['target_month']        = target_month.strftime('%b %Y')
-        bundle.data['project_profile_URL'] = 'http://'+request.META['HTTP_HOST']+reverse('project.views.view', kwargs={'project_key':project.key})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token 
+        bundle.data['project_profile_URL'] = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.view', kwargs={'project_key':project.key})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token
         
         project_budget_total                                    = project.getTotalMonthlyBudget(target_month)
         project_budget['budget_monthly']                        = {}
         project_budget['budget_monthly']['amount']              = project_budget_total 
         project_budget['budget_monthly']['currency']            = 'USD'
         project_budget['budget_monthly']['formatted']           = '$'+filters.floatformat(project_budget_total, 2)
-        project_budget['budget_monthly']['chart_image_URL']     = 'http://'+request.META['HTTP_HOST']+reverse('project.views.chart_image', kwargs={'project_key':project.key})
+        project_budget['budget_monthly']['chart_image_URL']     = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.chart_image', kwargs={'project_key':project.key})
         
         
         project_budget['end_utctimestamp']        = time.mktime(datetime(target_month.year, target_month.month+1, 1, tzinfo=target_month.tzinfo).utctimetuple())-1 #-1 because it's the last second of previous month, not first second of the next one
@@ -342,7 +342,7 @@ class ProjectNeedResource(ModelResource):
         need_budget_monthly['amount']           = need.amount  
         need_budget_monthly['currency']         = SITE_CURRENCY
         need_budget_monthly['formatted']        = '$'+filters.floatformat(need.amount, 2)
-        need_budget_monthly['chart_image_URL']  = 'http://'+request.META['HTTP_HOST']+reverse('project.views.chart_image', kwargs={'project_key':need.project.key, 'need_key':need.key,})
+        need_budget_monthly['chart_image_URL']  = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.chart_image', kwargs={'project_key':need.project.key, 'need_key':need.key,})
 
 
         
@@ -462,7 +462,7 @@ class ProjectGoalResource(ModelResource):
         goal_budget_total['amount']           = goal.amount  
         goal_budget_total['currency']         = SITE_CURRENCY
         goal_budget_total['formatted']        = '$'+filters.floatformat(goal.amount, 2)
-        goal_budget_total['chart_image_URL']  = 'http://'+request.META['HTTP_HOST']+reverse('project.views.chart_image', kwargs={'project_key':goal.project.key, 'goal_key':goal.key,})
+        goal_budget_total['chart_image_URL']  = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.chart_image', kwargs={'project_key':goal.project.key, 'goal_key':goal.key,})
 
         goal_pledges_sum = goal.getTotalPledges()
         goal_pledges               = {}
@@ -501,7 +501,7 @@ class ProjectGoalResource(ModelResource):
         goal_budget_outstanding['formatted']  = '$'+filters.floatformat(goal_budget_outstanding_sum, 2)
             
 
-        bundle_or_obj.data['goal_profile_URL']      = 'http://'+request.META['HTTP_HOST']+reverse('project.views.goal_view', kwargs={'project_key':goal.project.key, 'goal_key':goal.key,})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token
+        bundle_or_obj.data['goal_profile_URL']      = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.goal_view', kwargs={'project_key':goal.project.key, 'goal_key':goal.key,})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token
         bundle_or_obj.data['goal_budget']           = goal_budget_total
         bundle_or_obj.data['goal_outstanding']      = goal_budget_outstanding
         bundle_or_obj.data['pledges']               = goal_pledges

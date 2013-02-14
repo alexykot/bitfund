@@ -8,10 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
 
-from userena.models import UserenaBaseProfile
-
-from project.models import *
-from project.lists import *
+from bitfund.project.models import *
+from bitfund.project.lists import *
 
 DONATION_TRANSACTION_TYPES_CHOICES = (
     ('pledge', u'Pledge'),
@@ -26,14 +24,14 @@ DONATION_TRANSACTION_STATUSES_CHOICES = (
 )
 
 
-class Profile(UserenaBaseProfile):
+class Profile(User):
     user                    = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
     api_token               = models.CharField(max_length=255, unique=True)
     donation_is_public      = models.BooleanField(default=True)
     
     def getTotalProjectDonations(self, project):
         from django.db.models import Sum 
-        from pledger.models import DonationTransaction, DonationTransactionNeeds, DonationTransactionGoals
+        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds, DonationTransactionGoals
         
         user_project_donations_history           = DonationTransaction.objects.filter(user=self.user).filter(project=project)
         user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history__in=user_project_donations_history)
@@ -294,7 +292,7 @@ class DonationSubscriptionNeeds(models.Model):
     amount                  = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
      
-#donation history, storing all past donation transactions, for both onetime and monthly donations      
+#donation history, storing all past donation transactions, for both onetime and monthly donations
 class DonationTransaction(models.Model):
     transaction_type                = models.CharField(max_length=64, choices=DONATION_TRANSACTION_TYPES_CHOICES)
     transaction_hash                = models.CharField(max_length=64, unique=True)
@@ -341,7 +339,7 @@ class DonationTransaction(models.Model):
 
     def getAmount(self):
         from django.db.models import Sum
-        from pledger.models import DonationTransactionNeeds, DonationTransactionGoals
+        from bitfund.pledger.models import DonationTransactionNeeds, DonationTransactionGoals
         
         user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history=self)
                                                                                 .aggregate(Sum('amount'))['amount__sum']
@@ -381,4 +379,3 @@ class DonationTransactionGoals(models.Model):
     goal_date_ending            = models.DateField('date ending')
     amount                      = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-                                                   

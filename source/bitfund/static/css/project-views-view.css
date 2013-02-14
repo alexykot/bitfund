@@ -128,13 +128,9 @@
     height: 10px;
 }
 
-.kf_project-views-view .kf_legend .kf_backer{
-    background-color: #AECCEB; 
-}
-
-.kf_project-views-view .kf_legend .kf_other{
-    background-color: #E32D4B; 
-}
+.kf_project-views-view .kf_legend .kf_pledges{background-color: #586F05; }
+.kf_project-views-view .kf_legend .kf_redonations{background-color: #8DB308;}
+.kf_project-views-view .kf_legend .kf_other{background-color: #EFBC09;}
 
 .kf_project-views-view #chartdiv{
     width: 150px;

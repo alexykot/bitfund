@@ -27,21 +27,21 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 
-    #project custom middleware 
-    'bitfund.middleware.HiddenEntranceMiddleware',
-    'bitfund.middleware.SaveUserTokenMiddleware',
-    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
-    
+
     # installed middleware
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    
+
+    #project custom middleware
+    'bitfund.middleware.HiddenEntranceMiddleware',
+    'bitfund.middleware.SaveUserTokenMiddleware',
+
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -63,27 +63,26 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    
-    
+
+
     # proejct apps
-    'bitfund',          # bitfund core 
-    'pledger',          # pledger account
-    'project',          # project
-    'accounts',         # project
-    
+    'bitfund',          # bitfund core
+    'bitfund.pledger',          # pledger account
+    'bitfund.project',          # project
+
     # installed thirdparty apps
     # utilities 
-    'south',            # DB migrations  
+    'south',            # DB migrations
     'debug_toolbar',    # debug toolbar
 
     # functionality extensions
-    'crispy_forms',     # bootstrap based forms styling   
+    'crispy_forms',     # bootstrap based forms styling
     'django_cleanup',   # autodelete old files for FileField
-    'widget_tweaks',    # easy CSS stryling for forms  
-    'userena',          # user accounts enhanced
+    'widget_tweaks',    # easy CSS stryling for forms
     'guardian',         # object permissions checking
     'easy_thumbnails',  # easier thumbnailing
-    'tastypie',         # API framework          
+    'tastypie',         # API framework
+    'social_auth'       # authentication via various big name sites
 )
 
 # A sample logging configuration. The only tangible logging
@@ -124,17 +123,37 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    
-    
+
+
     #custom processors
     'bitfund.context_processors.frontend_header_template_data',
     'bitfund.context_processors.user_is_stranger',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'userena.backends.UserenaAuthenticationBackend',
     'guardian.backends.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
+
+    # 'social_auth.backends.twitter.TwitterBackend',
+    # 'social_auth.backends.facebook.FacebookBackend',
+    # 'social_auth.backends.google.GoogleOAuthBackend',
+    # 'social_auth.backends.google.GoogleOAuth2Backend',
+    # 'social_auth.backends.google.GoogleBackend',
+    # 'social_auth.backends.yahoo.YahooBackend',
+    # 'social_auth.backends.browserid.BrowserIDBackend',
+    # 'social_auth.backends.contrib.linkedin.LinkedinBackend',
+    # 'social_auth.backends.contrib.disqus.DisqusBackend',
+    # 'social_auth.backends.contrib.livejournal.LiveJournalBackend',
+    # 'social_auth.backends.contrib.orkut.OrkutBackend',
+    # 'social_auth.backends.contrib.foursquare.FoursquareBackend',
+    # 'social_auth.backends.contrib.github.GithubBackend',
+    # 'social_auth.backends.contrib.vkontakte.VKontakteBackend',
+    # 'social_auth.backends.contrib.live.LiveBackend',
+    # 'social_auth.backends.contrib.skyrock.SkyrockBackend',
+    # 'social_auth.backends.contrib.yahoo.YahooOAuthBackend',
+    # 'social_auth.backends.contrib.readability.ReadabilityBackend',
+    # 'social_auth.backends.OpenIDBackend',
+
 )
 
 

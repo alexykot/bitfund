@@ -11,11 +11,11 @@ from django.utils.timezone import utc, now
 
 from bitfund.settings_project import MAX_EXPENSES_ON_PROJECT_PAGE, MAX_USERS_ON_PROJECT_PAGE, MAX_GOALS_ON_PROJECT_PAGE
 from bitfund.settings import TIME_ZONE
-from project.models import *
-from project.forms import *
-from project.lists import PROJECT_USER_ROLES
-from project.decorators import *
-from pledger.models import *
+from bitfund.project.models import *
+from bitfund.project.forms import *
+from bitfund.project.lists import PROJECT_USER_ROLES
+from bitfund.project.decorators import *
+from bitfund.pledger.models import *
 
 
 def view(request, project_key):

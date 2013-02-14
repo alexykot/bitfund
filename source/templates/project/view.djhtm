@@ -4,10 +4,12 @@
 
 
 {% block pagescripts %}
+<script type="text/javascript">
 $(document).ready(function(){
 
-    var otherRadiant   = {{other_sources_radiant}};
-    var donationsRadiant = {{donationhistory_radiant}};
+    var pledgesRadiant = {{pledges_radiant}};
+    var redonationsRadiant = {{redonations_radiant}};
+    var otherRadiant = {{other_sources_radiant}};
 
     var backgroundSeries = [['a',100], ['b',100]];
     var backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
@@ -16,18 +18,25 @@ $(document).ready(function(){
         seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 4,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 94,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
     });
 
-    var otherSeries = [['c',(otherRadiant+donationsRadiant)], ['d',(360-(otherRadiant+donationsRadiant))]];
+    var otherSeries = [['c',(otherRadiant+redonationsRadiant+pledgesRadiant)], ['d',(360-(otherRadiant+redonationsRadiant+pledgesRadiant))]];
     var otherDonut = $.jqplot('chartdiv', [otherSeries], {
         grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
-        seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
+        seriesColors: [ "#EFBC09", "rgba(0,0,0,0)"],
         seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 8,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 98,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
     });
 
-    var donationsSeries = [['a',(donationsRadiant)], ['b',360-donationsRadiant]];
-    var donationsDonut = $.jqplot('chartdiv', [donationsSeries], {
+    var redonationsSeries = [['c',(redonationsRadiant+pledgesRadiant)], ['d',(360-(redonationsRadiant+pledgesRadiant))]];
+    var redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
         grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
-        seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
+        seriesColors: [ "#8DB308", "rgba(0,0,0,0)"],
         seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 14,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 105,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
+    });
+
+    var pledgesSeries = [['a',(pledgesRadiant)], ['b',360-pledgesRadiant]];
+    var pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
+        grid: {drawBorder: false,drawGridlines: false,background: 'rgba(0,0,0,0)',shadow:false,},
+        seriesColors: [ "#586F05", "rgba(0,0,0,0)"],
+        seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 18,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 110,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
     });
 
 
@@ -55,9 +64,6 @@ $(document).ready(function(){
             seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
             seriesDefaults: {renderer:$.jqplot.DonutRenderer,rendererOptions:{thickness: 6,sliceMargin: 0,startAngle: -90,ringMargin: -14,diameter: 45,showDataLabels: false,shadow:false,highlightMouseOver: false,}},
         });
-        
-        
-        
     {% endfor %}
 
 	$('#mainPledgeButtonMonthly, #mainPledgeButtonOnetime').click(function(event){
@@ -92,6 +98,7 @@ $(document).ready(function(){
 		
 
 });
+</script>
 {% endblock pagescripts %}
 
 
@@ -102,34 +109,8 @@ $(document).ready(function(){
 {% include "project/project-header.djhtm" %}
 
 <div class="row">
-    <div class="span6">
-        <div class="row kf_project_brief">
-            <div class="span6">
-                {{ project.brief }}
-            </div>        
-        </div>
-        <div class="row kf_project_people">
-            {% for project_user_role in project_users %}
-	            <div class="span1 kf_project_people_avatar">
-	                {% if project_user_role.profile.mugshot %}
-	                	<img src="{{ project_user_role.profile.mugshot.url }}" /> 
-	                {% endif %}
-	            </div>
-	            <div class="span2 kf_user_text">
-	                <p><a href="#" class="kf_person_name">
-	                    {% if project_user_role.profile.user.first_name and project_user_role.profile.user.last_name %}
-	                        {{ project_user_role.profile.user.first_name }} {{ project_user_role.profile.user.last_name }}
-	                    {% else %} 
-	                        {{ project_user_role.profile.user.username }}
-	                    {% endif %}
-	                </a></p>
-	                <p class="kf_person_role">{{ project_user_role.user_role_title }}</p>
-	            </div>
-            {% endfor %}
-        </div>
-    </div> 
 
-    <div class="span6">
+    <div class="span4">
 {% if project_needs_count or project_goals_count %}
 
 	<form method="get" action="{% url project.views.support project_key=project.key support_type='monthly' %}" id="pledgeForm">
@@ -143,11 +124,12 @@ $(document).ready(function(){
                 </div>
             </div>
             <div class="row kf_legend">
-                <span class="kf_backer"></span> Backer Support <br />
+                <span class="kf_pledges"></span> Backer Support <br />
+                <span class="kf_redonations"></span> Depended Projects <br />
                 <span class="kf_other"></span> Other Sources
             </div>
         </div> 
-        <div class="span4">
+        <div class="span2">
             <div class="row kf_pledged">
                 <div class="span3">
                     ${{ donations_total_sum }}<br />
@@ -160,33 +142,14 @@ $(document).ready(function(){
             </div>
             {% if donations_total_other_sources %}
             <div class="row kf_other">
-                <div class="span4"> ${{ donations_total_other_sources }} gained from other sources </div>
+                <div class="span2"> ${{ donations_total_other_sources }} gained from other sources </div>
             </div>
             {% endif %}
                                 
             <div class="row kf_details">
-                <div class="span4"> 
+                <div class="span2">
                     <div class="row">
-                        <div class="span4 kf_needed"> 
-                            <h4> ${{ project_needs_total }} asked this month for:</h4>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span4" id="needs_preselection_list"> 
-                            <ul style="display:none;">
-                            {% for needgoal in needsgoals_form.needsgoals %}
-                                {{ needgoal }}
-                            {% endfor %}
-                            </ul>                    
-                            {% if project_moar_needsgoals_count %}
-                                <a href="#" id="show_all_needs_preselection">and {{ project_moar_needsgoals_count }} more</a> 
-                            {% endif %}
-                                <a href="#" id="select_all_needs_preselection">Select all</a>
-                            
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span4"> 
+                        <div class="span2">
             
                             {# buttons&history start #}
                             {% if project_edit_access %}
@@ -256,22 +219,12 @@ $(document).ready(function(){
     {% endif %}
 
 {% endif %}
+    </div>
+    <div class="span8">
+        <h4> ${{ project_needs_total }} asked this month for:</h4>
+    </div>
 
 
-    </div>
-</div>
-<div class="row">
-    <div class="span12 kf_subheader">
-        <div>
-            <hr /> <h2><span>Project Timeline</span></h2>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="span12 kf_timeline kf_center">
-        <img src="{{ STATIC_URL }}img/fake_timeline.png" />    
-    </div>
 </div>
 
 <div class="row">

@@ -10,9 +10,9 @@ from django.db.models import Count, Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now 
 
-from project.models import *
-from project.forms import *
-from pledger.models import *
+from bitfund.project.models import *
+from bitfund.project.forms import *
+from bitfund.pledger.models import *
 
 
 def goals(request, project_key):
