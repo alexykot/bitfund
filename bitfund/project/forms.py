@@ -5,9 +5,11 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
+import selectable
+
 from bitfund.core.models import *
 from bitfund.project.models import *
-from bitfund.pledger.models import *
+from bitfund.project.lookups import LinkedProjectsLookup
 
 class CreateProjectForm(forms.ModelForm):
     def __init__(self, *args, **kw):
@@ -94,8 +96,16 @@ class CreateProjectGoalForm(forms.ModelForm):
     class Meta:
         model   = ProjectGoal
         fields  = {'key', 'title', 'date_ending', 'amount', 'brief', }
-        
-        
-        
-        
-        
+
+
+# class AddLinkedProjectForm(forms.Form):
+#     project_title = forms.CharField(
+#         label=u'Select Project',
+#         widget=selectable.AutoCompleteWidget(LinkedProjectsLookup),
+#         required=True,
+#         )
+#     project_percent = forms.CharField(required=False)
+#     project_amount = forms.CharField(required=False)
+
+
+

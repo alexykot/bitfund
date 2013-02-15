@@ -1,4 +1,4 @@
-
+# django-debug-toolbar
 # installed apps settings
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
@@ -21,8 +21,11 @@ DEBUG_TOOLBAR_CONFIG = {
     #'ENABLE_STACKTRACES' : True,
 }
 
-#django guardian 
+# django-guardian
 ANONYMOUS_USER_ID   = -1
 AUTH_PROFILE_MODULE = 'pledger.Profile'
 
+
+# django-tastypie
 TASTYPIE_FULL_DEBUG = True
+

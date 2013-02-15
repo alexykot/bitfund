@@ -6,7 +6,10 @@
 {% block pagescripts %}
     <script type="text/javascript">
         $(document).ready(function () {
-
+            $('a.project_crud').click(function(event){
+                event.preventDefault();
+                $('#add_edit_linked_project').load($(this).attr('href'));
+            });
         });
     </script>
 {% endblock pagescripts %}
@@ -40,23 +43,7 @@
         </div>
 
         <div class="span5">
-            {% if projects_i_depend_on_count %}
-                <h2>Projects {{ project.title }} depends on:</h2>
-                <ul>
-                    {% for project_i_depend_on in projects_i_depend_on %}
-                        <li><a href="{% url bitfund.project.views.view project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a> -
-                            {% if project_i_depend_on.amount_sum > 0 %}
-                                {{ site_currency_sign }}{{ project_i_depend_on.amount_sum|floatformat:2 }}
-                            {% elif project_i_depend_on.amount_percent > 0 %}
-                                {{ project_i_depend_on.amount_percent|floatformat }}%
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <h2>{{ project.title }} doesn't depend on any projects</h2>
-            {% endif %}
-
+            {% include "project/linked_projects/i_depend_on_projects_list.djhtm" %}
         </div>
 
     </div>

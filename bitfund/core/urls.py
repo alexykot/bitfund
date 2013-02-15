@@ -2,12 +2,13 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.simple import redirect_to
+#from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-from bitfund.core.settings.project import PROJECT_VERSION
 from bitfund.project.api import *
 
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
+
 
 #DJANGO USUAL
 urlpatterns = patterns('',
@@ -27,6 +28,7 @@ urlpatterns += patterns('',
     (r'^api/', include(ProjectResource().urls)),
     (r'^api/', include(ProjectNeedResource().urls)),
     (r'^api/', include(ProjectGoalResource().urls)),
+    (r'^selectable/', include('selectable.urls')),
 )
 
 #MISC PAGES
@@ -70,6 +72,8 @@ urlpatterns += patterns('bitfund.project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goals/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
+    (r'^projects/(?P<main_project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/(?P<action>add)/{0,}$', 'crud_linked_project'),
+    (r'^projects/(?P<main_project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/(?P<action>edit|drop)/(?P<linked_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'crud_linked_project'),
 
 )
 
@@ -92,4 +96,4 @@ if settings.DEBUG:
     )
     urlpatterns += patterns('django.contrib.staticfiles.views',
         url(r'^static/(?P<path>.*)$', 'serve'),
-    ) 
+    )

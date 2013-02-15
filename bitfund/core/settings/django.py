@@ -21,7 +21,7 @@ STATICFILES_FINDERS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     'tastypie',         # API framework
     #'social_auth'       # authentication via various big name sites
     'model_utils',      # models utilities
+    'selectable',       # select fields ajax autocomplete lookups
 )
 
 # A sample logging configuration. The only tangible logging
@@ -115,13 +116,14 @@ LOGGING = {
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     # django defaults
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
 
 
     #custom processors

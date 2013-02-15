@@ -1,0 +1,30 @@
+{% if projects_i_depend_on_count %}
+    <h2>Projects {{ project.title }} depends on:</h2>
+    <ul>
+        {% for project_i_depend_on in projects_i_depend_on %}
+            <li><a href="{% url bitfund.project.views.view project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a> -
+                {% if project_i_depend_on.amount_sum > 0 %}
+                    {{ site_currency_sign }}{{ project_i_depend_on.amount_sum|floatformat:2 }}
+                {% elif project_i_depend_on.amount_percent > 0 %}
+                    {{ project_i_depend_on.amount_percent|floatformat }}%
+                {% endif %}
+                {% if project_edit_access %}
+                    <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key linked_project_key=project_i_depend_on.key action='edit'  %}" class="project_crud">edit</a>
+                {% endif %}
+                {% if project_edit_access %}
+                    <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key linked_project_key=project_i_depend_on.key action='drop'  %}" class="project_crud">drop</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h2>{{ project.title }} doesn't depend on any projects</h2>
+{% endif %}
+{% if project_edit_access %}
+    {% if crud_linked_project_action == 'add' %}
+        {{ crud_linked_project_add_form }}
+    {% else %}
+        <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key action='add'  %}" class="project_crud">add</a>
+    {% endif %}
+{% endif %}
+

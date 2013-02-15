@@ -9,7 +9,8 @@ from django.utils.timezone import utc, now
 from bitfund.core.settings.project import MAX_EXPENSES_ON_PROJECT_PAGE, SITE_CURRENCY_CODE, SITE_CURRENCY_SIGN
 from bitfund.project.models import *
 from bitfund.project.forms import *
-from bitfund.pledger.models import *
+from bitfund.pledger.models import DonationTransactionGoals
+#from bitfund.core.decorators import ajax_required
 
 def view(request, project_key):
     project = get_object_or_404(Project, key=project_key)
@@ -170,7 +171,7 @@ def view(request, project_key):
 def chart_image(request, project_key, need_key=None, goal_key=None):
     return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
 
-def linked_projects(request, project_key, need_key=None, goal_key=None):
+def linked_projects(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 
     template_data = {'project': project,
@@ -184,6 +185,12 @@ def linked_projects(request, project_key, need_key=None, goal_key=None):
                                 .order_by('sort_order')
                                 .prefetch_related('depender_project')
     )
+
+    if project.maintainer_id == request.user.id :
+        template_data['project_edit_access'] = True
+    else :
+        template_data['project_edit_access'] = False
+
     template_data['projects_depending_on_me'] = []
     template_data['projects_depending_on_me_count'] = projects_depending_on_me.count()
     #template_data['projects_depending_on_me'] = projects_depending_on_me
@@ -212,5 +219,47 @@ def linked_projects(request, project_key, need_key=None, goal_key=None):
                                                      'amount_percent': project_i_depend_on.redonation_percent,
                                                      })
 
+    return render_to_response('project/linked_projects/linked_projects.djhtm', template_data, context_instance=RequestContext(request))
 
-    return render_to_response('project/linked_projects.djhtm', template_data, context_instance=RequestContext(request))
+#@ajax_required
+def crud_linked_project(request, main_project_key, linked_project_key=None, action=None):
+    project = get_object_or_404(Project, key=main_project_key)
+
+    template_data = {'project': project,
+                     'request': request,
+                     'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     }
+
+    projects_i_depend_on = (Project_Dependencies.objects
+                            .filter(depender_project=project.id)
+                            .order_by('sort_order')
+                            .prefetch_related('dependee_project')
+    )
+    template_data['projects_i_depend_on'] = []
+    template_data['projects_i_depend_on_count'] = projects_i_depend_on.count()
+    for project_i_depend_on in projects_i_depend_on:
+        template_data['projects_i_depend_on'].append({'id': project_i_depend_on.dependee_project.id,
+                                                      'key': project_i_depend_on.dependee_project.key,
+                                                      'title': project_i_depend_on.dependee_project.title,
+                                                      'logo': project_i_depend_on.dependee_project.logo,
+                                                      'amount_sum': project_i_depend_on.redonation_amount,
+                                                      'amount_percent': project_i_depend_on.redonation_percent,
+                                                      })
+
+
+    if linked_project_key is None:
+        template_data['crud_linked_project_action'] = 'add'
+
+        return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
+
+    linked_project = get_object_or_404(Project, key=linked_project_key)
+    template_data['linked_project'] = linked_project
+
+    #template_data['crud_linked_project_add_form'] = AddLinkedProjectForm()
+
+    if action == 'delete' :
+        return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
+    else :
+        return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
+
+
