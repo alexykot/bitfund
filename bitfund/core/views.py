@@ -21,7 +21,7 @@ from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMET
 def index(request):
     public_projects_list    = Project.objects.filter(Q(is_public = True))
     
-    return render_to_response('bitfund/index.djhtm', {'public_projects_list' : public_projects_list,
+    return render_to_response('core/index.djhtm', {'public_projects_list' : public_projects_list,
                                                   'request'               : request,
                                                   }, context_instance=RequestContext(request))
 
@@ -67,14 +67,14 @@ def login(request):
         else :
             login_error = 'login / password key pair is wrong'
                     
-        return render_to_response('bitfund/login.djhtm', {'form'        : form,
+        return render_to_response('core/login.djhtm', {'form'        : form,
                                                       'request'     : request,
                                                       'login_error' : login_error,
                                                       }, context_instance=RequestContext(request))
     else : 
         form = LoginForm()
             
-        return render_to_response('bitfund/login.djhtm', {'form'     : form,
+        return render_to_response('core/login.djhtm', {'form'     : form,
                                                       'request'  : request,
                                                       }, context_instance=RequestContext(request))
 
@@ -133,7 +133,7 @@ def register(request):
             
             return HttpResponseRedirect(reverse('bitfund.core.views.index'))
         else :
-            return render_to_response('bitfund/register.djhtm', {'form'     : form,
+            return render_to_response('core/register.djhtm', {'form'     : form,
                                                              'request'  : request,
                                                              }, context_instance=RequestContext(request))
         
@@ -155,19 +155,19 @@ def landing(request):
             
             send_mail('Message at bitfund.org from '+email, message, email, ['alexykot@gmail.com'], fail_silently=False)
             
-            return render_to_response('bitfund/landing.djhtm', {'form'         : form,
+            return render_to_response('core/landing.djhtm', {'form'         : form,
                                                                 'message_sent' : True,
                                                                 'request'      : request,
                                                                 }, context_instance=RequestContext(request))
         else :
-            return render_to_response('bitfund/landing.djhtm', {'form'     : form,
+            return render_to_response('core/landing.djhtm', {'form'     : form,
                                                                 'request'  : request,
                                                                 }, context_instance=RequestContext(request))
              
     else :            
         form = ContactForm()
 
-    return render_to_response('bitfund/landing.djhtm', {'form'      : form,
+    return render_to_response('core/landing.djhtm', {'form'      : form,
                                                         'request'   : request,
                                                         }, context_instance=RequestContext(request))
     

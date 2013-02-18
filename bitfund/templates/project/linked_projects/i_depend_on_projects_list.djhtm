@@ -22,9 +22,29 @@
 {% endif %}
 {% if project_edit_access %}
     {% if crud_linked_project_action == 'add' %}
-        {{ crud_linked_project_add_form }}
+        <form action="{% url bitfund.project.views.crud_linked_project main_project_key=project.key action='add' %}"
+              id="crud_linked_project_add_form">
+            {% csrf_token %}
+            {{ crud_linked_project_add_form.as_p }}
+            <input type="submit" value="Submit"/>
+        </form>
+        <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key %}" class="project_crud">cancel</a>
     {% else %}
-        <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key action='add'  %}" class="project_crud">add</a>
+        <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key action='add' %}"
+           class="project_crud">add</a>
     {% endif %}
 {% endif %}
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('a.project_crud').click(function(event){
+            event.preventDefault();
+            $('#i_depend_on_projects_list').load($(this).attr('href'));
+        });
+
+        $('#crud_linked_project_add_form').submit(function(event){
+            event.preventDefault();
+            $('#i_depend_on_projects_list').load($(this).attr('action'), $(this).serializeObject());
+        });
+    });
+</script>

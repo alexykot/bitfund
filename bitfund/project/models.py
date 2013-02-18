@@ -1,3 +1,5 @@
+from decimal import Decimal, getcontext
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.datetime_safe import datetime
@@ -5,6 +7,7 @@ from django.utils.timezone import utc, now
 from django.db.models import Count, Sum
 
 from bitfund.project.lists import *
+from bitfund.core.settings.project import CALCULATIONS_PRECISION
 
 class ProjectCategory(models.Model):
     key           = models.CharField(max_length=80, unique=True)
@@ -49,24 +52,24 @@ class Project(models.Model):
 
     # gets total monthly budget for project, i.e. sum of all active needs
     def getTotalMonthlyBudget(self, monthdate=None):
-        from bitfund.project.models import ProjectNeed
-            
+        getcontext().prec = CALCULATIONS_PRECISION
+
         if monthdate is None:
             monthdate = now()
             
-        lasting = (ProjectNeed.objects
+        lasting = Decimal((ProjectNeed.objects
                               .filter(project=self.id)
                               .filter(is_public=True)
                               .filter(date_ending=None)
                               .aggregate(Sum('amount'))['amount__sum']
-                              ) or 0
-        limited = (ProjectNeed.objects
+                              ) or 0)
+        limited = Decimal((ProjectNeed.objects
                               .filter(project=self.id)
                               .filter(is_public=True)
                               .filter(date_starting__lte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                               .filter(date_ending__gt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
                               .aggregate(Sum('amount'))['amount__sum']
-                              ) or 0
+                              ) or 0)
                                
         return limited+lasting
 
@@ -147,16 +150,19 @@ class Project(models.Model):
         return Project_Dependencies.objects.filter(depender_project=self).count(), \
                Project_Dependencies.objects.filter(dependee_project=self).count()
 
+    # calculates total percent redonated to all linked projects. Includes fixed amount redonations, recalculated into
+    # percent from current budget
     def getRedonationsPercent(self):
-        total_redonation_percent = 0.0
+        total_redonation_percent = Decimal(0)
         project_budget = self.getTotalMonthlyBudget()
+        getcontext().prec = CALCULATIONS_PRECISION
 
         redonation_projects = Project_Dependencies.objects.filter(depender_project=self)
         for redonation_project in redonation_projects :
             if redonation_project.redonation_amount > 0 :
-                total_redonation_percent = total_redonation_percent + round(((redonation_project.redonation_amount*100) / project_budget),2)
+                total_redonation_percent = total_redonation_percent + ((Decimal(redonation_project.redonation_amount)*100) / Decimal(project_budget))
             elif redonation_project.redonation_percent > 0 :
-                total_redonation_percent = total_redonation_percent + float(redonation_project.redonation_percent)
+                total_redonation_percent = total_redonation_percent + Decimal(redonation_project.redonation_percent)
 
         return total_redonation_percent
 

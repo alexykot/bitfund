@@ -1,15 +1,14 @@
 import re
+from decimal import Decimal, getcontext
 
 from django.utils.encoding import smart_unicode
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-import selectable
-
 from bitfund.core.models import *
+from bitfund.core.settings.project import CALCULATIONS_PRECISION
 from bitfund.project.models import *
-from bitfund.project.lookups import LinkedProjectsLookup
 
 class CreateProjectForm(forms.ModelForm):
     def __init__(self, *args, **kw):
@@ -97,15 +96,47 @@ class CreateProjectGoalForm(forms.ModelForm):
         model   = ProjectGoal
         fields  = {'key', 'title', 'date_ending', 'amount', 'brief', }
 
+class AddLinkedProjectForm(forms.Form):
+    linked_project = forms.ModelChoiceField(queryset=Project.objects.all(), required=True, empty_label=u'Select Project')
+    redonation_percent = forms.DecimalField(min_value=0.01, decimal_places=2,
+                                         required=False)
+    redonation_amount = forms.DecimalField(min_value=0.01, decimal_places=2,
+                                        required=False)
 
-# class AddLinkedProjectForm(forms.Form):
-#     project_title = forms.CharField(
-#         label=u'Select Project',
-#         widget=selectable.AutoCompleteWidget(LinkedProjectsLookup),
-#         required=True,
-#         )
-#     project_percent = forms.CharField(required=False)
-#     project_amount = forms.CharField(required=False)
+    def __init__(self, main_project_id, *args, **kw):
+        super(AddLinkedProjectForm, self).__init__(*args, **kw)
+
+        getcontext().prec = CALCULATIONS_PRECISION
+
+        already_linked_projects = (Project_Dependencies.objects
+                                   .filter(dependee_project=main_project_id)
+                                   .values('depender_project__id'))
+        self.fields['linked_project'].queryset = (Project.objects
+                                                  .filter(is_public=True)
+                                                  .exclude(id=main_project_id)
+                                                  .exclude(id__in=already_linked_projects))
+        main_project = Project(main_project_id)
+        main_project_budget = main_project.getTotalMonthlyBudget()
+        main_project_redonation_percent = main_project.getRedonationsPercent()
+
+        free_percent = Decimal(100)-main_project_redonation_percent
+        free_amount = main_project_budget - ((main_project_budget/Decimal(100))*main_project_redonation_percent)
+
+        #redefined to set correct max_value
+        self.fields['redonation_percent'] = forms.DecimalField(max_value=free_percent, min_value=0.01, decimal_places=2,
+                                            required=False)
+        self.fields['redonation_amount'] = forms.DecimalField(max_value=free_amount, min_value=0.01, decimal_places=2,
+                           required=False)
 
 
+    def clean(self):
+        cleaned_data = super(AddLinkedProjectForm, self).clean()
+
+        if ('redonation_percent' in cleaned_data and
+                    cleaned_data['redonation_percent'] > 0 and
+                    'redonation_amount' in cleaned_data and
+                    cleaned_data['redonation_amount'] > 0) :
+            raise ValidationError(_(u'You must choose either percent or a fixed amount, not both.'), code='invalid')
+
+        return cleaned_data
 

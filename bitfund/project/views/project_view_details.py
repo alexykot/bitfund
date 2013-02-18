@@ -1,6 +1,6 @@
 import math
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.db.models import Count, Sum
 from django.utils.datetime_safe import datetime
@@ -228,7 +228,36 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
     template_data = {'project': project,
                      'request': request,
                      'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
                      }
+
+    if project.maintainer_id == request.user.id :
+        template_data['project_edit_access'] = True
+    else :
+        template_data['project_edit_access'] = False
+
+    if request.method == 'POST':
+        linked_project_add_form      = AddLinkedProjectForm(project.id, request.POST)
+        if linked_project_add_form.is_valid():
+            project_dependency = Project_Dependencies()
+            project_dependency.depender_project = project
+            project_dependency.dependee_project = linked_project_add_form.cleaned_data['linked_project']
+            project_dependency.redonation_amount = linked_project_add_form.cleaned_data['redonation_amount']
+            project_dependency.redonation_percent = linked_project_add_form.cleaned_data['redonation_percent']
+            project_dependency.save()
+
+            return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
+        else :
+            template_data['crud_linked_project_add_form'] = linked_project_add_form
+    elif action == 'add' :
+        template_data['crud_linked_project_add_form'] = AddLinkedProjectForm(project.id)
+    elif linked_project_key is not None :
+        linked_project = get_object_or_404(Project, key=linked_project_key)
+
+        if action == 'delete' :
+            Project_Dependencies.objects.filter(dependee_project__id=project.id),filter(depender_project__id=linked_project.id).delete()
+        elif action == 'edit' :
+            template_data['linked_project'] = linked_project
 
     projects_i_depend_on = (Project_Dependencies.objects
                             .filter(depender_project=project.id)
@@ -246,20 +275,7 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
                                                       'amount_percent': project_i_depend_on.redonation_percent,
                                                       })
 
+    template_data['crud_linked_project_action'] = action
 
-    if linked_project_key is None:
-        template_data['crud_linked_project_action'] = 'add'
-
-        return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
-
-    linked_project = get_object_or_404(Project, key=linked_project_key)
-    template_data['linked_project'] = linked_project
-
-    #template_data['crud_linked_project_add_form'] = AddLinkedProjectForm()
-
-    if action == 'delete' :
-        return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
-    else :
-        return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
-
+    return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
 

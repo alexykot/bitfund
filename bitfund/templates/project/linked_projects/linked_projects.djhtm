@@ -4,14 +4,6 @@
 
 
 {% block pagescripts %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('a.project_crud').click(function(event){
-                event.preventDefault();
-                $('#add_edit_linked_project').load($(this).attr('href'));
-            });
-        });
-    </script>
 {% endblock pagescripts %}
 
 
@@ -42,7 +34,7 @@
             {% endif %}
         </div>
 
-        <div class="span5">
+        <div class="span5" id="i_depend_on_projects_list">
             {% include "project/linked_projects/i_depend_on_projects_list.djhtm" %}
         </div>
 
