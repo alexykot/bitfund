@@ -1,9 +1,11 @@
 {% if projects_i_depend_on_count %}
     <h2>Projects {{ project.title }} depends on:</h2>
-    <ul>
+    <ul id="projects_i_depend_on_list">
         {% for project_i_depend_on in projects_i_depend_on %}
             {% if crud_linked_project_action == 'edit' and project_i_depend_on.key == linked_project.key %}
-                <li><form action="{% url bitfund.project.views.crud_linked_project main_project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}"
+                <li>
+                    <a href="{% url bitfund.project.views.view project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a
+                    <form action="{% url bitfund.project.views.crud_linked_project main_project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}"
                       id="crud_linked_project_form">
                     {% csrf_token %}
                     {{ crud_linked_project_edit_form.as_p }}
@@ -23,8 +25,7 @@
                     {% if project_edit_access %}
                         <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}"
                            class="project_crud">edit</a>
-                    {% endif %}
-                    {% if project_edit_access %}
+
                         <a href="{% url bitfund.project.views.crud_linked_project main_project_key=project.key linked_project_key=project_i_depend_on.key action='drop' %}"
                            class="project_crud">drop</a>
                     {% endif %}
@@ -76,6 +77,11 @@
             event.preventDefault();
             $('#i_depend_on_projects_list').load($(this).attr('action'), $(this).serializeObject());
         });
+
+        $( "#projects_i_depend_on_list" ).sortable({
+            delay: 300
+        });
+        $( "#projects_i_depend_on_list li" ).disableSelection();
 
     });
 </script>

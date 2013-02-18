@@ -225,7 +225,7 @@ def linked_projects(request, project_key):
 
     return render_to_response('project/linked_projects/linked_projects.djhtm', template_data, context_instance=RequestContext(request))
 
-#@ajax_required
+@ajax_required
 #@user_is_project_maintainer
 def crud_linked_project(request, main_project_key, linked_project_key=None, action=None):
     project = get_object_or_404(Project, key=main_project_key)
@@ -245,6 +245,7 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
                 project_dependency.dependee_project = linked_project_add_form.cleaned_data['linked_project']
                 project_dependency.redonation_amount = (linked_project_add_form.cleaned_data['redonation_amount'] or None)
                 project_dependency.redonation_percent = (linked_project_add_form.cleaned_data['redonation_percent'] or None)
+                project_dependency.brief = (linked_project_add_form.cleaned_data['brief'] or None)
                 project_dependency.save()
 
                 return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
@@ -261,6 +262,7 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
                     (linked_project_edit_form.cleaned_data['redonation_amount'] or 0))
                 project_dependency.redonation_percent = Decimal(
                     (linked_project_edit_form.cleaned_data['redonation_percent'] or 0))
+                project_dependency.brief = (linked_project_edit_form.cleaned_data['brief'] or None)
                 project_dependency.save()
 
                 return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
@@ -282,7 +284,8 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
             form_data = {'linked_project': linked_project,
                          'redonation_percent' : linked_project_dependency.redonation_percent,
                          'redonation_amount' : linked_project_dependency.redonation_amount,
-                        }
+                         'brief' : linked_project_dependency.brief,
+                         }
             template_data['crud_linked_project_edit_form'] = EditLinkedProjectForm(project.id, linked_project.id, initial=form_data)
 
     if project.maintainer_id == request.user.id :

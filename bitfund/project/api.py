@@ -1,16 +1,12 @@
 import time
 import datetime
-import re
 import math
 
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, get_object_or_404 
 from django.template import defaultfilters as filters
-from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now, make_aware
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models.query_utils import Q
 
 from tastypie import http
@@ -194,7 +190,7 @@ class ProjectResource(ModelResource):
                                          .filter(depender_project=project)
                                          .count()
         )
-        #project_needs['resource_uri'] = '/api/'+ProjectDependenciesResource()._meta.resource_name+'/?project__key='+project.key
+        project_needs['resource_uri'] = '/api/'+ProjectDependenciesResource()._meta.resource_name+'/?depender_project__key='+project.key
 
         #USER SPECIFIC DATA, IF VALID TOKEN SUPPLIED
         project_user_data = {}
@@ -397,7 +393,6 @@ class ProjectGoalResource(ModelResource):
         bundle_or_obj.data['resource_uri'] = self.get_resource_uri(goal)
 
         goal_budget_total = {}
-
         goal_budget_total['end_utctimestamp'] = time.mktime(goal.date_ending.utctimetuple())
         if goal.date_ending >= datetime(now().year, now().month, 1, tzinfo=now().tzinfo):
             timedelta_to_end = goal.date_ending - now()
@@ -464,40 +459,22 @@ class ProjectGoalResource(ModelResource):
 
         return bundle_or_obj
 
-# class ProjectDependenciesResource(ModelResource):
-#     depender_project =  fields.ForeignKey(ProjectResource, 'project')
-#
-#     class Meta:
-#         queryset = (ProjectGoal.objects
-#                     .filter(is_public=True)
-#                     .filter(date_ending__gt=now())
-#                     .filter(date_starting__lte=now())
-#                     .order_by('sort_order'))
-#         fields = ['id',
-#                   'key',
-#                   'project',
-#                   'title',
-#                   'amount',
-#                   'brief',
-#                   'sort_order',
-#                   ]
-#         allowed_methods = ['get']
-#         filtering = {'project': ALL_WITH_RELATIONS, }
-#
-#     def get_resource_uri(self, bundle_or_obj):
-#         kwargs = {'resource_name': self._meta.resource_name,}
-#         if isinstance(bundle_or_obj, Bundle):
-#             kwargs['key'] = bundle_or_obj.obj.key
-#         else:
-#             kwargs['key'] = bundle_or_obj.key
-#         if self._meta.api_name is not None:
-#             kwargs['api_name'] = self._meta.api_name
-#
-#         return self._build_reverse_url('api_dispatch_detail', kwargs = kwargs)
-#
-#     def override_urls(self):
-#         return [
-#             url(r"^(?P<resource_name>%s)/(?P<key>[\w\d_.-]+)/$" % self._meta.resource_name,
-#                 self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-#             ]
+class ProjectDependenciesResource(ModelResource):
+    dependee_project =  fields.ForeignKey(ProjectResource, 'dependee_project')
+    depender_project =  fields.ForeignKey(ProjectResource, 'depender_project')
+
+    class Meta:
+        queryset = (Project_Dependencies.objects
+                    .order_by('dependee_project', 'sort_order'))
+        fields = ['depender_project',
+                  'dependee_project',
+                  'brief',
+                  'redonation_amount',
+                  'redonation_percent',
+                  'sort_order',
+                  ]
+        allowed_methods = ['get']
+        filtering = {'depender_project': ALL_WITH_RELATIONS,
+                     'dependee_project': ALL_WITH_RELATIONS,
+                     }
 

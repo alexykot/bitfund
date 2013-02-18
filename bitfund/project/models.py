@@ -311,7 +311,6 @@ class Project_Dependencies(models.Model):
     redonation_percent  = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
     redonation_amount   = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
     date_added          = models.DateTimeField('date added', default=now())
-    is_public           = models.BooleanField(default=True)
     sort_order          = models.IntegerField(default=0)
 
 

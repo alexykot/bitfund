@@ -28,6 +28,7 @@ urlpatterns += patterns('',
     (r'^api/', include(ProjectResource().urls)),
     (r'^api/', include(ProjectNeedResource().urls)),
     (r'^api/', include(ProjectGoalResource().urls)),
+    (r'^api/', include(ProjectDependenciesResource().urls)),
     (r'^selectable/', include('selectable.urls')),
 )
 
@@ -74,7 +75,7 @@ urlpatterns += patterns('bitfund.project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
     (r'^projects/(?P<main_project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/{0,}$', 'crud_linked_project'),
     (r'^projects/(?P<main_project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/(?P<action>add)/{0,}$', 'crud_linked_project'),
-    (r'^projects/(?P<main_project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/(?P<action>edit|drop)/(?P<linked_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'crud_linked_project'),
+    (r'^projects/(?P<main_project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/(?P<action>edit|drop|toggle_public)/(?P<linked_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'crud_linked_project'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_bitfund_link/(?P<action>donate|refuse)/{0,}$', 'crud_bitfund_link'),
 
