@@ -31,5 +31,7 @@ API_TARGET_MONTH_PARAM_NAME = 'targetMonth'
 SITE_CURRENCY_CODE = 'USD'
 SITE_CURRENCY_SIGN = '$'
 
-CALCULATIONS_PRECISION = 2 #for decimal calculations, used as `getcontext().prec` value
+CALCULATIONS_PRECISION = 28 #for decimal calculations, used as `getcontext().prec` value
 getcontext().prec = CALCULATIONS_PRECISION
+
+BITFUND_OWN_PROJECT_ID = 5

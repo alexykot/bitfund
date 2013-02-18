@@ -108,24 +108,29 @@ class AddLinkedProjectForm(forms.Form):
 
         getcontext().prec = CALCULATIONS_PRECISION
 
-        already_linked_projects = (Project_Dependencies.objects
-                                   .filter(dependee_project=main_project_id)
-                                   .values('depender_project__id'))
+        already_linked_projects_query = (Project_Dependencies.objects
+                                         .filter(depender_project=main_project_id)
+                                         .values('dependee_project')
+        )
+
+        already_linked_projects_list = []
+
+        for linked_project in already_linked_projects_query :
+            print linked_project['dependee_project']
+            already_linked_projects_list.append(linked_project['dependee_project'])
+
+
         self.fields['linked_project'].queryset = (Project.objects
                                                   .filter(is_public=True)
                                                   .exclude(id=main_project_id)
-                                                  .exclude(id__in=already_linked_projects))
-        main_project = Project(main_project_id)
-        main_project_budget = main_project.getTotalMonthlyBudget()
-        main_project_redonation_percent = main_project.getRedonationsPercent()
-
-        free_percent = Decimal(100)-main_project_redonation_percent
-        free_amount = main_project_budget - ((main_project_budget/Decimal(100))*main_project_redonation_percent)
+                                                  .exclude(id__in=already_linked_projects_list)
+                                                  )
+        free_percent, free_amount = Project(main_project_id).getMaxAvailableRedonationPercentandAmount()
 
         #redefined to set correct max_value
-        self.fields['redonation_percent'] = forms.DecimalField(max_value=free_percent, min_value=0.01, decimal_places=2,
+        self.fields['redonation_percent'] = forms.DecimalField(max_value=free_percent, min_value=0.01, decimal_places=4,
                                             required=False)
-        self.fields['redonation_amount'] = forms.DecimalField(max_value=free_amount, min_value=0.01, decimal_places=2,
+        self.fields['redonation_amount'] = forms.DecimalField(max_value=free_amount, min_value=0.01, decimal_places=4,
                            required=False)
 
 
@@ -139,4 +144,39 @@ class AddLinkedProjectForm(forms.Form):
             raise ValidationError(_(u'You must choose either percent or a fixed amount, not both.'), code='invalid')
 
         return cleaned_data
+
+class EditLinkedProjectForm(forms.Form):
+    linked_project = forms.ModelChoiceField(queryset=Project.objects.all(), required=True, empty_label=u'Select Project',
+                                            widget=forms.HiddenInput)
+    redonation_percent = forms.DecimalField(min_value=0.01, decimal_places=4,
+                                            required=False)
+    redonation_amount = forms.DecimalField(min_value=0.01, decimal_places=4,
+                                           required=False)
+
+    def __init__(self, main_project_id, linked_project_id, *args, **kw):
+        super(EditLinkedProjectForm, self).__init__(*args, **kw)
+
+        free_percent, free_amount = Project(main_project_id).getMaxAvailableRedonationPercentandAmount()
+
+        linked_project_dependency = Project_Dependencies.objects.get(dependee_project__id=linked_project_id, depender_project__id=main_project_id)
+        free_percent = free_percent - (linked_project_dependency.redonation_percent or Decimal(0))
+        free_amount = free_amount - (linked_project_dependency.redonation_amount or Decimal(0))
+
+        #redefined to set correct max_value
+        self.fields['redonation_percent'] = forms.DecimalField(max_value=free_percent, min_value=0.01, decimal_places=4,
+                                                               required=False)
+        self.fields['redonation_amount'] = forms.DecimalField(max_value=free_amount, min_value=0.01, decimal_places=4,
+                                                              required=False)
+
+    def clean(self):
+        cleaned_data = super(EditLinkedProjectForm, self).clean()
+
+        if ('redonation_percent' in cleaned_data and
+                    cleaned_data['redonation_percent'] > 0 and
+                    'redonation_amount' in cleaned_data and
+                    cleaned_data['redonation_amount'] > 0) :
+            raise ValidationError(_(u'You must choose either percent or a fixed amount, not both.'), code='invalid')
+
+        return cleaned_data
+
 

@@ -7,7 +7,7 @@ from django.utils.timezone import utc, now
 from django.db.models import Count, Sum
 
 from bitfund.project.lists import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION
+from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID
 
 class ProjectCategory(models.Model):
     key           = models.CharField(max_length=80, unique=True)
@@ -26,6 +26,7 @@ class Project(models.Model):
     date_added = models.DateTimeField('date added', default=now())
     is_public = models.BooleanField(default=True)
     status = models.CharField(max_length=80, choices=PROJECT_STATUS_CHOICES, default=PROJECT_STATUS_CHOICES.unclaimed)
+    is_refused_to_give_to_bitfund = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title
@@ -166,6 +167,26 @@ class Project(models.Model):
 
         return total_redonation_percent
 
+    # calculates maximum part of the budget still available for redonations, as percent and amount, returned separately in a tuple.
+    def getMaxAvailableRedonationPercentandAmount(self):
+        main_project_budget = self.getTotalMonthlyBudget()
+        main_project_redonation_percent = self.getRedonationsPercent()
+
+        free_percent = Decimal(Decimal(100)-main_project_redonation_percent).quantize(Decimal('0.01'))
+        free_amount = Decimal(main_project_budget - ((main_project_budget/Decimal(100))*main_project_redonation_percent)).quantize(Decimal('0.01'))
+
+        return free_percent, free_amount
+
+    # calculates maximum part of the budget still available for redonations, as percent and amount, returned separately in a tuple.
+    def checkProjectLinkedToBitFund(self):
+        if (Project_Dependencies.objects
+            .filter(dependee_project__id=BITFUND_OWN_PROJECT_ID, depender_project__id=self.id)
+            .count()) > 0 :
+            return True
+        else :
+            return False
+
+
 class ProjectGratefulUsers(models.Model):
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
@@ -287,7 +308,7 @@ class Project_Dependencies(models.Model):
     depender_project    = models.ForeignKey(Project, related_name='depender_project', default=0) # the one that depends on someone
     dependee_project    = models.ForeignKey(Project, related_name='dependee_project', default=0) # the one that someone is depended on
     brief               = models.TextField(null=True, blank=True)
-    redonation_percent  = models.DecimalField(decimal_places=0, max_digits=2, null=True, blank=True)
+    redonation_percent  = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
     redonation_amount   = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
     date_added          = models.DateTimeField('date added', default=now())
     is_public           = models.BooleanField(default=True)

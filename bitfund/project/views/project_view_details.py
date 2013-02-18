@@ -6,11 +6,12 @@ from django.db.models import Count, Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now
 
-from bitfund.core.settings.project import MAX_EXPENSES_ON_PROJECT_PAGE, SITE_CURRENCY_CODE, SITE_CURRENCY_SIGN
+from bitfund.core.settings.project import MAX_EXPENSES_ON_PROJECT_PAGE, SITE_CURRENCY_SIGN, BITFUND_OWN_PROJECT_ID
 from bitfund.project.models import *
 from bitfund.project.forms import *
 from bitfund.pledger.models import DonationTransactionGoals
-#from bitfund.core.decorators import ajax_required
+from bitfund.core.decorators import ajax_required
+from bitfund.project.decorators import user_is_project_maintainer
 
 def view(request, project_key):
     project = get_object_or_404(Project, key=project_key)
@@ -191,6 +192,9 @@ def linked_projects(request, project_key):
     else :
         template_data['project_edit_access'] = False
 
+    template_data['giving_to_bitfund'] = project.checkProjectLinkedToBitFund()
+    template_data['refused_to_give_to_bitfund'] = project.is_refused_to_give_to_bitfund
+
     template_data['projects_depending_on_me'] = []
     template_data['projects_depending_on_me_count'] = projects_depending_on_me.count()
     #template_data['projects_depending_on_me'] = projects_depending_on_me
@@ -222,6 +226,7 @@ def linked_projects(request, project_key):
     return render_to_response('project/linked_projects/linked_projects.djhtm', template_data, context_instance=RequestContext(request))
 
 #@ajax_required
+#@user_is_project_maintainer
 def crud_linked_project(request, main_project_key, linked_project_key=None, action=None):
     project = get_object_or_404(Project, key=main_project_key)
 
@@ -231,33 +236,62 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      }
 
-    if project.maintainer_id == request.user.id :
-        template_data['project_edit_access'] = True
-    else :
-        template_data['project_edit_access'] = False
-
     if request.method == 'POST':
-        linked_project_add_form      = AddLinkedProjectForm(project.id, request.POST)
-        if linked_project_add_form.is_valid():
-            project_dependency = Project_Dependencies()
-            project_dependency.depender_project = project
-            project_dependency.dependee_project = linked_project_add_form.cleaned_data['linked_project']
-            project_dependency.redonation_amount = linked_project_add_form.cleaned_data['redonation_amount']
-            project_dependency.redonation_percent = linked_project_add_form.cleaned_data['redonation_percent']
-            project_dependency.save()
+        if action == 'add' :
+            linked_project_add_form      = AddLinkedProjectForm(project.id, request.POST)
+            if linked_project_add_form.is_valid():
+                project_dependency = Project_Dependencies()
+                project_dependency.depender_project = project
+                project_dependency.dependee_project = linked_project_add_form.cleaned_data['linked_project']
+                project_dependency.redonation_amount = (linked_project_add_form.cleaned_data['redonation_amount'] or None)
+                project_dependency.redonation_percent = (linked_project_add_form.cleaned_data['redonation_percent'] or None)
+                project_dependency.save()
 
-            return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
-        else :
-            template_data['crud_linked_project_add_form'] = linked_project_add_form
+                return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
+            else :
+                template_data['crud_linked_project_add_form'] = linked_project_add_form
+        elif action == 'edit' :
+            linked_project = get_object_or_404(Project, key=linked_project_key)
+            template_data['linked_project'] = linked_project
+            linked_project_edit_form = EditLinkedProjectForm(project.id, linked_project.id, request.POST)
+            if linked_project_edit_form.is_valid():
+                project_dependency = (Project_Dependencies.objects.get(dependee_project__id=linked_project.id,
+                                                                              depender_project__id=project.id))
+                project_dependency.redonation_amount = Decimal(
+                    (linked_project_edit_form.cleaned_data['redonation_amount'] or 0))
+                project_dependency.redonation_percent = Decimal(
+                    (linked_project_edit_form.cleaned_data['redonation_percent'] or 0))
+                project_dependency.save()
+
+                return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
+            else :
+                template_data['crud_linked_project_edit_form'] = linked_project_edit_form
+
     elif action == 'add' :
         template_data['crud_linked_project_add_form'] = AddLinkedProjectForm(project.id)
     elif linked_project_key is not None :
         linked_project = get_object_or_404(Project, key=linked_project_key)
 
-        if action == 'delete' :
-            Project_Dependencies.objects.filter(dependee_project__id=project.id),filter(depender_project__id=linked_project.id).delete()
-        elif action == 'edit' :
+        if action == 'drop' :
+            (Project_Dependencies.objects.filter(dependee_project__id=linked_project.id)
+             .filter(depender_project__id=project.id).delete())
+        elif action == 'edit':
+            linked_project_dependency = (Project_Dependencies.objects.get(dependee_project__id=linked_project.id,
+                                                                          depender_project__id=project.id))
             template_data['linked_project'] = linked_project
+            form_data = {'linked_project': linked_project,
+                         'redonation_percent' : linked_project_dependency.redonation_percent,
+                         'redonation_amount' : linked_project_dependency.redonation_amount,
+                        }
+            template_data['crud_linked_project_edit_form'] = EditLinkedProjectForm(project.id, linked_project.id, initial=form_data)
+
+    if project.maintainer_id == request.user.id :
+        template_data['project_edit_access'] = True
+    else :
+        template_data['project_edit_access'] = False
+
+    template_data['giving_to_bitfund'] = project.checkProjectLinkedToBitFund()
+    template_data['refused_to_give_to_bitfund'] = project.is_refused_to_give_to_bitfund
 
     projects_i_depend_on = (Project_Dependencies.objects
                             .filter(depender_project=project.id)
@@ -267,15 +301,68 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
     template_data['projects_i_depend_on'] = []
     template_data['projects_i_depend_on_count'] = projects_i_depend_on.count()
     for project_i_depend_on in projects_i_depend_on:
-        template_data['projects_i_depend_on'].append({'id': project_i_depend_on.dependee_project.id,
-                                                      'key': project_i_depend_on.dependee_project.key,
-                                                      'title': project_i_depend_on.dependee_project.title,
-                                                      'logo': project_i_depend_on.dependee_project.logo,
-                                                      'amount_sum': project_i_depend_on.redonation_amount,
-                                                      'amount_percent': project_i_depend_on.redonation_percent,
-                                                      })
+        if project_i_depend_on.dependee_project.is_public :
+            template_data['projects_i_depend_on'].append({'id': project_i_depend_on.dependee_project.id,
+                                                          'key': project_i_depend_on.dependee_project.key,
+                                                          'title': project_i_depend_on.dependee_project.title,
+                                                          'logo': project_i_depend_on.dependee_project.logo,
+                                                          'amount_sum': project_i_depend_on.redonation_amount,
+                                                          'amount_percent': project_i_depend_on.redonation_percent,
+                                                          })
 
     template_data['crud_linked_project_action'] = action
 
     return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
 
+
+def crud_bitfund_link(request, project_key, action):
+    project = get_object_or_404(Project, key=project_key)
+    bitfund = get_object_or_404(Project, id=BITFUND_OWN_PROJECT_ID)
+
+    template_data = {'project': project,
+                     'request': request,
+                     'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
+    template_data['giving_to_bitfund'] = project.checkProjectLinkedToBitFund()
+
+    if action == 'donate' :
+        initial_data = {'linked_project': bitfund}
+        template_data['crud_linked_project_add_form'] = AddLinkedProjectForm(project.id, initial=initial_data)
+        template_data['giving_to_bitfund'] = True
+        template_data['crud_linked_project_action'] = 'add'
+        project.is_refused_to_give_to_bitfund = False
+        project.save()
+    elif action == 'refuse' :
+        project.is_refused_to_give_to_bitfund = True
+        project.save()
+
+        return redirect('bitfund.project.views.crud_linked_project', main_project_key=project_key)
+
+
+    if project.maintainer_id == request.user.id :
+        template_data['project_edit_access'] = True
+    else :
+        template_data['project_edit_access'] = False
+
+    template_data['refused_to_give_to_bitfund'] = project.is_refused_to_give_to_bitfund
+
+    projects_i_depend_on = (Project_Dependencies.objects
+                            .filter(depender_project=project.id)
+                            .order_by('sort_order')
+                            .prefetch_related('dependee_project')
+    )
+    template_data['projects_i_depend_on'] = []
+    template_data['projects_i_depend_on_count'] = projects_i_depend_on.count()
+    for project_i_depend_on in projects_i_depend_on:
+        if project_i_depend_on.dependee_project.is_public :
+            template_data['projects_i_depend_on'].append({'id': project_i_depend_on.dependee_project.id,
+                                                          'key': project_i_depend_on.dependee_project.key,
+                                                          'title': project_i_depend_on.dependee_project.title,
+                                                          'logo': project_i_depend_on.dependee_project.logo,
+                                                          'amount_sum': project_i_depend_on.redonation_amount,
+                                                          'amount_percent': project_i_depend_on.redonation_percent,
+                                                          })
+
+    return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
