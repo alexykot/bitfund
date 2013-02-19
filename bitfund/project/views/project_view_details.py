@@ -6,10 +6,18 @@ from django.db.models import Count, Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now
 
-from bitfund.core.settings.project import MAX_EXPENSES_ON_PROJECT_PAGE, SITE_CURRENCY_SIGN, BITFUND_OWN_PROJECT_ID
+from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
+                                           BITFUND_OWN_PROJECT_ID,
+                                           RGBCOLOR_DONUT_CHART_BACKGROUND,
+                                           RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
+                                           RGBCOLOR_DONUT_CHART_PLEDGES,
+                                           RGBCOLOR_DONUT_CHART_REDONATIONS,
+                                           MINIMAL_DEFAULT_PLEDGES_RADIANT,
+                                           MINIMAL_DEFAULT_REDONATIONS_RADIANT,
+                                           MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT,
+                                           )
 from bitfund.project.models import *
 from bitfund.project.forms import *
-from bitfund.pledger.models import DonationTransactionGoals
 from bitfund.core.decorators import ajax_required
 from bitfund.project.decorators import user_is_project_maintainer
 
@@ -19,107 +27,83 @@ def view(request, project_key):
     template_data = {'project': project,
                      'request': request,
                      'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'chartPledgesColor': RGBCOLOR_DONUT_CHART_PLEDGES,
+                     'chartRedonationsColor': RGBCOLOR_DONUT_CHART_REDONATIONS,
+                     'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
+                     'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
+
     }
 
     #GENERAL PROJECT INFO
-    template_data['project_categories'] = project.categories.all()
     if project.maintainer_id == request.user.id :
         template_data['project_edit_access'] = True
     else :
         template_data['project_edit_access'] = False
 
 
-    #GENERAL BUDGET DATA    
-    project_needs               = ProjectNeed.objects.filter(project=project.id).filter(is_public=True).order_by('sort_order')
-    project_needs_count         = project_needs.count()
-    project_needs_total         = (project_needs.aggregate(Sum('amount'))['amount__sum']) or 0
+    #BUDGET
+    project_needs = ProjectNeed.objects.filter(project=project.id).filter(is_public=True).order_by('sort_order')
+    project_needs_count = project_needs.count()
+    project_goals_count = (ProjectGoal.objects.filter(project=project, is_public=True,
+                                                      date_ending__gt=now(), date_starting__lt=now()).count())
+    template_data['project_monthly_budget'] = (project_needs.aggregate(Sum('amount'))['amount__sum']) or 0
 
-    project_goals               = (ProjectGoal.objects.filter(project=project.id)
-                                                      .filter(is_public=True)
-                                                      .filter(date_ending__gt=now())
-                                                      .filter(date_ending__lt=datetime(now().year, now().month+1, 1, tzinfo=now().tzinfo))
-                                                      .filter(date_starting__lt=now())
-                                                      .order_by('sort_order')
-                                                      )
-    project_goals_count         = project_goals.count()
-
-    needs_list = []
-    for need in project_needs :
-        needs_list.append(('need_'+str(need.id), need.title))
-
-    template_data['needsgoals_form']                  = ProjectNeedsGoalsListForm(project_needsgoals_choices=needs_list) 
-    template_data['project_needs_count']              = project_needs_count 
-    template_data['project_goals_count']              = project_goals_count
-    template_data['project_needs_total']              = project_needs_total
-    template_data['project_needs_to_show_initially']  = MAX_EXPENSES_ON_PROJECT_PAGE 
-    template_data['project_moar_needsgoals_count']    = max((project_needs_count-MAX_EXPENSES_ON_PROJECT_PAGE),0)
-    
-
-    #CURRENT USER DONATIONS
-    """
-    if (request.user.is_authenticated) :
-        donation_cart    = DonationCart.objects.filter(user=request.user.id).filter(project=project.id)  
-        if donation_cart.count() :
-            donation_cart = donation_cart[0]
-            template_data['donation_cart']             = donation_cart
-            template_data['donation_cart_needs_onetime_count'] = DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(donation_type='onetime').count()
-            template_data['donation_cart_needs_onetime_sum']   = DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(donation_type='onetime').aggregate(Sum('amount'))['amount__sum']
-            template_data['donation_cart_needs_monthly_count'] = DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(donation_type='monthly').count()
-            template_data['donation_cart_needs_monthly_sum']   = DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(donation_type='monthly').aggregate(Sum('amount'))['amount__sum']
-            template_data['donation_cart_goals_count'] = DonationCartGoals.objects.filter(donation_cart=donation_cart).count()
-            template_data['donation_cart_goals_sum']   = DonationCartGoals.objects.filter(donation_cart=donation_cart).aggregate(Sum('amount'))['amount__sum']
-            
-        donation_history = DonationHistory.objects.filter(user=request.user.id).filter(project=project.id)
-        if donation_history.count() :
-            donation_history_newest = donation_history.order_by('-datetime_sent')[0]
-            template_data['donation_history_newest']        = donation_history_newest
-            template_data['donation_history_newest_needsngoals_count'] = donation_history_newest.needs.all().count() + donation_history_newest.goals.all().count()   
-            template_data['donation_history_newest_needsngoals_sum']   = donation_history_newest.needs.all().aggregate(Sum('amount'))['amount__sum'] + donation_history_newest.goals.all().aggregate(Sum('amount'))['amount__sum']   
-            
-
-        donation_subscription = DonationSubscription.objects.filter(user=request.user.id).filter(project=project.id).filter(active=True)
-        if donation_subscription.count() :
-            template_data['donation_subscription']             = donation_subscription[0] 
-            template_data['donation_subscription_needs_count'] = donation_subscription.needs.all().count()
-            template_data['donation_subscription_needs_sum']   = donation_subscription.needs.all().aggregate(Sum('amount'))['amount__sum']
-    """
-
-    #ALL USERS DONATIONS
-    pledges_needs_total_sum, pledges_goals_total_sum           = project.getTotalMonthlyPledges()
-    template_data['donations_total_sum']      = pledges_needs_total_sum
+    #pledges
+    pledges_needs_total_sum, pledges_goals_total_sum = project.getTotalMonthlyPledges()
+    template_data['donations_total_sum'] = pledges_needs_total_sum
     template_data['donations_total_pledgers'] = project.getTotalMonthlyBackers()
 
-
-    #REDONATIONS
-    redonations_needs_total_sum, redonations_goals_total_sum  = project.getTotalMonthlyRedonations()
-    template_data['redonations_needs_total_sum']  = redonations_needs_total_sum
-    template_data['redonations_goals_total_sum']  = redonations_goals_total_sum
-
-    #OTHER SOURCES
+    #other sources
     other_sources_needs_total_sum, other_sources_goals_total_sum  = project.getTotalMonthlyOtherSources()
     other_sources_total_sum = other_sources_needs_total_sum + other_sources_goals_total_sum
     template_data['other_sources_total_sum']  = other_sources_total_sum
-    other_sources_per_needgoal_amount         = int(round(other_sources_total_sum/(project_goals_count+project_needs_count))) #this needs to be replaced with direct budget assignment
 
+    #redonations
+    projects_i_depend_on_count, projects_depending_on_me_count = project.getLinkedProjectsCount()
+    redonations_total_sum = project.getTotalMonthlyRedonations()
+    template_data['redonations_total_sum'] = redonations_total_sum
+    template_data['depending_on_me_projects_count'] = projects_depending_on_me_count
+    template_data['i_depend_on_projects_count'] = projects_i_depend_on_count
+    template_data['i_depend_on_transfer_percent'] = project.getRedonationsPercent()
 
-    #DONUT CHART RADIANTS
+    #donut chart radiants
     template_data['pledges_radiant'] = min(360, round(
-        360 * (redonations_needs_total_sum / template_data['project_needs_total'])))
+        360 * (redonations_total_sum / template_data['project_monthly_budget'])))
     template_data['redonations_radiant'] = min(360, round(
-        360 * (redonations_needs_total_sum / template_data['project_needs_total'])))
+        360 * (redonations_total_sum / template_data['project_monthly_budget'])))
     template_data['other_sources_radiant'] = min(360, round(
-        360 * (other_sources_total_sum / template_data['project_needs_total'])))
+        360 * (other_sources_total_sum / template_data['project_monthly_budget'])))
 
     template_data['total_gained_percent'] = int(round(
-        ((redonations_needs_total_sum + other_sources_total_sum) * 100) / template_data['project_needs_total']))
+        ((redonations_total_sum + other_sources_total_sum) * 100) / template_data['project_monthly_budget']))
 
     if not (template_data['pledges_radiant']  or template_data['redonations_radiant'] or template_data['other_sources_radiant']) :
-        template_data['pledges_radiant'] = 2
-        template_data['redonations_radiant'] = 1
-        template_data['other_sources_radiant'] = 1
+        template_data['pledges_radiant'] = MINIMAL_DEFAULT_PLEDGES_RADIANT
+        template_data['redonations_radiant'] = MINIMAL_DEFAULT_REDONATIONS_RADIANT
+        template_data['other_sources_radiant'] = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
 
+    #NEEDS
+    template_data['project_needs'] = project_needs
+    template_data['project_needs_radiants'] = []
 
-    #GOALS DETAILS LIST
+    #these two calculations need to be replaced with direct budget assignment
+    other_sources_per_needgoal_amount = (Decimal(round(other_sources_total_sum / (project_needs_count + project_goals_count)))
+                                                .quantize(Decimal('0.01')))
+
+    for need in project_needs :
+        donations_sum_radiant = min(360, round(360 * ((need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal()) / need.amount)))
+        other_sources_radiant = min(360, round(360 * (need.getOtherSourcesMonthlyTotal() / need.amount)))
+
+        if donations_sum_radiant == 0 and other_sources_radiant == 0 :
+            donations_sum_radiant = MINIMAL_DEFAULT_PLEDGES_RADIANT
+            other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+
+        template_data['project_needs_radiants'].append({'id': need.id,
+                                                        'donations_sum_radiant': donations_sum_radiant,
+                                                        'other_sources_radiant': other_sources_radiant,
+        })
+        #GOALS
     project_goals = (ProjectGoal.objects
                      .filter(project=project)
                      .filter(is_public=True)
@@ -130,16 +114,16 @@ def view(request, project_key):
     template_data['project_goals'] = []
 
     for goal in project_goals:
-        donations_amount             = (DonationTransactionGoals.objects.filter(goal=goal)
-                                        .aggregate(Sum('amount'))['amount__sum']) or 0
-        donations_radiant            = min(360, round(360 * (donations_amount/goal.amount)))
-        other_sources_radiant        = min(360, round(360 * (other_sources_per_needgoal_amount/goal.amount)))
-        total_percent                = int(math.ceil(((donations_amount+other_sources_per_needgoal_amount) * 100) / goal.amount))
-        
+        donations_amount = goal.getTotalPledges() + goal.getTotalRedonations()
+        other_sources_amount = goal.getTotalOtherSources()
+        donations_radiant = min(360, round(360 * (donations_amount / goal.amount)))
+        other_sources_radiant = min(360, round(360 * (other_sources_amount / goal.amount)))
+        total_percent = int(math.ceil(((donations_amount + other_sources_per_needgoal_amount) * 100) / goal.amount))
+
         if not (donations_radiant or other_sources_radiant) :
-            donations_radiant     = 2
-            other_sources_radiant = 1
-        
+            donations_radiant     = MINIMAL_DEFAULT_PLEDGES_RADIANT
+            other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+
         template_data['project_goals'].append({'id'                     : goal.id,
                                                'key'                    : goal.key,
                                                'title'                  : goal.title,
@@ -154,24 +138,17 @@ def view(request, project_key):
                                                'donations_radiant'      : donations_radiant,
                                                'other_sources_radiant'  : other_sources_radiant,
                                                'total_percent'          : total_percent,
-                                                    })
-    #LINKED PROJECTS
-    template_data['linked_projects'] = {}
-    projects_i_depend_on_count, projects_depending_on_me_count = project.getLinkedProjectsCount()
-    if projects_i_depend_on_count :
-        template_data['linked_projects']['i_depend_on_transfer_percent'] = project.getRedonationsPercent()
-
-    template_data['linked_projects']['i_depend_on_count'] = projects_i_depend_on_count
-    template_data['linked_projects']['depending_on_me_count'] = projects_depending_on_me_count
+                                               })
 
 
-
+    template_data['project_goals_count'] = project_goals.count()
 
     return render_to_response('project/view.djhtm', template_data, context_instance=RequestContext(request))
 
 def chart_image(request, project_key, need_key=None, goal_key=None):
     return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
 
+#@user_is_project_maintainer
 def linked_projects(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 
@@ -203,6 +180,7 @@ def linked_projects(request, project_key):
                                                           'key': project_depending_on_me.depender_project.key,
                                                           'title': project_depending_on_me.depender_project.title,
                                                           'logo': project_depending_on_me.depender_project.logo,
+                                                          'brief': project_depending_on_me.brief,
                                                           'amount_sum': project_depending_on_me.redonation_amount,
                                                           'amount_percent': project_depending_on_me.redonation_percent,
                                                           })
@@ -219,6 +197,7 @@ def linked_projects(request, project_key):
                                                      'key': project_i_depend_on.dependee_project.key,
                                                      'title': project_i_depend_on.dependee_project.title,
                                                      'logo': project_i_depend_on.dependee_project.logo,
+                                                     'brief': project_i_depend_on.brief,
                                                      'amount_sum': project_i_depend_on.redonation_amount,
                                                      'amount_percent': project_i_depend_on.redonation_percent,
                                                      })
@@ -226,9 +205,9 @@ def linked_projects(request, project_key):
     return render_to_response('project/linked_projects/linked_projects.djhtm', template_data, context_instance=RequestContext(request))
 
 @ajax_required
-#@user_is_project_maintainer
-def crud_linked_project(request, main_project_key, linked_project_key=None, action=None):
-    project = get_object_or_404(Project, key=main_project_key)
+@user_is_project_maintainer
+def crud_linked_project(request, project_key, linked_project_key=None, action=None):
+    project = get_object_or_404(Project, key=project_key)
 
     template_data = {'project': project,
                      'request': request,
@@ -248,7 +227,7 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
                 project_dependency.brief = (linked_project_add_form.cleaned_data['brief'] or None)
                 project_dependency.save()
 
-                return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
+                return redirect('bitfund.project.views.crud_linked_project', project_key=project_key)
             else :
                 template_data['crud_linked_project_add_form'] = linked_project_add_form
         elif action == 'edit' :
@@ -265,7 +244,7 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
                 project_dependency.brief = (linked_project_edit_form.cleaned_data['brief'] or None)
                 project_dependency.save()
 
-                return redirect('bitfund.project.views.crud_linked_project', main_project_key=main_project_key)
+                return redirect('bitfund.project.views.crud_linked_project', project_key=project_key)
             else :
                 template_data['crud_linked_project_edit_form'] = linked_project_edit_form
 
@@ -309,6 +288,7 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
                                                           'key': project_i_depend_on.dependee_project.key,
                                                           'title': project_i_depend_on.dependee_project.title,
                                                           'logo': project_i_depend_on.dependee_project.logo,
+                                                          'brief': (project_i_depend_on.brief or ''),
                                                           'amount_sum': project_i_depend_on.redonation_amount,
                                                           'amount_percent': project_i_depend_on.redonation_percent,
                                                           })
@@ -318,6 +298,7 @@ def crud_linked_project(request, main_project_key, linked_project_key=None, acti
     return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
 
 
+@ajax_required
 def crud_bitfund_link(request, project_key, action):
     project = get_object_or_404(Project, key=project_key)
     bitfund = get_object_or_404(Project, id=BITFUND_OWN_PROJECT_ID)
@@ -341,7 +322,7 @@ def crud_bitfund_link(request, project_key, action):
         project.is_refused_to_give_to_bitfund = True
         project.save()
 
-        return redirect('bitfund.project.views.crud_linked_project', main_project_key=project_key)
+        return redirect('bitfund.project.views.crud_linked_project', project_key=project_key)
 
 
     if project.maintainer_id == request.user.id :
@@ -364,6 +345,7 @@ def crud_bitfund_link(request, project_key, action):
                                                           'key': project_i_depend_on.dependee_project.key,
                                                           'title': project_i_depend_on.dependee_project.title,
                                                           'logo': project_i_depend_on.dependee_project.logo,
+                                                          'brief': (project_i_depend_on.brief or ''),
                                                           'amount_sum': project_i_depend_on.redonation_amount,
                                                           'amount_percent': project_i_depend_on.redonation_percent,
                                                           })

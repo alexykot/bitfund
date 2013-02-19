@@ -15,8 +15,6 @@ MAX_GOALS_PER_PROJECT = 10
 DEFAULT_MONTHLY_DONATION_AMOUNT = 1 # default donation in $
 DEFAULT_ONETIME_DONATION_AMOUNT = 5 # default donation in $
 
-MAX_EXPENSES_ON_PROJECT_PAGE = 1 # max needs and goals to show in the list near Pledge button
-
 DATE_INPUT_FORMATS = (
 '%d %b %Y', '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y', '%b %d, %Y', '%d %b, %Y', '%B %d %Y', '%B %d, %Y',
 '%d %B %Y', '%d %B, %Y')
@@ -35,3 +33,14 @@ CALCULATIONS_PRECISION = 28 #for decimal calculations, used as `getcontext().pre
 getcontext().prec = CALCULATIONS_PRECISION
 
 BITFUND_OWN_PROJECT_ID = 5
+
+
+RGBCOLOR_DONUT_CHART_PLEDGES = '586F05'
+RGBCOLOR_DONUT_CHART_REDONATIONS = '8DB308'
+RGBCOLOR_DONUT_CHART_OTHER_SOURCES = 'EFBC09'
+RGBCOLOR_DONUT_CHART_BACKGROUND = 'EDEBEA'
+
+#empty chart looks better if a tiny colored bit is shown
+MINIMAL_DEFAULT_PLEDGES_RADIANT = 2
+MINIMAL_DEFAULT_REDONATIONS_RADIANT = 2
+MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT = 1

@@ -2,10 +2,14 @@
 
 {% block title %}Budget : {{ project.title }}{% endblock title %}
 
-
 {% block pagescripts %}
     <script type="text/javascript">
         $(document).ready(function () {
+
+            var backgroundColor = '{{ chartBackgroundColor }}';
+            var otherColor = '{{ chartOtherColor }}';
+            var redonationsColor = '{{ chartRedonationsColor }}';
+            var pledgesColor = '{{ chartPledgesColor }}';
 
             var pledgesRadiant = {{pledges_radiant}};
             var redonationsRadiant = {{redonations_radiant}};
@@ -17,7 +21,7 @@
             ];
             var backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#EDEBEA", "#EDEBEA" ],
+                seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 94, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
 
@@ -27,7 +31,7 @@
             ];
             var otherDonut = $.jqplot('chartdiv', [otherSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#EFBC09", "rgba(0,0,0,0)"],
+                seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 8, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 98, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
 
@@ -37,7 +41,7 @@
             ];
             var redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#8DB308", "rgba(0,0,0,0)"],
+                seriesColors: [ "#"+redonationsColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 14, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 105, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
 
@@ -47,22 +51,20 @@
             ];
             var pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#586F05", "rgba(0,0,0,0)"],
+                seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
 
 
             {% for goal in project_goals %}
+                /*
                 var goal{{goal.id}}OtherRadiant = {{goal.other_sources_radiant}};
                 var goal{{goal.id}}DonationsRadiant = {{goal.donations_radiant}};
 
-                var goal{{goal.id}}BackgroundSeries = [
-                    ['a', 100],
-                    ['b', 100]
-                ];
+                var goal{{goal.id}}BackgroundSeries = [['a', 100],['b', 100]];
                 var goal{{goal.id}}BackgroundDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}BackgroundSeries], {
                     grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#EDEBEA", "#EDEBEA" ],
+                    seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
                     seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
                 });
 
@@ -72,7 +74,7 @@
                 ];
                 var goal{{goal.id}}OtherDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}OtherSeries], {
                     grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
+                    seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
                     seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
                 });
 
@@ -82,65 +84,61 @@
                 ];
                 var goal{{goal.id}}DonationsDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}DonationsSeries], {
                     grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
+                    seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
+                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+                });
+                */
+            {% endfor %}
+
+            {% for need_radiant in project_needs_radiants %}
+                var need{{need_radiant.id}}DonationsSumRadiant = {{need_radiant.donations_sum_radiant}};
+                var need{{need_radiant.id}}OtherRadiant = {{need_radiant.other_sources_radiant}};
+
+                var need{{need_radiant.id}}BackgroundSeries = [['a', 100],['b', 100]];
+                var need{{need_radiant.id}}BackgroundDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}BackgroundSeries], {
+                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                    seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
+                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+                });
+
+                var need{{need_radiant.id}}OtherSeries = [
+                    ['c', (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant)],
+                    ['d', (360 - (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant))]
+                ];
+                var need{{need_radiant.id}}OtherDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}OtherSeries], {
+                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                    seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
+                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+                });
+
+                var need{{need_radiant.id}}DonationsSumSeries = [
+                    ['a', (need{{need_radiant.id}}DonationsSumRadiant)],
+                    ['b', 360 - need{{need_radiant.id}}DonationsSumRadiant]
+                ];
+                var need{{need_radiant.id}}DonationsSumDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}DonationsSumSeries], {
+                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                    seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
                     seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
                 });
             {% endfor %}
-
-            $('#mainPledgeButtonMonthly, #mainPledgeButtonOnetime').click(function (event) {
-                event.preventDefault();
-                $('#pledgeForm').attr('action', $(this).attr('href'));
-                $('#pledgeForm').submit();
-            });
-
-
-            var project_needs_to_show_initially = {{project_needs_to_show_initially}};
-            var index = 0;
-            $('#needs_preselection_list ul li').each(function (event) {
-                $(this).toggle((project_needs_to_show_initially > index));
-                index++;
-            });
-
-            $('#needs_preselection_list ul').toggle(true);
-
-            $('#show_all_needs_preselection').click(function (event) {
-                $('#needs_preselection_list ul li').each(function () {
-                    $(this).toggle(true);
-                });
-                $(this).toggle(false);
-            });
-
-            $('#select_all_needs_preselection').click(function (event) {
-                $('#show_all_needs_preselection').click();
-                $('#needs_preselection_list input[type="checkbox"]').each(function () {
-                    $(this).attr('checked', true);
-                });
-            });
-
 
         });
     </script>
 {% endblock pagescripts %}
 
-
 {% block content %}
-
-    <div class="kf_project-views-view">
+    <div class="kf_project-views-view project-views-support">
 
         {% include "project/project-header.djhtm" %}
 
         <div class="row">
-
             <div class="span4">
-                {% if project_needs_count or project_goals_count %}
-
-                    <form method="get"
-                          action="{% url bitfund.project.views.support project_key=project.key support_type='monthly' %}"
-                          id="pledgeForm">
+                <div class="row">
+                    <span>{{ today|date:"F Y" }}</span>
+                </div>
+                <div class="row">
+                    <div class="span4">
                         <div class="span2 kf_chart">
-                            <div class="row kf_month kf_center">
-                                <span>{{ today|date:"F Y" }}</span>
-                            </div>
                             <div class="row">
                                 <div id="chartdiv" class="kf_center">
                                     <span class="kf_percent">{{ total_gained_percent }}%</span>
@@ -155,7 +153,7 @@
                         <div class="span2">
                             <div class="row kf_pledged">
                                 <div class="span3">
-                                    ${{ donations_total_sum }}<br/>
+                                    {{ site_currency_sign }}{{ donations_total_sum }}<br/>
                                     <span class="kf_small">pledged</span>
                                 </div>
                                 <div class="span1 kf_right">
@@ -163,130 +161,102 @@
                                     <span class="kf_small">backer{{ donations_total_pledgers|pluralize }}</span>
                                 </div>
                             </div>
-                            {% if donations_total_other_sources %}
+                            {% if other_sources_total_sum %}
                                 <div class="row kf_other">
-                                    <div class="span2"> ${{ donations_total_other_sources }} gained from other sources
+                                    <div class="span2">
+                                        {{ site_currency_sign }}{{ other_sources_total_sum }} gained from other sources
                                     </div>
                                 </div>
                             {% endif %}
-
-                            <div class="row kf_details">
-                                <div class="span2">
-                                    <div class="row">
-                                        <div class="span2">
-
-                                            {# buttons&history start #}
-                                            {% if project_edit_access %}
-                                                <a href="{% url bitfund.project.views.edit project_key=project.key %}">edit
-                                                    project details</a>
-                                                &nbsp;&nbsp;&nbsp;
-                                                <a href="{% url bitfund.project.views.edit_needs project_key=project.key %}">edit
-                                                    project needs</a>
-                                                &nbsp;&nbsp;&nbsp;
-                                                <a href="{% url bitfund.project.views.edit_goals project_key=project.key %}">edit
-                                                    project goals</a>
-
-                                            {% elif donation_cart or donation_subscription %}
-                                                You're supporting:
-                                                <br/>
-                                                {% if donation_cart_needs_onetime_count or donation_cart_goals_count %}
-                                                    {% if donation_cart_needs_onetime_count %}
-                                                        ${{ donation_cart_needs_onetime_sum }} today for
-                                                        {{ donation_cart_needs_onetime_count }} need
-                                                        {{ donation_cart_needs_onetime_count|pluralize }}
-                                                        &nbsp;&nbsp;&nbsp;
-                                                        <a href="{% url bitfund.project.views.support project_key=project.key %}">change</a>
-                                                        <br/>
-                                                    {% endif %}
-                                                    {% if donation_cart_goals_count %}
-                                                        ${{ donation_cart_goals_sum }} today for
-                                                        {{ donation_cart_goals_count }} goal
-                                                        {{ donation_cart_goals_count|pluralize }}
-                                                        &nbsp;&nbsp;&nbsp;
-                                                        <a href="{% url bitfund.project.views.support project_key=project.key %}">change</a>
-                                                        <br/>
-                                                    {% endif %}
-                                                {% endif %}
-
-                                                {% if donation_cart_needs_monthly_count %}
-                                                    ${{ donation_cart_needs_monthly_sum }} monthly for
-                                                    {{ donation_cart_needs_monthly_count }} need
-                                                    {{ donation_cart_needs_monthly_count|pluralize }}
-                                                    &nbsp;&nbsp;&nbsp;
-                                                    <a href="{% url bitfund.project.views.support project_key=project.key %}">change</a>
-                                                    <br/>
-                                                {% endif %}
-                                                {% if donation_subscription %}
-                                                    ${{ donation_subscription_needs_sum }} monthly for
-                                                    {{ donation_subscription_needs_count }} need
-                                                    {{ donation_subscription_needs_count|pluralize }}
-                                                    &nbsp;&nbsp;&nbsp;
-                                                    <a href="{% url bitfund.project.views.support project_key=project.key %}">change</a>
-                                                    <br/>
-                                                {% endif %}
-
-                                                <a href="{% url bitfund.project.views.drop_support project_key=project.key %}"
-                                                   onclick="confirm('are you sure?')">cancel all</a>
-                                            {% else %}
-                                                <a href="{% url bitfund.project.views.support project_key=project.key support_type='monthly' %}"
-                                                   id="mainPledgeButtonMonthly" class="button">Pledge Monthly</a>
-                                                <a href="{% url bitfund.project.views.support project_key=project.key support_type='onetime' %}"
-                                                   id="mainPledgeButtonOnetime" class="button">Pledge Once</a>
-                                            {% endif %}
-
-                                            {% if donation_history_newest_needsngoals_sum %}
-                                                <br/>
-                                                You've supported earlier:<br/>
-                                                ${{ donation_history_newest_needsngoals_sum }} for
-                                                {{ donation_history_newest_needsngoals_count }} needs and goals on
-                                                {{ donation_history_newest.datetime_sent }}<br/>
-                                            {% endif %}
-                                            {# buttons&history end #}
-                                        </div>
+                            {% if redonations_total_sum %}
+                                <div class="row kf_other">
+                                    <div class="span2">
+                                        {{ site_currency_sign }}{{ redonations_total_sum }} received from {{ depending_on_me_count }} dependant project
                                     </div>
                                 </div>
+                            {% endif %}
+                        </div>
+                        {% if i_depend_on_projects_count %}
+                            <div class="row">
+                                <div class="span4">
+                                    {% if i_depend_on_transfer_percent > 0 %}
+                                        {{ project.title }} transfers
+                                        {{ i_depend_on_transfer_percent|floatformat:2 }}% of
+                                        it's pledges
+                                        to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
+                                        {{ i_depend_on_projects_count }}
+                                        other projects</a> it depends on.
+                                    {% else %}
+                                        {{ project.title }} depends on
+                                        <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
+                                            {{ i_depend_on_projects_count }}
+                                            other projects</a>, but not transfers any funds to them.
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    </form>
-                {% else %}
+                        {% else %}
+                            <div class="row">
+                                <div class="span4">
+                                    {{ project.title }} <a
+                                        href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't
+                                    depend</a> on any other projects.
+                                </div>
+                            </div>
+                        {% endif %}
 
-                    {# buttons if no needs or goals #}
-                    {% if project_edit_access %}
-                        <a href="{% url bitfund.project.views.edit project_key=project.key %}">edit project details</a>
-                        &nbsp;&nbsp;&nbsp;
-                        <a href="{% url bitfund.project.views.edit_needs project_key=project.key %}">edit project needs</a>
-                        &nbsp;&nbsp;&nbsp;
-                        <a href="{% url bitfund.project.views.edit_goals project_key=project.key %}">edit project goals</a>
-                    {% else %}
-                        This project has no needs of goals, but you can still offer them your support.
-                        <a href="#">offer support</a>
-                    {% endif %}
 
-                {% endif %}
-                {% if linked_projects.i_depend_on_count %}
-                    <div class="row">
-                        <div class="span4">
-                            {{ project.title }} transfers {{ linked_projects.i_depend_on_transfer_percent }}% of it's pledges
-                            to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
-                            {{ linked_projects.i_depend_on_count }}
-                            other projects</a> it depends on.
-                        </div>
                     </div>
-                {% else %}
-                    <div class="row">
-                        <div class="span4">
-
-                            {{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
-                        </div>
-                    </div>
-                {% endif %}
-
-
-
+                </div>
             </div>
-
             <div class="span8">
-                <h4> ${{ project_needs_total }} asked this month for:</h4>
+                <div class="row">
+                    {% if project_monthly_budget > 0 %}
+                    <h4> {{ project.title }} asked {{ site_currency_sign }}{{ project_monthly_budget }} this month
+                        for:</h4>
+                    {% else %}
+                        <h4> {{ project.title }} has no budget specified for this month</h4>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="span8">
+                        {% for need in project_needs %}
+                            <div class="row">
+                                <div class="span8">
+                                    {{ need.title }}
+                                    {{ site_currency_sign }}{{ need.amount|floatformat:2 }} <div id="need-{{ need.id }}-chart"></div>
+                                    <br />
+                                    {{ need.brief }}
+                                    <a href="need-onetime-{{ need.id }}-switch">onetime</a> <a href="need-monthly-{{ need.id }}-switch">monthly</a>
+                                    {{ site_currency_sign }}
+                                    <ul class="kf_amount_buttons" id="need-onetime-{{ need.id }}-options">
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-2" value="2">2</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-5" value="5">5</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-10" value="10">10</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-15" value="15">15</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-25" value="25">25</a></li>
+                                    </ul>
+                                    <ul class="kf_amount_buttons" id="need-monthly-{{ need.id }}-options">
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25" value="0.25">0.25</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5" value="0.5">0.5</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-1" value="1">1</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-2" value="2">2</a></li>
+                                        <li><a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-5" value="5">5</a></li>
+                                    </ul>
+                                    <a href="need-onetime-{{ need.id }}-switch" class="need-more">more</a>
+                                    <input type="button" class="button" value="Pledge now" />
+                                </div>
+                            </div>
+                        {% empty %}
+                            {{ project.title }} has no specific budget, but you can still <a href="{% url bitfund.project.views.view project_key=project.key %}#support-generally" id="support-generally" class="button">support it</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="span8">
+                        I'm not ready to pledge to {{ project.title }} right now, but <a href="" class="button">I'm grateful</a> for
+                        their work.
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -347,3 +317,5 @@
     </div>
 
 {% endblock content %}
+
+

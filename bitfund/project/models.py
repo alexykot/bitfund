@@ -116,9 +116,9 @@ class Project(models.Model):
     def getTotalMonthlyOtherSources(self, monthdate=None):
         return self.getTotalMonthlyNeedsByType('other_source', monthdate), self.getTotalMonthlyGoalsByType('other_source', monthdate)
 
-    # calculates total redonations amount accounting for budget and goals, returned separately
+    # calculates total redonations amount accounting for budget (redonations are not applied to onetime goals)
     def getTotalMonthlyRedonations(self, monthdate=None):
-        return self.getTotalMonthlyNeedsByType('redonation', monthdate), self.getTotalMonthlyGoalsByType('redonation', monthdate)
+        return self.getTotalMonthlyNeedsByType('redonation', monthdate)
 
     # gets active needs count
     def getNeedsCount(self):
@@ -224,10 +224,10 @@ class ProjectNeed(models.Model):
                                              .select_related(depth=1)
                                              )    
         
-        return (DonationTransactionNeeds.objects
+        return Decimal((DonationTransactionNeeds.objects
                                     .filter(need=self)
                                     .filter(donation_history__in=donation_transactions)
-                                    .aggregate(Sum('amount'))['amount__sum']) or 0 
+                                    .aggregate(Sum('amount'))['amount__sum']) or 0).quantize(Decimal('0.01'))
 
 
     def getPledgesMonthlyTotal(self, monthdate=None):
@@ -290,10 +290,10 @@ class ProjectGoal(models.Model):
                                              .select_related(depth=1)
                                              )    
         
-        return (DonationTransactionGoals.objects
+        return Decimal((DonationTransactionGoals.objects
                                     .filter(goal=self)
                                     .filter(donation_history__in=donation_histories)
-                                    .aggregate(Sum('amount'))['amount__sum']) or 0 
+                                    .aggregate(Sum('amount'))['amount__sum']) or 0).quantize(Decimal('0.01'))
     
     def getTotalPledges(self):
         return self.getTotalByType('pledge')
