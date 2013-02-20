@@ -182,4 +182,7 @@ class EditLinkedProjectForm(forms.Form):
 
         return cleaned_data
 
+class PledgeProjectNeedForm(forms.Form):
+    pledge_type = forms.CharField(max_length=9, required=True, widget=forms.HiddenInput)
+    pledge_amount = forms.DecimalField(min_value=0.01, decimal_places=4, required=True)
 
