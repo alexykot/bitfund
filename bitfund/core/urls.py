@@ -79,6 +79,7 @@ urlpatterns += patterns('bitfund.project.views',
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_bitfund_link/(?P<action>donate|refuse)/{0,}$', 'crud_bitfund_link'),
 
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/pledge_need/(?P<need_id>[0-9]{1,})/{0,}$', 'pledge_need'),
 )
 
 #USER ACCOUNT

@@ -19,7 +19,7 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
 from bitfund.project.models import *
 from bitfund.project.forms import *
 from bitfund.core.decorators import ajax_required
-from bitfund.project.decorators import user_is_project_maintainer
+from bitfund.project.decorators import user_is_project_maintainer, user_is_not_project_maintainer
 
 def view(request, project_key):
     project = get_object_or_404(Project, key=project_key)
@@ -84,20 +84,30 @@ def view(request, project_key):
         template_data['other_sources_radiant'] = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
 
     #NEEDS
-    template_data['project_needs'] = project_needs
+    template_data['project_needs'] = []
     template_data['project_needs_radiants'] = []
-
     #these two calculations need to be replaced with direct budget assignment
     other_sources_per_needgoal_amount = (Decimal(round(other_sources_total_sum / (project_needs_count + project_goals_count)))
                                                 .quantize(Decimal('0.01')))
-
     for need in project_needs :
-        donations_sum_radiant = min(360, round(360 * ((need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal()) / need.amount)))
-        other_sources_radiant = min(360, round(360 * (need.getOtherSourcesMonthlyTotal() / need.amount)))
+        need_pledges_n_redonations_total = need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal()
+        need_other_sources_total = need.getOtherSourcesMonthlyTotal()
+        pledge_form = PledgeProjectNeedForm()
+        pledge_form.prefix = 'need-'+str(need.id)
+        template_data['project_needs'].append({'id': need.id,
+                                               'title': need.title,
+                                               'brief': need.brief,
+                                               'amount': need.amount,
+                                               'full_total': need_pledges_n_redonations_total+need_other_sources_total,
+                                               'pledge_form': pledge_form,
+                                               })
 
+        donations_sum_radiant = min(360, round(360 * (need_pledges_n_redonations_total / need.amount)))
+        other_sources_radiant = min(360, round(360 * (need_other_sources_total / need.amount)))
         if donations_sum_radiant == 0 and other_sources_radiant == 0 :
             donations_sum_radiant = MINIMAL_DEFAULT_PLEDGES_RADIANT
             other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+
 
         template_data['project_needs_radiants'].append({'id': need.id,
                                                         'donations_sum_radiant': donations_sum_radiant,
@@ -145,10 +155,15 @@ def view(request, project_key):
 
     return render_to_response('project/view.djhtm', template_data, context_instance=RequestContext(request))
 
+
+@user_is_not_project_maintainer
+def pledge_need(request, project_key, need_key=None, goal_key=None):
+    return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
+
 def chart_image(request, project_key, need_key=None, goal_key=None):
     return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
 
-#@user_is_project_maintainer
+@user_is_project_maintainer
 def linked_projects(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 

@@ -4,6 +4,21 @@
 
 {% block pagescripts %}
     <script type="text/javascript">
+
+        function toggleOnetimeMonthly(setMonthly, needId = false) {
+            if (needId == false) {
+                $("ul[id|='need-monthly-options']").toggle(setMonthly);
+                $("ul[id|='need-onetime-options']").toggle(!setMonthly);
+                $("a[id|='need-monthly-switch']").toggleClass('kf_need_switch_selected', setMonthly);
+                $("a[id|='need-onetime-switch']").toggleClass('kf_need_switch_selected', !setMonthly);
+            } else {
+                $("ul#need-monthly-options-" + needId).toggle(setMonthly);
+                $("ul#need-onetime-options-" + needId).toggle(!setMonthly);
+                $("a#need-monthly-switch-" + needId).toggleClass('kf_need_switch_selected', setMonthly);
+                $("a#need-onetime-switch-" + needId).toggleClass('kf_need_switch_selected', !setMonthly);
+            }
+        }
+
         $(document).ready(function () {
 
             var backgroundColor = '{{ chartBackgroundColor }}';
@@ -121,65 +136,34 @@
                     seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
                 });
             {% endfor %}
+            $('.kf_amount_buttons a').click(function(event){
+                event.preventDefault();
+                $(this).parents('.kf_need_item, .kf_goal_item').find('.kf_amount_buttons a').removeClass('kf_selected');
+                $(this).addClass('kf_selected');
 
-            $('.kf_amount_buttons a').click(function(){
-                if ($(this).hasClass('kf_selected')) {
-                    $(this).parents('.kf_need_item, .kf_goal_item').find('.kf_amount_buttons a').removeClass('kf_selected');
-                    $(this).removeClass('kf_selected');
-
-                    $(this).parents('.kf_need_item, .kf_goal_item').find('input[type="text"][class="kf_need_amount"], input[type="text"][class="kf_goal_amount"]').attr('value', '');
-                } else {
-                    $(this).parents('.kf_need_item, .kf_goal_item').find('.kf_amount_buttons a').removeClass('kf_selected');
-                    $(this).addClass('kf_selected');
-
-                    $(this).parents('.kf_need_item, .kf_goal_item').find('input[type="text"][class="kf_need_amount"], input[type="text"][class="kf_goal_amount"]').attr('value', $(this).attr('value'));
-                }
-
+                $(this).parents('.kf_need_item, .kf_goal_item').find('li.kf_need_pledge_amount_field input').attr('value', $(this).attr('data-amount'));
             });
 
-            $('input[type="text"][class="kf_need_amount"], input[type="text"][class="kf_goal_amount"]').each(function(){
+            $('li.kf_need_pledge_amount_field input').keyup(function(){
                 var cur_value = $(this).attr('value');
-                $(this).parents('.kf_need_item, .kf_goal_item').find('.kf_amount_buttons a').each(function(){
+                $(this).parents('.kf_need_item').find('.kf_amount_buttons a.need_pledge_amount_option').each(function(){
                     $(this).removeClass('kf_selected');
-                    if (cur_value == $(this).attr('value')) {
+                    if (cur_value == $(this).attr('data-amount')) {
                         $(this).addClass('kf_selected');
                     }
-                })
+                });
             });
 
-            $('input[type="text"][class="kf_need_amount"], input[type="text"][class="kf_goal_amount"]').keyup(function(){
-                var cur_value = $(this).attr('value');
-                $(this).parents('.kf_need_item, .kf_goal_item').find('.kf_amount_buttons a').each(function(){
-                    $(this).removeClass('kf_selected');
-                    if (cur_value == $(this).attr('value')) {
-                        $(this).addClass('kf_selected');
-                    }
-                })
+            $("a[id|='need-onetime-switch']").click(function(){
+                toggleOnetimeMonthly(false, $(this).attr('data-need_id'));
             });
-
-
-
-            $('div[name|="kf_need_monthly"]').click(function(){
-                if ($(this).hasClass('kf_need_monthly_selected')) {
-                    $(this).removeClass('kf_need_monthly_selected');
-                    $(this).addClass('kf_need_monthly');
-                    $(this).find('input[type="checkbox"]').attr('checked',false);
-                } else {
-                    $(this).removeClass('kf_need_monthly');
-                    $(this).addClass('kf_need_monthly_selected');
-                    $(this).find('input[type="checkbox"]').attr('checked',true);
-                }
+            $("a[id|='need-monthly-switch']").click(function(){
+                toggleOnetimeMonthly(true, $(this).attr('data-need_id'));
             });
 
             var defaultOnetimeMonthlyPosition = 'monthly';
-            var setMonthly = (defaultOnetimeMonthlyPosition == 'monthly');
-            $("ul[id|='need-monthly-options']").toggle(setMonthly);
-            $("ul[id|='need-onetime-options']").toggle(!setMonthly);
-            $("a[id|='need-monthly-switch']").toggleClass('kf_need_switch_selected', setMonthly);
-            $("a[id|='need-onetime-switch']").toggleClass('kf_need_switch_selected', !setMonthly);
-            $('.kf_need_item').toggle(true);
-
-
+            toggleOnetimeMonthly(defaultOnetimeMonthlyPosition == 'monthly');
+            $('.kf_need_pledge_controls').toggle(true);
 
         });
     </script>
@@ -280,54 +264,81 @@
                     <div class="span8">
                         {% for need in project_needs %}
                             <div class="row">
-                                <div class="span8 kf_need_item" style="display: none;">
-                                    <form action="">
-                                        {{ need.title }}
-                                        {{ site_currency_sign }}{{ need.amount|floatformat:2 }}
-                                        <div id="need-{{ need.id }}-chart"></div>
-                                        <br/>
-                                        {{ need.brief }}
-                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime"
-                                           id="need-onetime-switch-{{ need.id }}" class="kf_need_onetime">onetime</a>
-                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly"
-                                           id="need-monthly-switch-{{ need.id }}" class="kf_need_monthly">monthly</a>
-                                        {{ site_currency_sign }}
-                                        <ul class="kf_amount_buttons" id="need-onetime-options-{{ need.id }}">
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-2"
-                                                   value="2">2</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-5"
-                                                   value="5">5</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-10"
-                                                   value="10">10</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-15"
-                                                   value="15">15</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-25"
-                                                   value="25">25</a></li>
-                                        </ul>
-                                        <ul class="kf_amount_buttons" id="need-monthly-options-{{ need.id }}">
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
-                                                   value="0.25">0.25</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
-                                                   value="0.5">0.5</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-1"
-                                                   value="1">1</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-2"
-                                                   value="2">2</a></li>
-                                            <li>
-                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-5"
-                                                   value="5">5</a></li>
-                                        </ul>
-                                        <a href="need-onetime-{{ need.id }}-switch" class="need-more">more</a>
-                                        <input type="button" class="button" value="Pledge now"/>
+                                <div class="span8 kf_need_item">
+                                    <form action="{% url bitfund.project.views.pledge_need project_key=project.key need_id=need.id%}"
+                                          id="form-pledge-need-{{ need.id }}">
+                                        {{ need.pledge_form.pledge_type }}
+                                        <div class="row">
+                                            <div class="span6">{{ need.title }}</div>
+                                            <div class="span1">
+                                                {{ site_currency_sign }}{{ need.pledges_total|floatformat:2 }}
+                                            </div>
+                                            <div class="span1">
+                                                <div id="need-{{ need.id }}-chart"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="span8">{{ need.brief }}</div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="span8 kf_need_pledge_controls" style="display: none">
+                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime"
+                                                   id="need-onetime-switch-{{ need.id }}" class="kf_need_onetime"
+                                                   data-need_id="{{ need.id }}">onetime</a>
+                                                <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly"
+                                                   id="need-monthly-switch-{{ need.id }}" class="kf_need_monthly"
+                                                   data-need_id="{{ need.id }}">monthly</a>
+                                                {{ site_currency_sign }}
+                                                <ul class="kf_amount_buttons" id="need-onetime-options-{{ need.id }}">
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-2"
+                                                           data-amount="2" class="need_pledge_amount_option">2</a></li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-5"
+                                                           data-amount="5" class="need_pledge_amount_option">5</a></li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-10"
+                                                           data-amount="10" class="need_pledge_amount_option">10</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-15"
+                                                           data-amount="15" class="need_pledge_amount_option">15</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-onetime-25"
+                                                           data-amount="25" class="need_pledge_amount_option">25</a>
+                                                    </li>
+                                                </ul>
+                                                <ul class="kf_amount_buttons" id="need-monthly-options-{{ need.id }}">
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
+                                                           data-amount="0.25" class="need_pledge_amount_option">0.25</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
+                                                           data-amount="0.5" class="need_pledge_amount_option">0.5</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-1"
+                                                           data-amount="1" class="need_pledge_amount_option">1</a></li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-2"
+                                                           data-amount="2" class="need_pledge_amount_option">2</a></li>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-5"
+                                                           data-amount="5" class="need_pledge_amount_option">5</a></li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <a href="{% url bitfund.project.views.view project_key=project.key %}#select-need-{{ need.id }}-monthly-more">more</a>
+                                                    </li>
+                                                    <li class="kf_need_pledge_amount_field">{{ need.pledge_form.pledge_amount }}</li>
+                                                </ul>
+                                                <a href="need-onetime-{{ need.id }}-switch" class="need-more">more</a>
+                                                <input type="submit" class="button" value="Pledge now"/>
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
