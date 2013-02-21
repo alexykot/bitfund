@@ -89,13 +89,13 @@ $(document).ready(function(){
 <div class="row kf_project_title">
     <div class="span1">
         {% if logo %}
-            <a href="{% url bitfund.project.views.view project_key=project.key %}"><img src="{{ logo.url }}" /></a>
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ logo.url }}" /></a>
         {% elif project.logo %}
-            <a href="{% url bitfund.project.views.view project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
         {% endif %}
     </div>
     <div class="span5">
-        <h1><a href="{% url bitfund.project.views.view project_key=project.key %}">{{ project.title }}</a></h1>
+        <h1><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></h1>
     </div>
     <div class="span6 kf_big_call">
     	<div class="kf_label"><a href="javascript:void(0);" class="kf_green">Do it monthly!</a> Confidence and steady support are more important for Open Source than big revenues. $2 monthly will help more than $20 now. <a href="javascript:void(0);" class="kf_green">Consider this!</a> </div>

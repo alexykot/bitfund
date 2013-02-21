@@ -105,7 +105,7 @@ $(document).ready(function(){
         {% for form in projects_formset %}
 <div class="row kf_project_item">
 	<div class="span6">
-                <a href="{% url bitfund.project.views.view project_key=form.initial.project_key %}">{{ form.initial.project_title }}</a> <br />
+                <a href="{% url bitfund.project.views.budget project_key=form.initial.project_key %}">{{ form.initial.project_title }}</a> <br />
                 <div class="kf_project_description">{{ form.initial.project_description }}</div>   
     </div>
     <div class="span2 kf_needs_goals_count">

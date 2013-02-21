@@ -1,9 +1,6 @@
-import datetime
-
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.datetime_safe import datetime
-from django.utils.timezone import utc, now 
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
@@ -11,7 +8,6 @@ from django.shortcuts import get_object_or_404
 from model_utils import Choices
 
 from bitfund.project.models import *
-from bitfund.project.lists import *
 
 DONATION_TRANSACTION_TYPES_CHOICES = Choices(
     ('pledge', u'Pledge'),
@@ -23,6 +19,7 @@ DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
     ('unpaid', u'Confirmed, Unpaid'),
     ('paid', u'Paid'),
     ('rejected', u'Rejected'),
+    ('cancelled', u'Cancelled'),
 )
 
 USER_PROJECT_STATUS_CHOICES = Choices(
@@ -40,9 +37,6 @@ class Profile(User):
                                          default=USER_PROJECT_STATUS_CHOICES.sole_developer)
 
     def getTotalProjectDonations(self, project):
-        from django.db.models import Sum 
-        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds, DonationTransactionGoals
-        
         user_project_donations_history           = DonationTransaction.objects.filter(user=self.user).filter(project=project)
         user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history__in=user_project_donations_history)
                                                                                 .aggregate(Sum('amount'))['amount__sum']
@@ -301,89 +295,121 @@ class DonationSubscriptionNeeds(models.Model):
     need                    = models.ForeignKey(ProjectNeed)
     amount                  = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
-     
+
 #donation history, storing all past donation transactions, for both onetime and monthly donations
 class DonationTransaction(models.Model):
-    transaction_type                = models.CharField(max_length=64, choices=DONATION_TRANSACTION_TYPES_CHOICES, default=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
-    transaction_hash                = models.CharField(max_length=64, unique=True)
-    transaction_status              = models.CharField(max_length=64, choices=DONATION_TRANSACTION_STATUSES_CHOICES)
-    
-    pledger_user                    = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    pledger_donation_subscription   = models.ForeignKey(DonationSubscription, on_delete=models.SET_NULL, null=True, blank=True) 
+    transaction_type = models.CharField(max_length=64, choices=DONATION_TRANSACTION_TYPES_CHOICES,
+                                        default=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
+    transaction_hash = models.CharField(max_length=64, unique=True)
+    transaction_status = models.CharField(max_length=64, choices=DONATION_TRANSACTION_STATUSES_CHOICES,
+                                          default=DONATION_TRANSACTION_STATUSES_CHOICES.unpaid)
 
-    #other_source                    = models.ForeignKey(ProjectOtherSource, on_delete=models.SET_NULL, null=True, blank=True)
+    pledger_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    pledger_username = models.CharField(max_length=30, null=True, blank=True)
+    pledger_email = models.CharField(max_length=255, null=True, blank=True)
+    pledger_donation_type = models.CharField(max_length=7, choices=DONATION_TYPES_CHOICES,
+                                             default=DONATION_TYPES_CHOICES.onetime, null=True, blank=True)
+    pledger_donation_subscription = models.ForeignKey(DonationSubscription, on_delete=models.SET_NULL,
+                                                      null=True, blank=True)
 
-    redonation_transaction          = models.ForeignKey('self', on_delete=models.PROTECT, null=True, blank=True)
-    redonation_project              = models.ForeignKey(Project, related_name='redonation_project', on_delete=models.SET_NULL, null=True, blank=True)
-    
-    accepting_project               = models.ForeignKey(Project, related_name='accepting_project', on_delete=models.SET_NULL, null=True, blank=True)
-    accepting_project_key           = models.CharField(max_length=80)
-    accepting_project_title         = models.CharField(max_length=255)
-    accepting_amount                = models.CharField(max_length=255)
-    datetime_added                  = models.DateTimeField('date sent', default=now())
-    needs                           = models.ManyToManyField(ProjectNeed, through='DonationTransactionNeeds')
-    goals                           = models.ManyToManyField(ProjectGoal, through='DonationTransactionGoals')
+    other_source = models.ForeignKey(ProjectOtherSource, on_delete=models.SET_NULL, null=True, blank=True)
+    other_source_title = models.CharField(max_length=255, null=True, blank=True)
+
+    redonation_transaction = models.ForeignKey('self', on_delete=models.PROTECT, null=True, blank=True)
+    redonation_project = models.ForeignKey(Project, related_name='redonation_project', on_delete=models.SET_NULL,
+                                           null=True, blank=True)
+    redonation_project_key = models.CharField(max_length=80, null=True, blank=True)
+    redonation_project_title = models.CharField(max_length=80, null=True, blank=True)
+
+    accepting_project = models.ForeignKey(Project, related_name='accepting_project', on_delete=models.SET_NULL,
+                                          null=True, blank=True)
+    accepting_project_key = models.CharField(max_length=80)
+    accepting_project_title = models.CharField(max_length=255)
+    transaction_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    transaction_datetime = models.DateTimeField('date sent')
+
+    accepting_need = models.ForeignKey(ProjectNeed, on_delete=models.SET_NULL, null=True, blank=True)
+    accepting_need_title = models.CharField(max_length=255, null=True, blank=True)
+    accepting_need_key = models.CharField(max_length=80, null=True, blank=True)
+
+    accepting_goal = models.ForeignKey(ProjectGoal, on_delete=models.SET_NULL, null=True, blank=True)
+    accepting_goal_title = models.CharField(max_length=255, null=True, blank=True)
+    accepting_goal_key = models.CharField(max_length=80, null=True, blank=True)
+    accepting_goal_datetime_ending = models.DateTimeField(null=True, blank=True)
+
+
+
+
 
     def generateHash(self):
-        transaction_date                  = str(self.datetime_added.isoformat())
-        transaction_type                  = str(self.transaction_type)
-        transaction_username              = str(self.accepting_project_key)
-        transaction_other_source          = str(self.other_source.id)
-        transaction_redonation_project    = str(self.redonation_project.id)
-        transaction_accepting_project_key = str(self.accepting_project_key)
-        transaction_accepting_amount      = str(self.accepting_amount)
-        
+        transaction_datetime = str(self.transaction_datetime.isoformat())
+        transaction_type = str(self.transaction_type)
+        transaction_accepting_project_key = str(self.accepting_project.key)
+        transaction_accepting_amount = str(self.transaction_amount)
+
+        if (transaction_type == DONATION_TRANSACTION_TYPES_CHOICES.pledge):
+            transaction_source = str(self.pledger_user.username)
+        elif (transaction_type == DONATION_TRANSACTION_TYPES_CHOICES.other_source):
+            transaction_source = str(self.other_source.id)
+        elif (transaction_type == DONATION_TRANSACTION_TYPES_CHOICES.redonation):
+            transaction_source = str(self.redonation_project.key)
+
         import hashlib
 
-        hash_source = (transaction_date
-                       +'_'+transaction_type
-                       +'_'+transaction_username
-                       +'_'+transaction_other_source
-                       +'_'+transaction_redonation_project
-                       +'_'+transaction_accepting_project_key
-                       +'_'+transaction_accepting_amount
-                       )  
-                
+        hash_source = (transaction_datetime
+                       + '_' + transaction_type
+                       + '_' + transaction_source
+                       + '_' + transaction_accepting_project_key
+                       + '_' + transaction_accepting_amount
+        )
+
         return hashlib.sha512(hash_source).hexdigest()
-        
+
+    #@TODO transactions refactored, this part needs to be refactored accordingly
     def getAmount(self):
-        from django.db.models import Sum
-        from bitfund.pledger.models import DonationTransactionNeeds, DonationTransactionGoals
-
-        user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history=self)
-                                                                                .aggregate(Sum('amount'))['amount__sum']
-                                                                                ) or 0
-
-        user_project_donations_history_goals_sum = (DonationTransactionGoals.objects.filter(donation_history=self)
-                                                                                .aggregate(Sum('amount'))['amount__sum']
-                                                                                ) or 0
-
-        return user_project_donations_history_needs_sum + user_project_donations_history_goals_sum
-
-class DonationTransactionDetails(models.Model):
-    donation_transaction            = models.OneToOneField(DonationTransaction)
-    pledger_username                 = models.CharField(max_length=30, null=True, blank=True)
-    pledger_email                    = models.CharField(max_length=255, null=True, blank=True)
-
-    other_source_title              = models.CharField(max_length=255, null=True, blank=True)
-    
-    redonation_project_key          = models.CharField(max_length=80, null=True, blank=True)
-    redonation_project_title        = models.CharField(max_length=80, null=True, blank=True)
+        # user_project_donations_history_needs_sum = Decimal((DonationTransactionNeeds.objects.filter(donation_history=self)
+        #                                                                         .aggregate(Sum('amount'))['amount__sum']
+        #                                                                         ) or 0).quantize(Decimal('0.01'))
+        #
+        # user_project_donations_history_goals_sum = Decimal((DonationTransactionGoals.objects.filter(donation_history=self)
+        #                                                                         .aggregate(Sum('amount'))['amount__sum']
+        #                                                                         ) or 0).quantize(Decimal('0.01'))
+        #
+        # return user_project_donations_history_needs_sum + user_project_donations_history_goals_sum
 
 
+        raise Exception('transaction amount calculation needs to be redone!')
 
-class DonationTransactionNeeds(models.Model):
-    donation_history            = models.ForeignKey(DonationTransaction)
-    need                        = models.ForeignKey(ProjectNeed, on_delete=models.SET_NULL, null=True)
-    need_title                  = models.CharField(max_length=255)
-    need_key                    = models.CharField(max_length=80, null=True, blank=True)
-    amount                      = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    donation_type               = models.CharField(max_length=7, choices=DONATION_TYPES_CHOICES, default='onetime')
-     
-class DonationTransactionGoals(models.Model):
-    donation_history            = models.ForeignKey(DonationTransaction)
-    goal                        = models.ForeignKey(ProjectGoal, on_delete=models.SET_NULL, null=True)
-    goal_title                  = models.CharField(max_length=255)
-    goal_key                    = models.CharField(max_length=80, null=True, blank=True)
-    goal_date_ending            = models.DateField('date ending')
-    amount                      = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    def populatePledgeTransaction(self, project, user, pledge_amount, need=None, goal=None, donation_subscription=None):
+        self.transaction_type = DONATION_TRANSACTION_TYPES_CHOICES.pledge
+        self.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.unpaid
+
+        if donation_subscription is DonationSubscription :
+            self.pledger_donation_type = DONATION_TYPES_CHOICES.monthly
+            self.pledger_donation_subscription = donation_subscription
+        else :
+            self.pledger_donation_type = DONATION_TYPES_CHOICES.onetime
+
+        self.pledger_user = user
+        self.pledger_username = user.username
+        self.pledger_email = user.email
+
+        self.accepting_project               = project
+        self.accepting_project_key           = project.key
+        self.accepting_project_title         = project.title
+        self.transaction_amount              = pledge_amount
+
+        if need is ProjectNeed :
+            self.accepting_need = need
+            self.accepting_need_title = need.title
+            self.accepting_need_key = need.key
+        elif goal is ProjectGoal :
+            self.accepting_goal = goal
+            self.accepting_goal_title = goal.title
+            self.accepting_goal_key = goal.key
+            self.accepting_goal_datetime_ending = goal.date_ending
+
+        self.transaction_datetime = now()
+        self.transaction_hash = self.generateHash()
+
+    #def checkCreateRedonationTransactions(self):

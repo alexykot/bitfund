@@ -41,15 +41,13 @@ class Project(models.Model):
         return (DonationTransaction.objects
                                  .filter(accepting_project=self)
                                  .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
-                                 .filter(datetime_added__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                 .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                                  .aggregate(Count('pledger_user', distinct=True))['pledger_user__count']
                                  )
 
     # calculates total donations from all sources accounting for the budget income (goals pledges excluded)
     def getTotalMonthlyDonations(self, monthdate=None):
         return self.getPledgesMonthlyTotal(monthdate) + self.getOtherSourcesMonthlyTotal(monthdate) + self.getRedonationsMonthlyTotal(monthdate) 
-
-    #calculates total project budget (goals excluded)  
 
     # gets total monthly budget for project, i.e. sum of all active needs
     def getTotalMonthlyBudget(self, monthdate=None):
@@ -76,20 +74,22 @@ class Project(models.Model):
 
     # gets total monthly transactions recorded sum by transaction type
     def getTotalMonthlyNeedsByType(self, transaction_type, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds
+        from bitfund.pledger.models import DonationTransaction
 
         if monthdate is None:
             monthdate = now()
-            
-        donation_histories = (DonationTransaction.objects
-                                             .filter(accepting_project=self)
-                                             .filter(transaction_type=transaction_type)
-                                             .filter(datetime_added__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                             .filter(datetime_added__lt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                             .select_related(depth=1)
-                            )
-        
-        return (DonationTransactionNeeds.objects.filter(donation_history__in=donation_histories).aggregate(Sum('amount'))['amount__sum']) or 0
+
+        donations_amount = (DonationTransaction.objects
+                            .filter(accepting_project=self)
+                            .filter(transaction_type=transaction_type)
+                            .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1,
+                                                                       tzinfo=monthdate.tzinfo))
+                            .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
+                                                                      tzinfo=monthdate.tzinfo))
+                            .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
+        ) or 0
+
+        return Decimal(donations_amount).quantize(Decimal('0.01'))
 
     # strange behaviour, monthly is pointless for goals.
     #@TODO check if behafiour here is correct
@@ -102,8 +102,8 @@ class Project(models.Model):
         donation_histories = (DonationTransaction.objects
                                              .filter(accepting_project=self)
                                              .filter(transaction_type=transaction_type)
-                                             .filter(datetime_added__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                             .filter(datetime_added__lt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
+                                             .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                             .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
                                              .select_related(depth=1))    
         
         return (DonationTransactionGoals.objects.filter(donation_history__in=donation_histories).aggregate(Sum('amount'))['amount__sum']) or 0
@@ -209,25 +209,25 @@ class ProjectNeed(models.Model):
     class Meta:
         unique_together = (("project", "key"),)
 
-
+    # calculates total donations for a need for given transaction_type and month
     def getMonthlyTotalByType(self, transaction_type, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds
+        from bitfund.pledger.models import DonationTransaction
 
         if monthdate is None:
             monthdate = now()
-        
-        donation_transactions = (DonationTransaction.objects
-                                             .filter(accepting_project=self.project)
-                                             .filter(transaction_type=transaction_type)
-                                             .filter(datetime_added__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                             .filter(datetime_added__lt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                             .select_related(depth=1)
-                                             )    
-        
-        return Decimal((DonationTransactionNeeds.objects
-                                    .filter(need=self)
-                                    .filter(donation_history__in=donation_transactions)
-                                    .aggregate(Sum('amount'))['amount__sum']) or 0).quantize(Decimal('0.01'))
+
+        donation_transactions_sum = (DonationTransaction.objects
+                                     .filter(accepting_project=self.project)
+                                     .filter(accepting_need=self)
+                                     .filter(transaction_type=transaction_type)
+                                     .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1,
+                                                                                tzinfo=monthdate.tzinfo))
+                                     .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
+                                                                               tzinfo=monthdate.tzinfo))
+                                     .aggregate(Sum('amount'))['amount__sum']
+                                    ) or 0
+
+        return Decimal(donation_transactions_sum).quantize(Decimal('0.01'))
 
 
     def getPledgesMonthlyTotal(self, monthdate=None):
@@ -239,24 +239,22 @@ class ProjectNeed(models.Model):
     def getRedonationsMonthlyTotal(self, monthdate=None):
         return self.getMonthlyTotalByType('redonation', monthdate)
 
+    # calculates amount of separate pledges transactions for a need for given month
     def getPledgesMonthlyCount(self, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction, DonationTransactionNeeds, DONATION_TRANSACTION_TYPES_CHOICES
+        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES
 
         if monthdate is None:
             monthdate = now()
 
-        donation_transactions = (DonationTransaction.objects
-                                             .filter(accepting_project=self.project)
-                                             .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
-                                             .filter(datetime_added__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                             .filter(datetime_added__lt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                             .select_related(depth=1)
-                                             )    
-        
-        return (DonationTransactionNeeds.objects
-                                    .filter(need=self)
-                                    .filter(donation_history__in=donation_transactions)
-                                    .count()) 
+        return (DonationTransaction.objects
+                .filter(accepting_project=self.project)
+                .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
+                .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1,
+                                                           tzinfo=monthdate.tzinfo))
+                .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
+                                                          tzinfo=monthdate.tzinfo))
+                .count()
+        )
 
 
 class ProjectGoal(models.Model):
@@ -281,19 +279,18 @@ class ProjectGoal(models.Model):
     class Meta:
         unique_together = (("project", "key"),)
 
+    # calculates total donations for a goal for given transaction_type4
     def getTotalByType(self, transaction_type):
-        from bitfund.pledger.models import DonationTransaction, DonationTransactionGoals
+        from bitfund.pledger.models import DonationTransaction
 
-        donation_histories = (DonationTransaction.objects
-                                             .filter(accepting_project=self.project)
-                                             .filter(transaction_type=transaction_type)
-                                             .select_related(depth=1)
-                                             )    
-        
-        return Decimal((DonationTransactionGoals.objects
-                                    .filter(goal=self)
-                                    .filter(donation_history__in=donation_histories)
-                                    .aggregate(Sum('amount'))['amount__sum']) or 0).quantize(Decimal('0.01'))
+        donation_transactions_sum = (DonationTransaction.objects
+                                     .filter(accepting_project=self.project)
+                                     .filter(accepting_goal=self)
+                                     .filter(transaction_type=transaction_type)
+                                     .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
+                                    ) or 0
+
+        return Decimal(donation_transactions_sum).quantize(Decimal('0.01'))
     
     def getTotalPledges(self):
         return self.getTotalByType('pledge')

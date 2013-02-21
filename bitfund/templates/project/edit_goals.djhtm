@@ -99,6 +99,6 @@ $(function() {
     <br />
     <br />
     
-    <a href="{% url bitfund.project.views.view project_key=project.key %}">back</a>
+    <a href="{% url bitfund.project.views.budget project_key=project.key %}">back</a>
 
 {% endblock %}

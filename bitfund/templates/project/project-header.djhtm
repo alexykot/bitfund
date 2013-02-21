@@ -1,13 +1,13 @@
 <div class="row kf_project_title">
     <div class="span1 kf_project_logo">
         {% if logo %}
-            <a href="{% url bitfund.project.views.view project_key=project.key %}"><img src="{{ logo.url }}" /></a>
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ logo.url }}" /></a>
         {% elif project.logo %}
-            <a href="{% url bitfund.project.views.view project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
         {% endif %}
     </div>
     <div class="span6">
-        <h1><a href="{% url bitfund.project.views.view project_key=project.key %}">{{ project.title }}</a></h1>
+        <h1><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></h1>
     </div>
     <div class="span5 kf_project_meta">
         <div class="row">

@@ -183,7 +183,7 @@ def support(request, project_key, support_type='onetime'):
                     donation_cart_goal.goal          = ProjectGoal.objects.filter(project=project).get(pk=goal_form.cleaned_data['goal'])
                     donation_cart_goal.save()
 
-            return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.budget', args=(project.key,)))
         else :
             return render_to_response('project/support.djhtm', {'project'        : project,
                                                                 'request'        : request,
@@ -219,7 +219,7 @@ def drop_support(request, project_key):
             
         donation_cart_list.delete()
         
-    return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
+    return HttpResponseRedirect(reverse('bitfund.project.views.budget', args=(project.key,)))
 
 
 @user_is_not_project_maintainer
@@ -229,5 +229,5 @@ def toggle_grateful(request, project_key):
 
     project.toggleGratefulUser(request.user)
 
-    return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
+    return HttpResponseRedirect(reverse('bitfund.project.views.budget', args=(project.key,)))
 

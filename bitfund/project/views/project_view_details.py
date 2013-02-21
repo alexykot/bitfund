@@ -16,12 +16,16 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            MINIMAL_DEFAULT_REDONATIONS_RADIANT,
                                            MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT,
                                            )
-from bitfund.project.models import *
-from bitfund.project.forms import *
 from bitfund.core.decorators import ajax_required
+from bitfund.project.models import *
+from bitfund.project.lists import DONATION_TYPES_CHOICES
+from bitfund.project.forms import *
 from bitfund.project.decorators import user_is_project_maintainer, user_is_not_project_maintainer
+from bitfund.pledger.models import DonationTransaction, DonationSubscription
 
-def view(request, project_key):
+
+
+def budget(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 
     template_data = {'project': project,
@@ -86,9 +90,6 @@ def view(request, project_key):
     #NEEDS
     template_data['project_needs'] = []
     template_data['project_needs_radiants'] = []
-    #these two calculations need to be replaced with direct budget assignment
-    other_sources_per_needgoal_amount = (Decimal(round(other_sources_total_sum / (project_needs_count + project_goals_count)))
-                                                .quantize(Decimal('0.01')))
     for need in project_needs :
         need_pledges_n_redonations_total = need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal()
         need_other_sources_total = need.getOtherSourcesMonthlyTotal()
@@ -123,6 +124,9 @@ def view(request, project_key):
     )
     template_data['project_goals'] = []
 
+    #@TODO these calculations need to be replaced with transactions summary
+    other_sources_per_needgoal_amount = (Decimal(round(other_sources_total_sum / (project_needs_count + project_goals_count)))
+                                         .quantize(Decimal('0.01')))
     for goal in project_goals:
         donations_amount = goal.getTotalPledges() + goal.getTotalRedonations()
         other_sources_amount = goal.getTotalOtherSources()
@@ -153,12 +157,52 @@ def view(request, project_key):
 
     template_data['project_goals_count'] = project_goals.count()
 
-    return render_to_response('project/view.djhtm', template_data, context_instance=RequestContext(request))
-
+    return render_to_response('project/budget/budget.djhtm', template_data, context_instance=RequestContext(request))
 
 @user_is_not_project_maintainer
-def pledge_need(request, project_key, need_key=None, goal_key=None):
-    return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
+def crud_pledge_need(request, project_key, need_id, action):
+    project = get_object_or_404(Project, key=project_key)
+    need = get_object_or_404(ProjectNeed, id=need_id)
+
+    print request.is_ajax()
+
+    template_data = {'project': project,
+                     'request': request,
+                     'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
+    if request.method == 'POST':
+        if action == 'pledge' :
+            pledge_need_form = PledgeProjectNeedForm(request.POST)
+            if pledge_need_form.is_valid():
+                if pledge_need_form.cleaned_data['pledge_type'] == DONATION_TYPES_CHOICES.onetime :
+                    transaction = DonationTransaction()
+                    transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
+                                                          pledge_amount=pledge_need_form.cleaned_data['pledge_amount']
+                    )
+                    transaction.save()
+                elif pledge_need_form.cleaned_data['pledge_type'] == DONATION_TYPES_CHOICES.monthly :
+                    subscription = DonationSubscription()
+
+
+        elif action == 'drop' :
+            transaction = DonationTransaction()
+
+    #@TODO these two calculations need to be replaced with direct budget assignment
+    pledge_form = PledgeProjectNeedForm()
+    pledge_form.prefix = 'need-'+str(need.id)
+    template_data['need'] = {'id': need.id,
+                             'title': need.title,
+                             'brief': need.brief,
+                             'amount': need.amount,
+                             'full_total': need.getPledgesMonthlyTotal()+need.getRedonationsMonthlyTotal()+
+                                           need.getOtherSourcesMonthlyTotal(),
+                             'pledge_form': pledge_form,
+    }
+
+    return render_to_response('project/budget/ajax-pledge_need_form.djhtm', template_data, context_instance=RequestContext(request))
+
 
 def chart_image(request, project_key, need_key=None, goal_key=None):
     return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
@@ -219,6 +263,7 @@ def linked_projects(request, project_key):
 
     return render_to_response('project/linked_projects/linked_projects.djhtm', template_data, context_instance=RequestContext(request))
 
+
 @ajax_required
 @user_is_project_maintainer
 def crud_linked_project(request, project_key, linked_project_key=None, action=None):
@@ -232,7 +277,7 @@ def crud_linked_project(request, project_key, linked_project_key=None, action=No
 
     if request.method == 'POST':
         if action == 'add' :
-            linked_project_add_form      = AddLinkedProjectForm(project.id, request.POST)
+            linked_project_add_form = AddLinkedProjectForm(project.id, request.POST)
             if linked_project_add_form.is_valid():
                 project_dependency = Project_Dependencies()
                 project_dependency.depender_project = project
@@ -365,4 +410,4 @@ def crud_bitfund_link(request, project_key, action):
                                                           'amount_percent': project_i_depend_on.redonation_percent,
                                                           })
 
-    return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('project/linked_projects/ajax-i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))

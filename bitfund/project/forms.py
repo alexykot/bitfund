@@ -9,6 +9,7 @@ from django import forms
 from bitfund.core.models import *
 from bitfund.core.settings.project import CALCULATIONS_PRECISION
 from bitfund.project.models import *
+from bitfund.project.lists import DONATION_TYPES_CHOICES
 
 class CreateProjectForm(forms.ModelForm):
     def __init__(self, *args, **kw):
@@ -183,6 +184,6 @@ class EditLinkedProjectForm(forms.Form):
         return cleaned_data
 
 class PledgeProjectNeedForm(forms.Form):
-    pledge_type = forms.CharField(max_length=9, required=True, widget=forms.HiddenInput)
+    pledge_type = forms.ChoiceField(required=True, widget=forms.HiddenInput, choices=DONATION_TYPES_CHOICES)
     pledge_amount = forms.DecimalField(min_value=0.01, decimal_places=4, required=True)
 

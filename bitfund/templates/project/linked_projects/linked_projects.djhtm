@@ -20,7 +20,7 @@
                 <h2>Projects depending on {{ project.title }}:</h2>
                 <ul>
                     {% for project_depending_on_me in projects_depending_on_me %}
-                        <li><a href="{% url bitfund.project.views.view project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a> -
+                        <li><a href="{% url bitfund.project.views.budget project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a> -
                             {% if project_depending_on_me.amount_sum %}
                                 {{ site_currency_sign }}{{ project_depending_on_me.amount_sum|floatformat:2 }}
                             {% elif project_depending_on_me.amount_percent %}
@@ -35,7 +35,7 @@
         </div>
 
         <div class="span5" id="i_depend_on_projects_list">
-            {% include "project/linked_projects/i_depend_on_projects_list.djhtm" %}
+            {% include "project/linked_projects/ajax-i_depend_on_projects_list.djhtm" %}
         </div>
 
     </div>

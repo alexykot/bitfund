@@ -194,5 +194,5 @@ def view(request, project_key):
     
     
     
-    return render_to_response('project/view.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('project/budget.djhtm', template_data, context_instance=RequestContext(request))
 

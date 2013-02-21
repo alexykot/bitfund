@@ -4,7 +4,7 @@
         {% for project_i_depend_on in projects_i_depend_on %}
             {% if crud_linked_project_action == 'edit' and project_i_depend_on.key == linked_project.key %}
                 <li>
-                    <a href="{% url bitfund.project.views.view project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a>
+                    <a href="{% url bitfund.project.views.budget project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a>
                     <form action="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}"
                       id="crud_linked_project_form">
                     {% csrf_token %}
@@ -15,7 +15,7 @@
                    class="project_crud">cancel</a></li>
             {% else %}
                 <li>
-                    <a href="{% url bitfund.project.views.view project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a>
+                    <a href="{% url bitfund.project.views.budget project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a>
                     -
                     {% if project_i_depend_on.amount_sum > 0 %}
                         {{ site_currency_sign }}{{ project_i_depend_on.amount_sum|floatformat:2 }}

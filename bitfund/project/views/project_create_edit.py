@@ -21,7 +21,7 @@ def create(request):
             project.maintainer_id   = request.user.id
             form.save()
             
-            return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.budget', args=(project.key,)))
         else :
             data = {}
             for key in request.POST : 
@@ -50,7 +50,7 @@ def edit(request, project_key):
         if form.is_valid():
             form.save()
             
-            return HttpResponseRedirect(reverse('bitfund.project.views.view', args=(project.key,)))
+            return HttpResponseRedirect(reverse('bitfund.project.views.budget', args=(project.key,)))
         else :
             data = {}
             for key in request.POST : 
@@ -62,14 +62,14 @@ def edit(request, project_key):
             return render_to_response('project/create_edit.djhtm', {'form'     : form,
                                                                    'request'  : request,
                                                                    'project'  : project,  
-                                                                   'back_url' : reverse('project.views.view', args=(project.key,))}, context_instance=RequestContext(request))
+                                                                   'back_url' : reverse('project.views.budget', args=(project.key,))}, context_instance=RequestContext(request))
         
     else : 
         form = CreateProjectForm(instance=project)
         return render_to_response('project/create_edit.djhtm', {'form'     : form,
                                                                'request'  : request,
                                                                'project'  : project, 
-                                                               'back_url' : reverse('project.views.view', args=(project.key,))}, context_instance=RequestContext(request))
+                                                               'back_url' : reverse('project.views.budget', args=(project.key,))}, context_instance=RequestContext(request))
 
 
 @login_required

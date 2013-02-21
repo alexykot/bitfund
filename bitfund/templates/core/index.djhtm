@@ -13,7 +13,7 @@
 <h2>Available Projects</h2>
 <ul>
     {% for project in public_projects_list %}
-    <li><a href="{% url bitfund.project.views.view project_key=project.key%}">{{ project.title }}</a></li>
+    <li><a href="{% url bitfund.project.views.budget project_key=project.key%}">{{ project.title }}</a></li>
     {% endfor %}
 </ul>   
 {% endif %}

@@ -89,7 +89,7 @@ class ProjectResource(ModelResource):
         user_token, user = checkUserToken(request.GET.get(API_USER_TOKEN_PARAM_NAME, None))
         
         bundle.data['target_month']        = target_month.strftime('%b %Y')
-        bundle.data['project_profile_URL'] = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.view', kwargs={'project_key':project.key})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token
+        bundle.data['project_profile_URL'] = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.budget', kwargs={'project_key':project.key})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token
         
         project_budget_total                                    = project.getTotalMonthlyBudget(target_month)
         project_budget['budget_monthly']                        = {}
