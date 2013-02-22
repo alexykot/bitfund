@@ -199,11 +199,11 @@ class ProjectResource(ModelResource):
         if user is not None : 
             user_profile = Profile.objects.get(user=user)
             project_user_data['user_known']            = True
-            project_user_data['total_donations_sum']   = user_profile.getTotalProjectDonations(project)
+            project_user_data['total_donations_sum']   = user_profile.getTotalDonationsByProject(project)
             project_user_data['total_donations_count'] = DonationTransaction.objects.filter(user=user).filter(project=project).count()
             if project_user_data['total_donations_count'] > 0 :
                 latest_donation        = (DonationTransaction.objects.filter(user=user).filter(project=project).order_by('-datetime_sent')[:1])[0]
-                latest_donation_amount = latest_donation.getAmount()
+                latest_donation_amount = latest_donation.transaction_amount
                 project_user_data['latest_donation']                      = {}
                 project_user_data['latest_donation']['date_utctimestamp'] = time.mktime(latest_donation.datetime_sent.utctimetuple()) 
                 project_user_data['latest_donation']['date_formatted']    = latest_donation.datetime_sent.strftime('%d %b %Y')

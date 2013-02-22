@@ -15,7 +15,7 @@ from django.core.mail import send_mail
 from bitfund.core.models import *
 from bitfund.core.forms import *
 from bitfund.project.forms import *
-from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROTOTYPE_LANDING_PAGE_URL, PROTOTYPE_HIDDEN_ENTRANCE
+from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROTOTYPE_LANDING_PAGE_URL, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE
  
 
 def index(request):

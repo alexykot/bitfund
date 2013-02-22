@@ -1,4 +1,4 @@
-{% extends "base.djhtm" %}
+{% extends "core/base.djhtm" %}
 
 {% block title %}Pledge to {{ project.title }}{% endblock %}
 

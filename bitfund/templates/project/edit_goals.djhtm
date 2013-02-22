@@ -1,4 +1,4 @@
-{% extends "base.djhtm" %}
+{% extends "core/base.djhtm" %}
 
 {% block title %}register pledger{% endblock %}
 

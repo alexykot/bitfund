@@ -317,3 +317,8 @@ def donations_success(request):
                                                                   'recent':  recent_donations,
                                                                   'projects_count':index, 
                                                                   }, context_instance=RequestContext(request))
+
+
+@login_required
+def attach_card(request):
+    return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))

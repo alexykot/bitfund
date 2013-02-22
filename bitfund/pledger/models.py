@@ -36,17 +36,13 @@ class Profile(User):
     status_in_project = models.CharField(max_length=80, choices=USER_PROJECT_STATUS_CHOICES,
                                          default=USER_PROJECT_STATUS_CHOICES.sole_developer)
 
-    def getTotalProjectDonations(self, project):
-        user_project_donations_history           = DonationTransaction.objects.filter(user=self.user).filter(project=project)
-        user_project_donations_history_needs_sum = (DonationTransactionNeeds.objects.filter(donation_history__in=user_project_donations_history)
-                                                                                .aggregate(Sum('amount'))['amount__sum']
-                                                                                ) or 0
+    # calculates total donations from this user to certain project
+    def getTotalDonationsByProject(self, project):
+        user_project_donations_sum = (DonationTransaction.objects
+                                      .filter(user=self.user, accepting_project=project)
+                                      .aggregate(Sum('transaction_amount'))['transaction_amount__sum']) or 0
 
-        user_project_donations_history_goals_sum = (DonationTransactionGoals.objects.filter(donation_history__in=user_project_donations_history)
-                                                                                .aggregate(Sum('amount'))['amount__sum']
-                                                                                ) or 0
-        
-        return user_project_donations_history_needs_sum + user_project_donations_history_goals_sum
+        return Decimal(user_project_donations_sum).quantize(Decimal('0.01'))
 
 
 #donations cart, storing donations data until confirmed 
@@ -284,16 +280,16 @@ class DonationCartGoals(models.Model):
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely
 class DonationSubscription(models.Model):
-    user                = models.ForeignKey(User)
-    project             = models.ForeignKey(Project)
-    datetime_last_sent  = models.DateTimeField('last sent', null=True)
-    active              = models.BooleanField(default = True)
-    needs               = models.ManyToManyField(ProjectNeed, through='DonationSubscriptionNeeds')
+    user = models.ForeignKey(User)
+    project = models.ForeignKey(Project)
+    datetime_last_sent = models.DateTimeField('last sent', null=True)
+    active = models.BooleanField(default=True)
+    needs = models.ManyToManyField(ProjectNeed, through='DonationSubscriptionNeeds')
 
 class DonationSubscriptionNeeds(models.Model):
-    donation_subscription   = models.ForeignKey(DonationSubscription)
-    need                    = models.ForeignKey(ProjectNeed)
-    amount                  = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    donation_subscription = models.ForeignKey(DonationSubscription)
+    need = models.ForeignKey(ProjectNeed)
+    amount = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
 
 #donation history, storing all past donation transactions, for both onetime and monthly donations
@@ -337,10 +333,6 @@ class DonationTransaction(models.Model):
     accepting_goal_key = models.CharField(max_length=80, null=True, blank=True)
     accepting_goal_datetime_ending = models.DateTimeField(null=True, blank=True)
 
-
-
-
-
     def generateHash(self):
         transaction_datetime = str(self.transaction_datetime.isoformat())
         transaction_type = str(self.transaction_type)
@@ -365,45 +357,117 @@ class DonationTransaction(models.Model):
 
         return hashlib.sha512(hash_source).hexdigest()
 
-    #@TODO transactions refactored, this part needs to be refactored accordingly
-    def getAmount(self):
-        # user_project_donations_history_needs_sum = Decimal((DonationTransactionNeeds.objects.filter(donation_history=self)
-        #                                                                         .aggregate(Sum('amount'))['amount__sum']
-        #                                                                         ) or 0).quantize(Decimal('0.01'))
-        #
-        # user_project_donations_history_goals_sum = Decimal((DonationTransactionGoals.objects.filter(donation_history=self)
-        #                                                                         .aggregate(Sum('amount'))['amount__sum']
-        #                                                                         ) or 0).quantize(Decimal('0.01'))
-        #
-        # return user_project_donations_history_needs_sum + user_project_donations_history_goals_sum
+    # cycles through all linked projects for given transaction and creates redonations transactions if needed
+    def createRedonationTransactions(self):
+        projects_i_depend_on_list = (Project_Dependencies.objects
+                                .filter(depender_project=self.accepting_project)
+                                .sort_by('sort_order'))
+
+        # only genuine user pledges are to be redonated, other sources and redonations do not trigger subsequent redonations
+        if self.transaction_type != DONATION_TRANSACTION_TYPES_CHOICES.pledge:
+            return self
+
+        # parent transaction should be already saved before doing this
+        if not self.pk:
+            return self
+
+        project_current_budget = self.accepting_project.getTotalMonthlyBudget()
+
+        for project_i_depend_on in projects_i_depend_on_list :
+            # if the redonations transaction for this depender project and this initial transaction
+            # exists already - omiting the transaction
+            if DonationTransaction.objects.filter(redonation_project=self.accepting_project,
+                                                  accepting_project=project_i_depend_on.depender_project,
+                                                  redonation_transaction=self).count() > 0 :
+                continue
 
 
-        raise Exception('transaction amount calculation needs to be redone!')
+            # first we check if there is a fixed redonation amount set
+            if project_i_depend_on.redonation_amount > 0 :
+                # fixed redonation_amount is a part of this project's budget. Here we're getting
+                # the % representation of that part.
+                current_redonation_percent = (project_i_depend_on.redonation_amount*100) / project_current_budget
+
+                # multiply % representation on the this project's current budget - getting the amount we're going
+                # to redonate in this transaction
+                current_redonation_amount = project_current_budget * current_redonation_percent
+
+                # getting total of already sent redonations from this project to that one.
+                total_current_redonations = (DonationTransaction.objects
+                                             .filter(redonation_project=self.accepting_project,
+                                                     accepting_project=project_i_depend_on.depender_project)
+                                             .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
+                                            ) or 0
+
+                # if (existing_redonations + current_redonation) makes up bigger amount than total
+                # fixed redonation - redonation is capped
+                if (total_current_redonations+current_redonation_amount) > project_i_depend_on.redonation_amount :
+                    # in case of the cap current redonation should cover only difference between already given and the cap
+                    current_redonation_amount = project_i_depend_on.redonation_amount - total_current_redonations
+
+                    # if in fact total already given redonations have covered all designated fixed
+                    # redonation amount - nothing else to be redonated here then, omiting this cycle.
+                    if current_redonation_amount <= 0 :
+                        continue
+
+            # if there is no fixed redonation, maybe there is a percentage
+            elif project_i_depend_on.redonation_percent > 0 :
+                # figuring out redonation amount from a percentage is easy - there is no cap,
+                # just a share of the initial pledge
+                current_redonation_amount = (Decimal((self.transaction_amount/100) * project_i_depend_on.redonation_percent)
+                                             .quantize(Decimal('0.01')))
+            else :  # this project dependency doesn't imply any redonations, so we omit this redonation
+                continue
+
+            # now we have to take into account all active needs of the accepting project, if there are any
+            project_i_depend_on_needs_list = ProjectNeed.objects.filter(project=project_i_depend_on, is_public=True)
+            project_i_depend_on_needs_count = project_i_depend_on_needs_list.count()
+
+            # if redonation accepting project has no needs - redonation is not bound to any particular need
+            if project_i_depend_on_needs_count == 0 :
+                redonation_transaction = DonationTransaction()
+                redonation_transaction.populateRedonationTransaction(project=project_i_depend_on,
+                                                                     redonation_project=self.accepting_project,
+                                                                     redonation_transaction=self,
+                                                                     pledge_amount=current_redonation_amount)
+                redonation_transaction.save()
+            else :
+                # if there are needs in the redonation accepting project - we split redonation amount between all needs equally
+                current_redonation_amount_per_need = current_redonation_amount / project_i_depend_on_needs_count
+                for project_i_depend_on_need in project_i_depend_on_needs_list :
+                    redonation_transaction = DonationTransaction()
+                    redonation_transaction.populateRedonationTransaction(project=project_i_depend_on,
+                                                                         redonation_project=self.accepting_project,
+                                                                         redonation_transaction=self,
+                                                                         pledge_amount=current_redonation_amount_per_need,
+                                                                         need=project_i_depend_on_need)
+                    redonation_transaction.save()
+
 
     def populatePledgeTransaction(self, project, user, pledge_amount, need=None, goal=None, donation_subscription=None):
         self.transaction_type = DONATION_TRANSACTION_TYPES_CHOICES.pledge
         self.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.unpaid
 
-        if donation_subscription is DonationSubscription :
+        if donation_subscription is DonationSubscription:
             self.pledger_donation_type = DONATION_TYPES_CHOICES.monthly
             self.pledger_donation_subscription = donation_subscription
-        else :
+        else:
             self.pledger_donation_type = DONATION_TYPES_CHOICES.onetime
 
         self.pledger_user = user
         self.pledger_username = user.username
         self.pledger_email = user.email
 
-        self.accepting_project               = project
-        self.accepting_project_key           = project.key
-        self.accepting_project_title         = project.title
-        self.transaction_amount              = pledge_amount
+        self.accepting_project = project
+        self.accepting_project_key = project.key
+        self.accepting_project_title = project.title
+        self.transaction_amount = pledge_amount
 
-        if need is ProjectNeed :
+        if need is ProjectNeed:
             self.accepting_need = need
             self.accepting_need_title = need.title
             self.accepting_need_key = need.key
-        elif goal is ProjectGoal :
+        elif goal is ProjectGoal:
             self.accepting_goal = goal
             self.accepting_goal_title = goal.title
             self.accepting_goal_key = goal.key
@@ -412,4 +476,25 @@ class DonationTransaction(models.Model):
         self.transaction_datetime = now()
         self.transaction_hash = self.generateHash()
 
-    #def checkCreateRedonationTransactions(self):
+    def populateRedonationTransaction(self, project, redonation_project, redonation_transaction, pledge_amount,
+                                      need=None):
+        self.transaction_type = DONATION_TRANSACTION_TYPES_CHOICES.redonation
+        self.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.unpaid
+
+        self.redonation_transaction = redonation_transaction
+        self.redonation_project = redonation_project
+        self.redonation_project_key = redonation_project.key
+        self.redonation_project_title = redonation_project.title
+
+        self.accepting_project = project
+        self.accepting_project_key = project.key
+        self.accepting_project_title = project.title
+        self.transaction_amount = pledge_amount
+        self.transaction_datetime = now()
+
+        if need is ProjectNeed:
+            self.accepting_need = need
+            self.accepting_need_title = need.title
+            self.accepting_need_key = need.key
+
+        self.transaction_hash = self.generateHash()

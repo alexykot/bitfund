@@ -1,4 +1,4 @@
-{% extends "base.djhtm" %}
+{% extends "core/base.djhtm" %}
 {% load crispy_forms_tags %}
 
 {% block title %}login{% endblock %}

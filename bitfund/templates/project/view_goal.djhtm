@@ -1,4 +1,4 @@
-{% extends "base.djhtm" %}
+{% extends "core/base.djhtm" %}
 
 {% block title %}{{ project.title }} - goal "{{goal.title}}"{% endblock title %}
 

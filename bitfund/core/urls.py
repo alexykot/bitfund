@@ -79,11 +79,16 @@ urlpatterns += patterns('bitfund.project.views',
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_bitfund_link/(?P<action>donate|refuse)/{0,}$', 'crud_bitfund_link'),
 
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/(?P<action>pledge|drop)/{0,}$', 'crud_pledge_need'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/{0,}$', 'crud_pledge_need'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/(?P<action>pledge|drop_subscription|switch_monthly)/{0,}$', 'crud_pledge_need'),
+
 )
 
 #USER ACCOUNT
 urlpatterns += patterns('bitfund.pledger.views',
+    (r'^pledger/account/attach_card/{0,}$', 'attach_card'),
+    (r'^pledger/account/attach_card/return-to/(?P<return_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'attach_card'),
+
     (r'^pledger/donations_overview/{0,}$', 'donations_overview'),
     (r'^pledger/donations_update/{0,}$', 'donations_update'),
     (r'^pledger/checkout/{0,}$', 'checkout'),

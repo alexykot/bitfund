@@ -1,22 +1,18 @@
-{% extends "base.djhtm" %}
+{% extends "core/base.djhtm" %}
 
 {% block title %}Budget : {{ project.title }}{% endblock title %}
 
 {% block pagescripts %}
     <script type="text/javascript">
 
-        function toggleOnetimeMonthly(setMonthly, needId=false) {
-            if (needId == false) {
-                $("ul[id|='need-monthly-options']").toggle(setMonthly);
-                $("ul[id|='need-onetime-options']").toggle(!setMonthly);
-                $("a[id|='need-monthly-switch']").toggleClass('kf_need_switch_selected', setMonthly);
-                $("a[id|='need-onetime-switch']").toggleClass('kf_need_switch_selected', !setMonthly);
-            } else {
-                $("ul#need-monthly-options-" + needId).toggle(setMonthly);
-                $("ul#need-onetime-options-" + needId).toggle(!setMonthly);
-                $("a#need-monthly-switch-" + needId).toggleClass('kf_need_switch_selected', setMonthly);
-                $("a#need-onetime-switch-" + needId).toggleClass('kf_need_switch_selected', !setMonthly);
-            }
+        var defaultOnetimeMonthlyPosition = 'monthly';
+
+        function toggleOnetimeMonthly(setMonthly, needId) {
+            $("ul#need-monthly-options-" + needId).toggle(setMonthly);
+            $("ul#need-onetime-options-" + needId).toggle(!setMonthly);
+            $("a#need-monthly-switch-" + needId).toggleClass('kf_need_switch_selected', setMonthly);
+            $("a#need-onetime-switch-" + needId).toggleClass('kf_need_switch_selected', !setMonthly);
+            $("input#id_need-"+needId+"-pledge_type").attr('value', setMonthly ? 'monthly' : 'onetime');
         }
 
         $(document).ready(function () {
@@ -136,39 +132,7 @@
                     seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
                 });
             {% endfor %}
-            $('.kf_amount_buttons a').click(function(event){
-                event.preventDefault();
-                $(this).parents('.kf_need_item, .kf_goal_item').find('.kf_amount_buttons a').removeClass('kf_selected');
-                $(this).addClass('kf_selected');
 
-                $(this).parents('.kf_need_item, .kf_goal_item').find('li.kf_need_pledge_amount_field input').attr('value', $(this).attr('data-amount'));
-            });
-
-            $('li.kf_need_pledge_amount_field input').keyup(function(){
-                var cur_value = $(this).attr('value');
-                $(this).parents('.kf_need_item').find('.kf_amount_buttons a.need_pledge_amount_option').each(function(){
-                    $(this).removeClass('kf_selected');
-                    if (cur_value == $(this).data('amount')) {
-                        $(this).addClass('kf_selected');
-                    }
-                });
-            });
-
-            $("a[id|='need-onetime-switch']").click(function(){
-                toggleOnetimeMonthly(false, $(this).data('need_id'));
-            });
-            $("a[id|='need-monthly-switch']").click(function(){
-                toggleOnetimeMonthly(true, $(this).data('need_id'));
-            });
-
-            var defaultOnetimeMonthlyPosition = 'monthly';
-            toggleOnetimeMonthly(defaultOnetimeMonthlyPosition == 'monthly');
-            $('.kf_need_pledge_controls').toggle(true);
-
-            $("form[id|='form-pledge-need']").submit(function(event){
-                event.preventDefault();
-                $('#form-container-need-item-'+$(this).data('need_id')).load($(this).attr('action'), $(this).serializeObject());
-            });
 
         });
     </script>

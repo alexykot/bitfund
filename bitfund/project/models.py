@@ -87,26 +87,27 @@ class Project(models.Model):
                             .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                                       tzinfo=monthdate.tzinfo))
                             .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
-        ) or 0
+                            ) or 0
 
         return Decimal(donations_amount).quantize(Decimal('0.01'))
 
-    # strange behaviour, monthly is pointless for goals.
-    #@TODO check if behafiour here is correct
     def getTotalMonthlyGoalsByType(self, transaction_type, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction, DonationTransactionGoals
+        from bitfund.pledger.models import DonationTransaction
 
         if monthdate is None:
             monthdate = now()
-            
-        donation_histories = (DonationTransaction.objects
-                                             .filter(accepting_project=self)
-                                             .filter(transaction_type=transaction_type)
-                                             .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
-                                             .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
-                                             .select_related(depth=1))    
-        
-        return (DonationTransactionGoals.objects.filter(donation_history__in=donation_histories).aggregate(Sum('amount'))['amount__sum']) or 0
+
+        pledges_history_sum = (DonationTransaction.objects
+                               .filter(accepting_project=self)
+                               .filter(transaction_type=transaction_type)
+                               .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1,
+                                                                          tzinfo=monthdate.tzinfo))
+                               .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
+                                                                         tzinfo=monthdate.tzinfo))
+                               .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
+                               ) or 0
+
+        return Decimal(pledges_history_sum).quantize(Decimal('0.01'))
 
     # gets total monthly pledges for all actual needs and goals, returned separately in a tuple
     def getTotalMonthlyPledges(self, monthdate=None):
@@ -224,7 +225,7 @@ class ProjectNeed(models.Model):
                                                                                 tzinfo=monthdate.tzinfo))
                                      .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                                                tzinfo=monthdate.tzinfo))
-                                     .aggregate(Sum('amount'))['amount__sum']
+                                     .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                                     ) or 0
 
         return Decimal(donation_transactions_sum).quantize(Decimal('0.01'))
@@ -255,7 +256,6 @@ class ProjectNeed(models.Model):
                                                           tzinfo=monthdate.tzinfo))
                 .count()
         )
-
 
 class ProjectGoal(models.Model):
     project       = models.ForeignKey(Project)
