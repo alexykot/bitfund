@@ -21,7 +21,7 @@ from bitfund.pledger.models import DonationTransaction, DonationSubscription, Do
 
 @user_is_not_project_maintainer
 def crud_pledge_need(request, project_key, need_id, action=None):
-    if not request.user.is_authenticated :
+    if not request.user.is_authenticated() :
         if request.is_ajax() :
             return HttpResponseBadRequest()
         else :

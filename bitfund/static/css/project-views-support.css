@@ -66,10 +66,16 @@
 	background-color: #AECCEB;
 }	
 
-.kf_project-views-support .kf_amount_buttons li a:hover, .kf_project-views-support .kf_amount_buttons li a.kf_selected{
+.kf_project-views-support .kf_amount_buttons li a:hover,
+.kf_project-views-support .kf_amount_buttons li .kf_selected
+{
     background-color:#2aa112;
     text-decoration: none;
-}	
+}
+
+.kf_selected{
+
+}
 
 .kf_project-views-support .kf_need_amount, .kf_project-views-support .kf_goal_amount{
 	width:35px;

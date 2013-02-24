@@ -68,7 +68,7 @@ def view(request, project_key):
     
 
     #CURRENT USER DONATIONS
-    if (request.user.is_authenticated) :
+    if (request.user.is_authenticated()) :
         donation_cart    = DonationCart.objects.filter(user=request.user.id).filter(project=project.id)  
         if donation_cart.count() :
             donation_cart = donation_cart[0]

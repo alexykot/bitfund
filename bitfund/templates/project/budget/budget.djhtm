@@ -15,6 +15,13 @@
             $("input#id_need-"+needId+"-pledge_type").attr('value', setMonthly ? 'monthly' : 'onetime');
         }
 
+        function toggleMore(showMore, needId) {
+            $("form#form-pledge-need-" + needId+' .kf_need_pledge_amount_field').toggle(showMore);
+            $("form#form-pledge-need-" + needId+' .kf_amount_buttons_sets').toggle(!showMore);
+            $("form#form-pledge-need-" + needId+' .kf_link_need_more').toggle(!showMore);
+            $("form#form-pledge-need-" + needId+' .kf_link_need_less').toggle(showMore);
+        }
+
         $(document).ready(function () {
 
             var backgroundColor = '{{ chartBackgroundColor }}';
@@ -237,14 +244,16 @@
                                     <div class="row">
                                         <div class="span6">{{ need.title }}</div>
                                         <div class="span1">
-                                            {{ site_currency_sign }}{{ need.pledges_total|floatformat:2 }}
+                                            {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
+                                            <br />
+                                            of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}
                                         </div>
                                         <div class="span1">
                                             <div id="need-{{ need.id }}-chart"></div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="span8">{{ need.brief }}</div>
+                                        <div class="span8">{{ need.brief|default_if_none:'' }}</div>
                                     </div>
                                     <div class="row" id="form-container-need-item-{{ need.id }}">
                                         {% include "project/budget/ajax-pledge_need_form.djhtm" %}

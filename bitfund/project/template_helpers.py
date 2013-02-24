@@ -12,13 +12,13 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
     last_pledge_transaction = False
     previous_pledges_count = 0
     pledge_subscription = False
-    if request.user.is_authenticated :
+    if request.user.is_authenticated() :
         previous_pledges = (DonationTransaction.objects
                              .filter(pledger_user=request.user,
                                      accepting_project=project,
                                      accepting_need=need)
                              .order_by('-transaction_datetime')
-        )
+                            )
         if previous_pledges.count() > 0 :
             last_pledge_transaction = previous_pledges[0]
             previous_pledges_count = previous_pledges.count()
@@ -41,7 +41,7 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
         user_is_project_maintainer = True
 
 
-    return {'id': need.id,
+    result = {'id': need.id,
             'title': need.title,
             'brief': need.brief,
             'amount': need.amount,
@@ -54,3 +54,6 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
             'user_is_project_maintainer': user_is_project_maintainer,
 
             }
+
+    print result
+    return result

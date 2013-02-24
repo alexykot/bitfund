@@ -296,7 +296,7 @@ class DonationSubscriptionNeeds(models.Model):
 class DonationTransaction(models.Model):
     transaction_type = models.CharField(max_length=64, choices=DONATION_TRANSACTION_TYPES_CHOICES,
                                         default=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
-    transaction_hash = models.CharField(max_length=64, unique=True)
+    transaction_hash = models.CharField(max_length=255, unique=True)
     transaction_status = models.CharField(max_length=64, choices=DONATION_TRANSACTION_STATUSES_CHOICES,
                                           default=DONATION_TRANSACTION_STATUSES_CHOICES.unpaid)
 

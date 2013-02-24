@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    var user = {'id': {{ request.user.id }},
+    var user = {'id': {{ request.user.id|default_if_none:0 }},
         'is_authenticated': {{ request.user.is_authenticated|lower }},
     };
 </script>

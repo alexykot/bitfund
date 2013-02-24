@@ -210,7 +210,7 @@ def support(request, project_key, support_type='onetime'):
 def drop_support(request, project_key):
     project = get_object_or_404(Project, key=project_key)
     
-    if (request.user.is_authenticated) :
+    if (request.user.is_authenticated()) :
         donation_cart_list = DonationCart.objects.filter(user=request.user.id).filter(project=project.id)
         
         for donation_cart in donation_cart_list :
