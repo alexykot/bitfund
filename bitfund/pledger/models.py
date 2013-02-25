@@ -361,7 +361,7 @@ class DonationTransaction(models.Model):
     def createRedonationTransactions(self):
         projects_i_depend_on_list = (Project_Dependencies.objects
                                 .filter(depender_project=self.accepting_project)
-                                .sort_by('sort_order'))
+                                .order_by('sort_order'))
 
         # only genuine user pledges are to be redonated, other sources and redonations do not trigger subsequent redonations
         if self.transaction_type != DONATION_TRANSACTION_TYPES_CHOICES.pledge:
@@ -376,9 +376,9 @@ class DonationTransaction(models.Model):
         for project_i_depend_on in projects_i_depend_on_list :
             # if the redonations transaction for this depender project and this initial transaction
             # exists already - omiting the transaction
-            if DonationTransaction.objects.filter(redonation_project=self.accepting_project,
-                                                  accepting_project=project_i_depend_on.depender_project,
-                                                  redonation_transaction=self).count() > 0 :
+            if (DonationTransaction.objects.filter(redonation_project=self.accepting_project)
+                .filter(accepting_project=project_i_depend_on.depender_project)
+                .filter(redonation_transaction=self).count()) > 0:
                 continue
 
 
@@ -386,29 +386,45 @@ class DonationTransaction(models.Model):
             if project_i_depend_on.redonation_amount > 0 :
                 # fixed redonation_amount is a part of this project's budget. Here we're getting
                 # the % representation of that part.
-                current_redonation_percent = (project_i_depend_on.redonation_amount*100) / project_current_budget
+                current_redonation_percent = Decimal((project_i_depend_on.redonation_amount) / project_current_budget).quantize(Decimal('0.01'))
+                print '------------------------'
 
-                # multiply % representation on the this project's current budget - getting the amount we're going
+                print 'project_i_depend_on.redonation_amount '+str(project_i_depend_on.redonation_amount)
+                print 'project_current_budget '+str(project_current_budget)
+
+                # multiply % representation on parent transaction's amount - getting the amount we're going
                 # to redonate in this transaction
-                current_redonation_amount = project_current_budget * current_redonation_percent
+                print 'current_redonation_percent '+str(current_redonation_percent)
+                print 'self.transaction_amount '+str(self.transaction_amount)
+                current_redonation_amount = Decimal(self.transaction_amount*current_redonation_percent).quantize(Decimal('0.01'))
+                print 'current_redonation_amount '+str(current_redonation_amount)
 
                 # getting total of already sent redonations from this project to that one.
                 total_current_redonations = (DonationTransaction.objects
-                                             .filter(redonation_project=self.accepting_project,
-                                                     accepting_project=project_i_depend_on.depender_project)
+                                             .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.redonation)
+                                             .filter(redonation_project_id=self.accepting_project.id)
+                                             .filter(accepting_project_id=project_i_depend_on.dependee_project.id)
                                              .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
-                                            ) or 0
+                                            )
+                print 'total_current_redonations '+str(total_current_redonations)
+
+                total_current_redonations = Decimal(total_current_redonations or 0)
+                print 'total_current_redonations '+str(total_current_redonations)
 
                 # if (existing_redonations + current_redonation) makes up bigger amount than total
                 # fixed redonation - redonation is capped
                 if (total_current_redonations+current_redonation_amount) > project_i_depend_on.redonation_amount :
                     # in case of the cap current redonation should cover only difference between already given and the cap
-                    current_redonation_amount = project_i_depend_on.redonation_amount - total_current_redonations
+                    current_redonation_amount = (Decimal(Decimal(project_i_depend_on.redonation_amount) - total_current_redonations)
+                                                 .quantize(Decimal('0.01')))
 
                     # if in fact total already given redonations have covered all designated fixed
                     # redonation amount - nothing else to be redonated here then, omiting this cycle.
                     if current_redonation_amount <= 0 :
                         continue
+
+                print 'current_redonation_amount '+str(current_redonation_amount)
+                print '------------------------'
 
             # if there is no fixed redonation, maybe there is a percentage
             elif project_i_depend_on.redonation_percent > 0 :
@@ -416,7 +432,7 @@ class DonationTransaction(models.Model):
                 # just a share of the initial pledge
                 current_redonation_amount = (Decimal((self.transaction_amount/100) * project_i_depend_on.redonation_percent)
                                              .quantize(Decimal('0.01')))
-            else :  # this project dependency doesn't imply any redonations, so we omit this redonation
+            else :  # this project dependency doesn't imply any redonations, so we omit this cycle
                 continue
 
             # now we have to take into account all active needs of the accepting project, if there are any
@@ -426,7 +442,7 @@ class DonationTransaction(models.Model):
             # if redonation accepting project has no needs - redonation is not bound to any particular need
             if project_i_depend_on_needs_count == 0 :
                 redonation_transaction = DonationTransaction()
-                redonation_transaction.populateRedonationTransaction(project=project_i_depend_on,
+                redonation_transaction.populateRedonationTransaction(project=project_i_depend_on.dependee_project,
                                                                      redonation_project=self.accepting_project,
                                                                      redonation_transaction=self,
                                                                      pledge_amount=current_redonation_amount)
@@ -436,7 +452,7 @@ class DonationTransaction(models.Model):
                 current_redonation_amount_per_need = current_redonation_amount / project_i_depend_on_needs_count
                 for project_i_depend_on_need in project_i_depend_on_needs_list :
                     redonation_transaction = DonationTransaction()
-                    redonation_transaction.populateRedonationTransaction(project=project_i_depend_on,
+                    redonation_transaction.populateRedonationTransaction(project=project_i_depend_on.dependee_project,
                                                                          redonation_project=self.accepting_project,
                                                                          redonation_transaction=self,
                                                                          pledge_amount=current_redonation_amount_per_need,
@@ -463,11 +479,11 @@ class DonationTransaction(models.Model):
         self.accepting_project_title = project.title
         self.transaction_amount = pledge_amount
 
-        if need is ProjectNeed:
+        if need is not None :
             self.accepting_need = need
             self.accepting_need_title = need.title
             self.accepting_need_key = need.key
-        elif goal is ProjectGoal:
+        elif goal is not None :
             self.accepting_goal = goal
             self.accepting_goal_title = goal.title
             self.accepting_goal_key = goal.key

@@ -34,7 +34,8 @@
                         </li>
                     </ul>
                 </div>
-                <input type="submit" class="button" value="Update pledge"/>
+                <input type="submit" value="Update pledge"
+                       data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" />
                 {% if need.last_pledge_transaction %}
                     <div class="row">
                         You've last pledged this project with
@@ -43,8 +44,8 @@
                     </div>
                 {% endif %}
                 <div class="row">
-                    <button data-href="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='drop_subscription' %}"
-                            id="stop-subsription-{{ need.id }}">Stop monthly pledging</button>
+                    <input type="submit" value="Stop monthly pledging"
+                           data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='drop_subscription' %}" />
                 </div>
             </div>
         {% else %}
@@ -94,7 +95,8 @@
                         {{ need.pledge_form.pledge_amount }}
                     </li>
                 </ul>
-                <input type="submit" value="Pledge now" />
+                <input type="submit" value="Pledge now"
+                       data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" />
             </div>
             {% if need.last_pledge_transaction %}
                 <div class="span8">
@@ -117,10 +119,14 @@
         {% endif %}
     </div>
 </form>
+
 <script type="text/javascript">
     $(document).ready(function () {
         toggleOnetimeMonthly(defaultOnetimeMonthlyPosition == 'monthly', {{ need.id }});
         toggleMore(false, {{ need.id }});
+        {% if need.pledge_subscription %}
+            selectAmount({{ need.pledge_subscription.amount }}, {{ need.id }});
+        {% endif %}
         $('#pledge-form-contents-{{ need.id }}').toggle(true);
 
         $('.kf_amount_buttons button').click(function(event){
@@ -132,13 +138,7 @@
         });
 
         $('li.kf_need_pledge_amount_field input').keyup(function(){
-            var cur_value = $(this).attr('value');
-            $(this).parents('.kf_need_item').find('.kf_amount_buttons button.need_pledge_amount_option').each(function(){
-                $(this).removeClass('kf_selected');
-                if (cur_value == $(this).data('amount')) {
-                    $(this).addClass('kf_selected');
-                }
-            });
+            selectAmount($(this).attr('value'));
         });
 
         $("a#need-onetime-switch-{{ need.id }}").click(function(event){
@@ -159,7 +159,11 @@
             toggleMore(false, {{ need.id }});
         });
 
-        if (user.is_authenticated) {
+        if (user.is_authenticated && !{{ need.user_is_project_maintainer|lower }} ) {
+            $("form#form-pledge-need-{{ need.id }} input[type=submit]").click(function(event){
+                $('form#form-pledge-need-{{ need.id }}').attr('action', $(this).data('action'));
+            });
+
             $("form#form-pledge-need-{{ need.id }}").submit(function(event){
                 event.preventDefault();
                 $('#form-container-need-item-' + $(this).data('need_id')).load($(this).attr('action'), $(this).serializeObject());
@@ -176,11 +180,14 @@
                 $('#login-links-{{ need.id }}').fadeOut();
                 $('#login-links-{{ need.id }}').fadeIn();
             });
+
+            $("form#form-pledge-need-{{ need.id }}").submit(function(event){
+                event.preventDefault();
+                $('#login-links-{{ need.id }}').fadeOut();
+                $('#login-links-{{ need.id }}').fadeIn();
+                $('#login-links-{{ need.id }}').fadeOut();
+                $('#login-links-{{ need.id }}').fadeIn();
+            });
         }
-
-
-
-
-
     });
 </script>

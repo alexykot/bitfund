@@ -67,22 +67,37 @@ def budget(request, project_key):
     template_data['i_depend_on_transfer_percent'] = project.getRedonationsPercent()
 
     #donut chart radiants
-    template_data['pledges_radiant'] = min(360, round(
-        360 * (redonations_total_sum / template_data['project_monthly_budget'])))
-    template_data['redonations_radiant'] = min(360, round(
-        360 * (redonations_total_sum / template_data['project_monthly_budget'])))
-    template_data['other_sources_radiant'] = min(360, round(
-        360 * (other_sources_total_sum / template_data['project_monthly_budget'])))
+    if (template_data['project_monthly_budget'] > 0) :
+        template_data['pledges_radiant'] = min(360, round(
+            360 * (pledges_needs_total_sum / template_data['project_monthly_budget'])))
+        template_data['redonations_radiant'] = min(360, round(
+            360 * (redonations_total_sum / template_data['project_monthly_budget'])))
+        template_data['other_sources_radiant'] = min(360, round(
+            360 * (other_sources_total_sum / template_data['project_monthly_budget'])))
 
-    template_data['total_gained_percent'] = int(round(
-        ((redonations_total_sum + other_sources_total_sum) * 100) / template_data['project_monthly_budget']))
+        template_data['total_gained_percent'] = int(round(
+            ((pledges_needs_total_sum+redonations_total_sum+other_sources_total_sum) * 100) / template_data['project_monthly_budget']))
+        if not (template_data['pledges_radiant'] or template_data['redonations_radiant'] or template_data['other_sources_radiant']) :
+            template_data['pledges_radiant'] = MINIMAL_DEFAULT_PLEDGES_RADIANT
+            template_data['redonations_radiant'] = MINIMAL_DEFAULT_REDONATIONS_RADIANT
+            template_data['other_sources_radiant'] = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+    else :
+        if pledges_needs_total_sum > 0 :
+            template_data['pledges_radiant'] = 360
+        else :
+            template_data['pledges_radiant'] = MINIMAL_DEFAULT_PLEDGES_RADIANT
+        if redonations_total_sum > 0 :
+            template_data['redonations_radiant'] = 360
+        else :
+            template_data['redonations_radiant'] = MINIMAL_DEFAULT_REDONATIONS_RADIANT
+        if other_sources_total_sum > 0 :
+            template_data['other_sources_radiant'] = 360
+        else :
+            template_data['other_sources_radiant'] = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+        template_data['total_gained_percent'] = -1
 
-    if not (template_data['pledges_radiant']  or template_data['redonations_radiant'] or template_data['other_sources_radiant']) :
-        template_data['pledges_radiant'] = MINIMAL_DEFAULT_PLEDGES_RADIANT
-        template_data['redonations_radiant'] = MINIMAL_DEFAULT_REDONATIONS_RADIANT
-        template_data['other_sources_radiant'] = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
 
-    #NEEDS
+        #NEEDS
     template_data['project_needs'] = []
     template_data['project_needs_radiants'] = []
     for need in project_needs :
@@ -115,38 +130,39 @@ def budget(request, project_key):
     template_data['project_goals'] = []
 
     #@TODO instead of sharing other sources equally between all goals and needs we would need a way to
-    # set exact amounts for each need/goal
-    other_sources_per_needgoal_amount = (Decimal(round(other_sources_total_sum / (project_needs_count + project_goals_count)))
-                                         .quantize(Decimal('0.01')))
-    for goal in project_goals:
-        donations_amount = goal.getTotalPledges() + goal.getTotalRedonations()
-        other_sources_amount = goal.getTotalOtherSources()
-        donations_radiant = min(360, round(360 * (donations_amount / goal.amount)))
-        other_sources_radiant = min(360, round(360 * (other_sources_amount / goal.amount)))
-        total_percent = int(math.ceil(((donations_amount + other_sources_per_needgoal_amount) * 100) / goal.amount))
-
-        if not (donations_radiant or other_sources_radiant) :
-            donations_radiant     = MINIMAL_DEFAULT_PLEDGES_RADIANT
-            other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
-
-        template_data['project_goals'].append({'id'                     : goal.id,
-                                               'key'                    : goal.key,
-                                               'title'                  : goal.title,
-                                               'brief'                  : goal.brief,
-                                               'video_url'              : goal.video_url,
-                                               'image'                  : goal.image,
-                                               'amount'                 : goal.amount,
-                                               'other_sources'          : other_sources_per_needgoal_amount,
-                                               'date_ending'            : goal.date_ending,
-                                               'days_to_end'            : (goal.date_ending - now()).days,
-                                               'donations_amount'       : donations_amount,
-                                               'donations_radiant'      : donations_radiant,
-                                               'other_sources_radiant'  : other_sources_radiant,
-                                               'total_percent'          : total_percent,
-                                               })
-
-
     template_data['project_goals_count'] = project_goals.count()
+    if template_data['project_goals_count'] > 0 :
+        # set exact amounts for each need/goal
+        other_sources_per_needgoal_amount = (Decimal(round(other_sources_total_sum / (project_needs_count + project_goals_count)))
+                                             .quantize(Decimal('0.01')))
+        for goal in project_goals:
+            donations_amount = goal.getTotalPledges() + goal.getTotalRedonations()
+            other_sources_amount = goal.getTotalOtherSources()
+            donations_radiant = min(360, round(360 * (donations_amount / goal.amount)))
+            other_sources_radiant = min(360, round(360 * (other_sources_amount / goal.amount)))
+            total_percent = int(math.ceil(((donations_amount + other_sources_per_needgoal_amount) * 100) / goal.amount))
+
+            if not (donations_radiant or other_sources_radiant) :
+                donations_radiant     = MINIMAL_DEFAULT_PLEDGES_RADIANT
+                other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+
+            template_data['project_goals'].append({'id'                     : goal.id,
+                                                   'key'                    : goal.key,
+                                                   'title'                  : goal.title,
+                                                   'brief'                  : goal.brief,
+                                                   'video_url'              : goal.video_url,
+                                                   'image'                  : goal.image,
+                                                   'amount'                 : goal.amount,
+                                                   'other_sources'          : other_sources_per_needgoal_amount,
+                                                   'date_ending'            : goal.date_ending,
+                                                   'days_to_end'            : (goal.date_ending - now()).days,
+                                                   'donations_amount'       : donations_amount,
+                                                   'donations_radiant'      : donations_radiant,
+                                                   'other_sources_radiant'  : other_sources_radiant,
+                                                   'total_percent'          : total_percent,
+                                                   })
+
+
 
     return render_to_response('project/budget/budget.djhtm', template_data, context_instance=RequestContext(request))
 

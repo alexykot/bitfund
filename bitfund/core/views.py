@@ -147,7 +147,6 @@ def register(request):
 
 def landing(request):
     if request.method == 'POST':
-        print '!!!'
         form = ContactForm(request.POST)
         if form.is_valid():
             email   = form.cleaned_data['email']

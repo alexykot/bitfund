@@ -14,9 +14,9 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
     pledge_subscription = False
     if request.user.is_authenticated() :
         previous_pledges = (DonationTransaction.objects
-                             .filter(pledger_user=request.user,
-                                     accepting_project=project,
-                                     accepting_need=need)
+                             .filter(pledger_user__id=request.user.id,
+                                     accepting_project__id=project.id,
+                                     accepting_need__id=need.id)
                              .order_by('-transaction_datetime')
                             )
         if previous_pledges.count() > 0 :
@@ -40,20 +40,18 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
     if request.user.id == project.maintainer_id :
         user_is_project_maintainer = True
 
-
     result = {'id': need.id,
-            'title': need.title,
-            'brief': need.brief,
-            'amount': need.amount,
-            'full_total': need.getPledgesMonthlyTotal()+need.getRedonationsMonthlyTotal()+
-                          need.getOtherSourcesMonthlyTotal(),
-            'pledge_form': pledge_need_form,
-            'last_pledge_transaction': last_pledge_transaction,
-            'previous_pledges_count': previous_pledges_count,
-            'pledge_subscription': pledge_subscription,
-            'user_is_project_maintainer': user_is_project_maintainer,
+              'title': need.title,
+              'brief': need.brief,
+              'amount': need.amount,
+              'full_total': need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal() +
+                            need.getOtherSourcesMonthlyTotal(),
+              'pledge_form': pledge_need_form,
+              'last_pledge_transaction': last_pledge_transaction,
+              'previous_pledges_count': previous_pledges_count,
+              'pledge_subscription': pledge_subscription,
+              'user_is_project_maintainer': user_is_project_maintainer,
 
-            }
+    }
 
-    print result
     return result

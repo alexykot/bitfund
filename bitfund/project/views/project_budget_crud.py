@@ -48,6 +48,7 @@ def crud_pledge_need(request, project_key, need_id, action=None):
                     transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
                                                           pledge_amount=cleaned_pledge_amount)
                     transaction.save()
+                    transaction.createRedonationTransactions()
                 else :
                     existing_subscription_project = (DonationSubscription.objects
                                                      .filter(user=request.user, project=project)

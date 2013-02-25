@@ -40,8 +40,6 @@ def support(request, project_key, support_type='onetime'):
     for goal in project_goals :
         needsgoals_list.append(('goal_'+str(goal.id), goal.title))
 
-    print needsgoals_list     
-
     preselected_form = ProjectNeedsGoalsListForm(project_needsgoals_choices=needsgoals_list, data=request.GET)
     preselected_needs = []
     preselected_goals = []
@@ -73,7 +71,6 @@ def support(request, project_key, support_type='onetime'):
     SupportNeedsFormSet = formset_factory(SupportProjectForm, extra=0)
     initial_data_needs  = []
     project_needs       = ProjectNeed.objects.filter(project=project)
-    print preselected_needs 
     for need in project_needs :
         if donation_cart.id :
             if DonationCartNeeds.objects.filter(donation_cart=donation_cart).filter(need=need.id).count() :

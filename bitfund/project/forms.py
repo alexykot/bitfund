@@ -118,7 +118,6 @@ class AddLinkedProjectForm(forms.Form):
         already_linked_projects_list = []
 
         for linked_project in already_linked_projects_query :
-            print linked_project['dependee_project']
             already_linked_projects_list.append(linked_project['dependee_project'])
 
 

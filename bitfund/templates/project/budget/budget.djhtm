@@ -16,11 +16,21 @@
         }
 
         function toggleMore(showMore, needId) {
-            $("form#form-pledge-need-" + needId+' .kf_need_pledge_amount_field').toggle(showMore);
-            $("form#form-pledge-need-" + needId+' .kf_amount_buttons_sets').toggle(!showMore);
-            $("form#form-pledge-need-" + needId+' .kf_link_need_more').toggle(!showMore);
-            $("form#form-pledge-need-" + needId+' .kf_link_need_less').toggle(showMore);
+            $("form#form-pledge-need-" + needId + ' .kf_need_pledge_amount_field').toggle(showMore);
+            $("form#form-pledge-need-" + needId + ' .kf_amount_buttons_sets').toggle(!showMore);
+            $("form#form-pledge-need-" + needId + ' .kf_link_need_more').toggle(!showMore);
+            $("form#form-pledge-need-" + needId + ' .kf_link_need_less').toggle(showMore);
         }
+
+        function selectAmount(amount, needId) {
+            $("form#form-pledge-need-" + needId).find('.kf_amount_buttons button.need_pledge_amount_option').each(function () {
+                $(this).removeClass('kf_selected');
+                if (amount == $(this).data('amount')) {
+                    $(this).addClass('kf_selected');
+                }
+            });
+        }
+
 
         $(document).ready(function () {
 
@@ -160,7 +170,11 @@
                         <div class="span2 kf_chart">
                             <div class="row">
                                 <div id="chartdiv" class="kf_center">
-                                    <span class="kf_percent">{{ total_gained_percent }}%</span>
+                                    {% if total_gained_percent == -1 %}
+                                        <span class="kf_percent">&infin;</span>
+                                    {% else %}
+                                        <span class="kf_percent">{{ total_gained_percent }}%</span>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="row kf_legend">
