@@ -10,16 +10,17 @@ from model_utils import Choices
 from bitfund.project.models import *
 
 DONATION_TRANSACTION_TYPES_CHOICES = Choices(
-    ('pledge', u'Pledge'),
-    ('other_source', u'Other Source'),
-    ('redonation', u'Redonation'),
+    ('pledge', u'Pledge'), # onetime or monthly pledge by the user
+    ('other_source', u'Other Source'), # income from other source, stated by the project maintainers
+    ('redonation', u'Redonation'), # redonation from a pledge on a depended project
 )
 
 DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
-    ('unpaid', u'Confirmed, Unpaid'),
-    ('paid', u'Paid'),
-    ('rejected', u'Rejected'),
-    ('cancelled', u'Cancelled'),
+    ('pending', u'Pending, Unpaid'), # transaction for the monthly pledge for current month, month end not reached yet, not processed through payment yet
+    ('unpaid', u'Confirmed, Unpaid'), # trasaction for the monthly pledge when month end reached, or from onetime pledge at any time, not processed through payment yet
+    ('paid', u'Paid'), # trasaction already processed through payment successfully
+    ('rejected', u'Rejected'), # trasaction rejected by the payment processor
+    ('cancelled', u'Cancelled'), # trasaction cancelled by the issuer
 )
 
 USER_PROJECT_STATUS_CHOICES = Choices(
@@ -291,6 +292,15 @@ class DonationSubscriptionNeeds(models.Model):
     need = models.ForeignKey(ProjectNeed)
     amount = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
+    def cancelPendingTransactions(self):
+        subscription_pending_transactions_list = (DonationTransaction.objects
+                                                  .filter(pledger_donation_subscription_id=self.donation_subscription_id)
+                                                  .filter(accepting_need_id=self.need_id)
+                                                  .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
+        )
+        for subscription_pending_transaction in subscription_pending_transactions_list :
+            subscription_pending_transaction.cancel()
+
 
 #donation history, storing all past donation transactions, for both onetime and monthly donations
 class DonationTransaction(models.Model):
@@ -464,7 +474,7 @@ class DonationTransaction(models.Model):
         self.transaction_type = DONATION_TRANSACTION_TYPES_CHOICES.pledge
         self.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.unpaid
 
-        if donation_subscription is DonationSubscription:
+        if donation_subscription is not None:
             self.pledger_donation_type = DONATION_TYPES_CHOICES.monthly
             self.pledger_donation_subscription = donation_subscription
         else:
@@ -495,7 +505,8 @@ class DonationTransaction(models.Model):
     def populateRedonationTransaction(self, project, redonation_project, redonation_transaction, pledge_amount,
                                       need=None):
         self.transaction_type = DONATION_TRANSACTION_TYPES_CHOICES.redonation
-        self.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.unpaid
+        self.transaction_status = redonation_transaction.transaction_status
+        self.pledger_donation_type = redonation_transaction.pledger_donation_type
 
         self.redonation_transaction = redonation_transaction
         self.redonation_project = redonation_project
@@ -514,3 +525,38 @@ class DonationTransaction(models.Model):
             self.accepting_need_key = need.key
 
         self.transaction_hash = self.generateHash()
+
+    def cancel(self):
+        self.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.cancelled
+        self.save()
+
+        redonation_transactions_list = (DonationTransaction.objects
+                            .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.redonation)
+                            .filter(redonation_transaction_id=self.id)
+                            )
+
+        for redonation_transaction in redonation_transactions_list :
+            redonation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.cancelled
+            redonation_transaction.save()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

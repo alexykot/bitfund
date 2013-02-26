@@ -33,7 +33,7 @@ class Project(models.Model):
 
     # calculates total backers count (goals backers included)
     def getTotalMonthlyBackers(self, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES
+        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES
             
         if monthdate is None:
             monthdate = now()
@@ -42,6 +42,7 @@ class Project(models.Model):
                                  .filter(accepting_project=self)
                                  .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
                                  .filter(transaction_datetime__gte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
+                                 .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
                                  .aggregate(Count('pledger_user', distinct=True))['pledger_user__count']
                                  )
 
@@ -74,7 +75,7 @@ class Project(models.Model):
 
     # gets total monthly transactions recorded sum by transaction type
     def getTotalMonthlyNeedsByType(self, transaction_type, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction
+        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES
 
         if monthdate is None:
             monthdate = now()
@@ -86,13 +87,14 @@ class Project(models.Model):
                                                                        tzinfo=monthdate.tzinfo))
                             .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                                       tzinfo=monthdate.tzinfo))
+                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
                             .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                             ) or 0
 
         return Decimal(donations_amount).quantize(Decimal('0.01'))
 
     def getTotalMonthlyGoalsByType(self, transaction_type, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction
+        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES
 
         if monthdate is None:
             monthdate = now()
@@ -104,6 +106,7 @@ class Project(models.Model):
                                                                           tzinfo=monthdate.tzinfo))
                                .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                                          tzinfo=monthdate.tzinfo))
+                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
                                .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                                ) or 0
 
@@ -209,7 +212,7 @@ class ProjectNeed(models.Model):
 
     # calculates total donations for a need for given transaction_type and month
     def getMonthlyTotalByType(self, transaction_type, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction
+        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES
 
         if monthdate is None:
             monthdate = now()
@@ -222,6 +225,7 @@ class ProjectNeed(models.Model):
                                                                                 tzinfo=monthdate.tzinfo))
                                      .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                                                tzinfo=monthdate.tzinfo))
+                                     .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
                                      .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                                     ) or 0
 
@@ -239,7 +243,7 @@ class ProjectNeed(models.Model):
 
     # calculates amount of separate pledges transactions for a need for given month
     def getPledgesMonthlyCount(self, monthdate=None):
-        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES
+        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES
 
         if monthdate is None:
             monthdate = now()
@@ -251,6 +255,7 @@ class ProjectNeed(models.Model):
                                                            tzinfo=monthdate.tzinfo))
                 .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                           tzinfo=monthdate.tzinfo))
+                .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
                 .count()
         )
 

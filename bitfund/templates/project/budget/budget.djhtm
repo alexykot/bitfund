@@ -31,23 +31,22 @@
             });
         }
 
+        var backgroundColor = '{{ chartBackgroundColor }}';
+        var otherColor = '{{ chartOtherColor }}';
+        var redonationsColor = '{{ chartRedonationsColor }}';
+        var pledgesColor = '{{ chartPledgesColor }}';
 
         $(document).ready(function () {
 
-            var backgroundColor = '{{ chartBackgroundColor }}';
-            var otherColor = '{{ chartOtherColor }}';
-            var redonationsColor = '{{ chartRedonationsColor }}';
-            var pledgesColor = '{{ chartPledgesColor }}';
-
-            var pledgesRadiant = {{pledges_radiant}};
-            var redonationsRadiant = {{redonations_radiant}};
-            var otherRadiant = {{other_sources_radiant}};
+            var pledgesRadiant = {{ budget.pledges_radiant }};
+            var redonationsRadiant = {{ budget.redonations_radiant }};
+            var otherRadiant = {{ budget.other_sources_radiant }};
 
             var backgroundSeries = [
                 ['a', 100],
                 ['b', 100]
             ];
-            var backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
+            window.backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
                 seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 94, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
@@ -57,7 +56,7 @@
                 ['c', (otherRadiant + redonationsRadiant + pledgesRadiant)],
                 ['d', (360 - (otherRadiant + redonationsRadiant + pledgesRadiant))]
             ];
-            var otherDonut = $.jqplot('chartdiv', [otherSeries], {
+            window.otherDonut = $.jqplot('chartdiv', [otherSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
                 seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 8, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 98, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
@@ -67,7 +66,7 @@
                 ['c', (redonationsRadiant + pledgesRadiant)],
                 ['d', (360 - (redonationsRadiant + pledgesRadiant))]
             ];
-            var redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
+            window.redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
                 seriesColors: [ "#"+redonationsColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 14, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 105, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
@@ -77,7 +76,7 @@
                 ['a', (pledgesRadiant)],
                 ['b', 360 - pledgesRadiant]
             ];
-            var pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
+            window.pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
                 grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
                 seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
@@ -119,35 +118,35 @@
             {% endfor %}
 
             {% for need_radiant in project_needs_radiants %}
-                var need{{need_radiant.id}}DonationsSumRadiant = {{need_radiant.donations_sum_radiant}};
-                var need{{need_radiant.id}}OtherRadiant = {{need_radiant.other_sources_radiant}};
-
-                var need{{need_radiant.id}}BackgroundSeries = [['a', 100],['b', 100]];
-                var need{{need_radiant.id}}BackgroundDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}BackgroundSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-                var need{{need_radiant.id}}OtherSeries = [
-                    ['c', (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant)],
-                    ['d', (360 - (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant))]
-                ];
-                var need{{need_radiant.id}}OtherDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}OtherSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-                var need{{need_radiant.id}}DonationsSumSeries = [
-                    ['a', (need{{need_radiant.id}}DonationsSumRadiant)],
-                    ['b', 360 - need{{need_radiant.id}}DonationsSumRadiant]
-                ];
-                var need{{need_radiant.id}}DonationsSumDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}DonationsSumSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
+{#                var need{{need_radiant.id}}DonationsSumRadiant = {{need_radiant.donations_sum_radiant}};#}
+{#                var need{{need_radiant.id}}OtherRadiant = {{need_radiant.other_sources_radiant}};#}
+{##}
+{#                var need{{need_radiant.id}}BackgroundSeries = [['a', 100],['b', 100]];#}
+{#                var need{{need_radiant.id}}BackgroundDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}BackgroundSeries], {#}
+{#                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },#}
+{#                    seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],#}
+{#                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},#}
+{#                });#}
+{##}
+{#                var need{{need_radiant.id}}OtherSeries = [#}
+{#                    ['c', (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant)],#}
+{#                    ['d', (360 - (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant))]#}
+{#                ];#}
+{#                var need{{need_radiant.id}}OtherDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}OtherSeries], {#}
+{#                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },#}
+{#                    seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],#}
+{#                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},#}
+{#                });#}
+{##}
+{#                var need{{need_radiant.id}}DonationsSumSeries = [#}
+{#                    ['a', (need{{need_radiant.id}}DonationsSumRadiant)],#}
+{#                    ['b', 360 - need{{need_radiant.id}}DonationsSumRadiant]#}
+{#                ];#}
+{#                var need{{need_radiant.id}}DonationsSumDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}DonationsSumSeries], {#}
+{#                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },#}
+{#                    seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],#}
+{#                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},#}
+{#                });#}
             {% endfor %}
 
 
@@ -170,10 +169,10 @@
                         <div class="span2 kf_chart">
                             <div class="row">
                                 <div id="chartdiv" class="kf_center">
-                                    {% if total_gained_percent == -1 %}
+                                    {% if budget.total_gained_percent == -1 %}
                                         <span class="kf_percent">&infin;</span>
                                     {% else %}
-                                        <span class="kf_percent">{{ total_gained_percent }}%</span>
+                                        <span class="kf_percent">{{ budget.total_gained_percent }}%</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -186,12 +185,12 @@
                         <div class="span2">
                             <div class="row kf_pledged">
                                 <div class="span3">
-                                    {{ site_currency_sign }}{{ donations_total_sum }}<br/>
+                                    {{ site_currency_sign }}{{ budget.donations_total_sum }}<br/>
                                     <span class="kf_small">pledged</span>
                                 </div>
                                 <div class="span1 kf_right">
-                                    {{ donations_total_pledgers }}<br/>
-                                    <span class="kf_small">backer{{ donations_total_pledgers|pluralize }}</span>
+                                    {{ budget.donations_total_pledgers }}<br/>
+                                    <span class="kf_small">backer{{ budget.donations_total_pledgers|pluralize }}</span>
                                 </div>
                             </div>
                             {% if other_sources_total_sum %}
@@ -201,28 +200,28 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            {% if redonations_total_sum %}
+                            {% if budget.redonations_total_sum %}
                                 <div class="row kf_other">
                                     <div class="span2">
-                                        {{ site_currency_sign }}{{ redonations_total_sum }} received from {{ depending_on_me_count }} dependant project
+                                        {{ site_currency_sign }}{{ budget.redonations_total_sum }} received from {{ budget.depending_on_me_projects_count }} dependant project
                                     </div>
                                 </div>
                             {% endif %}
                         </div>
-                        {% if i_depend_on_projects_count %}
+                        {% if budget.i_depend_on_projects_count %}
                             <div class="row">
                                 <div class="span4">
-                                    {% if i_depend_on_transfer_percent > 0 %}
+                                    {% if budget.i_depend_on_transfer_percent > 0 %}
                                         {{ project.title }} transfers
-                                        {{ i_depend_on_transfer_percent|floatformat:2 }}% of
+                                        {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of
                                         it's pledges
                                         to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
-                                        {{ i_depend_on_projects_count }}
+                                        {{ budget.i_depend_on_projects_count }}
                                         other projects</a> it depends on.
                                     {% else %}
                                         {{ project.title }} depends on
                                         <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
-                                            {{ i_depend_on_projects_count }}
+                                            {{ budget.i_depend_on_projects_count }}
                                             other projects</a>, but not transfers any funds to them.
                                     {% endif %}
                                 </div>
@@ -243,8 +242,8 @@
             </div>
             <div class="span8">
                 <div class="row">
-                    {% if project_monthly_budget > 0 %}
-                    <h4> {{ project.title }} asked {{ site_currency_sign }}{{ project_monthly_budget }} this month
+                    {% if budget.project_monthly_budget > 0 %}
+                    <h4> {{ project.title }} asked {{ site_currency_sign }}{{ budget.project_monthly_budget }} this month
                         for:</h4>
                     {% else %}
                         <h4> {{ project.title }} has no budget specified for this month</h4>
