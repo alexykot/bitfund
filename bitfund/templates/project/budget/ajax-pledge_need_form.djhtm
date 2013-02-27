@@ -23,17 +23,17 @@
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-5"
                                data-amount="5" class="need_pledge_amount_option">5</button></li>
                     </ul>
-                    <ul>
-                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
-                               class="kf_link_need_more">more</a></li>
-                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                               class="kf_link_need_less">less</a></li>
-                        <li class="kf_need_pledge_amount_field">
-                            {{ need.pledge_form.pledge_amount.errors }}
-                            {{ need.pledge_form.pledge_amount }}
-                        </li>
-                    </ul>
                 </div>
+                <ul>
+                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
+                           class="kf_link_need_more">more</a></li>
+                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
+                           class="kf_link_need_less">less</a></li>
+                    <li class="kf_need_pledge_amount_field">
+                        {{ need.pledge_form.pledge_amount.errors }}
+                        {{ need.pledge_form.pledge_amount }}
+                    </li>
+                </ul>
                 <input type="submit" value="Update pledge"
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" />
                 {% if need.last_pledge_transaction %}
@@ -103,8 +103,8 @@
                     You've pledged this project with
                     {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
                     on {{ need.last_pledge_transaction.transaction_datetime }}.
-                    <button data-href="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='switch_monthly' %}"
-                            id="switch-monthly-{{ need.id }}">Switch to monthly pledge</button>
+                    <input type="submit" value="Switch to monthly pledge"
+                           data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='switch_monthly' %}" />
                 </div>
             {% endif %}
         {% endif %}
@@ -123,10 +123,21 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        toggleOnetimeMonthly(defaultOnetimeMonthlyPosition == 'monthly', {{ need.id }});
+        {% if not need.pledge_subscription %}
+            {% if need.last_pledge_transaction %}
+                toggleOnetimeMonthly(false, {{ need.id }});
+            {% else %}
+                toggleOnetimeMonthly(defaultOnetimeMonthlyPosition == 'monthly', {{ need.id }});
+            {% endif %}
+        {% else %}
+            toggleOnetimeMonthly(defaultOnetimeMonthlyPosition == 'monthly', {{ need.id }});
+        {% endif %}
+
         toggleMore(false, {{ need.id }});
         {% if need.pledge_subscription %}
             selectAmount({{ need.pledge_subscription.amount }}, {{ need.id }});
+        {% elif need.last_pledge_transaction %}
+            selectAmount({{ need.last_pledge_transaction.transaction_amount }}, {{ need.id }});
         {% endif %}
         $('#pledge-form-contents-{{ need.id }}').toggle(true);
 
@@ -193,6 +204,8 @@
 
 
     {% if request.is_ajax %}
+
+        $('#need-total-donations-{{ need.id }}').text('{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}');
 
         window.backgroundDonut.destroy();
         window.otherDonut.destroy();

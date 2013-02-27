@@ -29,6 +29,8 @@
                     $(this).addClass('kf_selected');
                 }
             });
+
+            $('#id_need-'+needId+'-pledge_amount').val(amount);
         }
 
         var backgroundColor = '{{ chartBackgroundColor }}';
@@ -246,7 +248,7 @@
                     <h4> {{ project.title }} asked {{ site_currency_sign }}{{ budget.project_monthly_budget }} this month
                         for:</h4>
                     {% else %}
-                        <h4> {{ project.title }} has no budget specified for this month</h4>
+                        <h4> {{ project.title }} has no budget for this month</h4>
                     {% endif %}
                 </div>
                 <div class="row">
@@ -257,7 +259,7 @@
                                     <div class="row">
                                         <div class="span6">{{ need.title }}</div>
                                         <div class="span1">
-                                            {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
+                                            <span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}</span>
                                             <br />
                                             of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}
                                         </div>
