@@ -7,6 +7,10 @@ from django.utils.datetime_safe import datetime
 from django.contrib.auth.decorators import login_required
 
 from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
+                                           RGBCOLOR_DONUT_CHART_BACKGROUND,
+                                           RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
+                                           RGBCOLOR_DONUT_CHART_PLEDGES,
+                                           RGBCOLOR_DONUT_CHART_REDONATIONS,
                                            BITFUND_OWN_PROJECT_ID,
                                            SESSION_PARAM_RETURN_TO_PROJECT,
                                            )
@@ -14,11 +18,44 @@ from bitfund.core.decorators import ajax_required
 from bitfund.project.models import *
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.forms import *
-from bitfund.project.decorators import user_is_project_maintainer, user_is_not_project_maintainer
-from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data
+from bitfund.project.decorators import user_is_project_maintainer, user_is_not_project_maintainer, disallow_not_public
+from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data, _prepare_project_crud_need_form_template_data
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
 
 
+@user_is_project_maintainer
+def budget_edit(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    template_data = {'project': project,
+                     'request': request,
+                     'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'chartPledgesColor': RGBCOLOR_DONUT_CHART_PLEDGES,
+                     'chartRedonationsColor': RGBCOLOR_DONUT_CHART_REDONATIONS,
+                     'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
+                     'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
+                     }
+
+    #BUDGET, pledges, redonations, other sources, donut charts radiants
+    template_data['budget'] = _prepare_project_budget_template_data(request, project)
+
+    #NEEDS
+    template_data['project_needs'] = []
+    project_needs = ProjectNeed.objects.filter(project=project.id).order_by('sort_order')
+    for need in project_needs :
+        need_template_data = _prepare_need_item_template_data(request, project, need)
+        need_template_data['crud_form'] = CreateProjectNeedForm(instance=need, prefix='need-'+str(need.id))
+        template_data['project_needs'].append(need_template_data)
+
+    #template_data['project_form'] = CreateProjectForm(project)
+    template_data['project_form'] = CreateProjectForm(instance=project)
+
+
+    return render_to_response('project/budget/budget_edit.djhtm', template_data, context_instance=RequestContext(request))
+
+@login_required
+@disallow_not_public
 @user_is_not_project_maintainer
 def crud_pledge_need(request, project_key, need_id, action=None):
     if not request.user.is_authenticated() :
@@ -167,6 +204,39 @@ def crud_pledge_need(request, project_key, need_id, action=None):
     template_data['budget'] = _prepare_project_budget_template_data(request, project)
 
     return render_to_response('project/budget/ajax-pledge_need_form.djhtm', template_data, context_instance=RequestContext(request))
+
+@login_required
+@user_is_project_maintainer
+def project_toggle(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    if request.method == 'POST' :
+        project.is_public = not project.is_public
+        project.save()
+
+    return redirect('bitfund.project.views.budget', project_key=project.key)
+
+@ajax_required
+@login_required
+@user_is_project_maintainer
+def add_need(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    template_data = {'project': project,
+                     'request': request,
+                     'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
+    need = ProjectNeed()
+    need.project = project
+    need.is_public = False
+    need.save()
+
+    template_data['crud_need'] = _prepare_project_crud_need_form_template_data(request, project, need)
+
+    return render_to_response('project/budget/ajax-crud_need_form.djhtm', template_data, context_instance=RequestContext(request))
+
 
 @ajax_required
 @login_required

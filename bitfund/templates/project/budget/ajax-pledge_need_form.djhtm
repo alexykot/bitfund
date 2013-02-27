@@ -1,5 +1,5 @@
 <form action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}"
-      id="form-pledge-need-{{ need.id }}" data-need_id="{{ need.id }}">
+      id="form-pledge-need-{{ need.id }}" data-need_id="{{ need.id }}" method="post">
     {{ need.pledge_form.pledge_type }}
     {% csrf_token %}
     {{ need.pledge_form.non_field_errors }}

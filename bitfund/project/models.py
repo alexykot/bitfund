@@ -197,10 +197,10 @@ class ProjectGratefulUsers(models.Model):
 
 class ProjectNeed(models.Model):
     project = models.ForeignKey(Project)
-    key = models.CharField(max_length=80)
-    title = models.CharField(max_length=255)
+    key = models.CharField(max_length=80, blank=True)
+    title = models.CharField(max_length=255, blank=True)
     brief = models.CharField(max_length=255, null=True, blank=True)
-    amount = models.DecimalField(decimal_places=0, max_digits=12, default=0)
+    amount = models.DecimalField(decimal_places=0, max_digits=12, default=0, blank=True)
     date_starting = models.DateTimeField('date starting', default=now(), null=True, blank=True)
     date_ending = models.DateTimeField('date ending', null=True, blank=True)
     date_added = models.DateTimeField('date added', default=now())

@@ -83,7 +83,7 @@ def edit_needs(request, project_key, need_id = False):
             need = ProjectNeed.objects.get(pk=need_id) 
         else :
             need = ProjectNeed()
-            need.project = project 
+            need.project = project
             
         form = CreateProjectNeedForm(request.POST, instance=need)
             

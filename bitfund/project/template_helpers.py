@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.utils.timezone import now
 
 from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
-from bitfund.project.forms import PledgeProjectNeedForm
+from bitfund.project.forms import PledgeProjectNeedForm, CreateProjectNeedForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
@@ -51,8 +51,12 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
     need_pledges_n_redonations_total = need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal()
     need_other_sources_total = need.getOtherSourcesMonthlyTotal()
 
-    donations_sum_radiant = min(360, round(360 * (need_pledges_n_redonations_total / need.amount)))
-    other_sources_radiant = min(360, round(360 * (need_other_sources_total / need.amount)))
+    if (need.amount > 0) :
+        donations_sum_radiant = min(360, round(360 * (need_pledges_n_redonations_total / need.amount)))
+        other_sources_radiant = min(360, round(360 * (need_other_sources_total / need.amount)))
+    else :
+        donations_sum_radiant = 360
+        other_sources_radiant = 360
     if donations_sum_radiant == 0 and other_sources_radiant == 0 :
         donations_sum_radiant = MINIMAL_DEFAULT_PLEDGES_RADIANT
         other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
@@ -61,6 +65,8 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
               'title': need.title,
               'brief': need.brief,
               'amount': need.amount,
+              'is_public': need.is_public,
+              'sort_order': need.sort_order,
               'full_total': need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal() +
                             need.getOtherSourcesMonthlyTotal(),
               'pledge_form': pledge_need_form,
@@ -138,3 +144,10 @@ def _prepare_project_budget_template_data(request, project) :
         budget_data['total_gained_percent'] = -1
 
     return budget_data
+
+def _prepare_project_crud_need_form_template_data(request, project, need) :
+    template_data = {}
+
+    template_data['need_form'] = CreateProjectNeedForm(instance=need)
+
+    return template_data

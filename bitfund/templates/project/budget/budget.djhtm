@@ -119,39 +119,6 @@
                 */
             {% endfor %}
 
-            {% for need_radiant in project_needs_radiants %}
-{#                var need{{need_radiant.id}}DonationsSumRadiant = {{need_radiant.donations_sum_radiant}};#}
-{#                var need{{need_radiant.id}}OtherRadiant = {{need_radiant.other_sources_radiant}};#}
-{##}
-{#                var need{{need_radiant.id}}BackgroundSeries = [['a', 100],['b', 100]];#}
-{#                var need{{need_radiant.id}}BackgroundDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}BackgroundSeries], {#}
-{#                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },#}
-{#                    seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],#}
-{#                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},#}
-{#                });#}
-{##}
-{#                var need{{need_radiant.id}}OtherSeries = [#}
-{#                    ['c', (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant)],#}
-{#                    ['d', (360 - (need{{need_radiant.id}}OtherRadiant + need{{need_radiant.id}}DonationsSumRadiant))]#}
-{#                ];#}
-{#                var need{{need_radiant.id}}OtherDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}OtherSeries], {#}
-{#                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },#}
-{#                    seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],#}
-{#                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},#}
-{#                });#}
-{##}
-{#                var need{{need_radiant.id}}DonationsSumSeries = [#}
-{#                    ['a', (need{{need_radiant.id}}DonationsSumRadiant)],#}
-{#                    ['b', 360 - need{{need_radiant.id}}DonationsSumRadiant]#}
-{#                ];#}
-{#                var need{{need_radiant.id}}DonationsSumDonut = $.jqplot('need-{{need_radiant.id}}-chart', [need{{need_radiant.id}}DonationsSumSeries], {#}
-{#                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },#}
-{#                    seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],#}
-{#                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},#}
-{#                });#}
-            {% endfor %}
-
-
         });
     </script>
 {% endblock pagescripts %}
@@ -159,7 +126,27 @@
 {% block content %}
     <div class="kf_project-views-view kf_project-views-support">
 
-        {% include "project/project-header.djhtm" %}
+        <div class="row kf_project_title">
+            <div class="span1 kf_project_logo">
+                {% if logo %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ logo.url }}" /></a>
+                {% elif project.logo %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
+                {% endif %}
+            </div>
+            <div class="span8">
+                <h1><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></h1>
+            </div>
+            <div class="span3 kf_project_meta">
+                {% if project_edit_access %}
+                    <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit budget mode</a> <br />
+                    <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
+                        {% csrf_token %}
+                        <input type="submit"
+                value="{% if project.is_public %}make project private{% else %}make project public{% endif %}"></form>
+                {% endif %}
+            </div>
+        </div>
 
         <div class="row">
             <div class="span4">
@@ -224,7 +211,7 @@
                                         {{ project.title }} depends on
                                         <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
                                             {{ budget.i_depend_on_projects_count }}
-                                            other projects</a>, but not transfers any funds to them.
+                                            other projects</a>, but doesn't transfer any funds to them.
                                     {% endif %}
                                 </div>
                             </div>

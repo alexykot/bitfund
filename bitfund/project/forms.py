@@ -38,8 +38,7 @@ class CreateProjectForm(forms.ModelForm):
     class Meta:
         model   = Project
         fields  = {'key', 'title', 'brief', 'logo', 'is_public'}
-        widgets = {
-                   'is_public'    : forms.RadioSelect(choices=YES_NO_CHOICES),
+        widgets = {'is_public'    : forms.RadioSelect(choices=YES_NO_CHOICES),
                    }
 
 #a form for new backers, email only. 
@@ -64,22 +63,15 @@ class ProjectNeedsGoalsListForm(forms.Form):
 
 class CreateProjectNeedForm(forms.ModelForm):
     amount = forms.DecimalField(max_value=9999999999, min_value=0.01, decimal_places=2, max_digits=12, required=True, label=_('amount'))
-
-    def __init__(self, *args, **kw):
-        super(forms.ModelForm, self).__init__(*args, **kw)
-
-        self.fields.keyOrder = [
-            'title',
-            'amount',
-            'key',
-            'brief',
-            ]
+    drop_need = forms.BooleanField(widget=forms.HiddenInput, required=False)
 
     class Meta:
         model   = ProjectNeed
-        fields  = {'key', 'title', 'amount', 'brief', }
+        widgets = {'is_public': forms.RadioSelect(choices=YES_NO_CHOICES),
+                   'brief': forms.Textarea(),
+        }
 
-    
+
 class CreateProjectGoalForm(forms.ModelForm):
     amount = forms.DecimalField(max_value=9999999999, min_value=0.01, decimal_places=2, max_digits=12, required=True)
 

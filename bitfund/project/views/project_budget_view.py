@@ -15,11 +15,11 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            MINIMAL_DEFAULT_REDONATIONS_RADIANT,
                                            MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT,
                                            )
+from bitfund.project.decorators import user_is_project_maintainer, disallow_not_public_unless_maintainer
 from bitfund.project.models import *
-from bitfund.project.forms import *
 from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data
 
-
+@disallow_not_public_unless_maintainer
 def budget(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 
@@ -31,7 +31,6 @@ def budget(request, project_key):
                      'chartRedonationsColor': RGBCOLOR_DONUT_CHART_REDONATIONS,
                      'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
                      'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
-
     }
 
     #GENERAL PROJECT INFO
@@ -49,21 +48,6 @@ def budget(request, project_key):
     project_needs = ProjectNeed.objects.filter(project=project.id).filter(is_public=True).order_by('sort_order')
     for need in project_needs :
         template_data['project_needs'].append(_prepare_need_item_template_data(request, project, need))
-
-        # need_pledges_n_redonations_total = need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal()
-        # need_other_sources_total = need.getOtherSourcesMonthlyTotal()
-        #
-        # donations_sum_radiant = min(360, round(360 * (need_pledges_n_redonations_total / need.amount)))
-        # other_sources_radiant = min(360, round(360 * (need_other_sources_total / need.amount)))
-        # if donations_sum_radiant == 0 and other_sources_radiant == 0 :
-        #     donations_sum_radiant = MINIMAL_DEFAULT_PLEDGES_RADIANT
-        #     other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
-        #
-        #
-        # template_data['project_needs_radiants'].append({'id': need.id,
-        #                                                 'donations_sum_radiant': donations_sum_radiant,
-        #                                                 'other_sources_radiant': other_sources_radiant,
-        # })
 
     #GOALS
     project_goals = (ProjectGoal.objects
@@ -114,10 +98,11 @@ def budget(request, project_key):
     return render_to_response('project/budget/budget.djhtm', template_data, context_instance=RequestContext(request))
 
 
-
+@disallow_not_public_unless_maintainer
 def chart_image(request, project_key, need_key=None, goal_key=None):
     return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
 
+@disallow_not_public_unless_maintainer
 def linked_projects(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 

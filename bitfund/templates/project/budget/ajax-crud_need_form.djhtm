@@ -1,0 +1,101 @@
+<div class="row kf_need_item" id="pledge-form-contents-{{ need.id }}">
+    {{ need.crud_form.drop_need }}
+    <div class="span8">
+        {{ need.crud_form.non_field_errors }}
+        <div class="row">
+            <div class="span4">
+                {{ need.crud_form.title.errors }}
+                {{ need.crud_form.title }}
+            </div>
+            <div class="span2">
+                {{ need.crud_form.is_public.errors }}
+                {{ need.crud_form.is_public }}
+            </div>
+            <div class="span1">
+                {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
+                <br />
+                of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}
+            </div>
+            <div class="span1">
+                <div id="need-{{ need.id }}-chart"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span8">
+                {{ need.crud_form.brief.errors }}
+                {{ need.crud_form.brief }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="span8 kf_need_pledge_controls">
+                {{ site_currency_sign }}
+                {{ need.crud_form.amount.errors }}
+                {{ need.crud_form.amount }}
+            </div>
+        </div>
+    </div>
+    <div class="span8">
+        <button id="button-drop-need-{{need.id}}">drop need</button>
+        <button id="button-dont-drop-need-{{need.id}}" disabled="disabled">do not drop need</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#button-drop-need-{{need.id}}').click(function(event){
+            event.preventDefault();
+            $('#pledge-form-contents-{{need.id}}').addClass('kf_dropped_need');
+            $('#pledge-form-contents-{{need.id}} input').prop('disabled', 'disabled');
+            $('#pledge-form-contents-{{need.id}} textarea').prop('disabled', 'disabled');
+            $(this).prop('disabled', 'disabled');
+
+            $('#button-dont-drop-need-{{need.id}}').removeProp('disabled');
+            $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').removeProp('disabled');
+            $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', '1');
+        });
+
+        $('#button-dont-drop-need-{{need.id}}').click(function(event){
+            event.preventDefault();
+            $('#pledge-form-contents-{{need.id}}').removeClass('kf_dropped_need');
+            $('#pledge-form-contents-{{need.id}} input').removeProp('disabled');
+            $('#pledge-form-contents-{{need.id}} textarea').removeProp('disabled');
+            $(this).prop('disabled', 'disabled');
+
+            $('#button-drop-need-{{need.id}}').removeProp('disabled');
+
+            $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', '0');
+        });
+
+
+        var need{{need.id}}DonationsSumRadiant = {{need.donations_sum_radiant}};
+        var need{{need.id}}OtherRadiant = {{need.other_sources_radiant}};
+
+        var need{{need.id}}BackgroundSeries = [['a', 100],['b', 100]];
+        window.need{{need.id}}BackgroundDonut = $.jqplot('need-{{need.id}}-chart', [need{{need.id}}BackgroundSeries], {
+            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+            seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
+            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+        });
+
+        var need{{need.id}}OtherSeries = [
+            ['c', (need{{need.id}}OtherRadiant + need{{need.id}}DonationsSumRadiant)],
+            ['d', (360 - (need{{need.id}}OtherRadiant + need{{need.id}}DonationsSumRadiant))]
+        ];
+        window.need{{need.id}}OtherDonut = $.jqplot('need-{{need.id}}-chart', [need{{need.id}}OtherSeries], {
+            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+            seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
+            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+        });
+
+        var need{{need.id}}DonationsSumSeries = [
+            ['a', (need{{need.id}}DonationsSumRadiant)],
+            ['b', 360 - need{{need.id}}DonationsSumRadiant]
+        ];
+        window.need{{need.id}}DonationsSumDonut = $.jqplot('need-{{need.id}}-chart', [need{{need.id}}DonationsSumSeries], {
+            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+            seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
+            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+        });
+
+    });
+</script>
