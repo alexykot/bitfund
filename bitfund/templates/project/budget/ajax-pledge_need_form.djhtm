@@ -26,10 +26,10 @@
                 </div>
                 <ul>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
-                           class="kf_link_need_more">more</a></li>
+                           id="link-need-more-{{ need.id }}">more</a></li>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                           class="kf_link_need_less">less</a></li>
-                    <li class="kf_need_pledge_amount_field">
+                           id="link-need-less-{{ need.id }}">less</a></li>
+                    <li id="need-pledge-amount-field-{{ need.id }}">
                         {{ need.pledge_form.pledge_amount.errors }}
                         {{ need.pledge_form.pledge_amount }}
                     </li>
@@ -141,15 +141,15 @@
         {% endif %}
         $('#pledge-form-contents-{{ need.id }}').toggle(true);
 
-        $('.kf_amount_buttons button').click(function(event){
+        $('#need-monthly-options-{{ need.id }} button').click(function(event){
             event.preventDefault();
-            $(this).parents('.kf_need_item, .kf_goal_item').find('.kf_amount_buttons button').removeClass('kf_selected');
+            $('#need-monthly-options-{{ need.id }} button').removeClass('kf_selected');
             $(this).addClass('kf_selected');
 
-            $(this).parents('.kf_need_item, .kf_goal_item').find('li.kf_need_pledge_amount_field input').attr('value', $(this).attr('data-amount'));
+            $('li#need-pledge-amount-field-{{ need.id }} input').attr('value', $(this).attr('data-amount'));
         });
 
-        $('li.kf_need_pledge_amount_field input').keyup(function(){
+        $('li#need-pledge-amount-field-{{ need.id }} input').keyup(function(){
             selectAmount($(this).attr('value'));
         });
 
@@ -162,11 +162,11 @@
             toggleOnetimeMonthly(true, $(this).data('need_id'));
         });
 
-        $("form#form-pledge-need-{{ need.id }} .kf_link_need_more").click(function(event){
+        $("#link-need-more-{{ need.id }}").click(function(event){
             event.preventDefault();
             toggleMore(true, {{ need.id }});
         });
-        $("form#form-pledge-need-{{ need.id }} .kf_link_need_less").click(function(event){
+        $("#link-need-less-{{ need.id }}").click(function(event){
             event.preventDefault();
             toggleMore(false, {{ need.id }});
         });
