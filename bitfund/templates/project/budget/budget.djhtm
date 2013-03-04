@@ -139,11 +139,11 @@
             </div>
             <div class="span3 kf_project_meta">
                 {% if project_edit_access %}
-                    <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit budget mode</a> <br />
+                    <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a> <br />
                     <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
                         {% csrf_token %}
                         <input type="submit"
-                value="{% if project.is_public %}make project private{% else %}make project public{% endif %}"></form>
+                value="{% if project.is_public %}unpublish{% else %}publish{% endif %}"></form>
                 {% endif %}
             </div>
         </div>

@@ -1,15 +1,15 @@
-<div class="row kf_need_item" id="pledge-form-contents-{{ need.id }}">
+<div class="row {% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}">
+    {{ need.crud_form.project }}
+    {{ need.crud_form.date_added }}
     {{ need.crud_form.drop_need }}
+    {{ need.crud_form.is_public }}
+    {{ need.crud_form.sort_order }}
     <div class="span8">
         {{ need.crud_form.non_field_errors }}
         <div class="row">
-            <div class="span4">
+            <div class="span6">
                 {{ need.crud_form.title.errors }}
                 {{ need.crud_form.title }}
-            </div>
-            <div class="span2">
-                {{ need.crud_form.is_public.errors }}
-                {{ need.crud_form.is_public }}
             </div>
             <div class="span1">
                 {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
@@ -35,37 +35,53 @@
         </div>
     </div>
     <div class="span8">
-        <button id="button-drop-need-{{need.id}}">drop need</button>
-        <button id="button-dont-drop-need-{{need.id}}" disabled="disabled">do not drop need</button>
+            <button id="button-toggle-publish-need-{{need.id}}">
+                {% if need.is_public %}unpublish{% else %}publish{% endif %}
+            </button>
+
+        <button id="button-drop-need-{{need.id}}">delete</button>
     </div>
 </div>
 
+<hr />
+
 <script type="text/javascript">
     $(document).ready(function(){
+
+        $('#button-toggle-publish-need-{{need.id}}').click(function(event){
+            event.preventDefault();
+
+            if ($('#pledge-form-contents-{{need.id}} input[name*="is_public"]').attr('value') == 'True') {
+                $('#pledge-form-contents-{{need.id}}').addClass('kf_unpublished_need');
+                $('#pledge-form-contents-{{need.id}} input[name*="is_public"]').attr('value', 'False');
+                $(this).text('publish');
+            } else {
+                $('#pledge-form-contents-{{need.id}}').removeClass('kf_unpublished_need');
+                $('#pledge-form-contents-{{need.id}} input[name*="is_public"]').attr('value', 'True');
+                $(this).text('unpublish');
+            }
+        });
+
         $('#button-drop-need-{{need.id}}').click(function(event){
             event.preventDefault();
-            $('#pledge-form-contents-{{need.id}}').addClass('kf_dropped_need');
-            $('#pledge-form-contents-{{need.id}} input').prop('disabled', 'disabled');
-            $('#pledge-form-contents-{{need.id}} textarea').prop('disabled', 'disabled');
-            $(this).prop('disabled', 'disabled');
 
-            $('#button-dont-drop-need-{{need.id}}').removeProp('disabled');
-            $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').removeProp('disabled');
-            $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', '1');
+            if ($('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value') == '') {
+                $('#pledge-form-contents-{{need.id}}').addClass('kf_dropped_need');
+                $('#pledge-form-contents-{{need.id}} input').prop('disabled', 'disabled');
+                $('#pledge-form-contents-{{need.id}} textarea').prop('disabled', 'disabled');
+
+                $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').removeProp('disabled');
+                $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', 'True');
+                $(this).text('undelete');
+            } else {
+                $('#pledge-form-contents-{{need.id}}').removeClass('kf_dropped_need');
+                $('#pledge-form-contents-{{need.id}} input').removeProp('disabled');
+                $('#pledge-form-contents-{{need.id}} textarea').removeProp('disabled');
+
+                $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', '');
+                $(this).text('delete');
+            }
         });
-
-        $('#button-dont-drop-need-{{need.id}}').click(function(event){
-            event.preventDefault();
-            $('#pledge-form-contents-{{need.id}}').removeClass('kf_dropped_need');
-            $('#pledge-form-contents-{{need.id}} input').removeProp('disabled');
-            $('#pledge-form-contents-{{need.id}} textarea').removeProp('disabled');
-            $(this).prop('disabled', 'disabled');
-
-            $('#button-drop-need-{{need.id}}').removeProp('disabled');
-
-            $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', '0');
-        });
-
 
         var need{{need.id}}DonationsSumRadiant = {{need.donations_sum_radiant}};
         var need{{need.id}}OtherRadiant = {{need.other_sources_radiant}};

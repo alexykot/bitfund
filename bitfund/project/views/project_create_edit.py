@@ -85,7 +85,7 @@ def edit_needs(request, project_key, need_id = False):
             need = ProjectNeed()
             need.project = project
             
-        form = CreateProjectNeedForm(request.POST, instance=need)
+        form = ProjectNeedForm(request.POST, instance=need)
             
         if form.is_valid():
             need.amount = form.cleaned_data['amount'] 
@@ -108,7 +108,7 @@ def edit_needs(request, project_key, need_id = False):
         else :
             need = ProjectNeed()
         
-        form = CreateProjectNeedForm(instance=need)
+        form = ProjectNeedForm(instance=need)
         
         return render_to_response('project/edit_needs.djhtm', {'request'        : request,
                                                                'project'        : project,

@@ -160,7 +160,8 @@ class Project(models.Model):
     def getRedonationsPercent(self):
         total_redonation_percent = Decimal(0)
         project_budget = self.getTotalMonthlyBudget()
-        getcontext().prec = CALCULATIONS_PRECISION
+        if project_budget == 0 :
+            return 0
 
         redonation_projects = Project_Dependencies.objects.filter(depender_project=self)
         for redonation_project in redonation_projects :
