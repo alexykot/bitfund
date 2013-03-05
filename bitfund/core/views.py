@@ -169,4 +169,10 @@ def landing(request):
     return render_to_response('core/landing.djhtm', {'form'      : form,
                                                         'request'   : request,
                                                         }, context_instance=RequestContext(request))
-    
+
+
+
+def maintainer_verication(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/maintainer_verication.djhtm', template_data, context_instance=RequestContext(request))

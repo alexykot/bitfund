@@ -1,0 +1,179 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %}Budget : {{ project.title }}{% endblock title %}
+
+{% block pagescripts %}
+    <script type="text/javascript">
+
+        var defaultOnetimeMonthlyPosition = 'monthly';
+
+        function toggleOnetimeMonthly(setMonthly, needId) {
+            $("ul#need-monthly-options-" + needId).toggle(setMonthly);
+            $("ul#need-onetime-options-" + needId).toggle(!setMonthly);
+            $("a#need-monthly-switch-" + needId).toggleClass('kf_need_switch_selected', setMonthly);
+            $("a#need-onetime-switch-" + needId).toggleClass('kf_need_switch_selected', !setMonthly);
+            $("input#id_need-"+needId+"-pledge_type").attr('value', setMonthly ? 'monthly' : 'onetime');
+        }
+
+        function toggleMore(showMore, needId) {
+            $("form#form-pledge-need-" + needId + ' .kf_need_pledge_amount_field').toggle(showMore);
+            $("form#form-pledge-need-" + needId + ' .kf_amount_buttons_sets').toggle(!showMore);
+            $("form#form-pledge-need-" + needId + ' .kf_link_need_more').toggle(!showMore);
+            $("form#form-pledge-need-" + needId + ' .kf_link_need_less').toggle(showMore);
+        }
+
+        function selectAmount(amount, needId) {
+            $("form#form-pledge-need-" + needId).find('.kf_amount_buttons button.need_pledge_amount_option').each(function () {
+                $(this).removeClass('kf_selected');
+                if (amount == $(this).data('amount')) {
+                    $(this).addClass('kf_selected');
+                }
+            });
+
+            $('#id_need-'+needId+'-pledge_amount').val(amount);
+        }
+
+        var backgroundColor = '{{ chartBackgroundColor }}';
+        var otherColor = '{{ chartOtherColor }}';
+        var redonationsColor = '{{ chartRedonationsColor }}';
+        var pledgesColor = '{{ chartPledgesColor }}';
+
+        $(document).ready(function () {
+
+            var pledgesRadiant = {{ budget.pledges_radiant }};
+            var redonationsRadiant = {{ budget.redonations_radiant }};
+            var otherRadiant = {{ budget.other_sources_radiant }};
+
+            var backgroundSeries = [
+                ['a', 100],
+                ['b', 100]
+            ];
+            window.backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
+                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 94, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+            });
+
+            var otherSeries = [
+                ['c', (otherRadiant + redonationsRadiant + pledgesRadiant)],
+                ['d', (360 - (otherRadiant + redonationsRadiant + pledgesRadiant))]
+            ];
+            window.otherDonut = $.jqplot('chartdiv', [otherSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
+                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 8, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 98, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+            });
+
+            var redonationsSeries = [
+                ['c', (redonationsRadiant + pledgesRadiant)],
+                ['d', (360 - (redonationsRadiant + pledgesRadiant))]
+            ];
+            window.redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                seriesColors: [ "#"+redonationsColor, "rgba(0,0,0,0)"],
+                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 14, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 105, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+            });
+
+            var pledgesSeries = [
+                ['a', (pledgesRadiant)],
+                ['b', 360 - pledgesRadiant]
+            ];
+            window.pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
+                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+            });
+
+
+        });
+    </script>
+{% endblock pagescripts %}
+
+{% block content %}
+    <div class="kf_project-views-view kf_project-views-support">
+
+        <div class="row kf_project_title">
+            <div class="span1 kf_project_logo">
+                {% if logo %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ logo.url }}" /></a>
+                {% elif project.logo %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
+                {% endif %}
+            </div>
+            <div class="span4">
+                <h1><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></h1>
+            </div>
+            <div class="span2">
+                <h2>UNCLAIMED</h2>
+            </div>
+            <div class="span2 offset3 kf_project_meta">
+                    <a href="{% url bitfund.project.views.claim project_key=project.key %}">claim project</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span4">
+                <div class="row">
+                    <div class="span4">
+                        <div class="span2 kf_chart">
+                            <div class="row">
+                                <div id="chartdiv" class="kf_center">
+                                    <span class="kf_percent">&infin;</span>
+                                </div>
+                            </div>
+                            <div class="row kf_legend">
+                                <span class="kf_pledges"></span> Backer Support <br/>
+                                <span class="kf_redonations"></span> Depended Projects <br/>
+                                <span class="kf_other"></span> Other Sources
+                            </div>
+                        </div>
+                        <div class="span2">
+                            <div class="row kf_pledged">
+                                <div class="span3">
+                                    {{ site_currency_sign }}{{ budget.donations_total_sum }}<br/>
+                                    <span class="kf_small">pledged</span>
+                                </div>
+                                <div class="span1 kf_right">
+                                    {{ budget.donations_total_pledgers }}<br/>
+                                    <span class="kf_small">backer{{ budget.donations_total_pledgers|pluralize }}</span>
+                                </div>
+                            </div>
+                            {% if budget.redonations_total_sum %}
+                                <div class="row kf_other">
+                                    <div class="span2">
+                                        {{ site_currency_sign }}{{ budget.redonations_total_sum }} received from
+                                        {{ budget.depending_on_me_projects_count }} dependant project
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span8">
+                <div class="row">
+                    <h4> No budget items defined </h4>
+                </div>
+                <div class="row">
+                    <div class="span8">
+                        {{ project.title }} is unclaimed and has no specific budget, but you can still
+                        <a href="{% url bitfund.project.views.budget project_key=project.key %}#support-generally" id="support-generally">support it</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="span8">
+                        No funds will be actually transferred until the project will be claimed.
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="span8">
+                        Is this your project? <a href="{% url bitfund.project.views.claim project_key=project.key %}">Claim it!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+

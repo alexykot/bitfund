@@ -37,8 +37,19 @@ $(document).ready(function(){
 {% block content %}
 
 <div class="kf_project-views-view">
-    
-{% include "project/project-header.djhtm" %}
+
+    <div class="row kf_project_title">
+        <div class="span1 kf_project_logo">
+            {% if logo %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ logo.url }}" /></a>
+            {% elif project.logo %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key %}"><img src="{{ project.logo.url }}" width="62" height="62" /></a>
+            {% endif %}
+        </div>
+        <div class="span8">
+            <h1><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></h1>
+        </div>
+    </div>
 
 {% if view_status = 'draft' %}
 <div class="row">

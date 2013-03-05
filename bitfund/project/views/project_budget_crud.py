@@ -415,3 +415,12 @@ def crud_bitfund_link(request, project_key, action):
                                                           })
 
     return render_to_response('project/linked_projects/ajax-i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
+
+@login_required
+@user_is_not_project_maintainer
+def toggle_grateful(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    project.toggleGratefulUser(request.user)
+
+    return redirect('bitfund.project.views.budget', project_key=project_key)

@@ -2,7 +2,6 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.simple import redirect_to
-#from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from bitfund.project.api import *
 
@@ -40,6 +39,8 @@ urlpatterns += patterns('bitfund.core.views',
     (r'^login/{0,}$', 'login'),
     (r'^logout/{0,}$', 'logout'),
     (r'^register/{0,}$', 'register'),
+    (r'^maintainer_verication/{0,}$', 'maintainer_verication'),
+
 )
 
 #PROJECTS
@@ -58,11 +59,15 @@ urlpatterns += patterns('bitfund.project.views',
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
 
+
+    #claims
+    (r'^unclaimed/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'unclaimed'),
+    (r'^claim/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'claim'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/vote_maintainer/(?P<action>support|dethrone)/{0,}$', 'vote_maintainer'),
+
     #crud
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit/{0,}$', 'budget_edit'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/toggle/{0,}$', 'project_toggle'),
-
-
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/{0,}$', 'crud_pledge_need'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/(?P<action>pledge|drop_subscription|switch_monthly)/{0,}$', 'crud_pledge_need'),

@@ -273,6 +273,23 @@
                         their work.
                     </div>
                 </div>
+                <div class="row">
+                    <div class="span8 pull-right">
+                        budget for {{ project.title }} is maintained by {{ project.maintainer.username }}, this is because <a href="{{ project.because_url }}">{{ project.because_text }}</a><br />
+                        his right to maintain it is
+                        {% if project.maintainer_verified %}
+                            <a href="{% url bitfund.core.views.maintainer_verification %}#verified-maintainer">verified</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">dethrone him</a>
+                        {% else %}
+                            <a href="{% url bitfund.core.views.maintainer_verication %}#unverified-maintainer">unverified</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='support' %}">support him</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">dethrone him</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
 
