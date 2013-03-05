@@ -1,5 +1,25 @@
 {% if projects_i_depend_on_count %}
-    <h2>Projects {{ project.title }} depends on:</h2>
+    <h3>Projects {{ project.title }} depends on</h3>
+    <ul id="projects_i_depend_on_list">
+
+        <li class="project">
+            <div class="media">
+                <img class="media-object pull-left" src="{{ STATIC_URL }}img/unclaimed_img.png" />
+                <div class="media-body">
+                    <h4 class="media-heading"><a href="">{{ project_i_depend_on.title }}</a></h4>
+                    <p>Get started by putting some bits in your bucket. Get started by putting some bits in your bucket.</p>
+                    <span>1%</span>
+                </div>
+            </div>
+            <ul class="actions">
+                <li><a href=""
+                           class="project_crud">edit</a></li>
+                <li><a href=""
+                           class="project_crud">drop</a></li>
+            </ul>
+        </li> 
+
+    </ul>
     <ul id="projects_i_depend_on_list">
         {% for project_i_depend_on in projects_i_depend_on %}
             {% if crud_linked_project_action == 'edit' and project_i_depend_on.key == linked_project.key %}
@@ -37,7 +57,7 @@
         {% endfor %}
     </ul>
 {% else %}
-    <h2>{{ project.title }} doesn't depend on any projects</h2>
+    <h3>{{ project.title }} doesn't depend on any projects</h3>
 {% endif %}
 {% if project_edit_access %}
     {% if crud_linked_project_action == 'add' %}

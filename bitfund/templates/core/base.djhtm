@@ -37,11 +37,7 @@
 
 <div id="kf_header-n-content">
     {% include "core/header.djhtm" %}
-    <!--
-    <div class="kf_dotline"></div>
-    -->
     <div id="kf_content">
-        <div class="kf_greenline"></div>
         <div class="container">
             {% block content %}{% endblock content %}
         </div>

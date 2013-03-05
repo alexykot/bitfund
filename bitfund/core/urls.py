@@ -33,7 +33,7 @@ urlpatterns += patterns('',
 
 #MISC PAGES
 urlpatterns += patterns('bitfund.core.views',
-    (r'^index.htm', 'landing'),
+    (r'^index.htm', 'index'),
     (r'^/{0,}$', 'index'),
     (r'^projects{0,}/{0,}$', redirect_to, {'url': '/'}),
     (r'^pledger{0,}/{0,}$', redirect_to, {'url': '/'}),

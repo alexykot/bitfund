@@ -9,35 +9,40 @@
 
 {% block content %}
 
-    <div class="kf_project-views-view">
+    <div class="dependent-projects">
+        <p><img src="{{ STATIC_URL }}img/project_img.png" />{{ project.title }}</p>
 
-    {% include "project/project-header.djhtm" %}
-
-    <div class="row">
-
-        <div class="span5">
+         <div class="row-fluid">
+            <div class="span6 depending-on">
             {% if projects_depending_on_me_count %}
-                <h2>Projects depending on {{ project.title }}:</h2>
+                <h3>Projects depending on {{ project.title }}</h3>
                 <ul>
                     {% for project_depending_on_me in projects_depending_on_me %}
-                        <li><a href="{% url bitfund.project.views.budget project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a> -
-                            {% if project_depending_on_me.amount_sum %}
+                    <li class="project">
+                        <div class="media">
+                            <img class="media-object pull-left" src="{{ STATIC_URL }}img/unclaimed_img.png" />
+                            <div class="media-body">
+                                <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a></h4>
+                                <p>Get started by putting some bits in your bucket.</p>
+                                <span>{% if project_depending_on_me.amount_sum %}
                                 {{ site_currency_sign }}{{ project_depending_on_me.amount_sum|floatformat:2 }}
                             {% elif project_depending_on_me.amount_percent %}
                                 {{ project_depending_on_me.amount_percent|floatformat }}%
-                            {% endif %}
-                        </li>
+                            {% endif %}</span>
+                            </div>
+                        </div>
+                    </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <h2>No projects depend on {{ project.title }}:</h2>
+                <h3>No projects depend on {{ project.title }}:</h3>
             {% endif %}
-        </div>
+            </div>
 
-        <div class="span5" id="i_depend_on_projects_list">
-            {% include "project/linked_projects/ajax-i_depend_on_projects_list.djhtm" %}
+            <div class="span6 depends-on" id="i_depend_on_projects_list">
+                {% include "project/linked_projects/ajax-i_depend_on_projects_list.djhtm" %}
+            </div>
         </div>
-
     </div>
 
 {% endblock content %}

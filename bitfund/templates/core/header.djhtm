@@ -1,11 +1,11 @@
-<div class="container">
-<div class="row kf_header">
-    <div class="span3 kf_logo">
+<div class="navbar">
+    <div class="logo">
         <a href="{% url bitfund.core.views.index %}">
-            <span class="kf_bit">Bit</span>
-            <span class="kf_fund">Fund</span>
+            <span id="kf_bitfund">bitfund</span>
+            <img src="{{ STATIC_URL }}img/logo.png" alt="Logotype" />
         </a>
     </div>
+    
     <div class="span3 offset1">
         <div class="kf_support-summary">
         {% if request.user.is_authenticated %}
@@ -59,4 +59,3 @@
         </div>
     </div>
 </div>
-</div>    
