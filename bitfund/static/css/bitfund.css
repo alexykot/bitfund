@@ -24,7 +24,7 @@ html, body , #kf_header-n-content {
 }
 
 #kf_content {
-    margin-top: 30px;
+    margin: 30px 0;
 }
 
 #kf_footer, #kf_push_footer {
@@ -120,9 +120,6 @@ button:disabled {
 }
 
 /* Container ==================*/
-#kf_content {
-    margin-bottom: 30px;
-}
 
 /* Page 1 - Available projects */
 .centered {
@@ -283,7 +280,7 @@ button.go {
     padding-top: 10px;
 }
 
-.dependent-projects > p > img, .project-goals .project-logo > img {
+.dependent-projects .project-logo > img, .project-goals .project-logo > img {
     vertical-align: bottom;
     padding-right: 10px;
 }
@@ -459,7 +456,7 @@ ul.chart-div-legend li:nth-child(3) {
     line-height: 35px;
 }
 
-.need-pledge-controls a:active, .need-pledge-controls a:active {
+.need-pledge-controls a.active {
     border: none;
     color: #000;
     font-weight: bold;

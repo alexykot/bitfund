@@ -56,7 +56,7 @@
                        id="need-onetime-switch-{{ need.id }}" class="kf_need_onetime"
                        data-need_id="{{ need.id }}">onetime</a></li>
                         <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly"
-                       id="need-monthly-switch-{{ need.id }}" class="kf_need_monthly"
+                       id="need-monthly-switch-{{ need.id }}" class="kf_need_monthly active"
                        data-need_id="{{ need.id }}">monthly</a></li>
                    </ul>
                 </div>
