@@ -57,7 +57,12 @@
 
             $('#button-add-need').click(function(event){
                 event.preventDefault();
-                $('#container-needs-list').appendTo($.get('{% url bitfund.project.views.add_need project_key=project.key %}'));
+
+                $.get('{% url bitfund.project.views.add_need project_key=project.key %}', function(data) {
+                    $('#container-needs-list').append(data);
+                });
+
+                //$('#container-needs-list').append($.get('{% url bitfund.project.views.add_need project_key=project.key %}'));
             });
         });
     </script>
@@ -75,10 +80,14 @@
                 {% elif project.logo %}
                     <img src="{{ project.logo.url }}" width="62" height="62" />
                 {% endif %}
+                {{ project_form.logo.errors }}
                 {{ project_form.logo }}
             </div>
             <div class="span6">
-                <h1>{{ project_form.title }}</h1> bitfund.org/{{ project_form.key }}
+                {{ project_form.title.errors }}
+                <h1>{{ project_form.title }}</h1>
+                {{ project_form.key.errors }}
+                bitfund.org/{{ project_form.key }}
             </div>
             <div class="span3 kf_project_meta">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">exit edit mode</a>

@@ -19,7 +19,7 @@ from bitfund.project.models import *
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.forms import *
 from bitfund.project.decorators import user_is_project_maintainer, user_is_not_project_maintainer, disallow_not_public
-from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data, _prepare_project_crud_need_form_template_data
+from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
 
 
@@ -40,17 +40,43 @@ def budget_edit(request, project_key):
     #BUDGET, pledges, redonations, other sources, donut charts radiants
     template_data['budget'] = _prepare_project_budget_template_data(request, project)
 
-    #NEEDS
-    template_data['project_needs'] = []
-    project_needs = ProjectNeed.objects.filter(project=project.id).order_by('sort_order')
-    for need in project_needs :
-        need_template_data = _prepare_need_item_template_data(request, project, need)
-        need_template_data['crud_form'] = CreateProjectNeedForm(instance=need, prefix='need-'+str(need.id))
-        template_data['project_needs'].append(need_template_data)
+    if request.method == 'POST' :
+        template_data['project_form'] = CreateProjectForm(request.POST, instance=project)
+        all_valid = True
 
-    #template_data['project_form'] = CreateProjectForm(project)
-    template_data['project_form'] = CreateProjectForm(instance=project)
+        if not template_data['project_form'].is_valid() :
+            all_valid = False
 
+        template_data['project_needs'] = []
+
+        project_needs = ProjectNeed.objects.filter(project=project.id).order_by('sort_order')
+        for need in project_needs :
+            need_template_data = _prepare_need_item_template_data(request, project, need)
+            need_template_data['crud_form'] = ProjectNeedForm(request.POST, instance=need, prefix='need-'+str(need.id))
+            if not need_template_data['crud_form'].is_valid() :
+                all_valid = False
+
+            template_data['project_needs'].append(need_template_data)
+
+        if all_valid :
+            template_data['project_form'].save()
+            for need_template_data in template_data['project_needs'] :
+                if need_template_data['crud_form'].cleaned_data['drop_need'] :
+                    need_template_data['crud_form'].instance.delete()
+                else :
+                    need_template_data['crud_form'].save()
+
+            return redirect('bitfund.project.views.budget_edit', project_key=project.key)
+    else :
+        template_data['project_form'] = CreateProjectForm(instance=project)
+
+        #NEEDS
+        template_data['project_needs'] = []
+        project_needs = ProjectNeed.objects.filter(project=project.id).order_by('sort_order')
+        for need in project_needs :
+            need_template_data = _prepare_need_item_template_data(request, project, need)
+            need_template_data['crud_form'] = ProjectNeedForm(instance=need, prefix='need-'+str(need.id))
+            template_data['project_needs'].append(need_template_data)
 
     return render_to_response('project/budget/budget_edit.djhtm', template_data, context_instance=RequestContext(request))
 
@@ -233,7 +259,8 @@ def add_need(request, project_key):
     need.is_public = False
     need.save()
 
-    template_data['crud_need'] = _prepare_project_crud_need_form_template_data(request, project, need)
+    template_data['need'] = _prepare_need_item_template_data(request, project, need)
+    template_data['need']['crud_form'] = ProjectNeedForm(instance=need, prefix='need-'+str(need.id))
 
     return render_to_response('project/budget/ajax-crud_need_form.djhtm', template_data, context_instance=RequestContext(request))
 

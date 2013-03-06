@@ -1,13 +1,26 @@
 <div class="navbar">
+    <ul class="nav pull-right">
+        <li>You are <a href="#">alexeykot</a></li>
+        <li>Support<a href="#">5 projects</a></li>
+        <li>{% if request.user.is_authenticated and not user_is_stranger %}
+                <a href="{% url bitfund.core.views.logout %}">Sign out</a>
+            {% else %}
+                <a href="{% url bitfund.core.views.login %}">Log in</a>
+            {% endif %}
+        </li>
+    </ul>
+
     <div class="logo">
         <a href="{% url bitfund.core.views.index %}">
             <span id="kf_bitfund">bitfund</span>
             <img src="{{ STATIC_URL }}img/logo.png" alt="Logotype" />
         </a>
     </div>
-    
-    <div class="span3 offset1">
+
+
+    <!-- <div class="span3 offset1">
         <div class="kf_support-summary">
+        {% comment %}
         {% if request.user.is_authenticated %}
             You currently pledging:
             <ul>
@@ -30,17 +43,10 @@
                 </li>
             </ul>
         {% endif %}
+       
         </div>
     </div>
-    <div class="span2">
-        <div class="kf_account_links">
-            {% if request.user.is_authenticated and not user_is_stranger %}
-                <a href="{% url bitfund.core.views.logout %}">log out</a>
-            {% else %}
-                <a href="{% url bitfund.core.views.login %}">log in</a>
-            {% endif %}
-        </div>
-    </div>
+
     <div class="span2 offset1">
         <div class="kf_big-header-button">
             {% if request.user.is_authenticated %}
@@ -56,6 +62,7 @@
                     </span>
                 </a>
             {% endif %}
+            {% endcomment %}
         </div>
-    </div>
+    </div> -->
 </div>

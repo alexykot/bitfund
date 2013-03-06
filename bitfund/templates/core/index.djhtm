@@ -7,16 +7,40 @@
 {% if request.user.is_authenticated and not user_is_stranger %}
 <h2><a href="{% url bitfund.project.views.create %}">create new project</a></h2>
 {% endif %}
+<div class="banner centered">
+    <h1>Fostering the open</h1>
+    <h2>Monthly pledges for the open projects</h2>
+    <a tupe="button" class="about">About</a>
+</div>
 
-
-{% if public_projects_list %}
-<h2>Available Projects</h2>
-<ul>
-    {% for project in public_projects_list %}
-    <li><a href="{% url bitfund.project.views.budget project_key=project.key%}">{{ project.title }}</a></li>
-    {% endfor %}
-</ul>   
-{% endif %}
+<div class="available-projects">
+    <div class="search-form centered">
+        <h4>What project will you support today?</h4>
+        <form class="form-inline">
+            <input type="text" />
+            <button type="submit" class="go">Go</button>
+        </form>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="span3 centered">
+        	{% if public_projects_list %}
+                <h3>New projects</h3>
+                {% for project in public_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            <img class="media-object pull-left" />
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div>5 min</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
 
 
 {% endblock %}

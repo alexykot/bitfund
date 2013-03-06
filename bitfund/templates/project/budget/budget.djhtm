@@ -199,12 +199,25 @@
                     </div>
                 {% endif %}
             </div>
+<<<<<<< local
 
             <div class="span8 goals-column">
                 {% if budget.project_monthly_budget > 0 %}
                     <h3>{{ project.title }} asked {{ site_currency_sign }}{{ budget.project_monthly_budget }} this month for:</h3>
                 {% else %}
                     <h3> {{ project.title }} has no budget for this month</h3>
+=======
+            <div class="span8">
+                <h1><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></h1>
+            </div>
+            <div class="span3 kf_project_meta">
+                {% if project_edit_access %}
+                    <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a> <br />
+                    <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
+                        {% csrf_token %}
+                        <input type="submit"
+                value="{% if project.is_public %}unpublish{% else %}publish{% endif %}"></form>
+>>>>>>> other
                 {% endif %}
 
                 {% for need in project_needs %}

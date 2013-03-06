@@ -48,9 +48,6 @@
 
 
 <div id="kf_footer">
-    <!--
-    <div class="kf_dotline"></div>
-    -->
     {% include "core/footer.djhtm" %}
 </div>
 

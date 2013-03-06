@@ -9,10 +9,23 @@
 
 {% block content %}
 
-    <div class="dependent-projects">
-        <p><img src="{{ STATIC_URL }}img/project_img.png" />{{ project.title }}</p>
+    <div class="kf_project-views-view">
 
-         <div class="row-fluid">
+        {% include "project/project-header.djhtm" %}
+    </div>
+    <div class="dependent-projects">
+        <div class="project-attributes">
+            <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">
+                {% if logo %}
+                    <img src="{{ logo.url }}" />
+                {% elif project.logo %}
+                <img src="{{ project.logo.url }}" width="62" height="62" />
+                {% endif %}
+                <span>{{ project.title }}</span>
+            </a>
+        </div>
+
+        <div class="row-fluid">
             <div class="span6 depending-on">
             {% if projects_depending_on_me_count %}
                 <h3>Projects depending on {{ project.title }}</h3>
@@ -20,7 +33,7 @@
                     {% for project_depending_on_me in projects_depending_on_me %}
                     <li class="project">
                         <div class="media">
-                            <img class="media-object pull-left" src="{{ STATIC_URL }}img/unclaimed_img.png" />
+                            <img class="media-object pull-left" src="#" />
                             <div class="media-body">
                                 <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a></h4>
                                 <p>Get started by putting some bits in your bucket.</p>

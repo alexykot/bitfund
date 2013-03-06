@@ -277,7 +277,7 @@ button.go {
 
 /* Page 2 - Dependent projects */
 
-.dependent-projects > p:first-child, .project-goals .project-logo span {
+.dependent-projects .project-logo span, .project-goals .project-logo span {
     color: #3d3d3d;
     font-size: 30px;
     padding-top: 10px;
@@ -312,7 +312,7 @@ button.go {
     color: #3d3d3d;
 }
 
-.dependent-projects span {
+.dependent-projects .media-body span {
     position: absolute;
     top: 0;
     right: 0;
@@ -346,17 +346,21 @@ button.go {
     margin: 50px 0 200px;
 }
 
-.dependency button {
+.dependency a {
     border: none;
     margin-left: 10px;
     padding: 8px;
 }
 
-.dependency button:hover {
+.dependency a:hover {
     border: none;
 }
 
 /* Page 3 =====================*/
+
+.project-attributes {
+    margin: 10px 0;
+}
 
 .budget-column .month {
     font-size: 16px;
@@ -372,7 +376,6 @@ button.go {
 }
 
 .chart-div-large {
-    background: url("../img/chart_div.png") no-repeat;
     line-height: 85px;
     margin: 0 15px 15px;
     text-align: center;
@@ -380,16 +383,15 @@ button.go {
 }
 
 .chart-div-medium {
+    background: url("../img/need_chart.png") no-repeat;
     display: inline-block;
     font-size: 12px;
     line-height: 57px;
-    margin-left: 10px;
     width: 57px;
     text-align: center;
 }
 
 .chart-div-small {
-    background: url("../img/chart_div2.png") no-repeat;
     line-height: 50px;
     font-size: 10px;
 }
@@ -427,9 +429,26 @@ ul.chart-div-legend li:nth-child(3) {
     padding-bottom: 20px;
 }
 
+.goal .row-fluid {
+    margin-bottom: 15px;
+}
+
+.goal > .row-fluid > .span3 {
+    display: table;
+}
+
+.goal > .row-fluid > .span3 span {
+    display: table-cell;
+    vertical-align: middle;
+}
+
 .goals-column div.pull-right {
     margin-right: 20px;
     text-align: right;
+}
+
+.need-pledge-controls {
+    margin-bottom: 10px;
 }
 
 .need-pledge-controls ul {
@@ -440,7 +459,7 @@ ul.chart-div-legend li:nth-child(3) {
     line-height: 35px;
 }
 
-.need-pledge-controls a:active, .need-pledge-controls a.active {
+.need-pledge-controls a:active, .need-pledge-controls a:active {
     border: none;
     color: #000;
     font-weight: bold;
@@ -460,7 +479,7 @@ ul.chart-div-legend li:nth-child(3) {
     padding: 8px 25px;
 }
 
-.amount-buttons li {
+.amount-buttons li, .need-pledge-controls ul li {
     float: left;
     margin-right: 5px;
 }
@@ -487,10 +506,21 @@ ul.chart-div-legend li:nth-child(3) {
     color: #fff;
 }
 
-button.grateful {
+.grateful {
+    margin: 20px 10px;
+    text-align: right;
+}
+
+.grateful a {
     border: none;
+    color: #000;
+    cursor: pointer;
     margin-left: 10px;
     padding: 8px;
+}
+
+.grateful a:hover {
+    text-decoration: none;
 }
 
 .current-goals {

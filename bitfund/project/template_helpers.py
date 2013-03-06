@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.utils.timezone import now
 
 from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
-from bitfund.project.forms import PledgeProjectNeedForm, CreateProjectNeedForm
+from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
@@ -144,10 +144,3 @@ def _prepare_project_budget_template_data(request, project) :
         budget_data['total_gained_percent'] = -1
 
     return budget_data
-
-def _prepare_project_crud_need_form_template_data(request, project, need) :
-    template_data = {}
-
-    template_data['need_form'] = CreateProjectNeedForm(instance=need)
-
-    return template_data

@@ -61,15 +61,39 @@ class ProjectNeedsGoalsListForm(forms.Form):
         self.fields['needsgoals'].choices = project_needsgoals_choices
     
 
-class CreateProjectNeedForm(forms.ModelForm):
-    amount = forms.DecimalField(max_value=9999999999, min_value=0.01, decimal_places=2, max_digits=12, required=True, label=_('amount'))
+class ProjectNeedForm(forms.ModelForm):
+    title = forms.CharField(max_length=255, required=False)
+    amount = forms.DecimalField(max_value=9999999999, decimal_places=2, max_digits=12, label=_('amount'), required=False)
+    sort_order = forms.IntegerField(widget=forms.HiddenInput, required=False)
     drop_need = forms.BooleanField(widget=forms.HiddenInput, required=False)
 
     class Meta:
         model   = ProjectNeed
-        widgets = {'is_public': forms.RadioSelect(choices=YES_NO_CHOICES),
+        widgets = {'is_public': forms.HiddenInput(),
                    'brief': forms.Textarea(),
         }
+        exclude = ('project', 'date_added', 'key',)
+
+
+    def clean(self):
+        cleaned_data = super(ProjectNeedForm, self).clean()
+
+        title = cleaned_data.get('title')
+        amount = cleaned_data.get('amount')
+        drop_need = cleaned_data.get('drop_need')
+        is_public = cleaned_data.get('is_public')
+
+        if not drop_need and is_public and (amount == 0 or amount is None):
+            self._errors["amount"] = self.error_class([_(u'Amount is required for active needs.')])
+            del cleaned_data["amount"]
+        elif not is_public and amount is None :
+            cleaned_data["amount"] = 0
+
+        if not drop_need and is_public and title == '':
+            self._errors["title"] = self.error_class([_(u'Title is required for active needs.')])
+            del cleaned_data["title"]
+
+        return cleaned_data
 
 
 class CreateProjectGoalForm(forms.ModelForm):
