@@ -24,9 +24,51 @@
     <hr>
     <div class="row">
         <div class="span3 centered">
-        	{% if public_projects_list %}
+        	{% if new_projects_list %}
                 <h3>New projects</h3>
-                {% for project in public_projects_list %}
+                {% for project in new_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            <img class="media-object pull-left" />
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div>5 min</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
+            {% if top_funded_projects_list %}
+                <h3>Top Funded</h3>
+                {% for project in top_funded_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            <img class="media-object pull-left" />
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div>5 min</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
+            {% if top_linked_projects_list %}
+                <h3>Top Linked</h3>
+                {% for project in top_linked_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            <img class="media-object pull-left" />
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div>5 min</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
+            {% if unclaimed_projects_list %}
+                <h3>Unclaimed</h3>
+                {% for project in unclaimed_projects_list %}
                     <a href="{% url bitfund.project.views.budget project_key=project.key%}">
                         <div class="media">
                             <img class="media-object pull-left" />
