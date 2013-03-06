@@ -38,6 +38,8 @@
                     </a>
                 {% endfor %}
             {% endif %}
+        </div>
+        <div class="span3 centered">
             {% if top_funded_projects_list %}
                 <h3>Top Funded</h3>
                 {% for project in top_funded_projects_list %}
@@ -52,6 +54,8 @@
                     </a>
                 {% endfor %}
             {% endif %}
+        </div>
+        <div class="span3 centered">
             {% if top_linked_projects_list %}
                 <h3>Top Linked</h3>
                 {% for project in top_linked_projects_list %}
@@ -66,6 +70,8 @@
                     </a>
                 {% endfor %}
             {% endif %}
+        </div>
+        <div class="span3 centered">
             {% if unclaimed_projects_list %}
                 <h3>Unclaimed</h3>
                 {% for project in unclaimed_projects_list %}
