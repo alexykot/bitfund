@@ -15,10 +15,11 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            MINIMAL_DEFAULT_REDONATIONS_RADIANT,
                                            MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT,
                                            )
-from bitfund.project.decorators import user_is_project_maintainer, disallow_not_public_unless_maintainer
+from bitfund.project.decorators import user_is_project_maintainer, disallow_not_public_unless_maintainer, redirect_not_active
 from bitfund.project.models import *
 from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data
 
+@redirect_not_active
 @disallow_not_public_unless_maintainer
 def budget(request, project_key):
     project = get_object_or_404(Project, key=project_key)
@@ -156,4 +157,5 @@ def linked_projects(request, project_key):
                                                      })
 
     return render_to_response('project/linked_projects/linked_projects.djhtm', template_data, context_instance=RequestContext(request))
+
 
