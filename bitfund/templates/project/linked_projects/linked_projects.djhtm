@@ -16,7 +16,7 @@
                     {% if logo %}
                         <img src="{{ logo.url }}" />
                     {% elif project.logo %}
-                    <img src="{{ project.logo.url }}" width="62" height="62" />
+                    <img src="{{ project.logo.url }}" />
                     {% endif %}
                     <span>{{ project.title }}</span>
                 </a>

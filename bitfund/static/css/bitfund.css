@@ -67,11 +67,13 @@ button, input[type="text"] {
 }
 
 button:disabled {
+    background-color: #fff;
     border: 1px solid #ccc;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
     color: #ccc;
+    cursor: default;
 }
 /* Header =====================*/
 
@@ -141,14 +143,21 @@ button:disabled {
     color: rgb(240, 103, 5);
 }
 
-button.orange-shadow:hover, button.orange-shadow:active {
+button.gray-shadow:hover, a.gray-shadow:hover {
+    -webkit-box-shadow: 0px 0px 8px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow:    0px 0px 8px rgba(50, 50, 50, 0.5);
+    box-shadow:         0px 0px 8px rgba(50, 50, 50, 0.5);
+}
+
+button.orange-shadow:not([disabled="disabled"]):hover, button.orange-shadow:not([disabled="disabled"]):active {
     -webkit-box-shadow: 0px 0px 8px rgba(240, 103, 5, 1);
     -moz-box-shadow:    0px 0px 8px rgba(240, 103, 5, 1);
     box-shadow:         0px 0px 8px rgba(240, 103, 5, 1);
 }
 
-button.orange-shadow:active {
+button.orange-shadow:not([disabled="disabled"]):active {
     background-color: rgb(240, 103, 5);
+    border: none;
     color: #fff;
 }
 
@@ -234,7 +243,7 @@ button.go {
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
-    padding: 10px 30px 30px;
+    padding: 30px;
     margin-top: 40px;
 }
 
@@ -266,23 +275,29 @@ button.go {
     color: #3d3d3d;
     height: 55px;
     padding: 10px;
+    text-align: left;
 }
 
-.media p {
-    margin-bottom: 0;
+.available-projects .media-object {
+    height: 55px;
+    width: 55px;
 }
-
 /* Page 2 - Dependent projects */
 
-.dependent-projects .project-logo span, .project-goals .project-logo span {
-    color: #3d3d3d;
-    font-size: 30px;
-    padding-top: 10px;
+.dependent-projects a.project-logo img, .project-goals a.project-logo img {
+    height: 62px;
+    width: 62px;
 }
 
-.dependent-projects .project-logo > img, .project-goals .project-logo > img {
-    vertical-align: bottom;
-    padding-right: 10px;
+.dependent-projects a.project-logo:hover img, .project-goals a.project-logo:hover img {
+    border-bottom: none;
+}
+
+.dependent-projects a.project-logo, .project-goals a.project-logo {
+    color: #3d3d3d;
+    font-size: 30px;
+    margin-left:10px;
+    vertical-align: middle;
 }
 
 .dependent-projects  .row-fluid h3, .project-goals .row-fluid h3 {
@@ -355,10 +370,6 @@ button.go {
 
 /* Page 3 =====================*/
 
-.project-attributes {
-    margin: 10px 0;
-}
-
 .budget-column .month {
     font-size: 16px;
 }
@@ -373,6 +384,7 @@ button.go {
 }
 
 .chart-div-large {
+    background: url("../img/chart_div.png") no-repeat;
     line-height: 85px;
     margin: 0 15px 15px;
     text-align: center;
@@ -536,11 +548,12 @@ ul.chart-div-legend li:nth-child(3) {
 /* Footer =====================*/
 
 #kf_footer {
-    border-top: 1px solid #c7c7c7;
+    margin-top: 30px;
 }
 
 .footer {
-    margin-top: 20px;
+    border-top: 1px solid #c7c7c7;
+    padding-top: 20px;
     text-align: center;
 }
 
@@ -559,8 +572,6 @@ ul.chart-div-legend li:nth-child(3) {
 .footer li:last-child {
     border-right: none;
 }
-
-
 
 /* bitfund.core.views.login */
 
