@@ -15,11 +15,13 @@ from django.core.mail import send_mail
 from bitfund.core.models import *
 from bitfund.core.forms import *
 from bitfund.project.forms import *
-from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN
+from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN
 
 
 def index(request):
-    template_data = {'request': request,}
+    template_data = {'request': request,
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
 
     template_data['new_projects_list'] = (Project.objects
                                           .filter(is_public=True)

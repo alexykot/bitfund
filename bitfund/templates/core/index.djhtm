@@ -48,7 +48,8 @@
                             <img class="media-object pull-left" />
                             <div class="media-body">
                                 <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>5 min</div>
+                                <div>{{ site_currency_sign }}158158.15</div>
+                                <div>15%</div>
                             </div>
                         </div>
                     </a>
@@ -64,7 +65,7 @@
                             <img class="media-object pull-left" />
                             <div class="media-body">
                                 <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>5 min</div>
+                                <div>157 links</div>
                             </div>
                         </div>
                     </a>
@@ -80,7 +81,7 @@
                             <img class="media-object pull-left" />
                             <div class="media-body">
                                 <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>5 min</div>
+                                <div>{{ site_currency_sign }}158.25</div>
                             </div>
                         </div>
                     </a>
