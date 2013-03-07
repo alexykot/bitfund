@@ -1,9 +1,13 @@
+from django.db.models.aggregates import Count
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.db import connection
 from django.template import Template, Context
 from django.conf import settings
 
 from bitfund.core.settings.project import PROTOTYPE_LANDING_PAGE_URL, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE, API_USER_TOKEN_PARAM_NAME
+from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES
+from bitfund.project.lists import PROJECT_STATUS_CHOICES
+from bitfund.project.models import Project
 
 
 class HiddenEntranceMiddleware(object):
@@ -17,8 +21,29 @@ class HiddenEntranceMiddleware(object):
             return None;
         else : 
             return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
-        
-        
+
+class UserProjectsCountMiddleware(object):
+    def process_request(self, request):
+        if request.user.is_authenticated():
+            request.user_projects_support_count = (DonationTransaction.objects
+                                                   .filter(pledger_user__id=request.user.id)
+                                                   .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
+                                                   .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                                                   .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                                   .values('accepting_project_key')
+                                                   .distinct()
+                                                   .count()
+                                                    ) or 0
+            request.user_projects_own_count = (Project.objects
+                                               .filter(maintainer__id=request.user.id)
+                                               .filter(is_public=True)
+                                               .exclude(status=PROJECT_STATUS_CHOICES.unclaimed)
+                                               .aggregate(Count('key'))['key__count']
+                                              ) or 0
+
+        return None;
+
+
 class SaveUserTokenMiddleware(object):
     def process_request(self, request):
         if API_USER_TOKEN_PARAM_NAME in request.GET :

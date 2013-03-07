@@ -10,23 +10,23 @@
         function toggleOnetimeMonthly(setMonthly, needId) {
             $("ul#need-monthly-options-" + needId).toggle(setMonthly);
             $("ul#need-onetime-options-" + needId).toggle(!setMonthly);
-            $("a#need-monthly-switch-" + needId).toggleClass('kf_need_switch_selected', setMonthly);
-            $("a#need-onetime-switch-" + needId).toggleClass('kf_need_switch_selected', !setMonthly);
+            $("a#need-monthly-switch-" + needId).toggleClass('active', setMonthly);
+            $("a#need-onetime-switch-" + needId).toggleClass('active', !setMonthly);
             $("input#id_need-"+needId+"-pledge_type").attr('value', setMonthly ? 'monthly' : 'onetime');
         }
 
         function toggleMore(showMore, needId) {
-            $("form#form-pledge-need-" + needId + ' .kf_need_pledge_amount_field').toggle(showMore);
-            $("form#form-pledge-need-" + needId + ' .kf_amount_buttons_sets').toggle(!showMore);
-            $("form#form-pledge-need-" + needId + ' .kf_link_need_more').toggle(!showMore);
-            $("form#form-pledge-need-" + needId + ' .kf_link_need_less').toggle(showMore);
+            $("form#form-pledge-need-" + needId + ' #need-pledge-amount-field-' + needId).toggle(showMore);
+            $("form#form-pledge-need-" + needId + ' #need-options-button-sets-' + needId).toggle(!showMore);
+            $("form#form-pledge-need-" + needId + ' #link-need-more-' + needId).toggle(!showMore);
+            $("form#form-pledge-need-" + needId + ' #link-need-less-' + needId).toggle(showMore);
         }
 
         function selectAmount(amount, needId) {
-            $("form#form-pledge-need-" + needId).find('.kf_amount_buttons button.need_pledge_amount_option').each(function () {
-                $(this).removeClass('kf_selected');
+            $('#need-options-button-sets-'+needId+' button').each(function(){
+                $(this).removeClass('active');
                 if (amount == $(this).data('amount')) {
-                    $(this).addClass('kf_selected');
+                    $(this).addClass('active');
                 }
             });
 

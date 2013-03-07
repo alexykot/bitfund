@@ -21,7 +21,6 @@
                            class="project_crud">cancel</a>
                     </div>
                 </li>
-
             {% else %}
                 <li>
                     <div class="project">
