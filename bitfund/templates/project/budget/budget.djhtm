@@ -127,13 +127,7 @@
 <div class="project-goals">
     <div class="row-fluid project-attributes">
         <div class="span9">
-            <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">
-                {% if logo %}
-                    <img src="{{ logo.url }}" />
-                {% elif project.logo %}
-                <img src="{{ project.logo.url }}" />
-                {% endif %}
-            </a>
+            <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">{% if logo %}<img src="{{ logo.url }}" />{% elif project.logo %}<img src="{{ project.logo.url }}" />{% endif %}</a>
             <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
         </div>
         <div class="span3 kf_project_meta">

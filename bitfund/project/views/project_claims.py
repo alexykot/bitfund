@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.utils.timezone import now
 
@@ -8,7 +8,9 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            RGBCOLOR_DONUT_CHART_PLEDGES,
                                            RGBCOLOR_DONUT_CHART_REDONATIONS,
                                            )
+from bitfund.pledger.models import DonationSubscription
 from bitfund.project.decorators import disallow_not_public_unless_maintainer, redirect_active
+from bitfund.project.forms import PledgeNoBudgetProjectForm
 from bitfund.project.models import *
 from bitfund.project.template_helpers import _prepare_project_budget_template_data
 
@@ -26,8 +28,42 @@ def unclaimed(request, project_key):
                      'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
                      'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
                      }
+
     #BUDGET, pledges, redonations, other sources, donut charts radiants
     template_data['budget'] = _prepare_project_budget_template_data(request, project)
+
+    if request.method == 'POST' :
+        if not request.user.is_authenticated() :
+            redirect('bitfund.project.views.unclaimed', project_key=project.key)
+
+        template_data['pledge_form'] = PledgeNoBudgetProjectForm(request.POST)
+        if template_data['pledge_form'].is_valid() :
+            pledge_subscription = (DonationSubscription.objects
+                                   .filter(user__id=request.user.id)
+                                   .filter(project__id=project.id))
+            if pledge_subscription.count() == 1 :
+                pledge_subscription = pledge_subscription[0]
+            else :
+                pledge_subscription = DonationSubscription()
+                pledge_subscription.user = request.user
+                pledge_subscription.project = project
+
+            pledge_subscription.amount = template_data['pledge_form'].cleaned_data['pledge_amount']
+            pledge_subscription.save()
+
+            redirect('bitfund.project.views.unclaimed', project_key=project.key)
+        else :
+
+            return render_to_response('project/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
+
+
+    else :
+        template_data['pledge_form'] = PledgeNoBudgetProjectForm()
+        pledge_subscription = (DonationSubscription.objects
+                               .filter(user__id=request.user.id)
+                               .filter(project__id=project.id))
+        if pledge_subscription.count() == 1 :
+            template_data['pledge_subscription'] = pledge_subscription[0]
 
     return render_to_response('project/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
 

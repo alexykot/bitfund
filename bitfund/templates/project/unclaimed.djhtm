@@ -4,31 +4,28 @@
 
 {% block pagescripts %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-
-        var defaultOnetimeMonthlyPosition = 'monthly';
-
-        function toggleMore(showMore) {
-            $('form#form-pledge #pledge-amount-field').toggle(showMore);
-            $('form#form-pledge #options-button-sets').toggle(!showMore);
-            $('form#form-pledge #link-need-more').toggle(!showMore);
-            $('form#form-pledge #link-need-less').toggle(showMore);
-        }
-
-        function selectAmount(amount, needId) {
-            $("form#form-pledge-need-" + needId).find('.kf_amount_buttons button.need_pledge_amount_option').each(function () {
-                $(this).removeClass('kf_selected');
-                if (amount == $(this).data('amount')) {
-                    $(this).addClass('kf_selected');
-                }
-            });
-
-            $('#id_need-'+needId+'-pledge_amount').val(amount);
-        }
-
         var backgroundColor = '{{ chartBackgroundColor }}';
         var otherColor = '{{ chartOtherColor }}';
         var redonationsColor = '{{ chartRedonationsColor }}';
         var pledgesColor = '{{ chartPledgesColor }}';
+
+        function toggleMore(showMore) {
+            $('form#form-pledge #pledge-amount-field').toggle(showMore);
+            $('form#form-pledge #options-button-sets').toggle(!showMore);
+            $('form#form-pledge #link-more').toggle(!showMore);
+            $('form#form-pledge #link-less').toggle(showMore);
+        }
+
+        function selectAmount(amount) {
+            $('#options-button-sets button').each(function(){
+                $(this).removeClass('active');
+                if (amount == $(this).data('amount')) {
+                    $(this).addClass('active');
+                }
+            });
+
+            $('#id_pledge_amount').val(amount);
+        }
 
         $(document).ready(function () {
 
@@ -76,7 +73,43 @@
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
 
+            toggleMore(false);
+            {% if pledge_subscription %}
+                selectAmount({{ pledge_subscription.amount }});
+            {% endif %}
 
+            $('#options-button-sets button').click(function(event){
+                event.preventDefault();
+                selectAmount($(this).data('amount'));
+            });
+
+            $('li#pledge-amount-field input').keyup(function(){
+                selectAmount($(this).attr('value'));
+            });
+
+            $("#link-more, #link-less").click(function(event){
+                event.preventDefault();
+                toggleMore($(this).attr('id')=='link-more');
+            });
+
+            if (!user.is_authenticated) {
+                $("form#form-pledge button").click(function (event) {
+                    event.preventDefault();
+
+                    $('#login-links').fadeOut();
+                    $('#login-links').fadeIn();
+                    $('#login-links').fadeOut();
+                    $('#login-links').fadeIn();
+                });
+
+                $("form#form-pledge").submit(function(event){
+                    event.preventDefault();
+                    $('#login-links').fadeOut();
+                    $('#login-links').fadeIn();
+                    $('#login-links').fadeOut();
+                    $('#login-links').fadeIn();
+                });
+            }
         });
     </script>
 {% endblock pagescripts %}
@@ -147,49 +180,51 @@
 
                 <div class="goal">
                     <div class="row-fluid">
-                        <div class="span9">
+                        <div class="span10">
                             {{ project.title }} is unclaimed and has no specific budget, but you can still
                             <a href="{% url bitfund.project.views.budget project_key=project.key %}#support-generally"
                                id="support-generally">support it</a>
                         </div>
                     </div>
 
-                    <form action="{% url bitfund.project.views.unclaimed project_key=project.key%}"
+                    <form action="{% url bitfund.project.views.unclaimed project_key=project.key%}" id="form-pledge" method="post">
                     <div class="row-fluid need-pledge-controls">
                         <div class="span3">
                             pledge monthly
                         </div>
+                        {% csrf_token %}
+                        {{ pledge_form.non_field_errors }}
 
                         <div class="span5" id="options-button-sets">
                             <ul class="amount-buttons">
                                 <li>{{ site_currency_sign }}</li>
-                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-monthly-0.25"
+                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-0.25"
                                             data-amount="0.25">0,25</button></li>
-                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-monthly-0.5"
+                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-0.5"
                                             data-amount="0.5">0,5</button></li>
-                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-monthly-1"
+                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-1"
                                             data-amount="1">1</button></li>
-                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-monthly-2"
+                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-2"
                                             data-amount="2">2</button></li>
-                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-monthly-5"
+                                <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-5"
                                             data-amount="5">5</button></li>
                             </ul>
                         </div>
                         <div class="span1"><ul>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-monthly-more"
-                                   id="link-need-more">more</a></li>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
+                                   id="link-more">more</a></li>
                             <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                                   id="link-need-less">less</a></li>
+                                   id="link-less">less</a></li>
                             <li id="pledge-amount-field">
-                                {{ need.pledge_form.pledge_amount.errors }}
-                                {{ need.pledge_form.pledge_amount }}
+                                {{ pledge_form.pledge_amount.errors }}
+                                {{ pledge_form.pledge_amount }}
                             </li>
                         </ul></div>
                         <div class="span3">
-{#                            <button type="submit" value="Pledge now" data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="pledge-button orange-shadow">Pledge now</button>#}
+                            <input class="pledge-button orange-shadow" value="Pledge" type="submit" />
                         </div>
 
-                        {% if need.pledge_subscription %}
+                        {% if pledge_subscription %}
                             <div class="row-fluid">
                                 <div class="span8">
                                     <ul>
@@ -210,12 +245,12 @@
                     </form>
 
                     <div class="row-fluid">
-                        <div class="span8">
+                        <div class="span10">
                             No funds will be actually transferred until the project will be claimed.
                         </div>
                     </div>
                     <div class="row-fluid">
-                        <div class="span8">
+                        <div class="span10">
                             Is this your project? <a href="{% url bitfund.project.views.claim project_key=project.key %}">Claim it!</a>
                         </div>
                     </div>
@@ -228,116 +263,6 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            toggleMore(false);
-            {% if need.pledge_subscription %}
-                selectAmount({{ need.pledge_subscription.amount }});
-            {% elif need.last_pledge_transaction %}
-                selectAmount({{ need.last_pledge_transaction.transaction_amount }});
-            {% endif %}
-
-            $('#options-button-sets button').click(function(event){
-                event.preventDefault();
-                selectAmount($(this).data('amount'));
-            });
-
-            $('li#pledge-amount-field input').keyup(function(){
-                selectAmount($(this).attr('value'));
-            });
-
-            $("#link-need-more, #link-need-less").click(function(event){
-                event.preventDefault();
-                toggleMore($(this).attr('id')=='link-need-more');
-            });
-
-            if (user.is_authenticated && !{{ need.user_is_project_maintainer|lower }} ) {
-                $("form#form-pledge-need-{{ need.id }} input[type=submit]").click(function(event){
-                    $('form#form-pledge-need-{{ need.id }}').attr('action', $(this).data('action'));
-                });
-
-                $("form#form-pledge-need-{{ need.id }}").submit(function(event){
-                    event.preventDefault();
-                    $('#form-container-need-item-' + $(this).data('need_id')).load($(this).attr('action'), $(this).serializeObject());
-                });
-
-            } else if ({{ need.user_is_project_maintainer|lower }}) {
-                $('#form-pledge button, #form-pledge-need input').attr('disabled', 'disabled');
-                $('#form-pledge button, #form-pledge-need input').attr('title', 'You cannot pledge your own project.');
-                $('#form-pledge button, #form-pledge-need input').attr('alt', 'You cannot pledge your own project.');
-            } else {
-                $("form#form-pledge button").click(function () {
-                    $('#login-links').fadeOut();
-                    $('#login-links').fadeIn();
-                    $('#login-links').fadeOut();
-                    $('#login-links').fadeIn();
-                });
-
-                $("form#form-pledge").submit(function(event){
-                    event.preventDefault();
-                    $('#login-links').fadeOut();
-                    $('#login-links').fadeIn();
-                    $('#login-links').fadeOut();
-                    $('#login-links').fadeIn();
-                });
-            }
-
-
-            {% if request.is_ajax %}
-
-                window.backgroundDonut.destroy();
-                window.otherDonut.destroy();
-                window.redonationsDonut.destroy();
-                window.pledgesDonut.destroy();
-
-                window.need{{need.id}}BackgroundDonut.destroy();
-                window.need{{need.id}}OtherDonut.destroy();
-                window.need{{need.id}}DonationsSumDonut.destroy();
-
-
-                var pledgesRadiant = {{ budget.pledges_radiant }};
-                var redonationsRadiant = {{ budget.redonations_radiant }};
-                var otherRadiant = {{ budget.other_sources_radiant }};
-
-                var backgroundSeries = [
-                    ['a', 100],
-                    ['b', 100]
-                ];
-                window.backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 94, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-                var otherSeries = [
-                    ['c', (otherRadiant + redonationsRadiant + pledgesRadiant)],
-                    ['d', (360 - (otherRadiant + redonationsRadiant + pledgesRadiant))]
-                ];
-                window.otherDonut = $.jqplot('chartdiv', [otherSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 8, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 98, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-                var redonationsSeries = [
-                    ['c', (redonationsRadiant + pledgesRadiant)],
-                    ['d', (360 - (redonationsRadiant + pledgesRadiant))]
-                ];
-                window.redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+redonationsColor, "rgba(0,0,0,0)"],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 14, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 105, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-                var pledgesSeries = [
-                    ['a', (pledgesRadiant)],
-                    ['b', 360 - pledgesRadiant]
-                ];
-                window.pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-            {% endif %}
         });
     </script>
 

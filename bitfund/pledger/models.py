@@ -283,14 +283,15 @@ class DonationCartGoals(models.Model):
 class DonationSubscription(models.Model):
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
-    datetime_last_sent = models.DateTimeField('last sent', null=True)
+    datetime_added = models.DateTimeField('date added', default=now())
     active = models.BooleanField(default=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     needs = models.ManyToManyField(ProjectNeed, through='DonationSubscriptionNeeds')
 
 class DonationSubscriptionNeeds(models.Model):
     donation_subscription = models.ForeignKey(DonationSubscription)
     need = models.ForeignKey(ProjectNeed)
-    amount = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     def cancelPendingTransactions(self):
         subscription_pending_transactions_list = (DonationTransaction.objects
