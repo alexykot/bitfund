@@ -87,6 +87,14 @@
                 selectAmount($(this).attr('value'));
             });
 
+            $('#button-drop-pledge').click(function(event){
+                event.preventDefault()
+                selectAmount(0);
+                $("form#form-pledge").submit();
+            });
+
+
+
             $("#link-more, #link-less").click(function(event){
                 event.preventDefault();
                 toggleMore($(this).attr('id')=='link-more');
@@ -189,8 +197,9 @@
 
                     <form action="{% url bitfund.project.views.unclaimed project_key=project.key%}" id="form-pledge" method="post">
                     <div class="row-fluid need-pledge-controls">
+
                         <div class="span3">
-                            pledge monthly
+                            {% if pledge_subscription %}pledging monthly{% else %}pledge monthly{% endif %}
                         </div>
                         {% csrf_token %}
                         {{ pledge_form.non_field_errors }}
@@ -221,18 +230,17 @@
                             </li>
                         </ul></div>
                         <div class="span3">
-                            <input class="pledge-button orange-shadow" value="Pledge" type="submit" />
+                            {% if pledge_subscription %}
+                                <input class="pledge-button orange-shadow" type="submit" value="Update pledge"/>
+                            {% else %}
+                                <input class="pledge-button orange-shadow" type="submit" value="Pledge"/>
+                            {% endif %}
                         </div>
-
                         {% if pledge_subscription %}
-                            <div class="row-fluid">
-                                <div class="span8">
-                                    <ul>
-                                        <li>already pledging monthly</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        {% elif not request.user.is_authenticated %}
+                            <input class="pledge-button orange-shadow" type="submit" value="withdraw pledge" id="button-drop-pledge" />
+                        {% endif %}
+
+                        {% if not request.user.is_authenticated %}
                             <div class="span8" id="login-links">
                                 login with
                                 <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">twitter</a>,

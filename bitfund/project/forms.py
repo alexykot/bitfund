@@ -203,4 +203,4 @@ class PledgeProjectNeedForm(forms.Form):
     pledge_amount = forms.DecimalField(min_value=0.01, decimal_places=4, required=True)
 
 class PledgeNoBudgetProjectForm(forms.Form):
-    pledge_amount = forms.DecimalField(min_value=0.01, decimal_places=8, required=True)
+    pledge_amount = forms.DecimalField(decimal_places=8, required=True)

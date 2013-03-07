@@ -40,7 +40,7 @@ MIDDLEWARE_CLASSES = (
     #'bitfund.core.middleware.HiddenEntranceMiddleware',
     'bitfund.core.middleware.UserProjectsCountMiddleware',
     'bitfund.core.middleware.SaveUserTokenMiddleware',
-    'bitfund.core.middleware.SQLLogToConsoleMiddleware',
+#    'bitfund.core.middleware.SQLLogToConsoleMiddleware',
 
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',

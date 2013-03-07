@@ -38,25 +38,30 @@ def unclaimed(request, project_key):
 
         template_data['pledge_form'] = PledgeNoBudgetProjectForm(request.POST)
         if template_data['pledge_form'].is_valid() :
-            pledge_subscription = (DonationSubscription.objects
-                                   .filter(user__id=request.user.id)
-                                   .filter(project__id=project.id))
-            if pledge_subscription.count() == 1 :
-                pledge_subscription = pledge_subscription[0]
+            if template_data['pledge_form'].cleaned_data['pledge_amount'] > 0 :
+                pledge_subscription = (DonationSubscription.objects
+                                       .filter(user__id=request.user.id)
+                                       .filter(project__id=project.id))
+                if pledge_subscription.count() == 1 :
+                    pledge_subscription = pledge_subscription[0]
+                else :
+                    pledge_subscription = DonationSubscription()
+                    pledge_subscription.user = request.user
+                    pledge_subscription.project = project
+
+                pledge_subscription.amount = template_data['pledge_form'].cleaned_data['pledge_amount']
+                pledge_subscription.save()
             else :
-                pledge_subscription = DonationSubscription()
-                pledge_subscription.user = request.user
-                pledge_subscription.project = project
+                pledge_subscription = (DonationSubscription.objects
+                                       .filter(user__id=request.user.id)
+                                       .filter(project__id=project.id))
+                if pledge_subscription.count() == 1 :
+                    pledge_subscription[0].delete()
 
-            pledge_subscription.amount = template_data['pledge_form'].cleaned_data['pledge_amount']
-            pledge_subscription.save()
-
-            redirect('bitfund.project.views.unclaimed', project_key=project.key)
+            return redirect('bitfund.project.views.unclaimed', project_key=project.key)
         else :
 
             return render_to_response('project/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
-
-
     else :
         template_data['pledge_form'] = PledgeNoBudgetProjectForm()
         pledge_subscription = (DonationSubscription.objects
