@@ -131,10 +131,10 @@
                 {% if logo %}
                     <img src="{{ logo.url }}" />
                 {% elif project.logo %}
-                <img src="{{ project.logo.url }}" width="62" height="62" />
+                <img src="{{ project.logo.url }}" />
                 {% endif %}
-                <span>{{ project.title }}</span>
             </a>
+            <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
         </div>
         <div class="span3 kf_project_meta">
             {% if project_edit_access %}
