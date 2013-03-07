@@ -76,7 +76,7 @@
                             data-amount="25">25</button></li>
                     </ul>
                     <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
-                        <li>$</li>
+                        <li>{{ site_currency_sign }}</li>
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
                             data-amount="0.25">0,25</button></li>
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
