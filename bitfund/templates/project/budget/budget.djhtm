@@ -269,7 +269,8 @@
                 {% endfor %}
             </div>
         </div>  
-    {% endif %}                  
+    {% endif %}  
+                    
 
 </div>
 
