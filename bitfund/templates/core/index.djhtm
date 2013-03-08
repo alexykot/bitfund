@@ -5,10 +5,10 @@
 
 
 {% if request.user.is_authenticated and not user_is_stranger %}
-<h2><a href="{% url bitfund.project.views.create %}">create new project</a></h2>
+{#<h2><a href="{% url bitfund.project.views.create %}">create new project</a></h2>#}
 {% endif %}
 <div class="banner centered">
-    <h1>Fostering the open</h1>
+    <h1>Fostering open world</h1>
     <h2>Monthly pledges for the open projects</h2>
     <a tupe="button" class="about">About</a>
 </div>

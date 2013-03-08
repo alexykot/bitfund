@@ -37,7 +37,8 @@ MIDDLEWARE_CLASSES = (
     # installed middleware
 
     #project custom middleware
-    'bitfund.core.middleware.HiddenEntranceMiddleware',
+    #'bitfund.core.middleware.HiddenEntranceMiddleware',
+    'bitfund.core.middleware.UserProjectsCountMiddleware',
     'bitfund.core.middleware.SaveUserTokenMiddleware',
 #    'bitfund.core.middleware.SQLLogToConsoleMiddleware',
 

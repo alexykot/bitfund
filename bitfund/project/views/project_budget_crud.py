@@ -357,7 +357,7 @@ def crud_linked_project(request, project_key, linked_project_key=None, action=No
 
     template_data['crud_linked_project_action'] = action
 
-    return render_to_response('project/linked_projects/i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('project/linked_projects/ajax-i_depend_on_projects_list.djhtm', template_data, context_instance=RequestContext(request))
 
 
 @ajax_required

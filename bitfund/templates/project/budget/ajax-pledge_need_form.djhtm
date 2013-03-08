@@ -9,7 +9,7 @@
                 <ul>
                     <li>pledging monthly</li>
                 </ul>
-                <div class="span5">
+                <div class="span5" id="need-options-button-sets-{{ need.id }}">
                     <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                         <li>{{ site_currency_sign }}</li>
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
@@ -26,10 +26,10 @@
                 </div>
                 <ul>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
-                           class="kf_link_need_more">more</a></li>
+                           id="link-need-more-{{ need.id }}">more</a></li>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                           class="kf_link_need_less">less</a></li>
-                    <li class="kf_need_pledge_amount_field">
+                           id="link-need-less-{{ need.id }}">less</a></li>
+                    <li id="need-pledge-amount-field-{{ need.id }}">
                         {{ need.pledge_form.pledge_amount.errors }}
                         {{ need.pledge_form.pledge_amount }}
                     </li>
@@ -61,7 +61,7 @@
                    </ul>
                 </div>
 
-                <div class="span5">
+                <div class="span5" id="need-options-button-sets-{{ need.id }}">
                     <ul class="amount-buttons" id="need-onetime-options-{{ need.id }}">
                         <li>{{ site_currency_sign }}</li>
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-2"
@@ -74,9 +74,9 @@
                             data-amount="15">15</button></li>
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-25"
                             data-amount="25">25</button></li>
-                    </ul> 
+                    </ul>
                     <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
-                        <li>$</li>
+                        <li>{{ site_currency_sign }}</li>
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
                             data-amount="0.25">0,25</button></li>
                         <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
@@ -91,10 +91,10 @@
                 </div>
                 <div class="span1"><ul>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
-                           class="kf_link_need_more">more</a></li>
+                           id="link-need-more-{{ need.id }}">more</a></li>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                           class="kf_link_need_less">less</a></li>
-                    <li class="kf_need_pledge_amount_field">
+                           id="link-need-less-{{ need.id }}">less</a></li>
+                    <li id="need-pledge-amount-field-{{ need.id }}">
                         {{ need.pledge_form.pledge_amount.errors }}
                         {{ need.pledge_form.pledge_amount }}
                     </li>
@@ -147,12 +147,16 @@
         {% endif %}
         $('#pledge-form-contents-{{ need.id }}').toggle(true);
 
-        $('#need-monthly-options-{{ need.id }} button').click(function(event){
+
+        $('#need-options-button-sets-{{ need.id }} button').click(function(event){
             event.preventDefault();
-            $('#need-monthly-options-{{ need.id }} button').removeClass('kf_selected');
-            $(this).addClass('kf_selected');
+            selectAmount($(this).data('amount'), {{ need.id }});
+            /*
+            $('#need-monthly-options-{{ need.id }} button').removeClass('active');
+            $(this).addClass('active');
 
             $('li#need-pledge-amount-field-{{ need.id }} input').attr('value', $(this).attr('data-amount'));
+            */
         });
 
         $('li#need-pledge-amount-field-{{ need.id }} input').keyup(function(){
@@ -268,7 +272,7 @@
         });
 
     {% endif %}
-
+/*
         var need{{need.id}}DonationsSumRadiant = {{need.donations_sum_radiant}};
         var need{{need.id}}OtherRadiant = {{need.other_sources_radiant}};
 
@@ -298,6 +302,6 @@
             seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
             seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
         });
-
+*/
     });
 </script>
