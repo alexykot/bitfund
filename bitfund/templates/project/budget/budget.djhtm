@@ -127,14 +127,14 @@
 <div class="project-goals">
     <div class="row-fluid project-attributes">
         <div class="span9">
-            <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">
-                {% if logo %}
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                {% comment %} {% if logo %} 
                     <img src="{{ logo.url }}" />
-                {% elif project.logo %}
-                <img src="{{ project.logo.url }}" />
-                {% endif %}
+                {% elif project.logo %} {% endcomment %}
+                 <img src="{% comment %} {{ project.logo.url }} {% endcomment %} {{ STATIC_URL }}img/project_img.png" />
+                {% comment %} {% endif %} {% endcomment %}
             </a>
-            <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
         </div>
         <div class="span3 kf_project_meta">
             {% if project_edit_access %}
@@ -238,7 +238,7 @@
     </div>
     <div class="grateful">
         <h4>Totally pledging: <b>$30</b> for 2 needs</h4>
-        <span>I'm not ready to pledge to {{ project.title }} right now, but <a href"#" class="gray-shadow">I'm grateful!</a></span>
+        <span>I'm not ready to pledge to {{ project.title }} right now, but <a href"#" class="button gray">I'm grateful!</a></span>
     </div>
 
 
@@ -250,7 +250,7 @@
                 {% for goal in project_goals %}
                     <div class="span4">
                         {% if goal.image %}
-                                <img src="{{ goal.image.url }}"/>
+                            <img src="{{ goal.image.url }}"/>
                         {% endif %}
                         <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"">{{ goal.title }}"></a></h4>
                         <p>{{ goal.brief }}</p>
