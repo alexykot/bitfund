@@ -10,25 +10,38 @@ body {
     background: url("../img/kf_background.png") repeat-x;
     background-color: #fff;
     font-family: Tahoma, sans-serif;
+    position: relative;
 }
 
-html, body , #kf_header-n-content {
+html, body {
     height:100%;
+    min-height: 100%
 }
 
 #kf_header-n-content {
-    width: 980px;
+    width: 940px;
     min-height: 100%;
     height: auto !important;
-    margin: 0 auto -40px;
+    margin: 0 auto;
 }
 
 #kf_content {
-    margin: 30px 0;
+    margin-bottom: 30px;
+}
+
+#kf_push_footer {
+    height: 45px;
 }
 
 #kf_footer, #kf_push_footer {
-    margin: auto;
+    margin: 0 auto;
+}
+
+#kf_footer {
+    border-top: 1px solid #c7c7c7;
+    height: 44px;
+    margin-top: -45px;
+    width: 100%;
 }
 
 /* general */
@@ -57,7 +70,8 @@ ul {
     list-style-type: none;
 }
 
-button, input[type="text"] {
+button, input[type="text"], .button {
+    border: none;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -66,7 +80,60 @@ button, input[type="text"] {
     box-shadow: none;
 }
 
-button:disabled {
+.button {
+    webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 10px;
+    text-align: center;
+}
+
+.button:hover {
+    text-decoration: none;
+}
+
+.gray {
+    background-color: #fff;
+    -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
+    box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
+    min-width: 100px;
+}
+
+.orange {
+    background-color: #fff;
+    -webkit-box-shadow: 0px 0px 5px rgba(240, 103, 5, 0.5);
+    -moz-box-shadow:    0px 0px 5px rgba(240, 103, 5, 0.5);
+    box-shadow:         0px 0px 5px rgba(240, 103, 5, 0.5);
+    color: rgb(240, 103, 5);
+    min-width: 100px;
+}
+
+.gray:hover {
+    -webkit-box-shadow: 0px 0px 8px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow:    0px 0px 8px rgba(50, 50, 50, 0.5);
+    box-shadow:         0px 0px 8px rgba(50, 50, 50, 0.5);
+}
+
+.orange:hover, .orange:active {
+    -webkit-box-shadow: 0px 0px 8px rgba(240, 103, 5, 1);
+    -moz-box-shadow:    0px 0px 8px rgba(240, 103, 5, 1);
+    box-shadow:         0px 0px 8px rgba(240, 103, 5, 1);
+}
+
+.orange:active {
+    background-color: rgb(240, 103, 5);
+    border: none;
+    color: #fff;
+}
+
+
+.button[disabled], .button[disabled]:hover, .button[disabled]:active {
     background-color: #fff;
     border: 1px solid #ccc;
     -webkit-box-shadow: none;
@@ -75,12 +142,8 @@ button:disabled {
     color: #ccc;
     cursor: default;
 }
-/* Header =====================*/
 
-#kf_header-n-content {
-    margin: 0 auto;
-    width: 940px;
-}
+/* Header =====================*/
 
 .logo {
     padding-top: 15px;
@@ -126,39 +189,6 @@ button:disabled {
 /* Page 1 - Available projects */
 .centered {
     text-align: center;
-}
-
-.gray-shadow {
-    background-color: #fff;
-    -webkit-box-shadow: 0px 0px 3px rgba(50, 50, 50, 0.5);
-    -moz-box-shadow:    0px 0px 3px rgba(50, 50, 50, 0.5);
-    box-shadow:         0px 0px 3px rgba(50, 50, 50, 0.5);
-}
-
-.orange-shadow {
-    background-color: #fff;
-    -webkit-box-shadow: 0px 0px 5px rgba(240, 103, 5, 0.5);
-    -moz-box-shadow:    0px 0px 5px rgba(240, 103, 5, 0.5);
-    box-shadow:         0px 0px 5px rgba(240, 103, 5, 0.5);
-    color: rgb(240, 103, 5);
-}
-
-button.gray-shadow:hover, a.gray-shadow:hover {
-    -webkit-box-shadow: 0px 0px 8px rgba(50, 50, 50, 0.5);
-    -moz-box-shadow:    0px 0px 8px rgba(50, 50, 50, 0.5);
-    box-shadow:         0px 0px 8px rgba(50, 50, 50, 0.5);
-}
-
-button.orange-shadow:not([disabled="disabled"]):hover, button.orange-shadow:not([disabled="disabled"]):active {
-    -webkit-box-shadow: 0px 0px 8px rgba(240, 103, 5, 1);
-    -moz-box-shadow:    0px 0px 8px rgba(240, 103, 5, 1);
-    box-shadow:         0px 0px 8px rgba(240, 103, 5, 1);
-}
-
-button.orange-shadow:not([disabled="disabled"]):active {
-    background-color: rgb(240, 103, 5);
-    border: none;
-    color: #fff;
 }
 
 .banner {
@@ -284,17 +314,16 @@ button.go {
 }
 /* Page 2 - Dependent projects */
 
-.dependent-projects a.project-logo img, .project-goals a.project-logo img {
+.dependent-projects .project-attributes a:first-child, .project-goals .project-attributes a:first-child {
     height: 62px;
     width: 62px;
 }
 
-.dependent-projects a.project-logo:hover img, .project-goals a.project-logo:hover img {
-    border-bottom: none;
+.dependent-projects .project-attributes a:first-child:hover, .project-goals .project-attributes a:first-child:hover {
+    text-decoration: none;
 }
 
-.dependent-projects a.project-logo, .project-goals a.project-logo {
-    color: #3d3d3d;
+.dependent-projects .project-attributes a:last-child, .project-goals .project-attributes a:last-child {
     font-size: 30px;
     margin-left:10px;
     vertical-align: middle;
@@ -311,6 +340,7 @@ button.go {
 }
 
 .dependent-projects .project {
+    border-bottom: 1px solid #ccc;
     margin: 15px 15px 0;
 }
 
@@ -336,7 +366,6 @@ button.go {
 }
 
 .project .actions {
-    border-bottom: 1px solid #ccc;
     line-height: 10px;
     margin-left: 0;
     padding-top: 20px;
@@ -358,14 +387,9 @@ button.go {
     margin: 50px 0 200px;
 }
 
-.dependency a {
-    border: none;
-    margin-left: 10px;
-    padding: 8px;
-}
-
-.dependency a:hover {
-    border: none;
+.dependency .button {
+    color: rgb(240, 103, 5);
+    margin-right: 10px;
 }
 
 /* Page 3 =====================*/
@@ -395,8 +419,8 @@ button.go {
     background: url("../img/need_chart.png") no-repeat;
     display: inline-block;
     font-size: 12px;
-    line-height: 57px;
-    width: 57px;
+    line-height: 53px;
+    width: 53px;
     text-align: center;
 }
 
@@ -457,7 +481,7 @@ ul.chart-div-legend li:nth-child(3) {
 }
 
 .need-pledge-controls {
-    margin-bottom: 10px;
+    margin-bottom: 10px;.amount-buttons button:active, .amount-buttons button.active 
 }
 
 .need-pledge-controls ul {
@@ -481,12 +505,12 @@ ul.chart-div-legend li:nth-child(3) {
 }
 
 .need-pledge-controls a:hover {
-    border-bottom: none;
+    cursor: default;
+    text-decoration: none;
 }
 
-.pledge-button {
-    border: none;
-    padding: 8px 25px;
+.need-pledge-controls a:visited {
+    color: #577000;
 }
 
 .amount-buttons li, .need-pledge-controls ul li {
@@ -507,7 +531,13 @@ ul.chart-div-legend li:nth-child(3) {
     width: 35px;
 }
 
-.amount-buttons button:active, .amount-buttons button.active {
+.amount-buttons button:active, .amount-buttons button.active   {
+    -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
+    box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
+}
+
+.amount-buttons button:active {
     border: none;
     -webkit-box-shadow: 0px 0px 3px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 3px rgba(50, 50, 50, 0.5);
@@ -517,20 +547,13 @@ ul.chart-div-legend li:nth-child(3) {
 }
 
 .grateful {
-    margin: 20px 10px;
+    margin: 20px;
     text-align: right;
 }
 
-.grateful a {
-    border: none;
+.grateful .button {
     color: #000;
-    cursor: pointer;
     margin-left: 10px;
-    padding: 8px;
-}
-
-.grateful a:hover {
-    text-decoration: none;
 }
 
 .current-goals {
@@ -547,12 +570,7 @@ ul.chart-div-legend li:nth-child(3) {
 
 /* Footer =====================*/
 
-#kf_footer {
-    margin-top: 30px;
-}
-
 .footer {
-    border-top: 1px solid #c7c7c7;
     padding-top: 20px;
     text-align: center;
 }

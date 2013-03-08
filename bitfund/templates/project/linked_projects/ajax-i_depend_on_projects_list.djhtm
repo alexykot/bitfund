@@ -41,7 +41,7 @@
                                 <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}">edit</a></li>
                                 <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='drop' %}">drop</a></li>
                             </ul>
-                        {% endif %}   
+                        {% endif %}    
                     </div>
                 </li>
             {% endif %}
@@ -71,13 +71,13 @@
             You've decided not to set dependency to BitFund.
             <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='donate' %}"
                 class="project_link_bitfund">change mind</a>
-        {% else %}
+        {% else %} 
             <div class="dependency centered">
                 <h4>You're not dependent on BitFund.</h4>
-                <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='donate' %}" class="orange-shadow">Yes, set dependency</a>
-                <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='refuse' %}" class="gray-shadow">No, thanks</a>
+                <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='donate' %}" class="button gray">Yes, set dependency</a>
+                <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='refuse' %}" class="button gray">No, thanks</a>
             </div>
-        {% endif %}
+        {% endif %} 
     {% endif %}
 {% endif %}
 
