@@ -100,8 +100,8 @@
                     </li>
                 </ul></div>
                 <div class="span3">
-                    <button type="submit" value="Pledge now"
-                       data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Pledge now</button>
+                    <button type="submit" value="Pledge"
+                       data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Pledge</button>
                 </div>
             </div>
             {% if need.last_pledge_transaction %}

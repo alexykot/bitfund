@@ -481,7 +481,7 @@ ul.chart-div-legend li:nth-child(3) {
 }
 
 .need-pledge-controls {
-    margin-bottom: 10px;.amount-buttons button:active, .amount-buttons button.active 
+    margin-bottom: 10px;
 }
 
 .need-pledge-controls ul {
@@ -531,13 +531,7 @@ ul.chart-div-legend li:nth-child(3) {
     width: 35px;
 }
 
-.amount-buttons button:active, .amount-buttons button.active   {
-    -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
-    -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
-    box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
-}
-
-.amount-buttons button:active {
+.amount-buttons button:active, .amount-buttons button.active {
     border: none;
     -webkit-box-shadow: 0px 0px 3px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 3px rgba(50, 50, 50, 0.5);
