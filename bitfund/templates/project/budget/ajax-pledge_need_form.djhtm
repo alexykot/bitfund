@@ -24,7 +24,7 @@
                                data-amount="5">5</button></li>
                     </ul>
                 </div>
-                <ul>
+                <div class="span1"><ul>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                     <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
@@ -33,7 +33,7 @@
                         {{ need.pledge_form.pledge_amount.errors }}
                         {{ need.pledge_form.pledge_amount }}
                     </li>
-                </ul>
+                </ul></div>
                 <input type="submit" value="Update pledge"
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" />
                 {% if need.last_pledge_transaction %}
@@ -50,7 +50,7 @@
             </div>
         {% else %}
             <div class="row-fluid need-pledge-controls">
-                <div class="span3">
+                <div class="span4">
                     <ul>
                         <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime"
                        id="need-onetime-switch-{{ need.id }}" class="kf_need_onetime"
@@ -99,7 +99,7 @@
                         {{ need.pledge_form.pledge_amount }}
                     </li>
                 </ul></div>
-                <div class="span3">
+                <div class="span2">
                     <button type="submit" value="Pledge"
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Pledge</button>
                 </div>

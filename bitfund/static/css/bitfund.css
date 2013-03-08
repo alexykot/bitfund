@@ -70,7 +70,7 @@ ul {
     list-style-type: none;
 }
 
-button, input[type="text"], .button {
+button, .button {
     border: none;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
@@ -88,8 +88,7 @@ button, input[type="text"], .button {
     display: inline-block;
     font-size: 14px;
     height: 38px;
-    line-height: 38px;
-    padding: 0 10px;
+    padding: 8px 15px;
     text-align: center;
 }
 
@@ -102,7 +101,6 @@ button, input[type="text"], .button {
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
-    min-width: 100px;
 }
 
 .orange {
@@ -111,7 +109,6 @@ button, input[type="text"], .button {
     -moz-box-shadow:    0px 0px 5px rgba(240, 103, 5, 0.5);
     box-shadow:         0px 0px 5px rgba(240, 103, 5, 0.5);
     color: rgb(240, 103, 5);
-    min-width: 100px;
 }
 
 .gray:hover {
@@ -505,7 +502,6 @@ ul.chart-div-legend li:nth-child(3) {
 }
 
 .need-pledge-controls a:hover {
-    cursor: default;
     text-decoration: none;
 }
 
@@ -531,11 +527,14 @@ ul.chart-div-legend li:nth-child(3) {
     width: 35px;
 }
 
-.amount-buttons button:active, .amount-buttons button.active {
+.amount-buttons button:hover, .amount-buttons button:active, .amount-buttons button.active {
+    -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
+    box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
+}
+
+.amount-buttons button:active  {
     border: none;
-    -webkit-box-shadow: 0px 0px 3px rgba(50, 50, 50, 0.5);
-    -moz-box-shadow:    0px 0px 3px rgba(50, 50, 50, 0.5);
-    box-shadow:         0px 0px 3px rgba(50, 50, 50, 0.5);
     background-color: #577000;
     color: #fff;
 }
