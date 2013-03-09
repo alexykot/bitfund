@@ -1,0 +1,5 @@
+log in with
+<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">twitter</a>,
+<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">github</a>,
+<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">google</a> or
+<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">facebook</a>
