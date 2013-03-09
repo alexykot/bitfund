@@ -1,0 +1,266 @@
+<div class="row-fluid">
+    <div class="span10">
+        <h4>{{ project.title }} has no specific budget, but you can still support it</h4>
+    </div>
+</div>
+<form action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='pledge' %}"
+      id="form-pledge-empty-project" method="post">
+    {{ empty_project.pledge_form.pledge_type }}
+    {% csrf_token %}
+    {{ empty_project.pledge_form.non_field_errors }}
+    <div id="pledge-form-contents" style="display: none;">
+        {% if empty_project.pledge_subscription %}
+            <div class="row-fluid need_pledge_controls">
+                <ul>
+                    <li>pledging monthly</li>
+                </ul>
+                <div class="span5" id="options-button-sets">
+                    <ul class="amount-buttons" id="monthly-options">
+                        <li>{{ site_currency_sign }}</li>
+                        <li><button data-amount="0.25">0,25</button></li>
+                        <li><button data-amount="0.5">0,5</button></li>
+                        <li><button data-amount="1">1</button></li>
+                        <li><button data-amount="2">2</button></li>
+                        <li><button data-amount="5">5</button></li>
+                    </ul>
+                </div>
+                <div class="span1"><ul>
+                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
+                           id="link-more">more</a></li>
+                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
+                           id="link-less">less</a></li>
+                    <li id="pledge-amount-field">
+                        {{ empty_project.pledge_form.pledge_amount.errors }}
+                        {{ empty_project.pledge_form.pledge_amount }}
+                    </li>
+                </ul></div>
+                <input type="submit" value="Update pledge"
+                       data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='pledge' %}" />
+                {% if last_pledge_transaction %}
+                    <div class="row">
+                        You've last pledged this project with
+                        {{ site_currency_sign }}{{ empty_project.last_pledge_transaction.transaction_amount }}
+                        on {{ empty_project.last_pledge_transaction.transaction_datetime }}.
+                    </div>
+                {% endif %}
+                <div class="row">
+                    <input type="submit" value="Stop monthly pledging"
+                           data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='drop_subscription' %}" />
+                </div>
+            </div>
+        {% else %}
+            <div class="row-fluid need-pledge-controls">
+                <div class="span4">
+                    <ul>
+                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-onetime"
+                       id="onetime-switch">onetime</a></li>
+                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly"
+                       id="monthly-switch">monthly</a></li>
+                   </ul>
+                </div>
+
+                <div class="span5" id="options-button-sets">
+                    <ul class="amount-buttons" id="onetime-options">
+                        <li>{{ site_currency_sign }}</li>
+                        <li><button data-amount="2">2</button></li>
+                        <li><button data-amount="5">5</button></li>
+                        <li><button data-amount="10">10</button></li>
+                        <li><button data-amount="15">15</button></li>
+                        <li><button data-amount="25">25</button></li>
+                    </ul>
+                    <ul class="amount-buttons" id="monthly-options">
+                        <li>{{ site_currency_sign }}</li>
+                        <li><button data-amount="0.25">0,25</button></li>
+                        <li><button data-amount="0.5">0,5</button></li>
+                        <li><button data-amount="1">1</button></li>
+                        <li><button data-amount="2">2</button></li>
+                        <li><button data-amount="5">5</button></li>
+                    </ul> 
+                </div>
+                <div class="span1"><ul>
+                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
+                           id="link-more">more</a></li>
+                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
+                           id="link-less">less</a></li>
+                    <li id="pledge-amount-field">
+                        {{ empty_project.pledge_form.pledge_amount.errors }}
+                        {{ empty_project.pledge_form.pledge_amount }}
+                    </li>
+                </ul></div>
+                <div class="span2">
+                    <button class="button orange"
+                       data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='pledge' %}"
+                            >Pledge</button>
+                </div>
+            </div>
+            {% if last_pledge_transaction %}
+                <div class="span8">
+                    You've pledged this project with
+                    {{ site_currency_sign }}{{ last_pledge_transaction.transaction_amount }}
+                    on {{ empty_project.last_pledge_transaction.transaction_datetime }}.
+                    <input type="submit" value="Switch to monthly pledge"
+                           data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='switch_monthly' %}" />
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if not request.user.is_authenticated %}
+            <div class="span8" id="login-links">
+                {% include "core/login/login-with-links.djhtm" %}
+            </div>
+        {% endif %}
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    function toggleOnetimeMonthly_empty(setMonthly) {
+        $("ul#monthly-options").toggle(setMonthly);
+        $("ul#onetime-options").toggle(!setMonthly);
+        $("a#monthly-switch").toggleClass('active', setMonthly);
+        $("a#onetime-switch").toggleClass('active', !setMonthly);
+        $("input#id_pledge_type").attr('value', setMonthly ? 'monthly' : 'onetime');
+    }
+
+    function toggleMore_empty(showMore) {
+        $('form#form-pledge-empty-project #pledge-amount-field').toggle(showMore);
+        $('form#form-pledge-empty-project #options-button-sets').toggle(!showMore);
+        $('form#form-pledge-empty-project #link-more').toggle(!showMore);
+        $('form#form-pledge-empty-project #link-less').toggle(showMore);
+    }
+
+    function selectAmount_empty(amount) {
+        $('#options-button-sets button').each(function(){
+            $(this).removeClass('active');
+            if (amount == $(this).data('amount')) {
+                $(this).addClass('active');
+            }
+        });
+
+        $('#id_pledge_amount').val(amount);
+    }
+
+    $(document).ready(function () {
+        $('#pledge-form-contents').toggle(true);
+        toggleMore_empty(true);
+
+        {% if not empty_project.pledge_subscription %}
+            {% if empty_project.last_pledge_transaction %}
+                toggleEmptyOnetimeMonthly_empty(false);
+            {% else %}
+                toggleOnetimeMonthly_empty(defaultOnetimeMonthlyPosition == 'monthly');
+            {% endif %}
+        {% else %}
+            toggleOnetimeMonthly_empty(defaultOnetimeMonthlyPosition == 'monthly');
+        {% endif %}
+
+        toggleMore_empty(false);
+        {% if empty_project.pledge_subscription %}
+            selectAmount_empty({{ empty_project.pledge_subscription.amount }});
+        {% elif empty_project.last_pledge_transaction %}
+            selectAmount_empty({{ empty_project.last_pledge_transaction.transaction_amount }});
+        {% endif %}
+
+
+        $('#options-button-sets button').click(function(event){
+            event.preventDefault();
+            selectAmount_empty($(this).data('amount'));
+        });
+
+        $('li#pledge-amount-field input').keyup(function(){
+            selectAmount_empty($(this).attr('value'));
+        });
+
+        $("#onetime-switch, #monthly-switch").click(function(event){
+            event.preventDefault();
+            toggleOnetimeMonthly_empty($(this).attr('id') == 'monthly-switch');
+        });
+        $("#link-more, #link-less").click(function(event){
+            event.preventDefault();
+            toggleMore_empty($(this).attr('id')=='link-more');
+        });
+
+        if (user.is_authenticated && !{{ project_edit_access|lower }} ) {
+            $("form#form-pledge-empty-project input[type=submit]").click(function(event){
+                $('form#form-pledge-empty-project').attr('action', $(this).data('action'));
+            });
+
+            $("form#form-pledge-empty-project").submit(function(event){
+                event.preventDefault();
+                $('#form-pledge-empty-project-container').load($(this).attr('action'), $(this).serializeObject());
+            });
+
+        } else if ({{ project_edit_access|lower }}) {
+            $('#form-pledge-empty-project button, #form-pledge-empty-project input').attr('disabled', 'disabled');
+            $('#form-pledge-empty-project button, #form-pledge-empty-project input').attr('title', 'You cannot pledge your own project.');
+            $('#form-pledge-empty-project button, #form-pledge-empty-project input').attr('alt', 'You cannot pledge your own project.');
+        } else {
+            $("form#form-pledge-empty-project button").click(function () {
+                $('#login-links').fadeOut();
+                $('#login-links').fadeIn();
+                $('#login-links').fadeOut();
+                $('#login-links').fadeIn();
+            });
+
+            $("form#form-pledge-empty-project").submit(function(event){
+                event.preventDefault();
+                $('#login-links').fadeOut();
+                $('#login-links').fadeIn();
+                $('#login-links').fadeOut();
+                $('#login-links').fadeIn();
+            });
+        }
+
+
+    {% if request.is_ajax %}
+        window.backgroundDonut.destroy();
+        window.otherDonut.destroy();
+        window.redonationsDonut.destroy();
+        window.pledgesDonut.destroy();
+
+        var pledgesRadiant = {{ budget.pledges_radiant }};
+        var redonationsRadiant = {{ budget.redonations_radiant }};
+        var otherRadiant = {{ budget.other_sources_radiant }};
+
+        var backgroundSeries = [
+            ['a', 100],
+            ['b', 100]
+        ];
+        window.backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
+            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+            seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
+            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 94, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+        });
+
+        var otherSeries = [
+            ['c', (otherRadiant + redonationsRadiant + pledgesRadiant)],
+            ['d', (360 - (otherRadiant + redonationsRadiant + pledgesRadiant))]
+        ];
+        window.otherDonut = $.jqplot('chartdiv', [otherSeries], {
+            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+            seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
+            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 8, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 98, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+        });
+
+        var redonationsSeries = [
+            ['c', (redonationsRadiant + pledgesRadiant)],
+            ['d', (360 - (redonationsRadiant + pledgesRadiant))]
+        ];
+        window.redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
+            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+            seriesColors: [ "#"+redonationsColor, "rgba(0,0,0,0)"],
+            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 14, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 105, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+        });
+
+        var pledgesSeries = [
+            ['a', (pledgesRadiant)],
+            ['b', 360 - pledgesRadiant]
+        ];
+        window.pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
+            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+            seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
+            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+        });
+
+    {% endif %}
+    });
+</script>

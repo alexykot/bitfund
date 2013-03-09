@@ -35,12 +35,7 @@ def index(request):
                                                  .order_by('-date_added')
                                                  [:PROJECTS_IN_HOMEPAGE_COLUMN]
                                                   )
-    template_data['top_linked_projects_list'] = (Project.objects
-                                                 .filter(is_public=True)
-                                                 .filter(status=PROJECT_STATUS_CHOICES.active)
-                                                 .order_by('-date_added')
-                                                 [:PROJECTS_IN_HOMEPAGE_COLUMN]
-                                                    )
+    template_data['top_linked_projects_list'] =  Project.getTopLinkedProjects()
     template_data['unclaimed_projects_list'] = (Project.objects
                                                 .filter(is_public=True)
                                                 .filter(status=PROJECT_STATUS_CHOICES.unclaimed)

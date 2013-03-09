@@ -232,6 +232,162 @@ def crud_pledge_need(request, project_key, need_id, action=None):
     return render_to_response('project/budget/ajax-pledge_need_form.djhtm', template_data, context_instance=RequestContext(request))
 
 @login_required
+@disallow_not_public
+@user_is_not_project_maintainer
+def crud_pledge_empty_project(request, project_key, action=None):
+    if not request.user.is_authenticated() :
+        if request.is_ajax() :
+            return HttpResponseBadRequest()
+        else :
+            return redirect('bitfund.core.login')
+
+    project = get_object_or_404(Project, key=project_key)
+
+    template_data = {'project': project,
+                     'request': request,
+                     'today': datetime.utcnow().replace(tzinfo=utc).today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
+    template_data['user_is_project_maintainer'] = False
+    if request.user.id == project.maintainer_id :
+        template_data['user_is_project_maintainer'] = True
+
+
+    # if request.method == 'POST' :
+    #     if action == 'pledge' :
+    #         pledge_need_form = PledgeProjectNeedForm(request.POST, prefix='need-'+str(need.id))
+    #         if pledge_need_form.is_valid() :
+    #             cleaned_pledge_type = pledge_need_form.cleaned_data['pledge_type']
+    #             cleaned_pledge_amount = pledge_need_form.cleaned_data['pledge_amount']
+    #
+    #             if cleaned_pledge_type == DONATION_TYPES_CHOICES.onetime :
+    #                 transaction = DonationTransaction()
+    #                 transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
+    #                                                       pledge_amount=cleaned_pledge_amount)
+    #                 transaction.save()
+    #                 transaction.createRedonationTransactions()
+    #             else :
+    #                 pledge_subscription = (DonationSubscription.objects
+    #                                        .filter(user=request.user)
+    #                                        .filter(project=project)
+    #                                        .select_related())
+    #
+    #                 if pledge_subscription.count() == 1 :
+    #                     pledge_subscription = pledge_subscription[0]
+    #                     pledge_subscription_need = (DonationSubscriptionNeeds.objects
+    #                                                 .filter(donation_subscription=pledge_subscription)
+    #                                                 .filter(need=need))
+    #                     if pledge_subscription_need.count() == 1 :
+    #                         pledge_subscription_need = pledge_subscription_need[0]
+    #                         pledge_subscription_need.cancelPendingTransactions()
+    #
+    #                         pledge_subscription_need.amount = cleaned_pledge_amount
+    #                         pledge_subscription_need.save()
+    #                     else :
+    #                         pledge_subscription_need = DonationSubscriptionNeeds()
+    #                         pledge_subscription_need.donation_subscription = pledge_subscription
+    #                         pledge_subscription_need.need = need
+    #                         pledge_subscription_need.amount = cleaned_pledge_amount
+    #                         pledge_subscription_need.save()
+    #
+    #                 else :
+    #                     pledge_subscription = DonationSubscription()
+    #                     pledge_subscription.user = request.user
+    #                     pledge_subscription.project = project
+    #                     pledge_subscription.save()
+    #
+    #                     pledge_subscription_need = DonationSubscriptionNeeds()
+    #                     pledge_subscription_need.donation_subscription = pledge_subscription
+    #                     pledge_subscription_need.need = need
+    #                     pledge_subscription_need.amount = cleaned_pledge_amount
+    #                     pledge_subscription_need.save()
+    #
+    #                 transaction = DonationTransaction()
+    #                 transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
+    #                                                       pledge_amount=cleaned_pledge_amount,
+    #                                                       donation_subscription=pledge_subscription)
+    #                 transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.pending
+    #                 transaction.save()
+    #                 transaction.createRedonationTransactions()
+    #
+    #                 return redirect('bitfund.project.views.crud_pledge_need', project_key=project.key, need_id=need.id)
+    #         else :
+    #             template_data['need'] = _prepare_need_item_template_data(request, project, need, pledge_need_form)
+    #
+    #         if not request.is_ajax() :
+    #             #@TODO card presence check (along with the payment integration itself)
+    #             if not request.user.is_card_attached :
+    #                 request.session[SESSION_PARAM_RETURN_TO_PROJECT] = project.key
+    #                 return redirect('bitfund.pledger.attach_card')
+    #             else :
+    #                 return redirect('bitfund.project.budget', project_key=project.key)
+    #
+    #     elif action == 'switch_monthly' :
+    #         pledge_need_form = PledgeProjectNeedForm(request.POST, prefix='need-'+str(need.id))
+    #         if pledge_need_form.is_valid() :
+    #             pledge_subscription = (DonationSubscription.objects
+    #                                    .filter(user=request.user)
+    #                                    .filter(project=project)
+    #                                    .select_related())
+    #             if pledge_subscription.count() == 1 :
+    #                 pledge_subscription = pledge_subscription[0]
+    #             else :
+    #                 pledge_subscription = DonationSubscription()
+    #                 pledge_subscription.user = request.user
+    #                 pledge_subscription.project = project
+    #                 pledge_subscription.save()
+    #
+    #
+    #             pledge_subscription_need = (DonationSubscriptionNeeds.objects
+    #                                         .filter(donation_subscription=pledge_subscription)
+    #                                         .filter(need=need))
+    #             if pledge_subscription_need.count() == 0 :
+    #                 cleaned_pledge_amount = pledge_need_form.cleaned_data['pledge_amount']
+    #                 pledge_subscription_need = DonationSubscriptionNeeds()
+    #                 pledge_subscription_need.donation_subscription = pledge_subscription
+    #                 pledge_subscription_need.need = need
+    #                 pledge_subscription_need.amount = cleaned_pledge_amount
+    #                 pledge_subscription_need.save()
+    #
+    #             return redirect('bitfund.project.views.crud_pledge_need', project_key=project.key, need_id=need.id)
+    #
+    #         else :
+    #             template_data['need'] = _prepare_need_item_template_data(request, project, need, pledge_need_form)
+    #
+    #     elif action == 'drop_subscription' :
+    #         existing_subscription = (DonationSubscription.objects
+    #                                  .filter(user=request.user, project=project)
+    #                                  .select_related())
+    #
+    #         if existing_subscription.count() == 1 :
+    #             existing_subscription = existing_subscription[0]
+    #             existing_subscription_need = (DonationSubscriptionNeeds.objects
+    #                                           .filter(donation_subscription=existing_subscription,
+    #                                                   need=need))
+    #             if existing_subscription_need.count() == 1 :
+    #                 existing_subscription_need = existing_subscription_need[0]
+    #                 existing_subscription_need.cancelPendingTransactions()
+    #
+    #                 existing_subscription_need.delete()
+    #
+    #             other_subscriptions_count = (DonationSubscriptionNeeds.objects
+    #                                          .filter(donation_subscription_id=existing_subscription.id)
+    #                                          .count())
+    #             if other_subscriptions_count == 0 :
+    #                 existing_subscription.delete()
+    #
+    #         return redirect('bitfund.project.views.crud_pledge_need', project_key=project.key, need_id=need.id)
+    #
+    # if 'need' not in template_data:
+    #     template_data['need'] = _prepare_need_item_template_data(request, project, need)
+    #
+    # template_data['budget'] = _prepare_project_budget_template_data(request, project)
+    #
+    return render_to_response('project/budget/ajax-pledge_empty_project_form.djhtm', template_data, context_instance=RequestContext(request))
+
+
+@login_required
 @user_is_project_maintainer
 def project_toggle(request, project_key):
     project = get_object_or_404(Project, key=project_key)

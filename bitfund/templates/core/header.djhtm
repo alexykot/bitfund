@@ -12,12 +12,7 @@
             {% endif %}
             <li><a href="{% url bitfund.core.views.logout %}">Sign out</a></li>
         {% else %}
-            <li>Log in with
-                <a href="{% url bitfund.core.views.login %}">twitter</a>,
-                <a href="{% url bitfund.core.views.login %}">github</a>,
-                <a href="{% url bitfund.core.views.login %}">google</a> or
-                <a href="{% url bitfund.core.views.login %}">facebook</a>
-            </li>
+            <li>{% include "core/login/login-with-links.djhtm" %}</li>
         {% endif %}
     </ul>
 

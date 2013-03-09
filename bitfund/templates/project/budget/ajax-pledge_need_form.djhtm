@@ -116,11 +116,7 @@
         {% endif %}
         {% if not request.user.is_authenticated %}
             <div class="span8" id="login-links-{{ need.id }}">
-                login with
-                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">twitter</a>,
-                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">github</a>,
-                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">google</a> or
-                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">facebook</a>
+                {% include "core/login/login-with-links.djhtm" %}
             </div>
         {% endif %}
     </div>

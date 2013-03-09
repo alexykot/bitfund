@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.utils.timezone import now
 
 from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
-from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm
+from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm, PledgeNoBudgetProjectForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
@@ -24,6 +24,7 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
                             .filter(accepting_project__id=project.id)
                             .filter(accepting_need__id=need.id)
                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
                              .order_by('-transaction_datetime')
                             )
         if previous_pledges.count() > 0 :
@@ -144,3 +145,35 @@ def _prepare_project_budget_template_data(request, project) :
         budget_data['total_gained_percent'] = -1
 
     return budget_data
+
+
+def _prepare_empty_project_template_data(request, project) :
+    template_data = {}
+    template_data['pledge_form'] = PledgeNoBudgetProjectForm()
+
+    if request.user.is_authenticated() :
+        previous_pledges = (DonationTransaction.objects
+                            .filter(pledger_user__id=request.user.id)
+                            .filter(accepting_project__id=project.id)
+                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                            .order_by('-transaction_datetime')
+        )
+        if previous_pledges.count() > 0 :
+            template_data['previous_pledges_count'] = previous_pledges.count()
+            template_data['last_pledge_transaction'] = previous_pledges[0]
+
+        pledge_subscription_project = (DonationSubscription.objects
+                                       .filter(user=request.user, project=project)
+                                       .select_related()
+        )
+        if pledge_subscription_project.count() > 0 :
+            pledge_subscription_project = pledge_subscription_project[0]
+            pledge_subscription_project_need = (DonationSubscriptionNeeds.objects
+                                                .filter(donation_subscription=pledge_subscription_project))
+            if pledge_subscription_project_need.count() == 0 :
+                template_data['pledge_subscription'] = pledge_subscription_project
+                template_data['pledge_form'].initial['pledge_type'] = DONATION_TYPES_CHOICES.monthly
+                template_data['pledge_form'].initial['pledge_amount'] = template_data['pledge_subscription'].amount
+
+    return template_data
