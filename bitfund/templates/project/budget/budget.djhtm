@@ -83,42 +83,6 @@
                 seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
-
-
-            {% for goal in project_goals %}
-                /*
-                var goal{{goal.id}}OtherRadiant = {{goal.other_sources_radiant}};
-                var goal{{goal.id}}DonationsRadiant = {{goal.donations_radiant}};
-
-                var goal{{goal.id}}BackgroundSeries = [['a', 100],['b', 100]];
-                var goal{{goal.id}}BackgroundDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}BackgroundSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-                var goal{{goal.id}}OtherSeries = [
-                    ['c', (goal{{goal.id}}OtherRadiant + goal{{goal.id}}DonationsRadiant)],
-                    ['d', (360 - (goal{{goal.id}}OtherRadiant + goal{{goal.id}}DonationsRadiant))]
-                ];
-                var goal{{goal.id}}OtherDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}OtherSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-
-                var goal{{goal.id}}DonationsSeries = [
-                    ['a', (goal{{goal.id}}DonationsRadiant)],
-                    ['b', 360 - goal{{goal.id}}DonationsRadiant]
-                ];
-                var goal{{goal.id}}DonationsDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}DonationsSeries], {
-                    grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                    seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
-                    seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-                });
-                */
-            {% endfor %}
-
         });
     </script>
 {% endblock pagescripts %}
@@ -128,10 +92,14 @@
     <div class="row-fluid project-attributes">
         <div class="span9">
             <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                {% comment %} {% if logo %} 
-                {% elif project.logo %} {% endcomment %}
-                 <img src="{% comment %} {{ project.logo.url }} {% endcomment %} {{ STATIC_URL }}img/project_img.png" />
-                {% comment %} {% endif %} {% endcomment %}
+                <img src="{{ STATIC_URL }}img/project_img.png" />
+                {% comment %}
+                {% if logo %}
+                    <img src="{{ logo.url }} " />
+                {% elif project.logo %}
+                    <img src="{{ project.logo.url }} " />
+                {% endif %}
+                {% endcomment %}
             <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
         </div>
         <div class="span3 kf_project_meta">
@@ -170,7 +138,7 @@
             <div class="row-fluid">
                 <div class="span5 ">
                     <ul class="chart-div-legend">
-                        <li>Backers suport</li>
+                        <li>Backers support</li>
                         <li>Linked projects</li>
                         <li>Other sources</li>
                     </ul>
@@ -228,15 +196,16 @@
                     </div>
                 </div>
             {% empty %}
-
-            <h4>{{ project.title }} has no specific budget, but you can still <a href="{% url bitfund.project.views.budget project_key=project.key %}#support-generally" id="support-generally" class="button">support it</a></h4>
-
+                <div class="goal">
+                    <div class="row-fluid" id="form-pledge-empty-project-container">
+                        {% include "project/budget/ajax-pledge_empty_project_form.djhtm" %}
+                    </div>
+                </div>
             {% endfor %}
         </div>
     </div>
     <div class="grateful">
-        <h4>Totally pledging: <b>$30</b> for 2 needs</h4>
-        <span>I'm not ready to pledge to {{ project.title }} right now, but <a href"#" class="button gray">I'm grateful!</a></span>
+        <span>I'm not ready to pledge to {{ project.title }} right now, but <a href="#" class="button gray">I'm grateful!</a></span>
     </div>
 
 

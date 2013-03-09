@@ -203,6 +203,7 @@
                         </div>
                         {% csrf_token %}
                         {{ pledge_form.non_field_errors }}
+                        {{ pledge_form.pledge_type }}
 
                         <div class="span5" id="options-button-sets">
                             <ul class="amount-buttons">
@@ -242,11 +243,7 @@
 
                         {% if not request.user.is_authenticated %}
                             <div class="span8" id="login-links">
-                                login with
-                                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">twitter</a>,
-                                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">github</a>,
-                                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">google</a> or
-                                <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">facebook</a>
+                                {% include "core/login/login-with-links.djhtm" %}
                             </div>
                         {% endif %}
                     </div>

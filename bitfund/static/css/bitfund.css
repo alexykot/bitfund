@@ -537,7 +537,7 @@ ul.chart-div-legend li:nth-child(3) {
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
 }
 
-.amount-buttons button:active  {
+.amount-buttons button:active, .amount-buttons button.active {
     border: none;
     background-color: #577000;
     color: #fff;

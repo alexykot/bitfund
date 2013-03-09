@@ -7,7 +7,8 @@ from django.utils.timezone import utc, now
 from django.db.models import Count, Sum
 
 from bitfund.project.lists import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID
+from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID, PROJECTS_IN_HOMEPAGE_COLUMN
+
 
 class ProjectCategory(models.Model):
     key           = models.CharField(max_length=80, unique=True)
@@ -30,6 +31,17 @@ class Project(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    @classmethod
+    def getTopLinkedProjects(cls):
+        top_linked_list = (Project.objects
+         .filter(is_public=True)
+         .filter(status=PROJECT_STATUS_CHOICES.active)
+         .order_by('-date_added')
+         [:PROJECTS_IN_HOMEPAGE_COLUMN]
+        )
+
+        return top_linked_list
 
     # calculates total backers count (goals backers included)
     def getTotalMonthlyBackers(self, monthdate=None):

@@ -63,7 +63,7 @@ def unclaimed(request, project_key):
 
             return render_to_response('project/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
     else :
-        template_data['pledge_form'] = PledgeNoBudgetProjectForm()
+        template_data['pledge_form'] = PledgeNoBudgetProjectForm(initial={'pledge_type':DONATION_TYPES_CHOICES.monthly})
         pledge_subscription = (DonationSubscription.objects
                                .filter(user__id=request.user.id)
                                .filter(project__id=project.id))

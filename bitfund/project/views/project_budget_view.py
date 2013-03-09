@@ -17,7 +17,8 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            )
 from bitfund.project.decorators import user_is_project_maintainer, disallow_not_public_unless_maintainer, redirect_not_active
 from bitfund.project.models import *
-from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data
+from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data, _prepare_empty_project_template_data
+
 
 @redirect_not_active
 @disallow_not_public_unless_maintainer
@@ -49,6 +50,8 @@ def budget(request, project_key):
     project_needs = ProjectNeed.objects.filter(project=project.id).filter(is_public=True).order_by('sort_order')
     for need in project_needs :
         template_data['project_needs'].append(_prepare_need_item_template_data(request, project, need))
+
+    template_data['empty_project'] = _prepare_empty_project_template_data(request, project)
 
     #GOALS
     project_goals = (ProjectGoal.objects
