@@ -1,5 +1,5 @@
 {% if projects_i_depend_on_count %}
-    <h3>Projects {{ project.title }} depends on</h3>
+    <h5>Projects {{ project.title }} depends on</h5>
     <ul id="projects_i_depend_on_list">
         {% for project_i_depend_on in projects_i_depend_on %}
             {% if crud_linked_project_action == 'edit' and project_i_depend_on.key == linked_project.key %}

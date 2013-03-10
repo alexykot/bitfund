@@ -26,7 +26,7 @@
         <div class="row-fluid">
             <div class="span6 depending-on">
             {% if projects_depending_on_me_count %}
-                <h3>Projects depending on {{ project.title }}</h3>
+                <h5>Projects depending on {{ project.title }}</h5>
                 <ul>
                     {% for project_depending_on_me in projects_depending_on_me %}
                     <li class="project">
