@@ -288,19 +288,30 @@ class DonationSubscription(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     needs = models.ManyToManyField(ProjectNeed, through='DonationSubscriptionNeeds')
 
+    def cancelPendingTransactions(self, donation_subscription_need=None):
+        if donation_subscription_need is not None :
+            subscription_pending_transactions_list = (DonationTransaction.objects
+                                                      .filter(pledger_donation_subscription__id=self.id)
+                                                      .filter(accepting_need__id=donation_subscription_need.need__id)
+                                                      .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
+            )
+        else :
+            subscription_pending_transactions_list = (DonationTransaction.objects
+                                                      .filter(pledger_donation_subscription__id=self.id)
+                                                      .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
+                                                      .exclude(accepting_need__isnull=True)
+                                                      .exclude(accepting_need=0)
+            )
+
+        for subscription_pending_transaction in subscription_pending_transactions_list :
+            subscription_pending_transaction.cancel()
+
+
 class DonationSubscriptionNeeds(models.Model):
     donation_subscription = models.ForeignKey(DonationSubscription)
     need = models.ForeignKey(ProjectNeed)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
-    def cancelPendingTransactions(self):
-        subscription_pending_transactions_list = (DonationTransaction.objects
-                                                  .filter(pledger_donation_subscription_id=self.donation_subscription_id)
-                                                  .filter(accepting_need_id=self.need_id)
-                                                  .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
-        )
-        for subscription_pending_transaction in subscription_pending_transactions_list :
-            subscription_pending_transaction.cancel()
 
 
 #donation history, storing all past donation transactions, for both onetime and monthly donations
@@ -398,17 +409,10 @@ class DonationTransaction(models.Model):
                 # fixed redonation_amount is a part of this project's budget. Here we're getting
                 # the % representation of that part.
                 current_redonation_percent = Decimal((project_i_depend_on.redonation_amount) / project_current_budget).quantize(Decimal('0.01'))
-                print '------------------------'
-
-                print 'project_i_depend_on.redonation_amount '+str(project_i_depend_on.redonation_amount)
-                print 'project_current_budget '+str(project_current_budget)
 
                 # multiply % representation on parent transaction's amount - getting the amount we're going
                 # to redonate in this transaction
-                print 'current_redonation_percent '+str(current_redonation_percent)
-                print 'self.transaction_amount '+str(self.transaction_amount)
                 current_redonation_amount = Decimal(self.transaction_amount*current_redonation_percent).quantize(Decimal('0.01'))
-                print 'current_redonation_amount '+str(current_redonation_amount)
 
                 # getting total of already sent redonations from this project to that one.
                 total_current_redonations = (DonationTransaction.objects
@@ -417,10 +421,8 @@ class DonationTransaction(models.Model):
                                              .filter(accepting_project_id=project_i_depend_on.dependee_project.id)
                                              .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                                             )
-                print 'total_current_redonations '+str(total_current_redonations)
 
                 total_current_redonations = Decimal(total_current_redonations or 0)
-                print 'total_current_redonations '+str(total_current_redonations)
 
                 # if (existing_redonations + current_redonation) makes up bigger amount than total
                 # fixed redonation - redonation is capped
@@ -433,9 +435,6 @@ class DonationTransaction(models.Model):
                     # redonation amount - nothing else to be redonated here then, omiting this cycle.
                     if current_redonation_amount <= 0 :
                         continue
-
-                print 'current_redonation_amount '+str(current_redonation_amount)
-                print '------------------------'
 
             # if there is no fixed redonation, maybe there is a percentage
             elif project_i_depend_on.redonation_percent > 0 :

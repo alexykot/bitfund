@@ -145,7 +145,7 @@
 
         {% if not empty_project.pledge_subscription %}
             {% if empty_project.last_pledge_transaction %}
-                toggleEmptyOnetimeMonthly_empty(false);
+                toggleOnetimeMonthly_empty(false);
             {% else %}
                 toggleOnetimeMonthly_empty(defaultOnetimeMonthlyPosition == 'monthly');
             {% endif %}
