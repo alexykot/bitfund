@@ -102,11 +102,16 @@ button, .button {
     text-decoration: none;
 }
 
+.button-small {
+    padding: 5px;
+}
+
 .gray {
     background-color: #fff;
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
+    color: #3d3d3d;
 }
 
 .orange {
@@ -144,6 +149,12 @@ button, .button {
     box-shadow: none;
     color: #ccc;
     cursor: default;
+}
+
+.orange-bg {
+    background-color: #ebbb06;
+    display: inline-block;
+    padding: 0 5px;
 }
 
 /* Header =====================*/
@@ -256,7 +267,7 @@ button.go {
     margin-left: 5px;
 }
 
-.search-form form {
+.form-inline {
     padding-bottom: 10px;
 }
 
@@ -265,8 +276,12 @@ button.go {
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
-    padding: 30px;
     margin-top: 40px;
+    padding: 20px 0 0;
+}
+
+.available-projects {
+    padding: 30px;
 }
 
 .available-projects .row {
@@ -306,25 +321,37 @@ button.go {
 }
 /* Page 2 - Dependent projects */
 
-.dependent-projects .project-attributes a:first-child, .project-goals .project-attributes a:first-child {
+.project-attributes {
+    margin: 0 30px 20px;
+}
+
+.project-attributes a:first-child {
     height: 62px;
     width: 62px;
 }
 
-.dependent-projects .project-attributes a:first-child:hover, .project-goals .project-attributes a:first-child:hover {
+.project-attributes a:first-child:hover {
     text-decoration: none;
 }
 
-.dependent-projects .project-attributes a:last-child, .project-goals .project-attributes a:last-child {
+.project-attributes a:last-child {
     font-size: 30px;
     margin-left:10px;
     vertical-align: middle;
 }
 
-.dependent-projects  .row-fluid h3, .project-goals .row-fluid h3 {
-    background-color: #f2f2f2;
-    height: 40px;
-    padding: 10px 15px;
+
+.dependent-projects .span6:last-child h5, .goals-column h5 {
+    border-left: 1px solid #fff;
+}
+
+.dependent-projects h5, .budget-column > h5, .goals-column > h5:first-child {
+    background-color: #3d3d3d;
+    color: #fff;
+    height: 45px;
+    line-height: 45px;
+    margin: 0;
+    padding-left: 30px;
 }
 
 .dependent-projects ul {
@@ -386,12 +413,16 @@ button.go {
 
 /* Page 3 =====================*/
 
-.budget-column .month {
-    font-size: 16px;
+.project-goals > .row-fluid:last-child {
+    padding-bottom: 30px;
 }
 
-.budget-column  > div:last-child {
-    padding-right: 10px;
+.budget-column > div, .goals-column > div {
+    padding-top: 20px;
+}
+
+.budget-column > div {
+    margin: 0 15px;
 }
 
 .budget-column .pledged, .backers {
@@ -402,9 +433,8 @@ button.go {
 .chart-div-large {
     background: url("../img/chart_div.png") no-repeat;
     line-height: 85px;
-    margin: 0 15px 15px;
     text-align: center;
-    
+    width: 85px;
 }
 
 .chart-div-medium {
@@ -423,36 +453,53 @@ button.go {
 
 ul.chart-div-legend {
     font-size: 12px;
-    margin-left: 15px;
-    
+    margin-left: 0;
 }
 
 ul.chart-div-legend li {
-    line-height: 14px;
-    padding: 0 15px 10px 20px;
+    line-height: 18px;
+    padding-left: 15px;
 }
 
 ul.chart-div-legend li:nth-child(1) {
-    background: url("../img/backers_suport_marker.png") no-repeat 0 8px;
+    background: url("../img/backers_suport_marker.png") no-repeat 0 2px;
 }
 
 ul.chart-div-legend li:nth-child(2) {
-    background: url("../img/linked_projects_marker.png") no-repeat 0 8px;
+    background: url("../img/linked_projects_marker.png") no-repeat 0 2px;
 }
 
 ul.chart-div-legend li:nth-child(3) {
-    background: url("../img/other_sources_marker.png") no-repeat 0 8px;
+    background: url("../img/other_sources_marker.png") no-repeat 0 2px;
 }
 
 .sum-from-sources {
     margin-top: 15px;
 }
 
+.goals-column > h5:first-child, .goals-column > div {
+    margin-left: -20px;
+}
+
+.goals-column > div {
+    border-left: 1px solid #ccc;
+}
+
+.goals-column div.pull-right {
+    margin-right: 20px;
+    text-align: right;
+}
+
 .goal {
     border-bottom: 1px solid #ccc;
-    margin: 15px;
+    margin: 0 15px 15px;
     padding-bottom: 20px;
 }
+
+.goals-column .goal:last-child {
+    border-bottom: none;
+}
+
 
 .goal .row-fluid {
     margin-bottom: 15px;
@@ -467,11 +514,6 @@ ul.chart-div-legend li:nth-child(3) {
     vertical-align: middle;
 }
 
-.goals-column div.pull-right {
-    margin-right: 20px;
-    text-align: right;
-}
-
 .need-pledge-controls {
     margin-bottom: 10px;
 }
@@ -480,11 +522,11 @@ ul.chart-div-legend li:nth-child(3) {
     margin-left: 0;
 }
 
-.need-pledge-controls a, .amount-buttons li:first-child {
+.need-pledge-controls li {
     line-height: 35px;
 }
 
-.need-pledge-controls a.active {
+.need-pledge-controls > .row-fluid a.active {
     border: none;
     color: #333;
     font-weight: bold;
@@ -492,11 +534,11 @@ ul.chart-div-legend li:nth-child(3) {
     text-decoration: none;
 }
 
-.need-pledge-controls a {
+.need-pledge-controls > .row-fluid a {
     border-bottom: 1px dashed #577000;
 }
 
-.need-pledge-controls a:hover {
+.need-pledge-controls > .row-fluid a:hover {
     text-decoration: none;
 }
 
@@ -506,7 +548,7 @@ ul.chart-div-legend li:nth-child(3) {
 
 .amount-buttons li, .need-pledge-controls ul li {
     float: left;
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 .amount-buttons button {
@@ -535,17 +577,12 @@ ul.chart-div-legend li:nth-child(3) {
 }
 
 .grateful {
-    margin: 20px;
-    text-align: right;
-}
-
-.grateful .button {
-    color: #000;
     margin-left: 10px;
 }
 
 .current-goals {
-    margin-top: 50px;
+    background-color: #f2f2f2;
+    margin: 30px;
 }
 
 .current-goals .span4 > img:first-child {

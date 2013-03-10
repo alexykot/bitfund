@@ -14,7 +14,7 @@
 </div>
 
 <div class="available-projects">
-    <div class="search-form centered">
+    <div class="centered">
         <h4>What project will you support today?</h4>
         <form class="form-inline">
             <input type="text" />
