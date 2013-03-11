@@ -115,100 +115,113 @@
   
     <div class="row-fluid">
         <div class="span4 budget-column">
-            <h3>Budget for <span class="month">{{ today|date:"F Y" }}</span></h3>
-            <div class="row-fluid">
-                <div class="span5">
-                    <div class="chart-div-large" id="chartdiv">
-                    {% if budget.total_gained_percent == -1 %}
-                        <span class="kf_percent">&infin;</span>
-                    {% else %}
-                        <span class="kf_percent">{{ budget.total_gained_percent }}%</span>
+            <h5><b>Budget for</b>
+                <span>
+                    <a href="#" class="month">
+                        <span class="arrow-left-white">&#9668</span>
+                        <span class="arrow-left-black">&#9668</span>
+                    </a>
+                    {{ today|date:"F Y" }}
+                    <a href="#" class="month">
+                        <span class="arrow-right-white">&#9658</span>
+                        <span class="arrow-right-black">&#9658</span>
+                    </a>
+                </span>
+            </h5>
+            <div>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <div class="chart-div-large" id="chartdiv">
+                        {% if budget.total_gained_percent == -1 %}
+                            <span class="kf_percent">&infin;</span>
+                        {% else %}
+                            <span class="kf_percent">{{ budget.total_gained_percent }}%</span>
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="span4 centered">
+                        <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
+                        <div>pledged</div>
+                    </div>
+                    <div class="span3 offset1 centered">
+                        <div class="backers">{{ budget.donations_total_pledgers }}</div>
+                        <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <ul class="chart-div-legend">
+                            <li><span class="green-marker"></span>Backers support</li>
+                            <li><span class="olive-marker"></span>Linked projects</li>
+                            <li><span class="yellow-marker"></span>Other sources</li>
+                        </ul>
+                    </div>
+                    <div class="span6">
+                    {% if budget.redonations_total_sum %}
+                        <div class="sum-from-projects">{{ site_currency_sign }}{{ budget.redonations_total_sum }} received from </div>
+                        <a href="#">{{ budget.depending_on_me_projects_count }} dependant project</a>
+                    {% endif %}
+                    {% if other_sources_total_sum %}
+                        <div class="sum-from-sources">{{ site_currency_sign }}{{ other_sources_total_sum }} gained from </div>
+                        <a href="#">other sources</a>
                     {% endif %}
                     </div>
                 </div>
-                <div class="span4 centered">
-                    <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
-                    <div>pledged</div>
-                </div>
-                <div class="span3 centered">
-                    <div class="backers">{{ budget.donations_total_pledgers }}</div>
-                    <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <div class="span5 ">
-                    <ul class="chart-div-legend">
-                        <li>Backers support</li>
-                        <li>Linked projects</li>
-                        <li>Other sources</li>
-                    </ul>
-                </div>
-                <div class="span7">
-                {% if budget.redonations_total_sum %}
-                    <div class="sum-from-projects">{{ site_currency_sign }}{{ budget.redonations_total_sum }} received from </div>
-                    <a href="#">{{ budget.depending_on_me_projects_count }} dependant project</a>
-                {% endif %}
-                {% if other_sources_total_sum %}
-                    <div class="sum-from-sources">{{ site_currency_sign }}{{ other_sources_total_sum }} gained from </div>
-                    <a href="#">other sources</a>
-                {% endif %}
-                </div>
-            </div>
 
-            {% if budget.i_depend_on_projects_count %}
-                <div class="centered">
-                    {% if budget.i_depend_on_transfer_percent > 0 %}
-                        {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of it's pledges to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
-                        {{ budget.i_depend_on_projects_count }} other projects</a> it depends on.
-                    {% else %}
-                        {{ project.title }} depends on <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}"> {{ budget.i_depend_on_projects_count }} other projects</a>, but doesn't transfer any funds to them.
-                    {% endif %}
-                </div>
-            {% else %}
-                <div class="centered">{{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
-                </div>
-            {% endif %}
+                {% if budget.i_depend_on_projects_count %}
+                    <h5 class="centered">
+                        {% if budget.i_depend_on_transfer_percent > 0 %}
+                            {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of it's pledges to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
+                            {{ budget.i_depend_on_projects_count }} other projects</a> it depends on.
+                        {% else %}
+                            {{ project.title }} depends on <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}"> {{ budget.i_depend_on_projects_count }} other projects</a>, but doesn't transfer any funds to them.
+                        {% endif %}
+                    </h5>
+                {% else %}
+                    <h5 class="centered">{{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
+                    </h5>
+                {% endif %}
+            </div>
         </div>
 
         <div class="span8 goals-column">
             {% if budget.project_monthly_budget > 0 %}
-                <h3>{{ project.title }} asked {{ site_currency_sign }}{{ budget.project_monthly_budget }} this month for:</h3>
+                <h5><b>{{ project.title }}</b> asked {{ site_currency_sign }}{{ budget.project_monthly_budget }} this month for:</h5>
             {% else %}
-                <h3> {{ project.title }} has no budget for this month</h3>
+                <h5><b>{{ project.title }}</b> has no budget for this month</h5>
             {% endif %}
-
-            {% for need in project_needs %}
-                <div class="goal">
-                    <div class="row-fluid">
-                        <div class="span9">
-                            <h4>{{ need.title }}</h4>
-                            <p>{{ need.brief|default_if_none:'' }}</p>
+            <div>
+                {% for need in project_needs %}
+                    <div class="goal">
+                        <div class="row-fluid">
+                            <div class="span9">
+                                <h4>{{ need.title }}</h4>
+                                <p>{{ need.brief|default_if_none:'' }}</p>
+                            </div>
+                            <div class="span3">
+                                <span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
+                                <br>
+                                of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
+                                <span class="chart-div-medium">100%</span>
+                            </div>
                         </div>
-                        <div class="span3">
-                            <span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
-                            <br>
-                            of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
-                            <span class="chart-div-medium">100%</span>
+                        <div id="form-container-need-item-{{ need.id }}">
+                            {% include "project/budget/ajax-pledge_need_form.djhtm" %}
                         </div>
                     </div>
-                    <div id="form-container-need-item-{{ need.id }}">
-                        {% include "project/budget/ajax-pledge_need_form.djhtm" %}
+                {% empty %}
+                    <div class="goal">
+                        <div class="row-fluid" id="form-pledge-empty-project-container">
+                            {% include "project/budget/ajax-pledge_empty_project_form.djhtm" %}
+                        </div>
                     </div>
-                </div>
-            {% empty %}
-                <div class="goal">
-                    <div class="row-fluid" id="form-pledge-empty-project-container">
-                        {% include "project/budget/ajax-pledge_empty_project_form.djhtm" %}
-                    </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
+            <h5 class="centered">
+                I'm not ready to pledge to {{ project.title }} right now, but <button class="button gray grateful">I'm grateful!</button>
+            </h5>
         </div>
     </div>
-    <div class="grateful">
-        <span>I'm not ready to pledge to {{ project.title }} right now, but <a href="#" class="button gray">I'm grateful!</a></span>
-    </div>
-
-
     {% if project_goals.count %}
         <div class="current-goals">
             <h3>Current goals</h3>
@@ -238,11 +251,8 @@
                 {% endfor %}
             </div>
         </div>  
-    {% endif %}  
-                    
-
+    {% endif %} 
 </div>
-
 {% endblock content %}
 
 
