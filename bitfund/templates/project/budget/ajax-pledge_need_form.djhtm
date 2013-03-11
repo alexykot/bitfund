@@ -46,9 +46,8 @@
 
                 {% if need.last_pledge_transaction %}
                     <div class="centered">
-                        You've last pledged this project with
-                        {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
-                        on {{ need.last_pledge_transaction.transaction_datetime }}.
+                        last pledged {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
+                        on {{ need.last_pledge_transaction.transaction_datetime|date }}
 
                 
                         <button type="submit" value="Stop monthly pledging"
@@ -118,9 +117,8 @@
                 </div>
             {% if need.last_pledge_transaction %}
                 <div class="centered">
-                    You've pledged this project with
-                    {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
-                    on {{ need.last_pledge_transaction.transaction_datetime }}.
+                    pledged {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
+                    on {{ need.last_pledge_transaction.transaction_datetime|date }}
                     <button type="submit" value="Switch to monthly pledge"
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='switch_monthly' %}" class="button button-small gray">switch to monthly pledge</button>
                 </div>
