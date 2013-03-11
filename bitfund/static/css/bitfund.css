@@ -554,7 +554,7 @@ ul.chart-div-legend {
     text-decoration: none;
 }
 
-.need-pledge-controls > .row-fluid a:visited {
+.need-pledge-controls > .row-fluid .amount-buttons a:visited {
     color: #577000;
 }
 
