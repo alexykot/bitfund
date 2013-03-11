@@ -128,14 +128,14 @@
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='switch_monthly' %}" class="button button-small gray">switch to monthly pledge</button>
                 </div>
             {% endif %}
-                <div class="centered" style="display: none;">
+                <div class="centered">
                     <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
                 </div>
             </div>
         {% endif %}
 
         {% if not request.user.is_authenticated %}
-            <div class="centered" style="display: none;" id="login-links-{{ need.id }}">
+            <div class="centered" id="login-links-{{ need.id }}">
                 <span class="orange-bg">to pledge &ndash; {% include "core/login/login-with-links.djhtm" %}</span>
             </div>
         {% endif %}

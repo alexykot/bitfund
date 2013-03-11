@@ -191,16 +191,16 @@ button, .button {
     padding: 0 5px;
 }
 
-.navbar .nav > li > a , .navbar .nav > li > a:hover {
-    color: #577000;
-}
-
 .navbar .nav > li > a:hover {
     text-decoration: underline;
 }
 
 .navbar .nav > li > a:visited, .navbar .nav > li > a:active {
     color: #89b001;
+}
+
+.navbar .nav > li > a , .navbar .nav > li > a:hover {
+    color: #577000;
 }
 
 /* Container ==================*/
@@ -554,7 +554,7 @@ ul.chart-div-legend {
     text-decoration: none;
 }
 
-.need-pledge-controls > .row-fluid .amount-buttons a:visited {
+.need-pledge-controls > .row-fluid a:visited {
     color: #577000;
 }
 
