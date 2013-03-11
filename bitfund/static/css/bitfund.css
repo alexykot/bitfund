@@ -188,13 +188,19 @@ button, .button {
 
 .navbar .nav > li > a {
     display: inline-block;
-    color: #577000;
     padding: 0 5px;
 }
 
-.navbar .nav > li > a:hover {
+.navbar .nav > li > a , .navbar .nav > li > a:hover {
     color: #577000;
+}
+
+.navbar .nav > li > a:hover {
     text-decoration: underline;
+}
+
+.navbar .nav > li > a:visited, .navbar .nav > li > a:active {
+    color: #89b001;
 }
 
 /* Container ==================*/
@@ -548,7 +554,7 @@ ul.chart-div-legend {
     text-decoration: none;
 }
 
-.need-pledge-controls a:visited {
+.need-pledge-controls > .row-fluid a:visited {
     color: #577000;
 }
 
