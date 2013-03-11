@@ -24,7 +24,7 @@
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                     </div>
-                    <div class="span6" id="need-pledge-amount-field-{{ need.id }}">
+                    <div class="span6 less-input" id="need-pledge-amount-field-{{ need.id }}">
                         <ul>
                             <li>{{ site_currency_sign }}</li>
                             <li>
