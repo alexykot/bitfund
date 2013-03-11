@@ -1,6 +1,6 @@
 {% extends "core/base.djhtm" %}
 
-{% block title %}Budget : {{ project.title }}{% endblock title %}
+{% block title %}Budget - {{ project.title }} - {% endblock title %}
 
 {% block pagescripts %}
     <script type="text/javascript">
@@ -18,8 +18,6 @@
         function toggleMore(showMore, needId) {
             $("form#form-pledge-need-" + needId + ' #need-pledge-amount-field-' + needId).toggle(showMore);
             $("form#form-pledge-need-" + needId + ' #need-options-button-sets-' + needId).toggle(!showMore);
-{#            $("form#form-pledge-need-" + needId + ' #link-need-more-' + needId).toggle(!showMore);#}
-{#            $("form#form-pledge-need-" + needId + ' #link-need-less-' + needId).toggle(showMore);#}
         }
 
         function selectAmount(amount, needId) {
@@ -220,7 +218,7 @@
             </h5>
         </div>
     </div>
-    {% if project_goals.count %}
+    {% if project_goals_count %}
         <div class="current-goals">
             <h3>Current goals</h3>
             <p>Apart from the project budget the community be grateful gor help with this goals.</p>
@@ -230,7 +228,7 @@
                         {% if goal.image %}
                             <img src="{{ goal.image.url }}"/>
                         {% endif %}
-                        <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"">{{ goal.title }}"></a></h4>
+                        <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                         <p>{{ goal.brief }}</p>
                         <div class="span3">
                             <div class="chart-div-small" id="goal-{{ goal.id }}-chart">{{ goal.total_percent }}%</div>
@@ -243,8 +241,6 @@
                             <div>{{ goal.days_to_end }}</div>
                             <div>days to go</div>
                         </div>
-                        <a href="{% url bitfund.project.views.support project_key=project.key support_type='onetime' %}?needsgoals=goal_{{ goal.id }}"
-                            class="button">Pledge</a>
                     </div>
                 {% endfor %}
             </div>

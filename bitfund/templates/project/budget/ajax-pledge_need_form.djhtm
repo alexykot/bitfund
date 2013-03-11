@@ -15,16 +15,11 @@
                     <div class="span6" id="need-options-button-sets-{{ need.id }}">
                         <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
-                                data-amount="0.25">0,25</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
-                                data-amount="0.5">0,5</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-1"
-                                data-amount="1">1</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-2"
-                                data-amount="2">2</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-5"
-                                   data-amount="5">5</button></li>
+                            <li><button data-amount="0.25">0.25</button></li>
+                            <li><button data-amount="0.5">0.5</button></li>
+                            <li><button data-amount="1">1</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
@@ -40,24 +35,23 @@
                                    id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
-                   
                     <div class="span3">
-                        <button type="submit" value="Update pledge"
-                           data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Update pledge</button>
+                        <button data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}"
+                                class="button orange">Update pledge</button>
                     </div>
                 </div>
 
-                {% if need.last_pledge_transaction %}
-                    <div class="centered">
-                        You've last pledged this project with
+                <div class="centered">
+                    {% if need.last_pledge_transaction %}
+                        last pledged with
                         {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
-                        on {{ need.last_pledge_transaction.transaction_datetime }}.
+                        on {{ need.last_pledge_transaction.transaction_datetime|date:"DATE_FORMAT" }}
+                    {% endif %}
 
-                
-                        <button type="submit" value="Stop monthly pledging"
-                           data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='drop_subscription' %}" class="button button-small gray">stop monthly pledging</button>
-                    </div>
-                {% endif %}
+
+                    <button data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='drop_subscription' %}"
+                            class="button button-small gray">stop monthly pledging</button>
+                </div>
                 {% if not user.is_card_attached %}
                     <div class="centered">
                         <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
@@ -81,31 +75,21 @@
                     <div class="span6" id="need-options-button-sets-{{ need.id }}">
                         <ul class="amount-buttons" id="need-onetime-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-2"
-                                data-amount="2">2</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-5"
-                                data-amount="5">5</button></li>
-                            <li><button  href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-10"
-                                data-amount="10">10</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-15"
-                                data-amount="15">15</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-25"
-                                data-amount="25">25</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
+                            <li><button data-amount="10">10</button></li>
+                            <li><button data-amount="15">15</button></li>
+                            <li><button data-amount="25">25</button></li>
                             <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                                id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                         <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
-                                data-amount="0.25">0,25</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
-                                data-amount="0.5">0,5</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-1"
-                                data-amount="1">1</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-2"
-                                data-amount="2">2</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-5"
-                                   data-amount="5">5</button></li>
+                            <li><button data-amount="0.25">0.25</button></li>
+                            <li><button data-amount="0.5">0.5</button></li>
+                            <li><button data-amount="1">1</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul> 
@@ -128,10 +112,10 @@
                 </div>
             {% if need.last_pledge_transaction %}
                 <div class="centered">
-                    You've pledged this project with
+                    last pledged with
                     {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
-                    on {{ need.last_pledge_transaction.transaction_datetime }}.
-                    <button type="submit" value="Switch to monthly pledge"
+                    on {{ need.last_pledge_transaction.transaction_datetime|date:"DATE_FORMAT" }}
+                    <button type="submit"
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='switch_monthly' %}" class="button button-small gray">switch to monthly pledge</button>
                 </div>
             {% endif %}

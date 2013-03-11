@@ -10,102 +10,116 @@
     {{ empty_project.pledge_form.non_field_errors }}
     <div id="pledge-form-contents" style="display: none;">
         {% if empty_project.pledge_subscription %}
-            <div class="row-fluid need_pledge_controls">
-                <ul>
-                    <li>pledging monthly</li>
-                </ul>
-                <div class="span5" id="options-button-sets">
-                    <ul class="amount-buttons" id="monthly-options">
-                        <li>{{ site_currency_sign }}</li>
-                        <li><button data-amount="0.25">0,25</button></li>
-                        <li><button data-amount="0.5">0,5</button></li>
-                        <li><button data-amount="1">1</button></li>
-                        <li><button data-amount="2">2</button></li>
-                        <li><button data-amount="5">5</button></li>
-                    </ul>
-                </div>
-                <div class="span1"><ul>
-                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
-                           id="link-more">more</a></li>
-                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
-                           id="link-less">less</a></li>
-                    <li id="pledge-amount-field">
-                        {{ empty_project.pledge_form.pledge_amount.errors }}
-                        {{ empty_project.pledge_form.pledge_amount }}
-                    </li>
-                </ul></div>
-                <input type="submit" value="Update pledge"
-                       data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='pledge' %}" />
-                {% if last_pledge_transaction %}
-                    <div class="row">
-                        You've last pledged this project with
-                        {{ site_currency_sign }}{{ empty_project.last_pledge_transaction.transaction_amount }}
-                        on {{ empty_project.last_pledge_transaction.transaction_datetime }}.
+            <div class="need-pledge-controls">
+                <div class="row-fluid">
+                    <div class="span3">
+                        <ul>
+                            <li>pledging monthly</li>
+                        </ul>
                     </div>
-                {% endif %}
-                <div class="row">
-                    <input type="submit" value="Stop monthly pledging"
-                           data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='drop_subscription' %}" />
+                    <div class="span6" id="options-button-sets">
+                        <ul class="amount-buttons" id="monthly-options">
+                            <li>{{ site_currency_sign }}</li>
+                            <li><button data-amount="0.25">0.25</button></li>
+                            <li><button data-amount="0.5">0.5</button></li>
+                            <li><button data-amount="1">1</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
+                                   id="link-monthly-more">more</a></li>
+                        </ul>
+                    </div>
+                    <div class="span6" id="pledge-amount-field"><ul>
+                        <li>{{ site_currency_sign }}</li>
+                        <li>
+                            {{ empty_project.pledge_form.pledge_amount.errors }}
+                            {{ empty_project.pledge_form.pledge_amount }}
+                        </li>
+                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
+                               id="link-less">less</a></li>
+                    </ul></div>
+                    <div class="span3">
+                        <button data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='pledge' %}"
+                                type="submit" class="button orange">Update pledge</button>
+                    </div>
+                </div>
+                <div class="centered">
+                    {% if empty_project.last_pledge_transaction %}
+                        last pledged with
+                        {{ site_currency_sign }}{{ empty_project.last_pledge_transaction.transaction_amount }}
+                        on {{ empty_project.last_pledge_transaction.transaction_datetime|date:"DATE_FORMAT" }}
+                    {% endif %}
+                    <button data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='drop_subscription' %}"
+                            type="submit" class="button button-small gray">stop monthly pledging</button>
                 </div>
             </div>
         {% else %}
-            <div class="row-fluid need-pledge-controls">
-                <div class="span4">
-                    <ul>
-                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-onetime"
-                       id="onetime-switch">onetime</a></li>
-                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly"
-                       id="monthly-switch">monthly</a></li>
-                   </ul>
-                </div>
+            <div class="need-pledge-controls">
+                <div class="row-fluid">
+                    <div class="span4">
+                        <ul>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-onetime"
+                           id="onetime-switch" class="kf_need_onetime">onetime</a></li>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly"
+                           id="monthly-switch"  class="kf_need_monthly active">monthly</a></li>
+                       </ul>
+                    </div>
 
-                <div class="span5" id="options-button-sets">
-                    <ul class="amount-buttons" id="onetime-options">
+                    <div class="span6" id="options-button-sets">
+                        <ul class="amount-buttons" id="onetime-options">
+                            <li>{{ site_currency_sign }}</li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
+                            <li><button data-amount="10">10</button></li>
+                            <li><button data-amount="15">15</button></li>
+                            <li><button data-amount="25">25</button></li>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-once-more"
+                                   id="link-onetime-more">more</a></li>
+                        </ul>
+                        <ul class="amount-buttons" id="monthly-options">
+                            <li>{{ site_currency_sign }}</li>
+                            <li><button data-amount="0.25">0.25</button></li>
+                            <li><button data-amount="0.5">0.5</button></li>
+                            <li><button data-amount="1">1</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
+                                   id="link-monthly-more">more</a></li>
+                        </ul>
+                    </div>
+                    <div class="span6" id="pledge-amount-field"><ul>
                         <li>{{ site_currency_sign }}</li>
-                        <li><button data-amount="2">2</button></li>
-                        <li><button data-amount="5">5</button></li>
-                        <li><button data-amount="10">10</button></li>
-                        <li><button data-amount="15">15</button></li>
-                        <li><button data-amount="25">25</button></li>
-                    </ul>
-                    <ul class="amount-buttons" id="monthly-options">
-                        <li>{{ site_currency_sign }}</li>
-                        <li><button data-amount="0.25">0,25</button></li>
-                        <li><button data-amount="0.5">0,5</button></li>
-                        <li><button data-amount="1">1</button></li>
-                        <li><button data-amount="2">2</button></li>
-                        <li><button data-amount="5">5</button></li>
-                    </ul> 
+                        <li>
+                            {{ empty_project.pledge_form.pledge_amount.errors }}
+                            {{ empty_project.pledge_form.pledge_amount }}
+                        </li>
+                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
+                               id="link-less">less</a></li>
+                    </ul></div>
+                    <div class="span2">
+                        <button data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='pledge' %}"
+                                type="submit" class="button orange">Pledge</button>
+                    </div>
                 </div>
-                <div class="span1"><ul>
-                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
-                           id="link-more">more</a></li>
-                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
-                           id="link-less">less</a></li>
-                    <li id="pledge-amount-field">
-                        {{ empty_project.pledge_form.pledge_amount.errors }}
-                        {{ empty_project.pledge_form.pledge_amount }}
-                    </li>
-                </ul></div>
-                <div class="span2">
-                    <button class="button orange"
-                       data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='pledge' %}"
-                            >Pledge</button>
-                </div>
+                {% if empty_project.last_pledge_transaction %}
+                    <div class="centered">
+                        last pledged with
+                        {{ site_currency_sign }}{{ empty_project.last_pledge_transaction.transaction_amount }}
+                        on {{ empty_project.last_pledge_transaction.transaction_datetime|date:"DATE_FORMAT" }}
+                        <button data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='switch_monthly' %}"
+                                type="submit" class="button button-small gray">switch to monthly pledge</button>
+                    </div>
+                {% endif %}
+                {% if not user.is_card_attached %}
+                    <div class="centered">
+                        <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
+                    </div>
+                {% endif %}
             </div>
-            {% if last_pledge_transaction %}
-                <div class="span8">
-                    You've pledged this project with
-                    {{ site_currency_sign }}{{ last_pledge_transaction.transaction_amount }}
-                    on {{ empty_project.last_pledge_transaction.transaction_datetime }}.
-                    <input type="submit" value="Switch to monthly pledge"
-                           data-action="{% url bitfund.project.views.crud_pledge_empty_project project_key=project.key action='switch_monthly' %}" />
-                </div>
-            {% endif %}
         {% endif %}
         {% if not request.user.is_authenticated %}
-            <div class="span8" id="login-links">
-                {% include "core/login/login-with-links.djhtm" %}
+            <div class="centered" id="login-links">
+                <span class="orange-bg">to pledge &ndash; {% include "core/login/login-with-links.djhtm" %}</span>
             </div>
         {% endif %}
     </div>
@@ -124,8 +138,6 @@
     function toggleMore_empty(showMore) {
         $('form#form-pledge-empty-project #pledge-amount-field').toggle(showMore);
         $('form#form-pledge-empty-project #options-button-sets').toggle(!showMore);
-        $('form#form-pledge-empty-project #link-more').toggle(!showMore);
-        $('form#form-pledge-empty-project #link-less').toggle(showMore);
     }
 
     function selectAmount_empty(amount) {
@@ -145,7 +157,7 @@
 
         {% if not empty_project.pledge_subscription %}
             {% if empty_project.last_pledge_transaction %}
-                toggleEmptyOnetimeMonthly_empty(false);
+                toggleOnetimeMonthly_empty(false);
             {% else %}
                 toggleOnetimeMonthly_empty(defaultOnetimeMonthlyPosition == 'monthly');
             {% endif %}
@@ -174,13 +186,14 @@
             event.preventDefault();
             toggleOnetimeMonthly_empty($(this).attr('id') == 'monthly-switch');
         });
-        $("#link-more, #link-less").click(function(event){
+        $("#link-onetime-more, #link-monthly-more, #link-less").click(function(event){
             event.preventDefault();
-            toggleMore_empty($(this).attr('id')=='link-more');
+            monthly = ($(this).attr('id') == 'link-onetime-more' || $(this).attr('id') == 'link-monthly-more');
+            toggleMore_empty(monthly);
         });
 
         if (user.is_authenticated && !{{ project_edit_access|lower }} ) {
-            $("form#form-pledge-empty-project input[type=submit]").click(function(event){
+            $("form#form-pledge-empty-project button[type=submit]").click(function(event){
                 $('form#form-pledge-empty-project').attr('action', $(this).data('action'));
             });
 
@@ -195,18 +208,18 @@
             $('#form-pledge-empty-project button, #form-pledge-empty-project input').attr('alt', 'You cannot pledge your own project.');
         } else {
             $("form#form-pledge-empty-project button").click(function () {
-                $('#login-links').fadeOut();
-                $('#login-links').fadeIn();
-                $('#login-links').fadeOut();
-                $('#login-links').fadeIn();
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
             });
 
             $("form#form-pledge-empty-project").submit(function(event){
                 event.preventDefault();
-                $('#login-links').fadeOut();
-                $('#login-links').fadeIn();
-                $('#login-links').fadeOut();
-                $('#login-links').fadeIn();
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
             });
         }
 
