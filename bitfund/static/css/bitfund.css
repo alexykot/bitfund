@@ -588,6 +588,11 @@ ul.chart-div-legend {
     color: #fff;
 }
 
+.less-input input {
+    margin-bottom: 0;
+    width: 200px;
+}
+
 .goals-column .centered .gray {
     margin-left: 10px;
 }
