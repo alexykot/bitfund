@@ -4,6 +4,23 @@
 
 
 {% block pagescripts %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#projects_i_depend_on_list" ).sortable({
+            items: '> li',
+            handle: '.sort-handle',
+            cursor: 'move',
+        });
+
+{#        $('#form-crud-project').submit(function(event){#}
+{#            sortedNeeds = $("#container-needs-list" ).sortable( "toArray", {attribute:'data-need'});#}
+{#            for (sort_order in sortedNeeds) {#}
+{#                need_id = sortedNeeds[sort_order];#}
+{#                $('#id_need-'+need_id+'-sort_order').attr('value',sort_order);#}
+{#            }#}
+{#        });#}
+    });
+</script>
 {% endblock pagescripts %}
 
 

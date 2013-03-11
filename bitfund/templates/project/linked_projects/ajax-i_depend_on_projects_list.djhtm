@@ -39,6 +39,7 @@
                             </div>
                             {% if project_edit_access %}
                                 <ul class="actions">
+                                    <li><span class="sort-handle">sort</span></li>
                                     <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}">edit</a></li>
                                     <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='drop' %}">drop</a></li>
                                 </ul>

@@ -118,7 +118,7 @@
                     </div>
                     {% endif %}    
                     <div class="span1 kf_time">
-                        {{goal.backers_count}} <br />
+                        {{goal.pledging_users_count}} <br />
                         <span class="kf_small">backers</span>
                     </div>
                     <div class="span1 kf_time">

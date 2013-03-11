@@ -81,6 +81,7 @@
                 seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
+
         });
     </script>
 {% endblock pagescripts %}

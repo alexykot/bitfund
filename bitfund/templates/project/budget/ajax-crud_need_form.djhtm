@@ -1,4 +1,4 @@
-<div class="row {% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}">
+<div class="row {% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}" data-need="{{ need.id }}">
     {{ need.crud_form.project }}
     {{ need.crud_form.date_added }}
     {{ need.crud_form.drop_need }}
@@ -35,9 +35,11 @@
         </div>
     </div>
     <div class="span8">
-            <button id="button-toggle-publish-need-{{need.id}}">
-                {% if need.is_public %}unpublish{% else %}publish{% endif %}
-            </button>
+        <span id="button-sort-need-{{need.id}}" class="sort-handle">sort</span>
+
+        <button id="button-toggle-publish-need-{{need.id}}">
+            {% if need.is_public %}unpublish{% else %}publish{% endif %}
+        </button>
 
         <button id="button-drop-need-{{need.id}}">delete</button>
     </div>
@@ -83,6 +85,7 @@
             }
         });
 
+        /*
         var need{{need.id}}DonationsSumRadiant = {{need.donations_sum_radiant}};
         var need{{need.id}}OtherRadiant = {{need.other_sources_radiant}};
 
@@ -112,6 +115,7 @@
             seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
             seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
         });
+        */
 
     });
 </script>

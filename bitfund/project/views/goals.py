@@ -94,6 +94,7 @@ def goal_view(request, project_key, goal_key):
 
     template_data = {'project' : project,
                      'request' : request,
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
                      'today'   : datetime.utcnow().replace(tzinfo=utc).today(),
                      }
 
