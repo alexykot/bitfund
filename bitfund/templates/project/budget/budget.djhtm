@@ -18,8 +18,8 @@
         function toggleMore(showMore, needId) {
             $("form#form-pledge-need-" + needId + ' #need-pledge-amount-field-' + needId).toggle(showMore);
             $("form#form-pledge-need-" + needId + ' #need-options-button-sets-' + needId).toggle(!showMore);
-            $("form#form-pledge-need-" + needId + ' #link-need-more-' + needId).toggle(!showMore);
-            $("form#form-pledge-need-" + needId + ' #link-need-less-' + needId).toggle(showMore);
+{#            $("form#form-pledge-need-" + needId + ' #link-need-more-' + needId).toggle(!showMore);#}
+{#            $("form#form-pledge-need-" + needId + ' #link-need-less-' + needId).toggle(showMore);#}
         }
 
         function selectAmount(amount, needId) {
