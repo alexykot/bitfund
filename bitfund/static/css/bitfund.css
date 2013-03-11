@@ -424,7 +424,7 @@ button.go {
     margin-right: 10px;
 }
 
-.month a:hover, .month a:hover .arrow-left-black, .month a:hover .arrow-right-black {
+.month a:hover, a:hover .arrow-left-black, a:hover .arrow-right-black {
     color: #fff;
     text-decoration: none;
 }
@@ -439,7 +439,7 @@ button.go {
     top: 1px;
 }
 
-.arrow-left-white, .arrow-right-white {
+a.arrow-left-white, a.arrow-right-white {
     color: #fff;
     font-family: arial;
    line-height: 16px;
@@ -586,6 +586,11 @@ ul.chart-div-legend {
     border: none;
     background-color: #577000;
     color: #fff;
+}
+
+.less-input input {
+    margin-bottom: 0;
+    width: 200px;
 }
 
 .goals-column .centered .gray {
