@@ -116,15 +116,13 @@
     <div class="row-fluid">
         <div class="span4 budget-column">
             <h5><b>Budget for</b>
-                <span>
-                    <a href="#" class="month">
-                        <span class="arrow-left-white">&#9668</span>
-                        <span class="arrow-left-black">&#9668</span>
+                <span class="month">
+                    <a href="#">
+                        <span class="arrow-left-white">&#9668<span class="arrow-left-black">&#9668</span></span>
                     </a>
                     {{ today|date:"F Y" }}
-                    <a href="#" class="month">
-                        <span class="arrow-right-white">&#9658</span>
-                        <span class="arrow-right-black">&#9658</span>
+                    <a href="#">
+                        <span class="arrow-right-white">&#9658<span class="arrow-right-black">&#9658</span></span>
                     </a>
                 </span>
             </h5>

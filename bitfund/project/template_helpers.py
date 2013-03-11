@@ -147,13 +147,9 @@ def _prepare_project_budget_template_data(request, project) :
     return budget_data
 
 
-def _prepare_empty_project_template_data(request, project, pledge_form=None) :
+def _prepare_empty_project_template_data(request, project) :
     template_data = {}
-    if pledge_form is None :
-        pledge_form = PledgeNoBudgetProjectForm()
-
-    template_data['pledge_form'] = pledge_form
-
+    template_data['pledge_form'] = PledgeNoBudgetProjectForm()
 
     if request.user.is_authenticated() :
         previous_pledges = (DonationTransaction.objects

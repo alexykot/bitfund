@@ -9,7 +9,6 @@
 body {
     background: url("../img/kf_background.png") repeat-x;
     background-color: #fff;
-    font-family: Tahoma, sans-serif;
     position: relative;
 }
 
@@ -415,25 +414,31 @@ button.go {
 
 /* Page 3 =====================*/
 
-.month {
-    position: relative;
+.budget-column h5 b {
+    margin-right: 10px;
 }
 
-.month:hover, .month:hover .arrow-left-black, .month:hover .arrow-right-black {
+.month a:hover, .month a:hover .arrow-left-black, .month a:hover .arrow-right-black {
     color: #fff;
     text-decoration: none;
 }
 
 .arrow-left-black, .arrow-right-black {
     color: #3d3d3d;
+    font-family: arial;
     font-size: 14px;
-    position : absolute;
     left: 1px;
+    line-height: 16px;
+    position: absolute;
+    top: 1px;
 }
 
 .arrow-left-white, .arrow-right-white {
     color: #fff;
+    font-family: arial;
+   line-height: 16px;
     font-size: 16px;
+    position: relative;
 }
 
 .budget-column > div {
