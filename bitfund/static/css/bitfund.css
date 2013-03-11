@@ -277,20 +277,11 @@ button.go {
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
     margin-top: 40px;
-    padding: 20px 0 0;
+    padding: 20px 0;
 }
 
 .available-projects {
-    padding: 30px;
-}
-
-.available-projects .row {
-    margin-left: -30px;
-}
-
-.available-projects .span3 {
-    margin-left: 30px;
-    width: 196px;
+    padding: 20px 30px;
 }
 
 .available-projects .span3 h3 {
@@ -340,8 +331,11 @@ button.go {
     vertical-align: middle;
 }
 
+.depends-on > div, .depending-on > div, .budget-column > div, .goals-column > div {
+    padding-top: 20px;
+}
 
-.dependent-projects .span6:last-child h5, .goals-column h5 {
+.depends-on > h5, .goals-column h5 {
     border-left: 1px solid #fff;
 }
 
@@ -354,13 +348,21 @@ button.go {
     padding-left: 30px;
 }
 
+.depends-on > h5, .depends-on > div, .goals-column > h5:first-child, .goals-column > div {
+    margin-left: -20px;
+}
+
+.depends-on > div, .goals-column > div {
+    border-left: 1px solid #ccc;
+}
+
 .dependent-projects ul {
     margin-left: 0;
 }
 
-.dependent-projects .project {
+.dependent-projects .project, .goal {
     border-bottom: 1px solid #ccc;
-    margin: 15px 15px 0;
+    margin: 0 15px 15px;
 }
 
 .dependent-projects .media {
@@ -413,12 +415,25 @@ button.go {
 
 /* Page 3 =====================*/
 
-.project-goals > .row-fluid:last-child {
-    padding-bottom: 30px;
+.month {
+    position: relative;
 }
 
-.budget-column > div, .goals-column > div {
-    padding-top: 20px;
+.month:hover, .month:hover .arrow-left-black, .month:hover .arrow-right-black {
+    color: #fff;
+    text-decoration: none;
+}
+
+.arrow-left-black, .arrow-right-black {
+    color: #3d3d3d;
+    font-size: 14px;
+    position : absolute;
+    left: 1px;
+}
+
+.arrow-left-white, .arrow-right-white {
+    color: #fff;
+    font-size: 16px;
 }
 
 .budget-column > div {
@@ -452,54 +467,40 @@ button.go {
 }
 
 ul.chart-div-legend {
-    font-size: 12px;
     margin-left: 0;
 }
 
-ul.chart-div-legend li {
-    line-height: 18px;
-    padding-left: 15px;
+.green-marker, .olive-marker, .yellow-marker {
+    border-radius: 6px;
+    display: inline-block;
+    height: 12px;
+    margin: 5px 5px 0 0;
+    width: 12px;
 }
 
-ul.chart-div-legend li:nth-child(1) {
-    background: url("../img/backers_suport_marker.png") no-repeat 0 2px;
+.green-marker {
+    background-color: #577000;
 }
 
-ul.chart-div-legend li:nth-child(2) {
-    background: url("../img/linked_projects_marker.png") no-repeat 0 2px;
+.olive-marker {
+    background-color: #89b001;
 }
 
-ul.chart-div-legend li:nth-child(3) {
-    background: url("../img/other_sources_marker.png") no-repeat 0 2px;
+.yellow-marker {
+    background-color: #ebbb06;
 }
 
 .sum-from-sources {
     margin-top: 15px;
 }
-
-.goals-column > h5:first-child, .goals-column > div {
-    margin-left: -20px;
-}
-
-.goals-column > div {
-    border-left: 1px solid #ccc;
-}
-
-.goals-column div.pull-right {
-    margin-right: 20px;
-    text-align: right;
-}
-
-.goal {
-    border-bottom: 1px solid #ccc;
-    margin: 0 15px 15px;
-    padding-bottom: 20px;
-}
-
+ 
 .goals-column .goal:last-child {
     border-bottom: none;
 }
 
+.goal {
+    padding-bottom: 20px;
+}
 
 .goal .row-fluid {
     margin-bottom: 15px;
@@ -576,7 +577,7 @@ ul.chart-div-legend li:nth-child(3) {
     color: #fff;
 }
 
-.grateful {
+.goals-column .centered .gray {
     margin-left: 10px;
 }
 

@@ -26,27 +26,29 @@
         <div class="row-fluid">
             <div class="span6 depending-on">
             {% if projects_depending_on_me_count %}
-                <h5>Projects depending on {{ project.title }}</h5>
-                <ul>
-                    {% for project_depending_on_me in projects_depending_on_me %}
-                    <li class="project">
-                        <div class="media">
-                            <img class="media-object pull-left" src="#" />
-                            <div class="media-body">
-                                <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a></h4>
-                                <p>Get started by putting some bits in your bucket.</p>
-                                <span>{% if project_depending_on_me.amount_sum %}
-                                {{ site_currency_sign }}{{ project_depending_on_me.amount_sum|floatformat:2 }}
-                            {% elif project_depending_on_me.amount_percent %}
-                                {{ project_depending_on_me.amount_percent|floatformat }}%
-                            {% endif %}</span>
+                <h5>Projects depending on <b>{{ project.title }}</b></h5>
+                <div>
+                    <ul>
+                        {% for project_depending_on_me in projects_depending_on_me %}
+                        <li class="project">
+                            <div class="media">
+                                <img class="media-object pull-left" src="#" />
+                                <div class="media-body">
+                                    <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_depending_on_me.key %}">{{ project_depending_on_me.title }}</a></h4>
+                                    <p>Get started by putting some bits in your bucket.</p>
+                                    <span>{% if project_depending_on_me.amount_sum %}
+                                    {{ site_currency_sign }}{{ project_depending_on_me.amount_sum|floatformat:2 }}
+                                {% elif project_depending_on_me.amount_percent %}
+                                    {{ project_depending_on_me.amount_percent|floatformat }}%
+                                {% endif %}</span>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             {% else %}
-                <h3>No projects depend on {{ project.title }}:</h3>
+                <h3>No projects depend on <b>{{ project.title }}</b></h3>
             {% endif %}
             </div>
 

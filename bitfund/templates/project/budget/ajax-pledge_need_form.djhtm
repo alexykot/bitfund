@@ -28,8 +28,9 @@
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
-                
-                        <ul style="display: none">
+                    </div>
+                    <div class="span6" style="display: none">
+                        <ul>
                             <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
                                    id="link-need-less-{{ need.id }}">less</a></li>
                             <li id="need-pledge-amount-field-{{ need.id }}">
@@ -38,6 +39,7 @@
                             </li>
                         </ul>
                     </div>
+                   
                     <div class="span3">
                         <button type="submit" value="Update pledge"
                            data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Update pledge</button>
@@ -101,8 +103,9 @@
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul> 
-                    
-                        <ul style="display: none;">
+                    </div>
+                    <div class="span6" style="display: none">
+                        <ul>
                             <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
                                    id="link-need-less-{{ need.id }}">less</a></li>
                             <li id="need-pledge-amount-field-{{ need.id }}">

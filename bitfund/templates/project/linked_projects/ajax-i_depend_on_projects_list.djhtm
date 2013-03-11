@@ -1,52 +1,54 @@
 {% if projects_i_depend_on_count %}
-    <h5>Projects {{ project.title }} depends on</h5>
-    <ul id="projects_i_depend_on_list">
-        {% for project_i_depend_on in projects_i_depend_on %}
-            {% if crud_linked_project_action == 'edit' and project_i_depend_on.key == linked_project.key %}
-                <li>
-                    <div class="project">
-                        <div class="media">
-                            <img class="media-object pull-left" src="#" />
-                            <div class="media-body">
-                                <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a></h4>
+    <h5>Projects <b>{{ project.title }}</b> depends on</h5>
+    <div>
+        <ul id="projects_i_depend_on_list">
+            {% for project_i_depend_on in projects_i_depend_on %}
+                {% if crud_linked_project_action == 'edit' and project_i_depend_on.key == linked_project.key %}
+                    <li>
+                        <div class="project">
+                            <div class="media">
+                                <img class="media-object pull-left" src="#" />
+                                <div class="media-body">
+                                    <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a></h4>
+                                </div>
                             </div>
+                            <form action="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}"
+                              id="crud_linked_project_form">
+                            {% csrf_token %}
+                            {{ crud_linked_project_edit_form.as_p }}
+                            <input type="submit" value="Submit"/>
+                            </form>
+                            <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key %}"
+                               class="project_crud">cancel</a>
                         </div>
-                        <form action="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}"
-                          id="crud_linked_project_form">
-                        {% csrf_token %}
-                        {{ crud_linked_project_edit_form.as_p }}
-                        <input type="submit" value="Submit"/>
-                        </form>
-                        <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key %}"
-                           class="project_crud">cancel</a>
-                    </div>
-                </li>
-            {% else %}
-                <li>
-                    <div class="project">
-                        <div class="media">
-                            <img class="media-object pull-left" src="#" />
-                            <div class="media-body">
-                                <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a></h4>
-                                <p>{{ project_i_depend_on.brief }}</p>
-                                <span>{% if project_i_depend_on.amount_sum > 0 %}
-                                    {{ site_currency_sign }}{{ project_i_depend_on.amount_sum|floatformat:2 }}
-                                {% elif project_i_depend_on.amount_percent > 0 %}
-                                    {{ project_i_depend_on.amount_percent|floatformat:2 }}%
-                                {% endif %} </span>
+                    </li>
+                {% else %}
+                    <li>
+                        <div class="project">
+                            <div class="media">
+                                <img class="media-object pull-left" src="#" />
+                                <div class="media-body">
+                                    <h4 class="media-heading"><a href="{% url bitfund.project.views.budget project_key=project_i_depend_on.key %}">{{ project_i_depend_on.title }}</a></h4>
+                                    <p>{{ project_i_depend_on.brief }}</p>
+                                    <span>{% if project_i_depend_on.amount_sum > 0 %}
+                                        {{ site_currency_sign }}{{ project_i_depend_on.amount_sum|floatformat:2 }}
+                                    {% elif project_i_depend_on.amount_percent > 0 %}
+                                        {{ project_i_depend_on.amount_percent|floatformat:2 }}%
+                                    {% endif %} </span>
+                                </div>
                             </div>
+                            {% if project_edit_access %}
+                                <ul class="actions">
+                                    <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}">edit</a></li>
+                                    <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='drop' %}">drop</a></li>
+                                </ul>
+                            {% endif %}    
                         </div>
-                        {% if project_edit_access %}
-                            <ul class="actions">
-                                <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}">edit</a></li>
-                                <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='drop' %}">drop</a></li>
-                            </ul>
-                        {% endif %}    
-                    </div>
-                </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
 {% else %}
     <h3>{{ project.title }} doesn't depend on any projects</h3>
 {% endif %}
