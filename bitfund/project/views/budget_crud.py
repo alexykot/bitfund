@@ -115,7 +115,7 @@ def crud_pledge_need(request, project_key, need_id, action=None):
                     pledge_subscription = (DonationSubscription.objects
                                            .filter(user=request.user)
                                            .filter(project=project)
-                                                     .select_related())
+                                           .select_related())
 
                     if pledge_subscription.count() == 1 :
                         pledge_subscription = pledge_subscription[0]
@@ -202,14 +202,14 @@ def crud_pledge_need(request, project_key, need_id, action=None):
 
         elif action == 'drop_subscription' :
             existing_subscription = (DonationSubscription.objects
-                                             .filter(user=request.user, project=project)
-                                             .select_related())
+                                     .filter(user=request.user, project=project)
+                                     .select_related())
 
             if existing_subscription.count() == 1 :
                 existing_subscription = existing_subscription[0]
                 existing_subscription_need = (DonationSubscriptionNeeds.objects
-                                                      .filter(donation_subscription=existing_subscription,
-                                                              need=need))
+                                              .filter(donation_subscription=existing_subscription,
+                                                      need=need))
                 if existing_subscription_need.count() == 1 :
                     existing_subscription_need = existing_subscription_need[0]
                     existing_subscription.cancelPendingTransactions(existing_subscription_need)
@@ -308,7 +308,6 @@ def crud_pledge_empty_project(request, project_key, action=None):
         elif action == 'switch_monthly' :
             pledge_empty_project_form = PledgeNoBudgetProjectForm(request.POST)
             if pledge_empty_project_form.is_valid() :
-                cleaned_pledge_type = pledge_empty_project_form.cleaned_data['pledge_type']
                 cleaned_pledge_amount = pledge_empty_project_form.cleaned_data['pledge_amount']
 
                 pledge_subscription = (DonationSubscription.objects
@@ -327,7 +326,6 @@ def crud_pledge_empty_project(request, project_key, action=None):
                 pledge_subscription.save()
 
                 return redirect('bitfund.project.views.crud_pledge_empty_project', project_key=project.key)
-
             else :
                 template_data['empty_project'] = _prepare_empty_project_template_data(request, project, pledge_empty_project_form)
 
@@ -341,8 +339,8 @@ def crud_pledge_empty_project(request, project_key, action=None):
                 existing_subscription.cancelPendingTransactions()
 
                 subscription_needs_count = (DonationSubscriptionNeeds.objects
-                                             .filter(donation_subscription_id=existing_subscription.id)
-                                             .count())
+                                            .filter(donation_subscription_id=existing_subscription.id)
+                                            .count())
                 if subscription_needs_count == 0 :
                     existing_subscription.delete()
                 else :
@@ -351,6 +349,7 @@ def crud_pledge_empty_project(request, project_key, action=None):
 
             return redirect('bitfund.project.views.crud_pledge_empty_project', project_key=project.key)
 
+    template_data['empty_project'] = _prepare_empty_project_template_data(request, project)
     template_data['budget'] = _prepare_project_budget_template_data(request, project)
 
     return render_to_response('project/budget/ajax-pledge_empty_project_form.djhtm', template_data, context_instance=RequestContext(request))
@@ -423,7 +422,7 @@ def crud_linked_project(request, project_key, linked_project_key=None, action=No
             linked_project_edit_form = EditLinkedProjectForm(project.id, linked_project.id, request.POST)
             if linked_project_edit_form.is_valid():
                 project_dependency = (Project_Dependencies.objects.get(dependee_project__id=linked_project.id,
-                                                                              depender_project__id=project.id))
+                                                                       depender_project__id=project.id))
                 project_dependency.redonation_amount = Decimal(
                     (linked_project_edit_form.cleaned_data['redonation_amount'] or 0))
                 project_dependency.redonation_percent = Decimal(

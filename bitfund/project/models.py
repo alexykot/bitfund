@@ -296,12 +296,14 @@ class ProjectGoal(models.Model):
 
     # calculates total donations for a goal for given transaction_type4
     def getTotalByType(self, transaction_type):
-        from bitfund.pledger.models import DonationTransaction
+        from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES
 
         donation_transactions_sum = (DonationTransaction.objects
-                                     .filter(accepting_project=self.project)
-                                     .filter(accepting_goal=self)
+                                     .filter(accepting_project_id=self.project.id)
+                                     .filter(accepting_goal_id=self.id)
                                      .filter(transaction_type=transaction_type)
+                                     .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                     .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
                                      .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                                     ) or 0
 

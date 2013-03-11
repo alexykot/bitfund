@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
+import math
 
 from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
 from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm, PledgeNoBudgetProjectForm
@@ -20,9 +21,9 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
     pledge_subscription = False
     if request.user.is_authenticated() :
         previous_pledges = (DonationTransaction.objects
-                            .filter(pledger_user__id=request.user.id)
-                            .filter(accepting_project__id=project.id)
-                            .filter(accepting_need__id=need.id)
+                            .filter(pledger_user_id=request.user.id)
+                            .filter(accepting_project_id=project.id)
+                            .filter(accepting_need_id=need.id)
                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
                              .order_by('-transaction_datetime')
@@ -81,6 +82,63 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
     }
 
     return result
+
+def _prepare_goal_item_template_data(request, project, goal) :
+    pledges_amount = goal.getTotalPledges() + goal.getTotalRedonations()
+    donations_radiant = min(360, round(360 * (pledges_amount / goal.amount)))
+    total_percent = int(math.ceil((pledges_amount*100) / goal.amount))
+
+    # other sources are not used at the moment
+    # other_sources_amount = goal.getTotalOtherSources()
+    # other_sources_radiant = min(360, round(360 * (other_sources_amount / goal.amount)))
+    # total_percent = int(math.ceil(((donations_amount+other_sources_amount)*100) / goal.amount))
+
+    if not (donations_radiant) :
+        donations_radiant     = MINIMAL_DEFAULT_PLEDGES_RADIANT
+        # other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+
+    pledging_users_count = (DonationTransaction.objects
+                          .filter(accepting_project_id=project.id)
+                          .filter(accepting_goal_id=goal.id)
+                          .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                          .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                          .values('pledger_user_id')
+                          .distinct()
+                          .count()
+                         )
+
+    datetime_to_end = (goal.date_ending - now())
+    if goal.date_ending < now() :
+        is_expired = True
+        days_to_end = 0
+        hours_to_end = 0
+    else :
+        is_expired = False
+        days_to_end = int(datetime_to_end.days)
+        hours_to_end = int(datetime_to_end.days * 24 + math.ceil(datetime_to_end.seconds / 3600))
+
+    result = {'id': goal.id,
+              'key': goal.key,
+              'title': goal.title,
+              'brief': goal.brief,
+              'short_text': goal.short_text,
+              'long_text': goal.long_text,
+              'video_url': goal.video_url,
+              'image': goal.image,
+              'amount': goal.amount,
+              'is_public': goal.is_public,
+              'is_expired': is_expired,
+              'date_ending': goal.date_ending,
+              'days_to_end': days_to_end,
+              'hours_to_end': hours_to_end,
+              'pledges_amount': pledges_amount,
+              'pledges_radiant': donations_radiant,
+              'pledging_users_count': pledging_users_count,
+              'total_percent': total_percent,
+    }
+
+    return result
+
 
 def _prepare_project_budget_template_data(request, project) :
     budget_data = {}
@@ -147,13 +205,13 @@ def _prepare_project_budget_template_data(request, project) :
     return budget_data
 
 
+
 def _prepare_empty_project_template_data(request, project, pledge_form=None) :
     template_data = {}
     if pledge_form is None :
-        pledge_form = PledgeNoBudgetProjectForm()
+            pledge_form = PledgeNoBudgetProjectForm()
 
     template_data['pledge_form'] = pledge_form
-
 
     if request.user.is_authenticated() :
         previous_pledges = (DonationTransaction.objects

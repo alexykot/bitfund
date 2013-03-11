@@ -115,10 +115,9 @@ class CreateProjectGoalForm(forms.ModelForm):
 
 class AddLinkedProjectForm(forms.Form):
     linked_project = forms.ModelChoiceField(queryset=Project.objects.all(), required=True, empty_label=u'Select Project')
-    redonation_percent = forms.DecimalField(min_value=0.01, decimal_places=2,
-                                         required=False)
-    redonation_amount = forms.DecimalField(min_value=0.01, decimal_places=2,
-                                        required=False)
+    redonation_percent = forms.DecimalField(min_value=0.01, decimal_places=2, required=False)
+    redonation_amount = forms.DecimalField(min_value=0.01, decimal_places=2, required=False)
+    sort_order = forms.IntegerField(required=False, widget=forms.HiddenInput)
     brief = forms.CharField(max_length=255, widget=forms.Textarea)
 
     def __init__(self, main_project_id, *args, **kw):

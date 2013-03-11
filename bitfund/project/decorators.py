@@ -39,8 +39,16 @@ def disallow_not_public_unless_maintainer(view):
         project = get_object_or_404(Project, key=project_key)
         if not project.is_public and (project.maintainer_id != request.user.id):
             return HttpResponseNotFound()
-        else:
-            return view(request, project_key=project_key, *args, **kwargs)
+
+        if 'goal_key' in kwargs :
+            goal_key = kwargs.pop('goal_key')
+            goal = get_object_or_404(ProjectGoal, key=goal_key)
+            if not goal.is_public and (project.maintainer_id != request.user.id):
+                return HttpResponseNotFound()
+            else :
+                return view(request, project_key=project_key, goal_key=goal_key, *args, **kwargs)
+
+        return view(request, project_key=project_key, *args, **kwargs)
 
     return _wrapped_view
 
