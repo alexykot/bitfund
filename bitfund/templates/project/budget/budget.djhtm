@@ -81,6 +81,7 @@
                 seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
                 seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
             });
+
         });
     </script>
 {% endblock pagescripts %}
@@ -140,7 +141,7 @@
                         </div>
                     </div>
                     <div class="span4 centered">
-                        <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
+                        <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}</div>
                         <div>pledged</div>
                     </div>
                     <div class="span3 offset1 centered">

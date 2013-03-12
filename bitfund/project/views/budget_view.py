@@ -1,9 +1,10 @@
-import math
+import os
 
+from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.db.models import Sum
 from django.utils.datetime_safe import datetime
+from django.utils.encoding import smart_str
 from django.utils.timezone import utc, now
 
 from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
@@ -15,6 +16,7 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            MINIMAL_DEFAULT_REDONATIONS_RADIANT,
                                            MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT,
                                            )
+from bitfund.core.settings.server import STATIC_ROOT, STATICFILES_DIRS
 from bitfund.project.decorators import user_is_project_maintainer, disallow_not_public_unless_maintainer, redirect_not_active
 from bitfund.project.models import *
 from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data, _prepare_empty_project_template_data, _prepare_goal_item_template_data
@@ -72,7 +74,14 @@ def budget(request, project_key):
 
 @disallow_not_public_unless_maintainer
 def chart_image(request, project_key, need_key=None, goal_key=None):
-    return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
+    chart_filename = 'out.png'
+    chart_fullpath = STATICFILES_DIRS[0]+"img/charts/"+chart_filename
+
+    response = HttpResponse(mimetype='image/png')
+    response['Content-Length'] = os.path.getsize(chart_fullpath)
+    response.write(open(chart_fullpath, 'r').read())
+
+    return response
 
 @disallow_not_public_unless_maintainer
 def linked_projects(request, project_key):

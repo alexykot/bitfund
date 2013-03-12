@@ -4,7 +4,7 @@
             <li>You are <a href="#">{{ request.user.username }}</a></li>
             {% if request.user_projects_support_count %}
                 <li>You're supporting <a href="#">{{ request.user_projects_support_count }} project{{ request.user_projects_support_count|pluralize }}</a></li>
-            {% else %}
+            {% elif not request.user_projects_own_count %}
                 <li>You're not supporting any projects</li>
             {% endif %}
             {% if request.user_projects_own_count %}

@@ -1,0 +1,280 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %}{{ project.title }} - goal "{{goal.title}}"{% endblock title %}
+
+
+{% block pagescripts %}
+    <script type="text/javascript">
+        function toggleMore(showMore) {
+            $('#pledge-amount-field').toggle(showMore);
+            $('#options-button-set').toggle(!showMore);
+        }
+
+        function selectAmount(amount) {
+            $('#options-button-set button').each(function(){
+                $(this).removeClass('active');
+                if (amount == $(this).data('amount')) {
+                    $(this).addClass('active');
+                }
+            });
+
+            $('#id_pledge_amount').val(amount);
+        }
+
+        $(document).ready(function () {
+
+            /*
+            var goal{{goal.id}}OtherRadiant = {{goal.other_sources_radiant}};
+            var goal{{goal.id}}DonationsRadiant = {{goal.donations_radiant}};
+
+            var goal{{goal.id}}BackgroundSeries = [
+                ['a', 100],
+                ['b', 100]
+            ];
+            var goal{{goal.id}}BackgroundDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}BackgroundSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                seriesColors: [ "#EDEBEA", "#EDEBEA" ],
+                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+            });
+
+            var goal{{goal.id}}OtherSeries = [
+                ['c', (goal{{goal.id}}OtherRadiant + goal{{goal.id}}DonationsRadiant)],
+                ['d', (360 - (goal{{goal.id}}OtherRadiant + goal{{goal.id}}DonationsRadiant))]
+            ];
+            var goal{{goal.id}}OtherDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}OtherSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
+                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+            });
+
+            var goal{{goal.id}}DonationsSeries = [
+                ['a', (goal{{goal.id}}DonationsRadiant)],
+                ['b', 360 - goal{{goal.id}}DonationsRadiant]
+            ];
+            var goal{{goal.id}}DonationsDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}DonationsSeries], {
+                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
+                seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
+                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
+            });
+            */
+
+            $('#link-more, #link-less').click(function(event){
+                event.preventDefault();
+                toggleMore($(this).attr('id') == 'link-more');
+            });
+
+            $('#options-button-set button').click(function(event){
+                event.preventDefault();
+                selectAmount($(this).data('amount'));
+            });
+
+            $('#pledge-amount-field input').keyup(function(){
+                selectAmount($(this).attr('value'));
+            });
+
+            $('form#form-pledge-goal button[type=submit]').click(function(event){
+                event.preventDefault();
+                $('form#form-pledge-goal').attr('action', $(this).data('action'));
+                $('form#form-pledge-goal').submit();
+            });
+
+
+        {% if goal.last_transaction %}
+            selectAmount({{ goal.last_transaction.transaction_amount}});
+        {% endif %}
+
+
+        {% if project_edit_access %}
+            $('#form-pledge-goal button, #form-pledge-goal input').attr('disabled', 'disabled');
+            $('#form-pledge-goal button, #form-pledge-goal input').attr('title', 'You cannot pledge your own project.');
+            $('#form-pledge-goal button, #form-pledge-goal input').attr('alt', 'You cannot pledge your own project.');
+        {% elif not request.user.is_authenticated  %}
+            $("form#form-pledge-goal button").click(function () {
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
+            });
+
+            $("form#form-pledge-goal ").submit(function(event){
+                event.preventDefault();
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
+                $('#login-links').fadeOut(100);
+                $('#login-links').fadeIn(100);
+            });
+        {% endif %}
+
+
+        });
+    </script>
+{% endblock pagescripts %}
+
+
+{% block content %}
+
+<div class="project-goals">
+
+    <div class="row-fluid project-attributes">
+        <div class="span9">
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                <img src="{{ STATIC_URL }}img/project_img.png" />
+                {% comment %}
+                {% if logo %}
+                    <img src="{{ logo.url }} " />
+                {% elif project.logo %}
+                    <img src="{{ project.logo.url }} " />
+                {% endif %}
+                {% endcomment %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
+        </div>
+        <div class="span3">
+            {% if project_edit_access %}
+                <a href="{% url bitfund.project.views.edit_goals project_key=project.key goal_key=goal.key %}">edit</a> <br>
+                <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
+                    {% csrf_token %}
+                    <input type="submit"
+                           value="{% if goal.is_public %}unpublish{% else %}publish{% endif %}"></form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            {{goal.title}}
+        </div>
+        <div class="span12">
+            {{goal.brief}}
+        </div>
+        <div class="span8">
+            {% if goal.youtube_video_id %}
+
+                <div id="ytplayer"></div>
+
+                <script>
+                    // Load the IFrame Player API code asynchronously.
+                    var tag = document.createElement('script');
+                    tag.src = "https://www.youtube.com/player_api";
+                    var firstScriptTag = document.getElementsByTagName('script')[0];
+                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                    // Replace the 'ytplayer' element with an <iframe> and
+                    // YouTube player after the API code downloads.
+                    var player;
+                    function onYouTubePlayerAPIReady() {
+                        player = new YT.Player('ytplayer', {
+                            height: '390',
+                            width: '620',
+                            videoId: '{{ goal.youtube_video_id }}'
+                        });
+                    }
+                </script>
+            {% elif goal.vimeo_video_id  %}
+                <iframe src="http://player.vimeo.com/video/{{ goal.vimeo_video_id }}" width="620" height="390" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+            {% elif goal.image %}
+                <img src="{{ goal.image.url }}" />
+            {% endif %}
+        </div>
+        <div class="span4">
+            <div class="row">
+                <div class="span4 pull-right">
+                    <div class="span2 pull-left">
+                        Launched: {{goal.date_starting|date:"DATE_FORMAT"}} <br />
+                        Ending: {{goal.date_ending|date:"DATE_FORMAT"}}
+                    </div>
+                </div>
+
+                <div class="span1 kf_chart_container">
+                    <div id="goal-{{goal.id}}-chart"></div>
+                    <span>{{goal.total_percent}}%</span>
+                </div>
+                <div class="span1">
+                    {{ site_currency_sign }}
+                    {{goal.pledges_amount}} <br />
+                    <span class="kf_small">pledged</span>
+                </div>
+
+                {% if goal.days_to_end > 1 %}
+                    <div class="span1">
+                        {{goal.days_to_end}} <br />
+                        <span class="kf_small">days to go</span>
+                    </div>
+                {% elif goal.hours_to_end > 0 %}
+                    <div class="span1">
+                        {{goal.hours_to_end}} <br />
+                        <span class="kf_small">hours to go</span>
+                    </div>
+                {% else %}
+                    <div class="span1">
+                        ENDED
+                    </div>
+                {% endif %}
+                <div class="span1 kf_time">
+                    {{goal.pledging_users_count}} <br />
+                    <span class="kf_small">backers</span>
+                </div>
+                <div class="span4">
+                    ${{goal.amount}} <br />
+                    <span class="kf_small">asked</span>
+                </div>
+            </div>
+
+            {% if goal.last_transaction %}
+                You're pledging {{ site_currency_sign }}{{ goal.last_transaction.transaction_amount|floatformat:2 }}
+            {% endif %}
+
+            <form action="" method="post" id="form-pledge-goal">
+                <div class="row">
+                    {% csrf_token %}
+                    {{ goal.pledge_form.non_field_errors }}
+                    <ul class="amount-buttons" id="options-button-set">
+                        <li>{{ site_currency_sign }}</li>
+                        <li><button data-amount="2">2</button></li>
+                        <li><button data-amount="5">5</button></li>
+                        <li><button data-amount="10">10</button></li>
+                        <li><button data-amount="15">15</button></li>
+                        <li><button data-amount="25">25</button></li>
+                        <li><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}#select-more"
+                               id="link-more">more</a></li>
+                    </ul>
+                    <ul id="pledge-amount-field" style="display: none;">
+                        <li>{{ site_currency_sign }}</li>
+                        <li>
+                            {{ goal.pledge_form.pledge_amount.errors }}
+                            {{ goal.pledge_form.pledge_amount }}
+                        </li>
+                        <li><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"
+                               id="link-less">less</a></li>
+                    </ul>
+                </div>
+                <div class="row">
+                    {% if goal.last_transaction %}
+                        <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
+                                type="submit">Update pledge</button>
+                        <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='drop' %}"
+                                type="submit" >Cancel pledge</button>
+                    {% else %}
+                        <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
+                                type="submit">Pledge</button>
+                    {% endif %}
+                </div>
+                {% if not request.user.is_authenticated %}
+                    <div class="centered" id="login-links-{{ need.id }}">
+                        <span class="orange-bg">{% include "core/login/login-with-links.djhtm" %}</span>
+                    </div>
+                {% endif %}
+                {% if not request.user.is_payment_card_attached %}
+                    <div class="centered">
+                        <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+        <div class="span8">
+            {{goal.long_text|safe }}
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

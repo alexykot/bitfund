@@ -64,6 +64,20 @@
 
                 //$('#container-needs-list').append($.get('{% url bitfund.project.views.add_need project_key=project.key %}'));
             });
+
+            $("#container-needs-list" ).sortable({
+                items: 'div[id|="pledge-form-contents"]',
+                 handle: 'span[id|="button-sort-need"]',
+                cursor: 'move',
+            });
+
+            $('#form-crud-project').submit(function(event){
+                sortedNeeds = $("#container-needs-list" ).sortable( "toArray", {attribute:'data-need'});
+                for (sort_order in sortedNeeds) {
+                    need_id = sortedNeeds[sort_order];
+                    $('#id_need-'+need_id+'-sort_order').attr('value',sort_order);
+                }
+            });
         });
     </script>
 {% endblock pagescripts %}
@@ -91,7 +105,7 @@
             </div>
             <div class="span3 kf_project_meta">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">exit edit mode</a>
-                <input type="submit" value="Save" />
+                <input type="submit" value="Save" id="save-budget" />
             </div>
         </div>
 

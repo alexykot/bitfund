@@ -4,7 +4,7 @@ from django.utils.timezone import now
 import math
 
 from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
-from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm, PledgeNoBudgetProjectForm
+from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
@@ -83,7 +83,10 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
 
     return result
 
-def _prepare_goal_item_template_data(request, project, goal) :
+def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=None) :
+    if pledge_goal_form is None :
+        pledge_goal_form = PledgeProjectGoalForm()
+
     pledges_amount = goal.getTotalPledges() + goal.getTotalRedonations()
     donations_radiant = min(360, round(360 * (pledges_amount / goal.amount)))
     total_percent = int(math.ceil((pledges_amount*100) / goal.amount))
@@ -107,6 +110,19 @@ def _prepare_goal_item_template_data(request, project, goal) :
                           .count()
                          )
 
+    last_transaction = (DonationTransaction.objects
+                                  .filter(accepting_project_id=project.id)
+                                  .filter(accepting_goal_id=goal.id)
+                                  .filter(pledger_user_id=request.user.id)
+                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+    )
+    if last_transaction.count() > 0 :
+        last_transaction = last_transaction[0]
+    else :
+        last_transaction = False
+
+
     datetime_to_end = (goal.date_ending - now())
     if goal.date_ending < now() :
         is_expired = True
@@ -123,7 +139,8 @@ def _prepare_goal_item_template_data(request, project, goal) :
               'brief': goal.brief,
               'short_text': goal.short_text,
               'long_text': goal.long_text,
-              'video_url': goal.video_url,
+              'youtube_video_id': goal.youtube_video_id,
+              'vimeo_video_id': goal.vimeo_video_id,
               'image': goal.image,
               'amount': goal.amount,
               'is_public': goal.is_public,
@@ -135,6 +152,8 @@ def _prepare_goal_item_template_data(request, project, goal) :
               'pledges_radiant': donations_radiant,
               'pledging_users_count': pledging_users_count,
               'total_percent': total_percent,
+              'pledge_form': pledge_goal_form,
+              'last_transaction': last_transaction,
     }
 
     return result

@@ -15,46 +15,38 @@
                     <div class="span6" id="need-options-button-sets-{{ need.id }}">
                         <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button data-amount="0.25">0.25</button></li>
-                            <li><button data-amount="0.5">0.5</button></li>
+                            <li><button data-amount="0.25">0,25</button></li>
+                            <li><button data-amount="0.5">0,5</button></li>
                             <li><button data-amount="1">1</button></li>
                             <li><button data-amount="2">2</button></li>
                             <li><button data-amount="5">5</button></li>
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
-                    </div>
-                    <div class="span6 less-input" id="need-pledge-amount-field-{{ need.id }}">
-                        <ul>
-                            <li>{{ site_currency_sign }}</li>
-                            <li>
+                
+                        <ul style="display: none">
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
+                                   id="link-need-less-{{ need.id }}">less</a></li>
+                            <li id="need-pledge-amount-field-{{ need.id }}">
                                 {{ need.pledge_form.pledge_amount.errors }}
                                 {{ need.pledge_form.pledge_amount }}
                             </li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                                   id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
                     <div class="span3">
-                        <button data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}"
-                                class="button orange">Update pledge</button>
+                        <button type="submit" value="Update pledge"
+                           data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Update pledge</button>
                     </div>
                 </div>
 
-                <div class="centered">
-                    {% if need.last_pledge_transaction %}
-                        last pledged with
-                        {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
-                        on {{ need.last_pledge_transaction.transaction_datetime|date:"DATE_FORMAT" }}
-                    {% endif %}
-
-
-                    <button data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='drop_subscription' %}"
-                            class="button button-small gray">stop monthly pledging</button>
-                </div>
-                {% if not user.is_card_attached %}
+                {% if need.last_pledge_transaction %}
                     <div class="centered">
-                        <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
+                        last pledged {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
+                        on {{ need.last_pledge_transaction.transaction_datetime|date }}
+
+                
+                        <button type="submit" value="Stop monthly pledging"
+                           data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='drop_subscription' %}" class="button button-small gray">stop monthly pledging</button>
                     </div>
                 {% endif %}
             </div>
@@ -85,24 +77,22 @@
                         </ul>
                         <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button data-amount="0.25">0.25</button></li>
-                            <li><button data-amount="0.5">0.5</button></li>
+                            <li><button data-amount="0.25">0,25</button></li>
+                            <li><button data-amount="0.5">0,5</button></li>
                             <li><button data-amount="1">1</button></li>
                             <li><button data-amount="2">2</button></li>
                             <li><button data-amount="5">5</button></li>
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul> 
-                    </div>
-                    <div class="span6 less-input" id="need-pledge-amount-field-{{ need.id }}">
-                        <ul>
-                            <li>{{ site_currency_sign }}</li>
-                            <li>
+                    
+                        <ul style="display: none;">
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
+                                   id="link-need-less-{{ need.id }}">less</a></li>
+                            <li id="need-pledge-amount-field-{{ need.id }}">
                                 {{ need.pledge_form.pledge_amount.errors }}
                                 {{ need.pledge_form.pledge_amount }}
                             </li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                                   id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
                     <div class="span2">
@@ -112,14 +102,13 @@
                 </div>
             {% if need.last_pledge_transaction %}
                 <div class="centered">
-                    last pledged with
-                    {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
-                    on {{ need.last_pledge_transaction.transaction_datetime|date:"DATE_FORMAT" }}
-                    <button type="submit"
+                    pledged {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
+                    on {{ need.last_pledge_transaction.transaction_datetime|date }}
+                    <button type="submit" value="Switch to monthly pledge"
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='switch_monthly' %}" class="button button-small gray">switch to monthly pledge</button>
                 </div>
             {% endif %}
-            {% if not user.is_card_attached %}
+            {% if not request.user.is_payment_card_attached %}
                 <div class="centered">
                     <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
                 </div>
@@ -166,16 +155,22 @@
             selectAmount($(this).attr('value'));
         });
 
-        $("#need-onetime-switch-{{ need.id }}, #need-monthly-switch-{{ need.id }}").click(function(event){
+        $("a#need-onetime-switch-{{ need.id }}").click(function(event){
             event.preventDefault();
-            var monthly = ($(this).attr('id') == 'need-monthly-switch-{{ need.id }}');
-            toggleOnetimeMonthly(monthly, $(this).data('need_id'));
+            toggleOnetimeMonthly(false, $(this).data('need_id'));
+        });
+        $("a#need-monthly-switch-{{ need.id }}").click(function(event){
+            event.preventDefault();
+            toggleOnetimeMonthly(true, $(this).data('need_id'));
         });
 
-        $("#link-need-more-{{ need.id }}, #link-need-less-{{ need.id }}").click(function(event){
+        $("#link-need-more-{{ need.id }}").click(function(event){
             event.preventDefault();
-            var more = ($(this).attr('id') == 'link-need-more-{{ need.id }}');
-            toggleMore(more, {{ need.id }});
+            toggleMore(true, {{ need.id }});
+        });
+        $("#link-need-less-{{ need.id }}").click(function(event){
+            event.preventDefault();
+            toggleMore(false, {{ need.id }});
         });
 
         if (user.is_authenticated && !{{ need.user_is_project_maintainer|lower }} ) {
@@ -194,18 +189,18 @@
             $('#form-pledge-need-{{ need.id }} button, #form-pledge-need-{{ need.id }} input').attr('alt', 'You cannot pledge your own project.');
         } else {
             $("form#form-pledge-need-{{ need.id }} button").click(function () {
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
             });
 
             $("form#form-pledge-need-{{ need.id }}").submit(function(event){
                 event.preventDefault();
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
             });
         }
 
