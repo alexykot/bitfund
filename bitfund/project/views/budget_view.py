@@ -6,7 +6,6 @@ from django.template import RequestContext
 from django.utils.datetime_safe import datetime
 from django.utils.encoding import smart_str
 from django.utils.timezone import utc, now
-from sendfile import sendfile
 
 from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            RGBCOLOR_DONUT_CHART_BACKGROUND,

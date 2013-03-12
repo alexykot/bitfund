@@ -201,6 +201,9 @@ class PledgeProjectNeedForm(forms.Form):
     pledge_type = forms.ChoiceField(required=True, widget=forms.HiddenInput, choices=DONATION_TYPES_CHOICES)
     pledge_amount = forms.DecimalField(min_value=0.01, decimal_places=4, required=True)
 
+class PledgeProjectGoalForm(forms.Form):
+    pledge_amount = forms.DecimalField(min_value=0.01, decimal_places=4, required=True)
+
 class PledgeNoBudgetProjectForm(forms.Form):
     pledge_type = forms.ChoiceField(required=True, widget=forms.HiddenInput, choices=DONATION_TYPES_CHOICES)
     pledge_amount = forms.DecimalField(decimal_places=8, required=True)

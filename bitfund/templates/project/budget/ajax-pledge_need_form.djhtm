@@ -15,16 +15,11 @@
                     <div class="span6" id="need-options-button-sets-{{ need.id }}">
                         <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
-                                data-amount="0.25">0,25</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
-                                data-amount="0.5">0,5</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-1"
-                                data-amount="1">1</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-2"
-                                data-amount="2">2</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-5"
-                                   data-amount="5">5</button></li>
+                            <li><button data-amount="0.25">0,25</button></li>
+                            <li><button data-amount="0.5">0,5</button></li>
+                            <li><button data-amount="1">1</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
@@ -72,31 +67,21 @@
                     <div class="span6" id="need-options-button-sets-{{ need.id }}">
                         <ul class="amount-buttons" id="need-onetime-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-2"
-                                data-amount="2">2</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-5"
-                                data-amount="5">5</button></li>
-                            <li><button  href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-10"
-                                data-amount="10">10</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-15"
-                                data-amount="15">15</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime-25"
-                                data-amount="25">25</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
+                            <li><button data-amount="10">10</button></li>
+                            <li><button data-amount="15">15</button></li>
+                            <li><button data-amount="25">25</button></li>
                             <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                                id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                         <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                             <li>{{ site_currency_sign }}</li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.25"
-                                data-amount="0.25">0,25</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-0.5"
-                                data-amount="0.5">0,5</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-1"
-                                data-amount="1">1</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-2"
-                                data-amount="2">2</button></li>
-                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-5"
-                                   data-amount="5">5</button></li>
+                            <li><button data-amount="0.25">0,25</button></li>
+                            <li><button data-amount="0.5">0,5</button></li>
+                            <li><button data-amount="1">1</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul> 
@@ -123,9 +108,11 @@
                        data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='switch_monthly' %}" class="button button-small gray">switch to monthly pledge</button>
                 </div>
             {% endif %}
-                <div class="centered" style="display: none">
+            {% if not request.user.is_payment_card_attached %}
+                <div class="centered">
                     <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
                 </div>
+            {% endif %}
             </div>
         {% endif %}
 
@@ -162,12 +149,6 @@
         $('#need-options-button-sets-{{ need.id }} button').click(function(event){
             event.preventDefault();
             selectAmount($(this).data('amount'), {{ need.id }});
-            /*
-            $('#need-monthly-options-{{ need.id }} button').removeClass('active');
-            $(this).addClass('active');
-
-            $('li#need-pledge-amount-field-{{ need.id }} input').attr('value', $(this).attr('data-amount'));
-            */
         });
 
         $('li#need-pledge-amount-field-{{ need.id }} input').keyup(function(){
@@ -208,18 +189,18 @@
             $('#form-pledge-need-{{ need.id }} button, #form-pledge-need-{{ need.id }} input').attr('alt', 'You cannot pledge your own project.');
         } else {
             $("form#form-pledge-need-{{ need.id }} button").click(function () {
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
             });
 
             $("form#form-pledge-need-{{ need.id }}").submit(function(event){
                 event.preventDefault();
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
-                $('#login-links-{{ need.id }}').fadeOut();
-                $('#login-links-{{ need.id }}').fadeIn();
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
+                $('#login-links-{{ need.id }}').fadeOut(100);
+                $('#login-links-{{ need.id }}').fadeIn(100);
             });
         }
 

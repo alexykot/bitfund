@@ -50,12 +50,12 @@ urlpatterns += patterns('bitfund.project.views',
     #view
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'budget'),
 
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goals/{0,}$', 'goals'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goals/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<action>pledge|drop){0,}$', 'goal_view'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/needs/(?P<need_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'chart_image'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goals/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'chart_image'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/need/(?P<need_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
 
@@ -68,6 +68,7 @@ urlpatterns += patterns('bitfund.project.views',
     #crud
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit/{0,}$', 'budget_edit'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/toggle/{0,}$', 'project_toggle'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/toggle/{0,}$', 'goal_toggle'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/{0,}$', 'crud_pledge_need'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/(?P<action>pledge|drop_subscription|switch_monthly)/{0,}$', 'crud_pledge_need'),
