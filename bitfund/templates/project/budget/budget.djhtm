@@ -101,10 +101,10 @@
                 {% endcomment %}
             <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
         </div>
-        <div class="span3">
+        <div class="span4">
             <span class="unpublished">unpublished</span>
         </div>
-        <div class="span5">
+        <div class="span4">
             <div class="project-meta">
             {% if project_edit_access %}
                 <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>

@@ -319,7 +319,7 @@ button.go {
 
 .project-attributes a:first-child img {
     height: 62px;
-    margin-left: 30px;
+    margin: 0 10px 0 30px;
     width: 62px;
 }
 
@@ -327,9 +327,8 @@ button.go {
     text-decoration: none;
 }
 
-.project-attributes a:last-child {
+.project-attributes a:last-child, .project-attributes input {
     font-size: 30px;
-    margin-left:10px;
 }
 
 .depends-on > div, .depending-on > div, .budget-column > div, .goals-column > div {
@@ -419,12 +418,18 @@ button.go {
     padding-bottom: 20px;
 }
 
-.header .span4, .header .span3, .header .span5 {
+.header > * {
     height: 62px;
     position: relative;
 } 
 
-.project-attributes a:last-child, .unpublished, .project-meta {
+.header input {
+    height: auto;
+    margin-bottom: 0;
+    width: 150px;
+}
+
+.project-attributes a:last-child, .unpublished, .uri, .project-meta {
     position: absolute;
     top: 35%;
 }
@@ -562,6 +567,11 @@ ul.chart-div-legend {
     vertical-align: middle;
 }
 
+.goal textarea {
+    display: block;
+    margin-right: 0;
+}
+
 .need-pledge-controls {
     margin-bottom: 10px;
 }
@@ -582,7 +592,7 @@ ul.chart-div-legend {
     text-decoration: none;
 }
 
-.need-pledge-controls > .row-fluid a, .add-goal {
+.need-pledge-controls > .row-fluid a {
     border-bottom: 1px dashed #577000;
 }
 

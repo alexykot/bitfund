@@ -1,51 +1,47 @@
-<div class="row {% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}" data-need="{{ need.id }}">
+
+<div class="goal {% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}" data-need="{{ need.id }}">
     {{ need.crud_form.project }}
     {{ need.crud_form.date_added }}
     {{ need.crud_form.drop_need }}
     {{ need.crud_form.is_public }}
     {{ need.crud_form.sort_order }}
-    <div class="span8">
+
+    <div class="row-fluid">
         {{ need.crud_form.non_field_errors }}
-        <div class="row">
-            <div class="span6">
+            <div class="span9">
                 {{ need.crud_form.title.errors }}
                 {{ need.crud_form.title }}
-            </div>
-            <div class="span1">
-                {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
-                <br />
-                of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}
-            </div>
-            <div class="span1">
-                <div id="need-{{ need.id }}-chart"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span8">
                 {{ need.crud_form.brief.errors }}
                 {{ need.crud_form.brief }}
             </div>
-        </div>
-        <div class="row">
-            <div class="span8 kf_need_pledge_controls">
+                    {% comment %}
+                    <div class="span1">
+                        {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
+                        <br />
+                        of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}
+                    </div>
+
+                    <div class="span1">
+                        <div id="need-{{ need.id }}-chart"></div>
+                    </div>
+                    {% endcomment %}
+
+            <div class="span3">
                 {{ site_currency_sign }}
                 {{ need.crud_form.amount.errors }}
                 {{ need.crud_form.amount }}
             </div>
-        </div>
     </div>
-    <div class="span8">
-        <span id="button-sort-need-{{need.id}}" class="sort-handle">sort</span>
+    <div>
+        <button id="button-sort-need-{{need.id}}" class="button button-small gray text-left">sort</button>
 
-        <button id="button-toggle-publish-need-{{need.id}}">
+        <button id="button-toggle-publish-need-{{need.id}}" class="button button-small gray text-right">
             {% if need.is_public %}unpublish{% else %}publish{% endif %}
         </button>
 
-        <button id="button-drop-need-{{need.id}}">delete</button>
+        <button id="button-drop-need-{{need.id}}" class="button button-small gray text-right">delete</button>
     </div>
 </div>
-
-<hr />
 
 <script type="text/javascript">
     $(document).ready(function(){

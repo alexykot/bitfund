@@ -83,134 +83,127 @@
 {% endblock pagescripts %}
 
 {% block content %}
-    <div class="kf_project-views-view">
+<div class="project-goals">
     <form action="" id="form-crud-project" method="post">
         {% csrf_token %}
 
-        <div class="row kf_project_title">
-            <div class="span3 kf_project_logo">
-                {% if logo %}
-                    <img src="{{ logo.url }}" />
-                {% elif project.logo %}
-                    <img src="{{ project.logo.url }}" width="62" height="62" />
-                {% endif %}
-                {{ project_form.logo.errors }}
-                {{ project_form.logo }}
-            </div>
-            <div class="span6">
+        <div class="row-fluid header">
+            <div class="span4 project-attributes">
+                <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                    <!-- <img src="{{ STATIC_URL }}img/project_img.png" /> -->
+                    {% if logo %}
+                        <img src="{{ logo.url }} " />
+                    {% elif project.logo %}
+                        <img src="{{ project.logo.url }} " />
+                    {% endif %}
+                    {% comment %}
+                    {{ project_form.logo.errors }}
+                    {{ project_form.logo }}
+                    {% endcomment %}
+                </a><span>
+                {{ project_form.title }}
                 {{ project_form.title.errors }}
-                <h1>{{ project_form.title }}</h1>
-                {{ project_form.key.errors }}
-                bitfund.org/{{ project_form.key }}
+                {{ project_form.key.errors }}</span>
             </div>
-            <div class="span3 kf_project_meta">
-                <a href="{% url bitfund.project.views.budget project_key=project.key %}">exit edit mode</a>
-                <input type="submit" value="Save" id="save-budget" />
+            <div class="span4">
+                <div class="uri">bitfund.org/ {{ project_form.key }}</div>
+            </div>
+            <div class="span4">
+                <div class="project-meta">
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">exit edit mode</a>
+                    <button type="submit" value="Save" id="save-budget" class="button button-small gray">Save</button>
+                    <button type="submit" value="{% if project.is_public %}unpublish{% else %}publish{% endif %}" class="button button-small gray">unpublish</button>
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="span4">
-                <div class="row">
-                    <span>{{ today|date:"F Y" }}</span>
-                </div>
-                <div class="row">
-                    <div class="span4">
-                        <div class="span2 kf_chart">
-                            <div class="row">
-                                <div id="chartdiv" class="kf_center">
-                                    {% if budget.total_gained_percent == -1 %}
-                                        <span class="kf_percent">&infin;</span>
-                                    {% else %}
-                                        <span class="kf_percent">{{ budget.total_gained_percent }}%</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="row kf_legend">
-                                <span class="kf_pledges"></span> Backer Support <br/>
-                                <span class="kf_redonations"></span> Depended Projects <br/>
-                                <span class="kf_other"></span> Other Sources
+        <div class="row-fluid budget-n-goals">
+            <div class="span4 budget-column">
+                <h5><b>Budget for</b>
+                    <span class="month">
+                        <a href="#" class="arrow-left-white">&#9668<span class="arrow-left-black">&#9668</span>
+                        </a>
+                        {{ today|date:"F Y" }}
+                        <a href="#" class="arrow-right-white">&#9658<span class="arrow-right-black">&#9658</span>
+                        </a>
+                    </span>
+                </h5>
+                <div>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div class="chart-div-large" id="chartdiv">
+                            {% if budget.total_gained_percent == -1 %}
+                                <span class="kf_percent">&infin;</span>
+                            {% else %}
+                                <span class="kf_percent">{{ budget.total_gained_percent }}%</span>
+                            {% endif %}
                             </div>
                         </div>
-                        <div class="span2">
-                            <div class="row kf_pledged">
-                                <div class="span3">
-                                    {{ site_currency_sign }}{{ budget.donations_total_sum }}<br/>
-                                    <span class="kf_small">pledged</span>
-                                </div>
-                                <div class="span1 kf_right">
-                                    {{ budget.donations_total_pledgers }}<br/>
-                                    <span class="kf_small">backer{{ budget.donations_total_pledgers|pluralize }}</span>
-                                </div>
-                            </div>
-                            {% if other_sources_total_sum %}
-                                <div class="row kf_other">
-                                    <div class="span2">
-                                        {{ site_currency_sign }}{{ other_sources_total_sum }} gained from other sources
-                                    </div>
-                                </div>
-                            {% endif %}
-                            {% if budget.redonations_total_sum %}
-                                <div class="row kf_other">
-                                    <div class="span2">
-                                        {{ site_currency_sign }}{{ budget.redonations_total_sum }} received from {{ budget.depending_on_me_projects_count }} dependant project
-                                    </div>
-                                </div>
-                            {% endif %}
+                        <div class="span4 centered">
+                            <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
+                            <div>pledged</div>
                         </div>
-                        {% if budget.i_depend_on_projects_count %}
-                            <div class="row">
-                                <div class="span4">
-                                    {% if budget.i_depend_on_transfer_percent > 0 %}
-                                        {{ project.title }} transfers
-                                        {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of
-                                        it's pledges
-                                        to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
-                                        {{ budget.i_depend_on_projects_count }}
-                                        other projects</a> it depends on.
-                                    {% else %}
-                                        {{ project.title }} depends on
-                                        <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
-                                            {{ budget.i_depend_on_projects_count }}
-                                            other projects</a>, but doesn't transfer any funds to them.
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="row">
-                                <div class="span4">
-                                    {{ project.title }}
-                                    <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't
-                                    depend</a> on any other projects.
-                                </div>
-                            </div>
-                        {% endif %}
-
-
+                        <div class="span3 offset1 centered">
+                            <div class="backers">{{ budget.donations_total_pledgers }}</div>
+                            <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="span8">
-                <div class="row">
-                    {% if budget.project_monthly_budget > 0 %}
-                    <h4> {{ project.title }} current budget is {{ site_currency_sign }}{{ budget.project_monthly_budget }}
-                        for:</h4>
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <ul class="chart-div-legend">
+                                <li><span class="green-marker"></span>Backers support</li>
+                                <li><span class="olive-marker"></span>Linked projects</li>
+                                <li><span class="yellow-marker"></span>Other sources</li>
+                            </ul>
+                        </div>
+                        <div class="span6">
+                        {% if budget.redonations_total_sum %}
+                            <div class="sum-from-projects">{{ site_currency_sign }}{{ budget.redonations_total_sum }} received from </div>
+                            <a href="#">{{ budget.depending_on_me_projects_count }} dependant project</a>
+                        {% endif %}
+                        {% if other_sources_total_sum %}
+                            <div class="sum-from-sources">{{ site_currency_sign }}{{ other_sources_total_sum }} gained from </div>
+                            <a href="#">other sources</a>
+                        {% endif %}
+                        </div>
+                    </div>
+
+                    {% if budget.i_depend_on_projects_count %}
+                        <h5 class="centered">
+                            {% if budget.i_depend_on_transfer_percent > 0 %}
+                                {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of it's pledges to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
+                                {{ budget.i_depend_on_projects_count }} other projects</a> it depends on.
+                            {% else %}
+                                {{ project.title }} depends on <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}"> {{ budget.i_depend_on_projects_count }} other projects</a>, but doesn't transfer any funds to them.
+                            {% endif %}
+                        </h5>
                     {% else %}
-                        <h4> {{ project.title }} has no budget for this month</h4>
+                        <h5 class="centered">{{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
+                        </h5>
                     {% endif %}
                 </div>
-                <div class="row">
-                    <div class="span8" id="container-needs-list">
-                        {% for need in project_needs %}
-                            {% include "project/budget/ajax-crud_need_form.djhtm" %}
-                        {% endfor %}
-                    </div>
-                    <div class="span8"><button id="button-add-need">add need</button></div>
+            </div><!-- budget-column -->
+
+            <div class="span8 goals-column">
+                {% if budget.project_monthly_budget > 0 %}
+                    <h5><b>{{ project.title }}</b> current budget is {{ site_currency_sign }}{{ budget.project_monthly_budget }} for:</h5>
+                {% else %}
+                    <h5><b>{{ project.title }}</b> has no budget for this month</h5>
+                {% endif %}
+                <div id="container-needs-list">
+                    {% for need in project_needs %}
+                        {% include "project/budget/ajax-crud_need_form.djhtm" %}
+                    {% endfor %}
                 </div>
-            </div>
-        </div>
+                <div class="pull-right">
+                    <button id="button-add-need" class="button gray">add need</button>
+                </div>
+            </div><!-- goals-column -->
+
+        </div><!-- budget-n-goals -->
     </form>
-    </div>
+
+</div><!-- project-goals -->
 
 {% endblock content %}
 
