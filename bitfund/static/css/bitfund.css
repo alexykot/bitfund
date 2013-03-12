@@ -317,12 +317,9 @@ button.go {
 }
 /* Page 2 - Dependent projects */
 
-.project-attributes {
-    margin: 0 30px 20px;
-}
-
-.project-attributes a:first-child {
+.project-attributes a:first-child img {
     height: 62px;
+    margin-left: 30px;
     width: 62px;
 }
 
@@ -333,14 +330,13 @@ button.go {
 .project-attributes a:last-child {
     font-size: 30px;
     margin-left:10px;
-    vertical-align: middle;
 }
 
 .depends-on > div, .depending-on > div, .budget-column > div, .goals-column > div {
     padding-top: 20px;
 }
 
-.depends-on > h5, .goals-column h5 {
+.depends-on > h5, .goals-column > h5:first-child {
     border-left: 1px solid #fff;
 }
 
@@ -357,7 +353,7 @@ button.go {
     margin-left: -20px;
 }
 
-.depends-on > div, .goals-column > div {
+.depends-on > div, .goals-column > div:nth-child(2) {
     border-left: 1px solid #ccc;
 }
 
@@ -386,9 +382,8 @@ button.go {
     right: 0;
 }
 
-.add-new {
-    margin: 15px;
-    text-align: right;
+.project-crud {
+    margin-right: 25px;
 }
 
 .project .actions {
@@ -419,6 +414,43 @@ button.go {
 }
 
 /* Page 3 =====================*/
+
+.header {
+    padding-bottom: 20px;
+}
+
+.header .span4, .header .span3, .header .span5 {
+    height: 62px;
+    position: relative;
+} 
+
+.project-attributes a:last-child, .unpublished, .project-meta {
+    position: absolute;
+    top: 35%;
+}
+
+.unpublished {
+    background-color: #24c1d0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+}
+
+.project-meta {
+    right: 10%;
+}
+
+.project-meta a {
+    margin-right: 10px;
+}
+.project-meta form {
+    display: inline-block;
+}
+
+.budget-n-goals {
+    margin-bottom: 50px;
+}
 
 .budget-column h5 b {
     margin-right: 10px;
@@ -509,6 +541,10 @@ ul.chart-div-legend {
     border-bottom: none;
 }
 
+.deleted {
+    background-color: #bd4747;
+}
+
 .goal {
     padding-bottom: 20px;
 }
@@ -546,7 +582,7 @@ ul.chart-div-legend {
     text-decoration: none;
 }
 
-.need-pledge-controls > .row-fluid a {
+.need-pledge-controls > .row-fluid a, .add-goal {
     border-bottom: 1px dashed #577000;
 }
 
@@ -597,9 +633,25 @@ ul.chart-div-legend {
     margin-left: 10px;
 }
 
+.maintain {
+    font-size: 12px;
+    padding-right: 30px;
+    text-align: right;
+}
+
+.maintain span {
+    margin-left: 30px;
+}
+
+.add-goal {
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
 .current-goals {
-    background-color: #f2f2f2;
-    margin: 30px;
+    margin: 0 30px 30px;
+    position: relative;
 }
 
 .current-goals .span4 > img:first-child {

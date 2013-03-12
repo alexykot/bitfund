@@ -10,8 +10,8 @@
 {% block content %}
 
     <div class="dependent-projects">
-        <div class="row-fluid project-attributes">
-            <div class="span9">
+        <div class="row-fluid header">
+            <div class="span4 project-attributes">
                 <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">
                     {% comment %} {% if logo %} 
                         <img src="{{ logo.url }}" />

@@ -87,8 +87,8 @@
 
 {% block content %}
 <div class="project-goals">
-    <div class="row-fluid project-attributes">
-        <div class="span9">
+    <div class="row-fluid header">
+        <div class="span4 project-attributes">
             <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                 <img src="{{ STATIC_URL }}img/project_img.png" />
                 {% comment %}
@@ -100,18 +100,24 @@
                 {% endcomment %}
             <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
         </div>
-        <div class="span3 kf_project_meta">
+        <div class="span3">
+            <span class="unpublished">unpublished</span>
+        </div>
+        <div class="span5">
+            <div class="project-meta">
             {% if project_edit_access %}
-                <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a> <br>
+                <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
                 <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
                     {% csrf_token %}
-                    <input type="submit"
-            value="{% if project.is_public %}unpublish{% else %}publish{% endif %}"></form>
+                    <button type="submit"
+                        value="{% if project.is_public %}unpublish{% else %}publish{% endif %}" class="button button-small gray">unpublish</button>
+                </form>
             {% endif %}
+            </div>
         </div>
     </div>
   
-    <div class="row-fluid">
+    <div class="row-fluid budget-n-goals">
         <div class="span4 budget-column">
             <h5><b>Budget for</b>
                 <span class="month">
@@ -214,10 +220,15 @@
             <h5 class="centered">
                 I'm not ready to pledge to {{ project.title }} right now, but <button class="button gray grateful">I'm grateful!</button>
             </h5>
+
+            <div class="maintain pull-right">
+                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is becouse <a href="#">community decided so</a><br>his right to maintain it is <a href="#">unverified<span><a href="#">support him</a></span><span><a href="#">dethrone him</a></span></a><br>his right to maintain it is <a href="#">verified<span><a href="#">dethrone him</a></span></a></p>
+            </div>
         </div>
     </div>
     {% if project_goals_count %}
         <div class="current-goals">
+            <a href="#" class="add-goal">add goal</a>
             <h3>Current goals</h3>
             <p>Apart from the project budget the community be grateful gor help with this goals.</p>
             <div class="row-fluid ">

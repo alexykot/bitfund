@@ -61,10 +61,10 @@
             {{ crud_linked_project_add_form.as_p }}
             <input type="submit" value="Submit"/>
         </form>
-        <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key %}" class="project_crud">cancel</a>
+        <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key %}" class=" pull-right project-crud">cancel</a>
     {% else %}
         <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key action='add' %}"
-           class="project_crud">add</a>
+           class="project-crud pull-right">add</a>
     {% endif %}
     {% if not giving_to_bitfund  %}
         <br>
