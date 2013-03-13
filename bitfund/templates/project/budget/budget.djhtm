@@ -222,8 +222,16 @@
                 I'm not ready to pledge to {{ project.title }} right now, but <button class="button gray grateful">I'm grateful!</button>
             </h5>
 
-            <div class="maintain pull-right">
-                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is becouse <a href="#">community decided so</a><br>his right to maintain it is <a href="#">unverified<span><a href="#">support him</a></span><span><a href="#">dethrone him</a></span></a><br>his right to maintain it is <a href="#">verified<span><a href="#">dethrone him</a></span></a></p>
+            <div class="maintain">
+                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is becouse <a href="#">community decided so</a>
+                    <br>
+                    his right to maintain it is <span><a href="#">unverified</a></span>
+                    <span><a href="#">support him</a></span>
+                    <a href="#">dethrone him</a>
+                    <br>
+                    his right to maintain it is <span><a href="#">verified</span>
+                    <a href="#">dethrone him</a>
+                </p>
             </div>
         </div>
     </div>

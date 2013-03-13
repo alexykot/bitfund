@@ -1,5 +1,6 @@
+{% load widget_tweaks %}
 
-<div class="goal {% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}" data-need="{{ need.id }}">
+<div class="goal{% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}" data-need="{{ need.id }}">
     {{ need.crud_form.project }}
     {{ need.crud_form.date_added }}
     {{ need.crud_form.drop_need }}
@@ -8,9 +9,10 @@
 
     <div class="row-fluid">
         {{ need.crud_form.non_field_errors }}
-            <div class="span9">
+            <div class="span8">
+                <h4>
                 {{ need.crud_form.title.errors }}
-                {{ need.crud_form.title }}
+                {{ need.crud_form.title }}</h4>
                 {{ need.crud_form.brief.errors }}
                 {{ need.crud_form.brief }}
             </div>
@@ -18,7 +20,7 @@
                     <div class="span1">
                         {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
                         <br />
-                        of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}
+                        of {{ site_currency_sign }}{{ need.amount|floatformat:2 }}
                     </div>
 
                     <div class="span1">
@@ -26,21 +28,24 @@
                     </div>
                     {% endcomment %}
 
-            <div class="span3">
+            <div class="span4">
+                <span>
                 {{ site_currency_sign }}
                 {{ need.crud_form.amount.errors }}
-                {{ need.crud_form.amount }}
+                {{ need.crud_form.amount|attr:"class:input-medium" }}
+                </span>
             </div>
     </div>
-    <div>
-        <button id="button-sort-need-{{need.id}}" class="button button-small gray text-left">sort</button>
-
-        <button id="button-toggle-publish-need-{{need.id}}" class="button button-small gray text-right">
-            {% if need.is_public %}unpublish{% else %}publish{% endif %}
-        </button>
-
-        <button id="button-drop-need-{{need.id}}" class="button button-small gray text-right">delete</button>
-    </div>
+    <div class="row-fluid">
+        <div class="span9">
+            <button id="button-sort-need-{{need.id}}" class="button button-small gray">sort</button>
+        </div>
+        <div class="span3">
+            <button id="button-toggle-publish-need-{{need.id}}" class="button button-small gray">
+                {% if need.is_public %}unpublish{% else %}publish{% endif %}</button>
+            <button id="button-drop-need-{{need.id}}" class="button button-small gray">delete</button>
+        </div>
+    </div> 
 </div>
 
 <script type="text/javascript">

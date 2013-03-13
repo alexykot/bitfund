@@ -73,7 +73,7 @@ ul {
     list-style-type: none;
 }
 
-button, .button, input[type="text"] {
+button, .button, input[type="text"], textarea {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -414,6 +414,12 @@ button.go {
 
 /* Page 3 =====================*/
 
+
+.project-goals input {
+    height: auto;
+    margin-bottom: 0;
+}
+
 .header {
     padding-bottom: 20px;
 }
@@ -423,13 +429,7 @@ button.go {
     position: relative;
 } 
 
-.header input {
-    height: auto;
-    margin-bottom: 0;
-    width: 150px;
-}
-
-.project-attributes a:last-child, .unpublished, .uri, .project-meta {
+.project-attributes a:last-child, .unpublished, .uri, .project-meta, .goal > .row-fluid > .span4 span {
     position: absolute;
     top: 35%;
 }
@@ -446,9 +446,10 @@ button.go {
     right: 10%;
 }
 
-.project-meta a {
-    margin-right: 10px;
+.project-meta button, .goals-column .goal button:nth-child(2) {
+    margin-left: 10px;
 }
+
 .project-meta form {
     display: inline-block;
 }
@@ -542,7 +543,7 @@ ul.chart-div-legend {
     margin-top: 15px;
 }
  
-.goals-column .goal:last-child {
+.goals-column .goal:last-of-type {
     border-bottom: none;
 }
 
@@ -567,9 +568,23 @@ ul.chart-div-legend {
     vertical-align: middle;
 }
 
-.goal textarea {
+.goal > .row-fluid > .span4 {
+    height: 100px;
+    position: relative;
+}
+
+.goal .span8 textarea {
     display: block;
+    height: 50px;
     margin-right: 0;
+}
+
+.goal .span8 input {
+    font-size: 18px;
+}
+
+.goal .span8 textarea, .goal .span8 input {
+    width: 350px;
 }
 
 .need-pledge-controls {
@@ -649,8 +664,8 @@ ul.chart-div-legend {
     text-align: right;
 }
 
-.maintain span {
-    margin-left: 30px;
+.maintain span  {
+    margin-right: 30px;
 }
 
 .add-goal {
