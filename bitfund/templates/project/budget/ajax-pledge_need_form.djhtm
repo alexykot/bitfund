@@ -24,13 +24,14 @@
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                 
-                        <ul style="display: none">
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                                   id="link-need-less-{{ need.id }}">less</a></li>
-                            <li id="need-pledge-amount-field-{{ need.id }}">
+                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none">
+                            <li>{{ site_currency_sign }}</li>
+                            <li>
                                 {{ need.pledge_form.pledge_amount.errors }}
                                 {{ need.pledge_form.pledge_amount }}
                             </li>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
+                                   id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
                     <div class="span3">
@@ -86,13 +87,14 @@
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul> 
                     
-                        <ul style="display: none;">
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                                   id="link-need-less-{{ need.id }}">less</a></li>
-                            <li id="need-pledge-amount-field-{{ need.id }}">
+                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none;">
+                            <li>{{ site_currency_sign }}</li>
+                            <li>
                                 {{ need.pledge_form.pledge_amount.errors }}
                                 {{ need.pledge_form.pledge_amount }}
                             </li>
+                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
+                                   id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
                     <div class="span2">
@@ -155,22 +157,16 @@
             selectAmount($(this).attr('value'));
         });
 
-        $("a#need-onetime-switch-{{ need.id }}").click(function(event){
+        $("#need-onetime-switch-{{ need.id }}, #need-monthly-switch-{{ need.id }}").click(function(event){
             event.preventDefault();
-            toggleOnetimeMonthly(false, $(this).data('need_id'));
-        });
-        $("a#need-monthly-switch-{{ need.id }}").click(function(event){
-            event.preventDefault();
-            toggleOnetimeMonthly(true, $(this).data('need_id'));
+            var monthly = ($(this).attr('id') == 'need-monthly-switch-{{ need.id }}');
+            toggleOnetimeMonthly(monthly, $(this).data('need_id'));
         });
 
-        $("#link-need-more-{{ need.id }}").click(function(event){
+        $("#link-need-more-{{ need.id }}, #link-need-less-{{ need.id }}").click(function(event){
             event.preventDefault();
-            toggleMore(true, {{ need.id }});
-        });
-        $("#link-need-less-{{ need.id }}").click(function(event){
-            event.preventDefault();
-            toggleMore(false, {{ need.id }});
+            var more = ($(this).attr('id') == 'link-need-more-{{ need.id }}');
+            toggleMore(more, {{ need.id }});
         });
 
         if (user.is_authenticated && !{{ need.user_is_project_maintainer|lower }} ) {

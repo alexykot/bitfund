@@ -17,7 +17,7 @@
 
         function toggleMore(showMore, needId) {
             $("form#form-pledge-need-" + needId + ' #need-pledge-amount-field-' + needId).toggle(showMore);
-            $("form#form-pledge-need-" + needId + ' #need-options-button-sets-' + needId).toggle(!showMore);
+            $("form#form-pledge-need-" + needId + ' #need-monthly-options-' + needId).toggle(!showMore);
         }
 
         function selectAmount(amount, needId) {
@@ -90,7 +90,7 @@
 <div class="project-goals">
     <div class="header">
         <div class="row-fluid">
-            <div class="span4 project-attributes">
+            <div class="span8 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                     <img src="{{ STATIC_URL }}img/project_img.png" />
                     {% comment %}
@@ -102,17 +102,18 @@
                     {% endcomment %}
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
-            <div class="span4">
-                <span class="unpublished">unpublished</span>
-            </div>
-            <div class="span4">
+            {% if not project.is_public %}
+                <div class="span2">
+                    <span class="unpublished">unpublished</span>
+                </div>
+            {% endif %}
+            <div class="span2 pull-right">
                 <div class="project-meta">
                 {% if project_edit_access %}
                     <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
                     <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
                         {% csrf_token %}
-                        <button type="submit"
-                            value="{% if project.is_public %}unpublish{% else %}publish{% endif %}" class="button button-small gray">unpublish</button>
+                        <button type="submit" class="button button-small gray">{% if project.is_public %}unpublish{% else %}publish{% endif %}</button>
                     </form>
                 {% endif %}
                 </div>

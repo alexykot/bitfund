@@ -7,40 +7,28 @@
     {{ need.crud_form.is_public }}
     {{ need.crud_form.sort_order }}
 
-    <span class="deleted">deleted</span>
-    <span class="unpublished">unpublished</span> 
+    <span class="deleted" id="need-deleted-marker-{{ need.id }}" style="display: none;">deleted</span>
+    <span class="unpublished" id="need-unpublished-marker-{{ need.id }}" {% if need.is_public %}style="display: none;"{% endif %}>unpublished</span>
     <div class="row-fluid">
         {{ need.crud_form.non_field_errors }}
             <div class="span9">
                 <h4>
                 {{ need.crud_form.title.errors }}
-                {{ need.crud_form.title|attr:"disabled"}}</h4>
+                {{ need.crud_form.title }}</h4>
                 {{ need.crud_form.brief.errors }}
-                {{ need.crud_form.brief|attr:"disabled" }}
+                {{ need.crud_form.brief }}
             </div>
-                    {% comment %}
-                    <div class="span1">
-                        {{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
-                        <br />
-                        of {{ site_currency_sign }}{{ need.amount|floatformat:2 }}
-                    </div>
-
-                    <div class="span1">
-                        <div id="need-{{ need.id }}-chart"></div>
-                    </div>
-                    {% endcomment %}
-
             <div class="span3">
                 <span>
                 {{ site_currency_sign }}
                 {{ need.crud_form.amount.errors }}
-                {{ need.crud_form.amount|attr:"class:input-small"|attr:"disabled" }}
+                {{ need.crud_form.amount|attr:"class:input-small" }}
                 </span>
             </div>
     </div>
     <div class="row-fluid">
         <div class="span9">
-            <button id="button-sort-need-{{need.id}}" class="button button-small gray">sort</button>
+            <span id="button-sort-need-{{need.id}}" class="button button-small gray">sort</span>
         </div>
         <div class="span3">
             <span>
@@ -61,11 +49,13 @@
             if ($('#pledge-form-contents-{{need.id}} input[name*="is_public"]').attr('value') == 'True') {
                 $('#pledge-form-contents-{{need.id}}').addClass('kf_unpublished_need');
                 $('#pledge-form-contents-{{need.id}} input[name*="is_public"]').attr('value', 'False');
+                $('#need-unpublished-marker-{{need.id}}').toggle(true);
                 $(this).text('publish');
             } else {
                 $('#pledge-form-contents-{{need.id}}').removeClass('kf_unpublished_need');
                 $('#pledge-form-contents-{{need.id}} input[name*="is_public"]').attr('value', 'True');
                 $(this).text('unpublish');
+                $('#need-unpublished-marker-{{need.id}}').toggle(false);
             }
         });
 
@@ -79,13 +69,20 @@
 
                 $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').removeProp('disabled');
                 $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', 'True');
+                $('#button-toggle-publish-need-{{need.id}}').toggle(false);
+                $('#button-sort-need-{{need.id}}').toggle(false);
+
+                $('#need-deleted-marker-{{need.id}}').toggle(true);
                 $(this).text('undelete');
             } else {
                 $('#pledge-form-contents-{{need.id}}').removeClass('kf_dropped_need');
                 $('#pledge-form-contents-{{need.id}} input').removeProp('disabled');
                 $('#pledge-form-contents-{{need.id}} textarea').removeProp('disabled');
+                $('#button-toggle-publish-need-{{need.id}}').toggle(true);
+                $('#button-sort-need-{{need.id}}').toggle(true);
 
                 $('#pledge-form-contents-{{need.id}} input[name*="drop_need"]').attr('value', '');
+                $('#need-deleted-marker-{{need.id}}').toggle(false);
                 $(this).text('delete');
             }
         });

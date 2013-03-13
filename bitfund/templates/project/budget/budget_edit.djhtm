@@ -1,4 +1,3 @@
-
 {% extends "core/base.djhtm" %}
 
 {% block title %}Budget : {{ project.title }}{% endblock title %}
@@ -70,7 +69,7 @@
 
             $("#container-needs-list" ).sortable({
                 items: 'div[id|="pledge-form-contents"]',
-                 handle: 'span[id|="button-sort-need"]',
+                handle: 'span[id|="button-sort-need"]',
                 cursor: 'move',
             });
 
