@@ -88,32 +88,34 @@
 
 {% block content %}
 <div class="project-goals">
-    <div class="row-fluid header">
-        <div class="span4 project-attributes">
-            <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                <img src="{{ STATIC_URL }}img/project_img.png" />
-                {% comment %}
-                {% if logo %}
-                    <img src="{{ logo.url }} " />
-                {% elif project.logo %}
-                    <img src="{{ project.logo.url }} " />
+    <div class="header">
+        <div class="row-fluid">
+            <div class="span4 project-attributes">
+                <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                    <img src="{{ STATIC_URL }}img/project_img.png" />
+                    {% comment %}
+                    {% if logo %}
+                        <img src="{{ logo.url }} " />
+                    {% elif project.logo %}
+                        <img src="{{ project.logo.url }} " />
+                    {% endif %}
+                    {% endcomment %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
+            </div>
+            <div class="span4">
+                <span class="unpublished">unpublished</span>
+            </div>
+            <div class="span4">
+                <div class="project-meta">
+                {% if project_edit_access %}
+                    <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
+                    <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                            value="{% if project.is_public %}unpublish{% else %}publish{% endif %}" class="button button-small gray">unpublish</button>
+                    </form>
                 {% endif %}
-                {% endcomment %}
-            <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
-        </div>
-        <div class="span4">
-            <span class="unpublished">unpublished</span>
-        </div>
-        <div class="span4">
-            <div class="project-meta">
-            {% if project_edit_access %}
-                <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
-                <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
-                    {% csrf_token %}
-                    <button type="submit"
-                        value="{% if project.is_public %}unpublish{% else %}publish{% endif %}" class="button button-small gray">unpublish</button>
-                </form>
-            {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -199,11 +201,11 @@
                                 <h4>{{ need.title }}</h4>
                                 <p>{{ need.brief|default_if_none:'' }}</p>
                             </div>
-                            <div class="span3">
+                            <div class="span3"><span>
                                 <span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
                                 <br>
                                 of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
-                                <span class="chart-div-medium">100%</span>
+                                <span class="chart-div-medium">100%</span><span>
                             </div>
                         </div>
                         <div id="form-container-need-item-{{ need.id }}">

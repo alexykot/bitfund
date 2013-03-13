@@ -1,20 +1,22 @@
 {% load widget_tweaks %}
 
-<div class="goal{% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}" data-need="{{ need.id }}">
+<div class="edit-goal {% if not need.is_public %}kf_unpublished_need{% endif %}" id="pledge-form-contents-{{ need.id }}" data-need="{{ need.id }}">
     {{ need.crud_form.project }}
     {{ need.crud_form.date_added }}
     {{ need.crud_form.drop_need }}
     {{ need.crud_form.is_public }}
     {{ need.crud_form.sort_order }}
 
+    <span class="deleted">deleted</span>
+    <span class="unpublished">unpublished</span> 
     <div class="row-fluid">
         {{ need.crud_form.non_field_errors }}
-            <div class="span8">
+            <div class="span9">
                 <h4>
                 {{ need.crud_form.title.errors }}
-                {{ need.crud_form.title }}</h4>
+                {{ need.crud_form.title|attr:"disabled"}}</h4>
                 {{ need.crud_form.brief.errors }}
-                {{ need.crud_form.brief }}
+                {{ need.crud_form.brief|attr:"disabled" }}
             </div>
                     {% comment %}
                     <div class="span1">
@@ -28,11 +30,11 @@
                     </div>
                     {% endcomment %}
 
-            <div class="span4">
+            <div class="span3">
                 <span>
                 {{ site_currency_sign }}
                 {{ need.crud_form.amount.errors }}
-                {{ need.crud_form.amount|attr:"class:input-medium" }}
+                {{ need.crud_form.amount|attr:"class:input-small"|attr:"disabled" }}
                 </span>
             </div>
     </div>
@@ -41,9 +43,11 @@
             <button id="button-sort-need-{{need.id}}" class="button button-small gray">sort</button>
         </div>
         <div class="span3">
-            <button id="button-toggle-publish-need-{{need.id}}" class="button button-small gray">
-                {% if need.is_public %}unpublish{% else %}publish{% endif %}</button>
-            <button id="button-drop-need-{{need.id}}" class="button button-small gray">delete</button>
+            <span>
+                <button id="button-toggle-publish-need-{{need.id}}" class="button button-small gray">
+                    {% if need.is_public %}unpublish{% else %}publish{% endif %}</button>
+                <button id="button-drop-need-{{need.id}}" class="button button-small gray">delete</button>
+            </span>
         </div>
     </div> 
 </div>

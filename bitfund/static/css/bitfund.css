@@ -65,7 +65,7 @@ a:active, a:hover {
     text-decoration: underline;
 }
 
-a:focus, button:focus, input[type="text"]:focus {
+a:focus, button:focus, input[type="text"]:focus, textarea:focus {
     outline: 0;
 }
 
@@ -319,7 +319,7 @@ button.go {
 
 .project-attributes a:first-child img {
     height: 62px;
-    margin: 0 10px 0 30px;
+    margin: 0 10px;
     width: 62px;
 }
 
@@ -352,7 +352,7 @@ button.go {
     margin-left: -20px;
 }
 
-.depends-on > div, .goals-column > div:nth-child(2) {
+.depends-on > div, .goals-column > div:first-of-type {
     border-left: 1px solid #ccc;
 }
 
@@ -360,9 +360,12 @@ button.go {
     margin-left: 0;
 }
 
-.dependent-projects .project, .goal {
+.dependent-projects .project, .goal, .edit-goal {
     border-bottom: 1px solid #ccc;
-    margin: 0 15px 15px;
+}
+
+.project , .goal, .edit-goal, .header {
+        margin: 0 20px 15px;
 }
 
 .dependent-projects .media {
@@ -414,39 +417,42 @@ button.go {
 
 /* Page 3 =====================*/
 
+.project-goals {
+    padding-bottom:0;
+}
 
 .project-goals input {
     height: auto;
     margin-bottom: 0;
 }
 
-.header {
-    padding-bottom: 20px;
-}
-
-.header > * {
+.header > .row-fluid > * {
     height: 62px;
     position: relative;
 } 
 
-.project-attributes a:last-child, .unpublished, .uri, .project-meta, .goal > .row-fluid > .span4 span {
+.project-attributes a:last-child, .header .unpublished, .uri, .project-meta, .edit-goal .span3 span {
     position: absolute;
     top: 35%;
 }
 
-.unpublished {
-    background-color: #24c1d0;
+.unpublished, .deleted {
+    display: inline-block;
     color: #fff;
     font-size: 18px;
     font-weight: bold;
     padding: 5px;
 }
 
-.project-meta {
-    right: 10%;
+.unpublished {
+    background-color: #24c1d0;
 }
 
-.project-meta button, .goals-column .goal button:nth-child(2) {
+.deleted {
+    background-color: #bd4747;
+}
+
+.project-meta button, .goals-column .edit-goal button:nth-child(2) {
     margin-left: 10px;
 }
 
@@ -455,7 +461,7 @@ button.go {
 }
 
 .budget-n-goals {
-    margin-bottom: 50px;
+    padding-bottom: 50px;
 }
 
 .budget-column h5 b {
@@ -543,19 +549,15 @@ ul.chart-div-legend {
     margin-top: 15px;
 }
  
-.goals-column .goal:last-of-type {
+.goals-column .goal:last-of-type, .edit-goal:last-of-type {
     border-bottom: none;
 }
 
-.deleted {
-    background-color: #bd4747;
-}
-
-.goal {
+.goal, .edit-goal {
     padding-bottom: 20px;
 }
 
-.goal .row-fluid {
+.goal .row-fluid, .edit-goal .row-fluid {
     margin-bottom: 15px;
 }
 
@@ -568,23 +570,31 @@ ul.chart-div-legend {
     vertical-align: middle;
 }
 
-.goal > .row-fluid > .span4 {
+.edit-goal > .row-fluid:first-of-type .span3 {
     height: 100px;
+}
+
+.edit-goal > .row-fluid .span3 {
     position: relative;
 }
 
-.goal .span8 textarea {
+.edit-goal > .row-fluid .span3 span, .project-meta {
+    right: 0;
+}
+
+.edit-goal textarea {
     display: block;
     height: 50px;
     margin-right: 0;
+    max-width: 475px;
 }
 
-.goal .span8 input {
+.edit-goal .span9 input {
     font-size: 18px;
 }
 
-.goal .span8 textarea, .goal .span8 input {
-    width: 350px;
+.edit-goal textarea, .edit-goal .span9 input {
+    width: 400px;
 }
 
 .need-pledge-controls {
@@ -670,12 +680,17 @@ ul.chart-div-legend {
 
 .add-goal {
     position: absolute;
-    right: 0;
+    right: 30px;
     top: 10px;
 }
 
+#button-add-need {
+    margin-right: 20px;
+}
+
 .current-goals {
-    margin: 0 30px 30px;
+    background-color: #f2f2f2;
+    padding: 0 30px 30px;
     position: relative;
 }
 

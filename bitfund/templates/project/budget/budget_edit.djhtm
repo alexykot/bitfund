@@ -89,8 +89,8 @@
 <div class="project-goals">
     <form action="" id="form-crud-project" method="post">
         {% csrf_token %}
-
-        <div class="row-fluid header">
+        <div class="header">
+        <div class="row-fluid">
             <div class="span4 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                     <!-- <img src="{{ STATIC_URL }}img/project_img.png" /> -->
@@ -120,7 +120,7 @@
                     <button type="submit" value="{% if project.is_public %}unpublish{% else %}publish{% endif %}" class="button button-small gray">unpublish</button>
                 </div>
             </div>
-        </div>
+        </div></div>
 
         <div class="row-fluid budget-n-goals">
             <div class="span4 budget-column">
@@ -200,9 +200,8 @@
                         {% include "project/budget/ajax-crud_need_form.djhtm" %}
                     {% endfor %}
                 </div>
-                <div class="span3 offset9">
-                    <button id="button-add-need" class="button gray">add need</button>
-                </div>
+                <button id="button-add-need" class="button gray pull-right">add need</button>
+                
             </div><!-- goals-column -->
 
         </div><!-- budget-n-goals -->
