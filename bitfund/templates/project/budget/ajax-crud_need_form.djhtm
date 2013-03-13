@@ -26,18 +26,12 @@
                 </span>
             </div>
     </div>
-    <div class="row-fluid">
-        <div class="span9">
-            <span id="button-sort-need-{{need.id}}" class="button button-small gray sort">sort</span>
-        </div>
-        <div class="span3">
-            <span>
-                <button id="button-toggle-publish-need-{{need.id}}" class="button button-small gray">
-                    {% if need.is_public %}unpublish{% else %}publish{% endif %}</button>
-                <button id="button-drop-need-{{need.id}}" class="button button-small gray">delete</button>
-            </span>
-        </div>
-    </div> 
+    <span id="button-sort-need-{{need.id}}" class="button button-small gray sort">sort</span>
+    <span class="pull-right">
+        <button id="button-toggle-publish-need-{{need.id}}" class="button button-small gray">
+            {% if need.is_public %}unpublish{% else %}publish{% endif %}</button>
+        <button id="button-drop-need-{{need.id}}" class="button button-small gray">delete</button>
+    </span>
 </div>
 
 <script type="text/javascript">
