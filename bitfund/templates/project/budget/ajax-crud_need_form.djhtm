@@ -12,9 +12,9 @@
     <div class="row-fluid">
         {{ need.crud_form.non_field_errors }}
             <div class="span9">
-                <h4>
+                
                 {{ need.crud_form.title.errors }}
-                {{ need.crud_form.title }}</h4>
+                {{ need.crud_form.title }}
                 {{ need.crud_form.brief.errors }}
                 {{ need.crud_form.brief }}
             </div>
@@ -28,7 +28,7 @@
     </div>
     <div class="row-fluid">
         <div class="span9">
-            <span id="button-sort-need-{{need.id}}" class="button button-small gray">sort</span>
+            <span id="button-sort-need-{{need.id}}" class="button button-small gray sort">sort</span>
         </div>
         <div class="span3">
             <span>

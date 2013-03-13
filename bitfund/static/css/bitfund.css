@@ -364,8 +364,8 @@ button.go {
     border-bottom: 1px solid #ccc;
 }
 
-.project , .goal, .edit-goal, .header {
-        margin: 0 20px 15px;
+.project , .goal,.header {
+    margin: 0 20px 15px;
 }
 
 .dependent-projects .media {
@@ -458,10 +458,6 @@ button.go {
 
 .project-meta form {
     display: inline-block;
-}
-
-.budget-n-goals {
-    padding-bottom: 50px;
 }
 
 .budget-column h5 b {
@@ -570,6 +566,10 @@ ul.chart-div-legend {
     vertical-align: middle;
 }
 
+.edit-goal {
+    margin: 0 20px 15px 13px;
+}
+
 .edit-goal > .row-fluid:first-of-type .span3 {
     height: 100px;
 }
@@ -591,10 +591,15 @@ ul.chart-div-legend {
 
 .edit-goal .span9 input {
     font-size: 18px;
+    margin-bottom: 8px;
 }
 
 .edit-goal textarea, .edit-goal .span9 input {
     width: 400px;
+}
+
+.sort {
+    cursor: move;
 }
 
 .need-pledge-controls {
@@ -685,6 +690,7 @@ ul.chart-div-legend {
 }
 
 #button-add-need {
+    margin-bottom: 20px;
     margin-right: 20px;
 }
 

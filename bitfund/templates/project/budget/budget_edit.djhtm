@@ -104,13 +104,13 @@
                     {% endcomment %}
                 </a>
                 <span>
-                    {{ project_form.title|attr:"class:input-medium"}}
+                    {{ project_form.title|attr:"class:input-medium"|attr:"required"}}
                     {{ project_form.title.errors }}
                     {{ project_form.key.errors }}
                 </span>
             </div>
             <div class="span4">
-                <div class="uri">bitfund.org/ {{ project_form.key|attr:"class:input-medium" }}</div>
+                <div class="uri">bitfund.org/ {{ project_form.key|attr:"class:input-medium"|attr:"required" }}</div>
             </div>
             <div class="span4">
                 <div class="project-meta">
