@@ -53,7 +53,6 @@ class UserProjectsCountMiddleware(object):
 
             request.user_projects_own_count = (Project.objects
                                                .filter(maintainer__id=request.user.id)
-                                               .filter(is_public=True)
                                                .exclude(status=PROJECT_STATUS_CHOICES.unclaimed)
                                                .aggregate(Count('key'))['key__count']
                                               ) or 0
