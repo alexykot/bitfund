@@ -28,6 +28,7 @@ class Project(models.Model):
     is_public = models.BooleanField(default=True)
     status = models.CharField(max_length=80, choices=PROJECT_STATUS_CHOICES, default=PROJECT_STATUS_CHOICES.unclaimed)
     is_refused_to_give_to_bitfund = models.BooleanField(default=False)
+    #is_maintainer_confirmed = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title

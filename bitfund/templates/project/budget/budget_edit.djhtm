@@ -116,7 +116,7 @@
                 <div class="project-meta">
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">quit edit mode</a>
                     <button type="submit" value="Save" id="save-budget" class="button button-small gray">Save</button>
-                    <button type="submit" value="{% if project.is_public %}unpublish{% else %}publish{% endif %}" class="button button-small gray">unpublish</button>
+                    <button type="submit" class="button button-small gray">{% if project.is_public %}unpublish{% else %}publish{% endif %}</button>
                 </div>
             </div>
         </div></div>

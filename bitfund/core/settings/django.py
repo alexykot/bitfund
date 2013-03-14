@@ -35,6 +35,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
 
     # installed middleware
+    'social_auth.middleware.SocialAuthExceptionMiddleware',
 
     #project custom middleware
     #'bitfund.core.middleware.HiddenEntranceMiddleware',
@@ -82,7 +83,7 @@ INSTALLED_APPS = (
     'guardian',         # object permissions checking
     'easy_thumbnails',  # easier thumbnailing
     'tastypie',         # API framework
-    #'social_auth'       # authentication via various big name sites
+    'social_auth',       # authentication via various big name sites
     'model_utils',      # models utilities
     'selectable',       # select fields ajax autocomplete lookups
 )
@@ -127,21 +128,23 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
 
+    #installed processors
+    'social_auth.context_processors.social_auth_by_name_backends',
+    'social_auth.context_processors.social_auth_login_redirect',
 
     #custom processors
     'bitfund.core.context_processors.frontend_header_template_data',
     'bitfund.core.context_processors.user_is_stranger',
 )
 
-AUTHENTICATION_BACKENDS = (
-    'guardian.backends.ObjectPermissionBackend',
-    'django.contrib.auth.backends.ModelBackend',
 
-    # 'social_auth.backends.twitter.TwitterBackend',
-    # 'social_auth.backends.facebook.FacebookBackend',
-    # 'social_auth.backends.google.GoogleOAuthBackend',
-    # 'social_auth.backends.google.GoogleOAuth2Backend',
-    # 'social_auth.backends.google.GoogleBackend',
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.contrib.github.GithubBackend',
+    'social_auth.backends.facebook.FacebookBackend',
+    'social_auth.backends.google.GoogleOAuthBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.google.GoogleBackend',
     # 'social_auth.backends.yahoo.YahooBackend',
     # 'social_auth.backends.browserid.BrowserIDBackend',
     # 'social_auth.backends.contrib.linkedin.LinkedinBackend',
@@ -149,7 +152,6 @@ AUTHENTICATION_BACKENDS = (
     # 'social_auth.backends.contrib.livejournal.LiveJournalBackend',
     # 'social_auth.backends.contrib.orkut.OrkutBackend',
     # 'social_auth.backends.contrib.foursquare.FoursquareBackend',
-    # 'social_auth.backends.contrib.github.GithubBackend',
     # 'social_auth.backends.contrib.vkontakte.VKontakteBackend',
     # 'social_auth.backends.contrib.live.LiveBackend',
     # 'social_auth.backends.contrib.skyrock.SkyrockBackend',
@@ -157,6 +159,8 @@ AUTHENTICATION_BACKENDS = (
     # 'social_auth.backends.contrib.readability.ReadabilityBackend',
     # 'social_auth.backends.OpenIDBackend',
 
+    'guardian.backends.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 

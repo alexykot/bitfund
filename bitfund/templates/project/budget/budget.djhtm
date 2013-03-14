@@ -226,14 +226,15 @@
             </h5>
 
             <div class="maintain">
-                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is becouse <a href="#">community decided so</a>
+
+
+                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is because <a href="#">community decided so</a>
                     <br>
-                    his right to maintain it is <span><a href="#">unverified</a></span>
-                    <span><a href="#">support him</a></span>
-                    <a href="#">dethrone him</a>
-                    <br>
-                    his right to maintain it is <span><a href="#">verified</span>
-                    <a href="#">dethrone him</a>
+                    {% if project.is_maintainer_confirmed %}
+                        his right to maintain is <span><a href="#">verified</span>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">vote to dethrone</a>
+                    {% else %}
+                        his right to maintain is <span><a href="#">unverified</a></span>&nbsp;&nbsp;&nbsp;&nbsp;<span><a href="#">vote to support</a></span>&nbsp;&nbsp;&nbsp;<a href="#">vote against</a>
+                    {% endif %}
                 </p>
             </div>
         </div>
