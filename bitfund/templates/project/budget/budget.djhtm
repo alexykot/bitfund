@@ -107,7 +107,7 @@
                     <span class="unpublished">unpublished</span>
                 </div>
             {% endif %}
-            <div class="span2 pull-right">
+            <div class="span2 text-right">
                 <div class="project-meta">
                 {% if project_edit_access %}
                     <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
