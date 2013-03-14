@@ -2,8 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Count, Sum
-from django.shortcuts import get_object_or_404
+from django.db.models import Sum
 
 from model_utils import Choices
 

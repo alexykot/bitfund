@@ -1,14 +1,12 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_user_login
 from django.contrib.auth import logout as django_user_logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 from django.template import RequestContext
-from django.db.models import Q
 from django.core.validators import validate_email
 from django.core.mail import send_mail
 
@@ -19,6 +17,9 @@ from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMET
 
 
 def index(request):
+    from social_auth.backends import BACKENDS
+    print BACKENDS
+
     template_data = {'request': request,
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      }
