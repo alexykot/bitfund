@@ -143,11 +143,11 @@
                         {% endif %}
                         </div>
                     </div>
-                    <div class="span4 centered">
+                    <div class="span4 text-center">
                         <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}</div>
                         <div>pledged</div>
                     </div>
-                    <div class="span3 offset1 centered">
+                    <div class="span3 offset1 text-center">
                         <div class="backers">{{ budget.donations_total_pledgers }}</div>
                         <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
                     </div>
@@ -173,7 +173,7 @@
                 </div>
 
                 {% if budget.i_depend_on_projects_count %}
-                    <h5 class="centered">
+                    <h5 class="text-center">
                         {% if budget.i_depend_on_transfer_percent > 0 %}
                             {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of it's pledges to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
                             {{ budget.i_depend_on_projects_count }} other projects</a> it depends on.
@@ -182,7 +182,7 @@
                         {% endif %}
                     </h5>
                 {% else %}
-                    <h5 class="centered">{{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
+                    <h5 class="text-center">{{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
                     </h5>
                 {% endif %}
             </div>
@@ -202,11 +202,13 @@
                                 <h4>{{ need.title }}</h4>
                                 <p>{{ need.brief|default_if_none:'' }}</p>
                             </div>
-                            <div class="span3"><span>
-                                <span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
-                                <br>
-                                of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
-                                <span class="chart-div-medium">100%</span><span>
+                            <div class="span3">
+                                <div class="pull-right">
+                                    <span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
+                                    <br>
+                                    of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
+                                    <span class="chart-div-medium">100%</span>
+                                </div>
                             </div>
                         </div>
                         <div id="form-container-need-item-{{ need.id }}">
@@ -221,15 +223,13 @@
                     </div>
                 {% endfor %}
             </div>
-            <h5 class="centered">
+            <h5 class="text-center">
                 I'm not ready to pledge to {{ project.title }} right now, but <button class="button gray grateful">I'm grateful!</button>
             </h5>
 
-            <div class="maintain">
+            <div class="maintain text-right">
 
-
-                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is because <a href="#">community decided so</a>
-                    <br>
+                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is because <a href="#">community decided so</a><br>
                     {% if project.is_maintainer_confirmed %}
                         his right to maintain is <span><a href="#">verified</span>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">vote to dethrone</a>
                     {% else %}
@@ -255,11 +255,11 @@
                         <div class="span3">
                             <div class="chart-div-small" id="goal-{{ goal.id }}-chart">{{ goal.total_percent }}%</div>
                         </div>
-                        <div class="span3 centered">
+                        <div class="span3 text-center">
                             <div>${{ goal.donations_amount }}</div>
                             <div>pledged</div>
                         </div>
-                        <div class="span4 centered">
+                        <div class="span4 text-center">
                             <div>{{ goal.days_to_end }}</div>
                             <div>days to go</div>
                         </div>

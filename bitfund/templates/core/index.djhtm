@@ -7,14 +7,14 @@
 {% if request.user.is_authenticated and not user_is_stranger %}
 {#<h2><a href="{% url bitfund.project.views.create %}">create new project</a></h2>#}
 {% endif %}
-<div class="banner centered">
+<div class="banner text-center">
     <h1>Fostering open world</h1>
     <h2>Monthly pledges for the open projects</h2>
     <a tupe="button" class="about">About</a>
 </div>
 
 <div class="available-projects">
-    <div class="centered">
+    <div class="text-center">
         <h4>What project will you support today?</h4>
         <form class="form-inline">
             <input type="text" />
@@ -23,7 +23,7 @@
     </div>
     <hr>
     <div class="row-fluid">
-        <div class="span3 centered">
+        <div class="span3 text-center">
         	{% if new_projects_list %}
                 <h3>New projects</h3>
                 {% for project in new_projects_list %}
@@ -39,7 +39,7 @@
                 {% endfor %}
             {% endif %}
         </div>
-        <div class="span3 centered">
+        <div class="span3 text-center">
             {% if top_funded_projects_list %}
                 <h3>Top Funded</h3>
                 {% for project in top_funded_projects_list %}
@@ -56,7 +56,7 @@
                 {% endfor %}
             {% endif %}
         </div>
-        <div class="span3 centered">
+        <div class="span3 text-center">
             {% if top_linked_projects_list %}
                 <h3>Top Linked</h3>
                 {% for project in top_linked_projects_list %}
@@ -72,7 +72,7 @@
                 {% endfor %}
             {% endif %}
         </div>
-        <div class="span3 centered">
+        <div class="span3 text-center">
             {% if unclaimed_projects_list %}
                 <h3>Unclaimed</h3>
                 {% for project in unclaimed_projects_list %}

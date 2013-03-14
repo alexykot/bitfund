@@ -34,14 +34,14 @@
                                    id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
-                    <div class="span3">
+                    <div class="span3 text-right">
                         <button type="submit" value="Update pledge"
                            data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Update pledge</button>
                     </div>
                 </div>
 
                 {% if need.last_pledge_transaction %}
-                    <div class="centered">
+                    <div class="text-center">
                         last pledged {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
                         on {{ need.last_pledge_transaction.transaction_datetime|date }}
 
@@ -97,13 +97,13 @@
                                    id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
-                    <div class="span2">
+                    <div class="span2 text-right">
                         <button type="submit" value="Pledge"
                            data-action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}" class="button orange">Pledge</button>
                     </div>
                 </div>
             {% if need.last_pledge_transaction %}
-                <div class="centered">
+                <div class="text-center">
                     pledged {{ site_currency_sign }}{{ need.last_pledge_transaction.transaction_amount }}
                     on {{ need.last_pledge_transaction.transaction_datetime|date }}
                     <button type="submit" value="Switch to monthly pledge"
@@ -111,7 +111,7 @@
                 </div>
             {% endif %}
             {% if not request.user.is_payment_card_attached %}
-                <div class="centered">
+                <div class="text-center">
                     <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
                 </div>
             {% endif %}
@@ -119,7 +119,7 @@
         {% endif %}
 
         {% if not request.user.is_authenticated %}
-            <div class="centered" id="login-links-{{ need.id }}">
+            <div class="text-center" id="login-links-{{ need.id }}">
                 <span class="orange-bg">to pledge &ndash; {% include "core/login/login-with-links.djhtm" %}</span>
             </div>
         {% endif %}
