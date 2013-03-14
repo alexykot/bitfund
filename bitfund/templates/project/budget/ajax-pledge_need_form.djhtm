@@ -24,7 +24,7 @@
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                 
-                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none">
+                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none" class="less-input">
                             <li>{{ site_currency_sign }}</li>
                             <li>
                                 {{ need.pledge_form.pledge_amount.errors }}
@@ -87,7 +87,7 @@
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul> 
                     
-                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none;">
+                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none;" class="less-input">
                             <li>{{ site_currency_sign }}</li>
                             <li>
                                 {{ need.pledge_form.pledge_amount.errors }}

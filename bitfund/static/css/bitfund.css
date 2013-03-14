@@ -332,6 +332,10 @@ button.go {
     vertical-align: middle;
 }
 
+.dependent-projects .project-attributes {
+    margin-left: 20px;
+}
+
 .depends-on > div, .depending-on > div, .budget-column > div, .goals-column > div {
     padding-top: 20px;
 }
@@ -638,7 +642,12 @@ ul.chart-div-legend {
     line-height: 35px;
 }
 
-.need-pledge-controls > .row-fluid a.active {
+
+.need-pledge-controls > .row-fluid a:visited {
+    color: #577000;
+}
+
+.need-pledge-controls > .row-fluid .span4 a.active {
     border: none;
     color: #333;
     font-weight: bold;
@@ -652,10 +661,6 @@ ul.chart-div-legend {
 
 .need-pledge-controls > .row-fluid a:hover {
     text-decoration: none;
-}
-
-.need-pledge-controls > .row-fluid a:visited {
-    color: #577000;
 }
 
 .amount-buttons li, .need-pledge-controls ul li {
@@ -687,6 +692,7 @@ ul.chart-div-legend {
     background-color: #577000;
     color: #fff;
 }
+
 
 .less-input input {
     margin-bottom: 0;
