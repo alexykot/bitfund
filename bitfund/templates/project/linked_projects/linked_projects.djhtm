@@ -29,7 +29,7 @@
     <div class="dependent-projects">
     <div class="header">
         <div class="row-fluid">
-            <div class="span4 project-attributes">
+            <div class="span12 project-attributes">
                 <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">
                     {% comment %} {% if logo %} 
                         <img src="{{ logo.url }}" />

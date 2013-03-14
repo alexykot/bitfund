@@ -38,7 +38,7 @@
                                 </div>
                             </div>
                             {% if project_edit_access %}
-                                <ul class="actions">
+                                <ul class="actions text-right">
                                     <li><span class="sort-handle">sort</span></li>
                                     <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='edit' %}">edit</a></li>
                                     <li><a href="{% url bitfund.project.views.crud_linked_project project_key=project.key linked_project_key=project_i_depend_on.key action='drop' %}">drop</a></li>
@@ -75,7 +75,7 @@
             <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='donate' %}"
                 class="project_link_bitfund">change mind</a>
         {% else %} 
-            <div class="dependency centered">
+            <div class="dependency text-center">
                 <h4>You're not dependent on BitFund.</h4>
                 <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='donate' %}" class="button gray">Yes, set dependency</a>
                 <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='refuse' %}" class="button gray">No, thanks</a>

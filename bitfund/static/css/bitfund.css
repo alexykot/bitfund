@@ -206,9 +206,6 @@ button, .button {
 /* Container ==================*/
 
 /* Page 1 - Available projects */
-.centered {
-    text-align: center;
-}
 
 .banner {
     border: 1px solid #f06805;
@@ -396,7 +393,6 @@ button.go {
     line-height: 10px;
     margin-left: 0;
     padding-top: 20px;
-    text-align: right;
 }
 
 .project .actions li {
@@ -459,6 +455,10 @@ noindex:-o-prefocus, .project-meta {
     top: 35%;
 }
 
+.edit-goal .unpublished, .edit-goal .deleted {
+    margin-bottom: 10px;
+}
+
 .unpublished, .deleted {
     display: inline-block;
     color: #fff;
@@ -475,7 +475,7 @@ noindex:-o-prefocus, .project-meta {
     background-color: #bd4747;
 }
 
-.project-meta button, .goals-column .edit-goal button:nth-child(2) {
+.project-meta button, .goals-column .edit-goal button:nth-child(2), .grateful {
     margin-left: 10px;
 }
 
@@ -581,11 +581,11 @@ ul.chart-div-legend {
     margin-bottom: 15px;
 }
 
-.goal > .row-fluid > .span3 {
-    display: table;
+.goal > .row-fluid > .span3 div {
+    display: table-row;
 }
 
-.goal > .row-fluid > .span3 span {
+.goal > .row-fluid > .span3 div span {
     display: table-cell;
     vertical-align: middle;
 }
@@ -700,7 +700,6 @@ ul.chart-div-legend {
 .maintain {
     font-size: 12px;
     padding-right: 30px;
-    text-align: right;
 }
 
 .maintain span  {

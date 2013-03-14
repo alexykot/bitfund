@@ -143,11 +143,11 @@
                             {% endif %}
                             </div>
                         </div>
-                        <div class="span4 centered">
+                        <div class="span4 text-center">
                             <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
                             <div>pledged</div>
                         </div>
-                        <div class="span3 offset1 centered">
+                        <div class="span3 offset1 text-center">
                             <div class="backers">{{ budget.donations_total_pledgers }}</div>
                             <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
                         </div>
@@ -173,7 +173,7 @@
                     </div>
 
                     {% if budget.i_depend_on_projects_count %}
-                        <h5 class="centered">
+                        <h5 class="text-center">
                             {% if budget.i_depend_on_transfer_percent > 0 %}
                                 {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of it's pledges to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
                                 {{ budget.i_depend_on_projects_count }} other projects</a> it depends on.
@@ -182,7 +182,7 @@
                             {% endif %}
                         </h5>
                     {% else %}
-                        <h5 class="centered">{{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
+                        <h5 class="text-center">{{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
                         </h5>
                     {% endif %}
                 </div>
