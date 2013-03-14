@@ -44,6 +44,18 @@ urlpatterns += patterns('bitfund.core.views',
 
 )
 
+#USER ACCOUNT
+urlpatterns += patterns('bitfund.pledger.views',
+                        (r'^user/(?P<username>[a-z0-9-_.]{1,})/{0,}$', 'user_public_profile'),
+                        (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'user_public_profile'),
+                        (r'^user/me/{0,}$', 'user_own_profile'),
+
+
+                        (r'^pledger/account/attach_card/{0,}$', 'attach_card'),
+                        (r'^pledger/account/attach_card/return-to/(?P<return_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'attach_card'),
+
+                        )
+
 #PROJECTS
 urlpatterns += patterns('bitfund.project.views',
     (r'^projects/create$', 'create'),
@@ -59,7 +71,6 @@ urlpatterns += patterns('bitfund.project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
-
 
     #claims
     (r'^unclaimed/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'unclaimed'),
@@ -95,18 +106,6 @@ urlpatterns += patterns('bitfund.project.views',
     (r'^(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
 )
 
-#USER ACCOUNT
-urlpatterns += patterns('bitfund.pledger.views',
-    (r'^pledger/account/attach_card/{0,}$', 'attach_card'),
-    (r'^pledger/account/attach_card/return-to/(?P<return_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'attach_card'),
-
-    (r'^pledger/donations_overview/{0,}$', 'donations_overview'),
-    (r'^pledger/donations_update/{0,}$', 'donations_update'),
-    (r'^pledger/checkout/{0,}$', 'checkout'),
-    (r'^pledger/checkout_success/{0,}$', 'checkout_success'),
-    (r'^pledger/donations_success/{0,}$', 'donations_success'),
-    (r'^pledger/fake_external_checkout/{0,}$', 'fake_external_checkout'),
-)
 
 
 if settings.DEBUG:

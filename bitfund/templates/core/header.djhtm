@@ -1,7 +1,7 @@
 <div class="navbar">
     <ul class="nav pull-right">
         {% if request.user.is_authenticated and not user_is_stranger %}
-            <li>You are <a href="#">{{ request.user.username }}</a></li>
+            <li>You are <a href="{% url bitfund.pledger.views.user_public_profile username=request.user.username %}">{{ request.user.username }}</a></li>
             {% if request.user_projects_support_count %}
                 <li>You're supporting <a href="#">{{ request.user_projects_support_count }} project{{ request.user_projects_support_count|pluralize }}</a></li>
             {% elif not request.user_projects_own_count %}

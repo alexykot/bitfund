@@ -229,7 +229,7 @@
 
             <div class="maintain text-right">
 
-                <p>Budget is maintained by community ambassador <a href="#">{{ request.user.username }}</a>, this is because <a href="#">community decided so</a><br>
+                <p>Budget is maintained by community ambassador <a href="{% url bitfund.pledger.views.user_public_profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>, this is because <a href="#">community decided so</a><br>
                     {% if project.is_maintainer_confirmed %}
                         his right to maintain is <span><a href="#">verified</span>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">vote to dethrone</a>
                     {% else %}

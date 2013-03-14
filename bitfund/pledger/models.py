@@ -32,7 +32,8 @@ USER_PROJECT_STATUS_CHOICES = Choices(
 class Profile(User):
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
     api_token = models.CharField(max_length=255, unique=True)
-    donation_is_public = models.BooleanField(default=True)
+    donation_amount_is_public = models.BooleanField(default=True)
+    projects_list_is_public = models.BooleanField(default=False)
     status_in_project = models.CharField(max_length=80, choices=USER_PROJECT_STATUS_CHOICES,
                                          default=USER_PROJECT_STATUS_CHOICES.sole_developer)
 
