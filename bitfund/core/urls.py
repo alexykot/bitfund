@@ -46,10 +46,9 @@ urlpatterns += patterns('bitfund.core.views',
 
 #USER ACCOUNT
 urlpatterns += patterns('bitfund.pledger.views',
-                        (r'^user/(?P<username>[a-z0-9-_.]{1,})/{0,}$', 'user_public_profile'),
-                        (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'user_public_profile'),
-                        (r'^user/me/{0,}$', 'user_own_profile'),
-
+                        (r'^account/{0,}$', 'user_profile_overview'),
+                        (r'^user/(?P<username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
+                        (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
 
                         (r'^pledger/account/attach_card/{0,}$', 'attach_card'),
                         (r'^pledger/account/attach_card/return-to/(?P<return_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'attach_card'),
