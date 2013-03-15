@@ -44,6 +44,7 @@ html, body {
     width: 100%;
 }
 
+
 /* general */
 * {
     margin: 0;
@@ -206,27 +207,28 @@ button, .button {
 /* Container ==================*/
 
 /* Page 1 - Available projects */
-
-.banner {
-    border: 1px solid #f06805;
-    margin: 40px auto 50px;
-    padding: 10px;
+.masthead {
+    padding: 50px 0 20px;
     position: relative;
 }
 
-.banner h1 {
-    font-weight: bold;
+.masthead h1 {
     color: #3d3d3d; 
-    line-height: 20px;
+    margin-bottom: 45px;
     text-transform: uppercase;
-
 }
 
-.banner h2 {
-    color: #6f6f6f;
+.masthead h2 {
     font-weight: 100;
     letter-spacing: 1px;
-    line-height: 20px;
+}
+
+.masthead h1:after {
+    content: "\25A0";
+    color: #f06705; 
+    font-size: 20px;
+    position: relative;
+    top: -30px; 
 }
 
 a.about, button.go {
@@ -246,7 +248,7 @@ a.about {
     font-size: 18px;
     padding: 10px 25px;
     position: absolute;
-    bottom: 0;
+    top: 10px;
     right: 0;
 
 }
@@ -290,29 +292,129 @@ button.go {
     line-height: 25px;
 }
 
-.available-projects .span3 a {
+.available-projects ul {
+    margin-left: 0;
+}
+
+.available-projects .span3 > a, .available-projects .span6 ul li > a {
     border: 1px solid #ccc;
     display: block;
     margin-top: 15px;
 }
 
-.available-projects .span3 a:hover {
+.available-projects .span3 a:hover, .available-projects .span6 ul li > a:hover {
     border: 1px solid #89b001;
     text-decoration: none;
 }
 
-.available-projects .media {
+.available-projects .span3 .media, .available-projects .span6 ul li > a {
     color: #3d3d3d;
-    height: 55px;
     padding: 10px;
     text-align: left;
+}
+
+.available-projects .span3 .media {
+    height: 55px;
 }
 
 .available-projects .media-object {
     height: 55px;
     width: 55px;
 }
+
+.available-projects button.orange {
+    padding: 5px 8px;
+}
+
+.search-result {
+    margin: 30px 0;
+}
+
+.search-result .span6 .text-center {
+    padding-top: 20px;
+    padding-left: 10px;
+}
+
+.search-result .span6 .text-center span:first-of-type {
+    font-weight: bold;
+}
+
+.search-result .span6 .span3 {
+    padding-top: 8px;
+}
+
+.active-state, .achieved-state, .unclaimed-state {
+    color: #fff;
+    display: inline-block;
+    font-size: 10px;
+    line-height: 14px;
+    text-align: center;
+    width: 63px;
+}
+
+.active-state {
+    background-color: #577000;
+}
+
+.achieved-state {
+    background-color: #ccc;
+}
+
+.unclaimed-state {
+    background-color: #f06705;
+}
+
+a.arrow-left-green:hover, .arrow-right-green:hover, a:hover .arrow-left-white-gr, a:hover .arrow-right-white-gr {
+    color: #577000;
+    text-decoration: none;
+}
+
+.arrow-left-white-gr, .arrow-right-white-gr {
+    color: #fff;
+    font-family: arial;
+    font-size: 14px;
+    left: 1px;
+    line-height: 16px;
+    position: absolute;
+    top: 1px;
+}
+
+a.arrow-left-green, a.arrow-right-green {
+    color: #577000;
+    font-family: arial;
+   line-height: 16px;
+    font-size: 16px;
+    position: relative;
+}
+
 /* Page 2 - Dependent projects */
+
+.header {
+    display: table;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.header .row-fluid {
+    display: table-row;
+}
+
+.header .row-fluid > * {
+    display: table-cell;
+    float: none;
+}
+
+.header .row-fluid > * {
+    vertical-align: middle;
+}
+
+noindex:-o-prefocus, .project-attributes {
+    padding-left: 20px;
+}
+
+noindex:-o-prefocus, .project-meta {
+    padding-right: 20px;
+}
 
 .project-attributes a:first-child img {
     height: 62px;
@@ -428,30 +530,6 @@ button.go {
 .project-goals input {
     height: auto;
     margin-bottom: 0;
-}
-
-.header {
-    display: table;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.header .row-fluid {
-    display: table-row;
-}
-
-.header .row-fluid > * {
-    display: table-cell;
-    float: none;
-    vertical-align: middle;
-}
-
-noindex:-o-prefocus, .project-attributes {
-    padding-left: 20px;
-}
-
-noindex:-o-prefocus, .project-meta {
-    padding-right: 20px;
 }
 
 .edit-goal > .row-fluid:first-of-type .span3 span {
