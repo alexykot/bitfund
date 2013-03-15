@@ -19,8 +19,6 @@ DATE_INPUT_FORMATS = (
 '%d %b %Y', '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y', '%b %d, %Y', '%d %b, %Y', '%B %d %Y', '%B %d, %Y',
 '%d %B %Y', '%d %B, %Y')
 
-FAKE_CHECKOUT_SYSTEM_URL = '/pledger/fake_external_checkout'
-
 TIME_TO_SHOW_HOURS = 48 #when it's time to show hours instead of days for "time to go" for budget and goals, in hours
 
 API_USER_TOKEN_PARAM_NAME = 'userToken'
@@ -47,3 +45,5 @@ MINIMAL_DEFAULT_REDONATIONS_RADIANT = 2
 MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT = 1
 
 SESSION_PARAM_RETURN_TO_PROJECT = 'return-to-project'
+
+MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC = 10
