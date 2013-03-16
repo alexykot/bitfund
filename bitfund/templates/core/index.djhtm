@@ -98,8 +98,7 @@
                 </a></li>
             </ul>
             <div class="text-right">
-                <a href="#" class="arrow">
-                <span class="arrow-left-green">&#9668<span class="arrow-left-white-gr">&#9668</span></span><span class="arrow">Previous</span></a>
+                <a href="#" class="arrow-left">Previuos</a>
             </div>
         </div>
         <div class="span6">
@@ -177,9 +176,9 @@
                 </a></li>
             </ul>
             <div>
-                <a href="#" class="arrow"><span class="arrow">Next</span><span class="arrow-right-green"> &#9658<span class="arrow-right-white-gr">&#9658</span></span>
-                </a>
+                <a href="#" class="arrow-right">Next</a>
             </div>
+         
         </div>
     </div> <!-- row-fluid search -->
     <div class="support-form text-center">

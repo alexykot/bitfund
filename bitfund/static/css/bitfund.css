@@ -355,44 +355,24 @@ button.go {
     background-color: #f06705;
 }
 
-a.arrow:hover {
-    text-decoration: none;
+.arrow-left {
+    background: url("../img/arrow-left.png") no-repeat center left;
+    padding-left: 18px;
 }
 
-a.arrow:hover .arrow-right-white-gr, a.arrow:hover .arrow-left-white-gr {
-    color: #577000;
+.arrow-left:hover {
+    background: url("../img/arrow-left-hover.png") no-repeat center left;
+    padding-left: 18px;
 }
 
-span.arrow:hover {
-    text-decoration: underline;
+.arrow-right {
+    background: url("../img/arrow-right.png") no-repeat center right;
+    padding-right: 18px;
 }
 
-.arrow-left-white-gr, .arrow-right-white-gr {
-    color: #fff;
-    font-family: arial;
-    font-size: 14px;
-    line-height: 16px;
-    position: absolute;
-    top: 1px;
-}
-
-.arrow-left-white-gr {
-    right: 1px;
-}
-
-.arrow-right-white-gr {
-    left: 5px;
-}
-
-.arrow-left-green, .arrow-right-green {
-    color: #577000;
-    font-family: arial;
-    line-height: 16px;
-    font-size: 16px;
-    position: relative;
-}
-.arrow-left-green {
-    right: 3px;
+.arrow-right:hover {
+    background: url("../img/arrow-right-hover.png") no-repeat center right;
+    padding-right: 18px;
 }
 
 .support-form h4 {
