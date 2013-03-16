@@ -30,7 +30,7 @@
         </div>
         <div class="span9">
             <div class="span1">
-                <button class="button gray">profile</button>
+                <button class="button gray active">profile</button>
             </div>
             <div class="span1">
                 <button class="button gray">pledges</button>
@@ -84,36 +84,49 @@
             <ul>
                 {% for month in user.pledges_history %}
                     {% if month.monthly_total > 0 %}
+                        <hr />
                         <li>
-                            {{ month.date|date:"M o" }}
+                            <div class="row">
+                                <div class="span3">
+                                {{ month.date|date:"M o" }}
+                                </div>
 
-                                {{ site_currency_sign }}{{ month.monthly_total }}
+                                <div class="span3 pull-right">
+                                    {{ site_currency_sign }}{{ month.monthly_total }}
+                                </div>
+                            </div>
 
+                            <div class="row">
                                 <div class="span3">
                                     <ul>
                                         <li>Monthly pledges</li>
                                         {% for project_pledge in month.monthly_pledged_projects %}
                                             {% if project_pledge.project_key %}
-                                                {{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a>
+                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a></li>
                                             {% else %}
-                                                {{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}
+                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
                                             {% endif %}
+                                        {% empty %}
+                                            <li>none</li>
                                         {% endfor %}
                                     </ul>
                                 </div>
 
                                 <div class="span3">
                                     <ul>
-                                        <li>Monthly pledges</li>
-                                        {% for project_pledge in month.monthly_pledged_projects %}
+                                        <li>Onetime pledges</li>
+                                        {% for project_pledge in month.onetime_pledged_projects %}
                                             {% if project_pledge.project_key %}
-                                                {{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a>
+                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a></li>
                                             {% else %}
-                                                {{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}
+                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
                                             {% endif %}
+                                        {% empty %}
+                                            <li>none</li>
                                         {% endfor %}
                                     </ul>
                                 </div>
+                            </div>
                         </li>
                     {% endif %}
                 {% empty %}
