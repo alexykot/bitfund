@@ -237,16 +237,9 @@ a.about, button.go {
 }
 
 a.about {
-    background: #f0910c; /* Old browsers */
-    background: -moz-linear-gradient(top, #f0910c 50%, #f06705 50%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(50%,#f0910c), color-stop(50%,#f06705)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #f0910c 50%,#f06705 50%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #f0910c 50%,#f06705 50%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #f0910c 50%,#f06705 50%); /* IE10+ */
-    background: linear-gradient(to bottom, #f0910c 50%,#f06705 50%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0910c', endColorstr='#f06705',GradientType=0 ); /* IE6-9 */
+    background: #f06c0c;
     font-size: 18px;
-    padding: 10px 25px;
+    padding: 8px 26px;
     position: absolute;
     top: 10px;
     right: 0;
@@ -259,20 +252,8 @@ a.about:hover {
 } 
 
 button.go {
-    background: #89b001; /* Old browsers */
-    background: -moz-linear-gradient(top, #89b001 50%, #577000 50%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(50%,#89b001), color-stop(50%,#577000)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #89b001 50%,#577000 50%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #89b001 50%,#577000 50%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #89b001 50%,#577000 50%); /* IE10+ */
-    background: linear-gradient(to bottom, #89b001 50%,#577000 50%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#89b001', endColorstr='#577000',GradientType=0 ); /* IE6-9 */
+    background: #577000;
     padding: 5px 9px;
-    margin-left: 5px;
-}
-
-.form-inline {
-    padding-bottom: 10px;
 }
 
 .available-projects, .dependent-projects, .project-goals {
@@ -285,7 +266,7 @@ button.go {
 }
 
 .available-projects {
-    padding: 20px 30px;
+    padding: 30px;
 }
 
 .available-projects .span3 h3 {
@@ -317,6 +298,16 @@ button.go {
     height: 55px;
 }
 
+.available-projects .media-body {
+    line-height: 18px;
+}
+
+.available-projects .media-heading {
+    font-weight: bold;
+    line-height: 18px;
+    margin: 0;
+}
+
 .available-projects .media-object {
     height: 55px;
     width: 55px;
@@ -327,11 +318,11 @@ button.go {
 }
 
 .search-result {
-    margin: 30px 0;
+    margin-bottom: 30px;
 }
 
 .search-result .span6 .text-center {
-    padding-top: 20px;
+    padding-top: 16px;
     padding-left: 10px;
 }
 
@@ -340,7 +331,7 @@ button.go {
 }
 
 .search-result .span6 .span3 {
-    padding-top: 8px;
+    padding-top: 6px;
 }
 
 .active-state, .achieved-state, .unclaimed-state {
@@ -364,29 +355,52 @@ button.go {
     background-color: #f06705;
 }
 
-a.arrow-left-green:hover, .arrow-right-green:hover, a:hover .arrow-left-white-gr, a:hover .arrow-right-white-gr {
-    color: #577000;
+a.arrow:hover {
     text-decoration: none;
+}
+
+a.arrow:hover .arrow-right-white-gr, a.arrow:hover .arrow-left-white-gr {
+    color: #577000;
+}
+
+span.arrow:hover {
+    text-decoration: underline;
 }
 
 .arrow-left-white-gr, .arrow-right-white-gr {
     color: #fff;
     font-family: arial;
     font-size: 14px;
-    left: 1px;
     line-height: 16px;
     position: absolute;
     top: 1px;
 }
 
-a.arrow-left-green, a.arrow-right-green {
+.arrow-left-white-gr {
+    right: 1px;
+}
+
+.arrow-right-white-gr {
+    left: 5px;
+}
+
+.arrow-left-green, .arrow-right-green {
     color: #577000;
     font-family: arial;
-   line-height: 16px;
+    line-height: 16px;
     font-size: 16px;
     position: relative;
 }
+.arrow-left-green {
+    right: 3px;
+}
 
+.support-form h4 {
+    margin-bottom: 14px;
+}
+.support-form h5 {
+    margin-top: 4px;
+}
 /* Page 2 - Dependent projects */
 
 .header {
@@ -721,7 +735,7 @@ ul.chart-div-legend {
 }
 
 
-.need-pledge-controls > .row-fluid a:visited {
+.need-pledge-controls > .row-fluid a:visited, .support-form h4 a:visited {
     color: #577000;
 }
 
@@ -730,14 +744,13 @@ ul.chart-div-legend {
     color: #333;
     font-weight: bold;
     font-size: 16px;
-    text-decoration: none;
 }
 
-.need-pledge-controls > .row-fluid a {
+.need-pledge-controls > .row-fluid a, .support-form h4 a {
     border-bottom: 1px dashed #577000;
 }
 
-.need-pledge-controls > .row-fluid a:hover {
+.need-pledge-controls > .row-fluid a:hover, .support-form h4 a:hover, .need-pledge-controls > .row-fluid .span4 a.active, .support-form h4 a:active {
     text-decoration: none;
 }
 

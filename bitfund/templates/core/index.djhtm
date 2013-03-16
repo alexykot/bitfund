@@ -16,15 +16,188 @@
 <div class="available-projects">
     <div class="text-center">
         <h4>What project will you support today?</h4>
-        <form class="form-inline">
-            <input type="text" />
-            <button type="submit" class="go">Go</button>
-        </form>
+        <div class="input-append">
+          <input class="span3" id="appendedInputButton" type="text">
+          <button class="go" type="button">Go</button>
+        </div>
+    </div>
+    
+    <div class=" search-result row-fluid">
+        <div class="span6">
+            <ul>
+                <li><a href="#">
+                    <div class="row-fluid">
+                        <div class="span4"> 
+                            <div class="media">
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
+                                <div class="media-body">
+                                    <h5 class="media-heading">Bitfund</h5>
+                                    <div>5 min</div>
+                                    <div class="active-state">active</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span5 text-center">
+                            <span>$130</span><br>
+                            <span>asked this month</span>
+                        </div>
+                        <div class="span3">
+                            <div class="pull-right">
+                                <span>$65</span>
+                                <span class="chart-div-medium">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </a></li>
+                <li><a href="#">
+                    <div class="row-fluid">
+                        <div class="span4"> 
+                            <div class="media">
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
+                                <div class="media-body">
+                                    <h5 class="media-heading">Bitfund</h5>
+                                    <div>5 min</div>
+                                    <div class="achieved-state">achieved</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span5 text-center">
+                            <span>unclaimed project</span>
+                        </div>
+                        <div class="span3">
+                            <div class="pull-right">
+                                <span>$65</span>
+                                <span class="chart-div-medium">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </a></li>
+                <li><a href="#">
+                    <div class="row-fluid">
+                        <div class="span4"> 
+                            <div class="media">
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
+                                <div class="media-body">
+                                    <h5 class="media-heading">Bitfund</h5>
+                                    <div>5 min</div>
+                                    <div class="unclaimed-state">unclaimed</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span5 text-center">
+                            <span>$130</span><br>
+                            <span>asked this month</span>
+                        </div>
+                        <div class="span3">
+                            <div class="pull-right">
+                                <span>$65</span>
+                                <span class="chart-div-medium">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </a></li>
+            </ul>
+            <div class="text-right">
+                <a href="#" class="arrow">
+                <span class="arrow-left-green">&#9668<span class="arrow-left-white-gr">&#9668</span></span><span class="arrow">Previous</span></a>
+            </div>
+        </div>
+        <div class="span6">
+            <ul>
+                <li><a href="#">
+                    <div class="row-fluid">
+                        <div class="span4"> 
+                            <div class="media">
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
+                                <div class="media-body">
+                                    <h5 class="media-heading">Bitfund</h5>
+                                    <div>5 min</div>
+                                    <div class="active-state">active</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span5 text-center">
+                            <span>$130</span><br>
+                            <span>asked this month</span>
+                        </div>
+                        <div class="span3">
+                            <div class="pull-right">
+                                <span>$65</span>
+                                <span class="chart-div-medium">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </a></li>
+                <li><a href="#">
+                    <div class="row-fluid">
+                        <div class="span4"> 
+                            <div class="media">
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
+                                <div class="media-body">
+                                    <h5 class="media-heading">Bitfund</h5>
+                                    <div>5 min</div>
+                                    <div class="achieved-state">achieved</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span5 text-center">
+                            <span>unclaimed project</span>
+                        </div>
+                        <div class="span3">
+                            <div class="pull-right">
+                                <span>$65</span>
+                                <span class="chart-div-medium">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </a></li>
+                <li><a href="#">
+                    <div class="row-fluid">
+                        <div class="span4"> 
+                            <div class="media">
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
+                                <div class="media-body">
+                                    <h5 class="media-heading">Bitfund</h5>
+                                    <div>5 min</div>
+                                    <div class="unclaimed-state">unclaimed</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span5 text-center">
+                            <span>$130</span><br>
+                            <span>asked this month</span>
+                        </div>
+                        <div class="span3">
+                            <div class="pull-right">
+                                <span>$65</span>
+                                <span class="chart-div-medium">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </a></li>
+            </ul>
+            <div>
+                <a href="#" class="arrow"><span class="arrow">Next</span><span class="arrow-right-green"> &#9658<span class="arrow-right-white-gr">&#9658</span></span>
+                </a>
+            </div>
+        </div>
+    </div> <!-- row-fluid search -->
+    <div class="support-form text-center">
+        <h4>Didn't find the project you want to support? <a href="#">Support it anyway!</a></h4>
+            <div class="row-fluid">
+                <div class="span6 text-right">
+                    <input type="text" />
+                </div>
+                <div class="span6 text-left">
+                    <button class="button orange">Support unclaimed project</button>
+                </div>
+            </div>
+        <h5>Your support will be offered to the project, but will not actually leave your account until it will be claimed.</h5>
     </div>
     <hr>
     <div class="row-fluid">
         <div class="span3 text-center">
-        	{% if new_projects_list %}
+            {% if new_projects_list %}
                 <h3>New projects</h3>
                 {% for project in new_projects_list %}
                     <a href="{% url bitfund.project.views.budget project_key=project.key%}">
@@ -89,179 +262,6 @@
             {% endif %}
         </div>
     </div>
-
-    <div class=" search-result row-fluid">
-        <div class="span6">
-            <ul>
-                <li><a href="#">
-                    <div class="row-fluid">
-                        <div class="span4"> 
-                            <div class="media">
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
-                                <div class="media-body">
-                                    <h4 class="media-heading">Bitfund</h4>
-                                    <div>5 min</div>
-                                    <div class="active-state">active</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span5 text-center">
-                            <span>$130</span><br>
-                            <span>asked this month</span>
-                        </div>
-                        <div class="span3">
-                            <div class="pull-right">
-                                <span>$65</span>
-                                <span class="chart-div-medium">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </a></li>
-                <li><a href="#">
-                    <div class="row-fluid">
-                        <div class="span4"> 
-                            <div class="media">
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
-                                <div class="media-body">
-                                    <h4 class="media-heading">Bitfund</h4>
-                                    <div>5 min</div>
-                                    <div class="achieved-state">achieved</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span5 text-center">
-                            <span>unclaimed project</span>
-                        </div>
-                        <div class="span3">
-                            <div class="pull-right">
-                                <span>$65</span>
-                                <span class="chart-div-medium">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </a></li>
-                <li><a href="#">
-                    <div class="row-fluid">
-                        <div class="span4"> 
-                            <div class="media">
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
-                                <div class="media-body">
-                                    <h4 class="media-heading">Bitfund</h4>
-                                    <div>5 min</div>
-                                    <div class="unclaimed-state">unclaimed</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span5 text-center">
-                            <span>$130</span><br>
-                            <span>asked this month</span>
-                        </div>
-                        <div class="span3">
-                            <div class="pull-right">
-                                <span>$65</span>
-                                <span class="chart-div-medium">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </a></li>
-            </ul>
-            <div class="text-right">
-                <a href="#" class="arrow-left-green">&#9668 <span class="arrow-left-white-gr">&#9668 </span>
-                </a><a href="#" class="arrow">Previous</a>
-            </div>
-        </div>
-        <div class="span6">
-            <ul>
-                <li><a href="#">
-                    <div class="row-fluid">
-                        <div class="span4"> 
-                            <div class="media">
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
-                                <div class="media-body">
-                                    <h4 class="media-heading">Bitfund</h4>
-                                    <div>5 min</div>
-                                    <div class="active-state">active</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span5 text-center">
-                            <span>$130</span><br>
-                            <span>asked this month</span>
-                        </div>
-                        <div class="span3">
-                            <div class="pull-right">
-                                <span>$65</span>
-                                <span class="chart-div-medium">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </a></li>
-                <li><a href="#">
-                    <div class="row-fluid">
-                        <div class="span4"> 
-                            <div class="media">
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
-                                <div class="media-body">
-                                    <h4 class="media-heading">Bitfund</h4>
-                                    <div>5 min</div>
-                                    <div class="achieved-state">achieved</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span5 text-center">
-                            <span>unclaimed project</span>
-                        </div>
-                        <div class="span3">
-                            <div class="pull-right">
-                                <span>$65</span>
-                                <span class="chart-div-medium">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </a></li>
-                <li><a href="#">
-                    <div class="row-fluid">
-                        <div class="span4"> 
-                            <div class="media">
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
-                                <div class="media-body">
-                                    <h4 class="media-heading">Bitfund</h4>
-                                    <div>5 min</div>
-                                    <div class="unclaimed-state">unclaimed</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span5 text-center">
-                            <span>$130</span><br>
-                            <span>asked this month</span>
-                        </div>
-                        <div class="span3">
-                            <div class="pull-right">
-                                <span>$65</span>
-                                <span class="chart-div-medium">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </a></li>
-            </ul>
-            <div>
-                <a href="#" class="arrow">Next <a href="#" class="arrow-right-green">&#9658<span class="arrow-right-white-gr">&#9658</span></a>
-                </a>
-            </div>
-        </div>
-    </div> <!-- row-fluid search -->
-    <h3 class="text-center">Didn't find the project you want to support? <a href="#">Support it anyway!</a></h3>
-        <div class="row-fluid">
-            <div class="span6 text-right">
-                <input type="text" />
-            </div>
-            <div class="span6">
-                <button class="button orange">Support unclaimed project</button>
-            </div>
-        </div>
-    <h4 class="text-center">Your support will be offered to the project, but will not actually leave your account until it will be claimed.</h4>
-    <hr>
-
 </div>
 
 
