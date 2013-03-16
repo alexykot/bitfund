@@ -1,9 +1,11 @@
+import calendar
 from django.db.models import Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import now
 from bitfund.core.settings.project import MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC
 
 from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, Profile
+from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import Project
 
 
@@ -77,3 +79,154 @@ def _prepare_user_public_template_data(request, user) :
 
 
     return template_data
+
+
+def _prepare_user_pledges_monthly_history_data(request, user) :
+    pledges_monthly_history = []
+
+    total_transactions = (DonationTransaction.objects
+                          .filter(pledger_user_id=user.id)
+                          .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                          .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                          .count()
+    )
+
+    if total_transactions == 0 :
+        return pledges_monthly_history
+
+    month_upper_bound = (DonationTransaction.objects
+                                .filter(pledger_user_id=user.id)
+                                .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                                .order_by('-transaction_datetime')[0]
+                            ).transaction_datetime
+
+    month_lower_bound = (DonationTransaction.objects
+                           .filter(pledger_user_id=user.id)
+                           .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                           .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                           .order_by('transaction_datetime')[0]
+                        ).transaction_datetime
+
+
+    index_year = int(month_lower_bound.year)
+    index_month = int(month_lower_bound.month)
+    while True :
+        current_month = datetime(year=index_year, month=index_month, day=1, tzinfo=now().tzinfo)
+        if index_month == 12 :
+            next_month = datetime(year=index_year+1, month=1, day=1, tzinfo=now().tzinfo)
+        else :
+            next_month = datetime(year=index_year+1, month=index_month+1, day=1, tzinfo=now().tzinfo)
+
+        if current_month > month_upper_bound :
+            break
+
+        index_month = index_month+1
+        if index_month > 12 :
+            index_year = index_year+1
+            index_month = 1
+
+
+
+        current_months_transactions_monthly = (DonationTransaction.objects
+                                               .filter(pledger_user_id=user.id)
+                                               .filter(transaction_datetime__gte=current_month)
+                                               .filter(transaction_datetime__lt=next_month)
+                                               .filter(pledger_donation_type=DONATION_TYPES_CHOICES.monthly)
+                                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+        )
+
+        current_months_transactions_onetime = (DonationTransaction.objects
+                                               .filter(pledger_user_id=user.id)
+                                               .filter(transaction_datetime__gte=current_month)
+                                               .filter(transaction_datetime__lt=next_month)
+                                               .filter(pledger_donation_type=DONATION_TYPES_CHOICES.onetime)
+                                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+        )
+
+        current_months_transactions_total = 0
+        current_months_transactions_total = current_months_transactions_total + ((DonationTransaction.objects
+                                                                                  .filter(pledger_user_id=user.id)
+                                                                                  .filter(transaction_datetime__gte=current_month)
+                                                                                  .filter(transaction_datetime__lt=next_month)
+                                                                                  .filter(pledger_donation_type=DONATION_TYPES_CHOICES.monthly)
+                                                                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                                                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                                                                                  .aggregate(Sum('transaction_amount'))['transaction_amount__sum']) or 0)
+        current_months_transactions_total = current_months_transactions_total + ((DonationTransaction.objects
+                                                                                  .filter(pledger_user_id=user.id)
+                                                                                  .filter(transaction_datetime__gte=current_month)
+                                                                                  .filter(transaction_datetime__lt=next_month)
+                                                                                  .filter(pledger_donation_type=DONATION_TYPES_CHOICES.onetime)
+                                                                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                                                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                                                                                  .aggregate(Sum('transaction_amount'))['transaction_amount__sum']) or 0)
+
+        current_months_monthly_pledged_projects_list = (DonationTransaction.objects
+                                                        .filter(pledger_user_id=user.id)
+                                                        .filter(transaction_datetime__gte=current_month)
+                                                        .filter(transaction_datetime__lt=next_month)
+                                                        .filter(pledger_donation_type=DONATION_TYPES_CHOICES.monthly)
+                                                        .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                                        .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                                                        .values('accepting_project_key', 'accepting_project_title')
+                                                        .distinct())
+        monthly_pledged_projects = []
+        for monthly_pledged_project in current_months_monthly_pledged_projects_list :
+            active_project = Project.objects.filter(key=monthly_pledged_project['accepting_project_key'])
+            project_key = False
+            project_title = False
+            if active_project.count() == 1 :
+                active_project = active_project[0]
+
+                project_title = active_project.title
+                if active_project.is_public :
+                    project_key = active_project.key
+            else :
+                project_title = monthly_pledged_project['accepting_project_title']
+
+
+            monthly_pledged_projects.append({'project_key': project_key,
+                                            'project_title': project_title,
+                                            })
+
+        current_months_onetime_pledged_projects_list = (DonationTransaction.objects
+                                                        .filter(pledger_user_id=user.id)
+                                                        .filter(transaction_datetime__gte=current_month)
+                                                        .filter(transaction_datetime__lt=next_month)
+                                                        .filter(pledger_donation_type=DONATION_TYPES_CHOICES.onetime)
+                                                        .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                                        .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                                                        .values('accepting_project_key', 'accepting_project_title')
+                                                        .distinct())
+        onetime_pledged_projects = []
+        for onetime_pledged_project in current_months_onetime_pledged_projects_list :
+            active_project = Project.objects.filter(key=onetime_pledged_project['accepting_project_key'])
+            project_key = False
+            project_title = False
+            if active_project.count() == 1 :
+                active_project = active_project[0]
+
+                project_title = active_project.title
+                if active_project.is_public :
+                    project_key = active_project.key
+            else :
+                project_title = onetime_pledged_project['accepting_project_title']
+
+
+            onetime_pledged_projects.append({'project_key': project_key,
+                                             'project_title': project_title,
+                                             })
+
+        monthly_data = {'date': current_month,
+                       'monthly_total': current_months_transactions_total,
+                       'monthly_pledged_projects': monthly_pledged_projects,
+                       'onetime_pledged_projects': onetime_pledged_projects,
+                       }
+        print monthly_data
+        pledges_monthly_history.append(monthly_data)
+
+
+    return pledges_monthly_history
