@@ -67,6 +67,7 @@ urlpatterns += patterns('bitfund.project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<action>pledge|drop){0,}$', 'goal_view'),
 
+    (r'^chart_test/{0,}$', 'chart_image'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/need/(?P<need_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),

@@ -12,13 +12,18 @@
                 $('#create-project-popup').toggle();
             });
             $('#id_title').bindWithDelay('keyup', function(event){
-                $('#similar-projects').load('{% url bitfund.pledger.views.existing_similar_projects %}?search_string='+$(this).val(),
-                        null,
-                function(responseText, textStatus, XMLHttpRequest){
-                    if (textStatus == 'success'){
-                        $('#similar-projects').toggle(true);
-                    }
-                });
+                var search_string = $(this).val()
+                if (search_string.length > 1) {
+                    $('#similar-projects-list').load('{% url bitfund.pledger.views.existing_similar_projects %}?search_string='+search_string,
+                            null,
+                            function(responseText, textStatus, XMLHttpRequest){
+                                if (textStatus == 'success'){
+                                    $('#similar-projects-block').toggle(true);
+                                } else {
+                                    $('#similar-projects-block').toggle(false);
+                                }
+                            });
+                }
             }, 500);
         });
     </script>
@@ -53,7 +58,7 @@
             <div class="span1">
                 <button class="button gray">pledges</button>
             </div>
-            <div class="span2 pull-right">
+            <div class="span4 pull-right">
                 {% if user.public.maintained_projects_count %}
                     <button class="button gray">projects</button>
                 {% endif %}
@@ -64,9 +69,9 @@
                         {{ create_project_form.title|attr:"required" }}
                         <button type="submit">create project</button>
                     </form>
-                    <div id="similar-projects" style="display:none;">
+                    <div id="similar-projects-block" style="display:none;">
                         <div class="row">existing similar projects</div>
-                        <div class="span2"></div>
+                        <ul id="similar-projects-list"></ul>
                     </div>
                 </div>
             </div>
