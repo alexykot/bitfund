@@ -89,37 +89,38 @@
     <form action="" id="form-crud-project" method="post">
         {% csrf_token %}
         <div class="header">
-        <div class="row-fluid">
-            <div class="span4 project-attributes">
-                <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                    <!-- <img src="{{ STATIC_URL }}img/project_img.png" /> -->
-                    {% if logo %}
-                        <img src="{{ logo.url }} " />
-                    {% elif project.logo %}
-                        <img src="{{ project.logo.url }} " />
-                    {% endif %}
-                    {% comment %}
-                    {{ project_form.logo.errors }}
-                    {{ project_form.logo }}
-                    {% endcomment %}
-                </a>
-                <span>
-                    {{ project_form.title|attr:"class:input-medium"|attr:"required"}}
-                    {{ project_form.title.errors }}
-                    {{ project_form.key.errors }}
-                </span>
-            </div>
-            <div class="span4">
-                <div class="uri"><span>bitfund.org/ </span>{{ project_form.key|attr:"class:input-medium"|attr:"required" }}</div>
-            </div>
-            <div class="span4 text-right">
-                <div class="project-meta">
-                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">quit edit mode</a>
-                    <button type="submit" value="Save" id="save-budget" class="button button-small gray">Save</button>
-                    <button type="submit" class="button button-small gray">{% if project.is_public %}unpublish{% else %}publish{% endif %}</button>
+            <div class="row-fluid">
+                <div class="span4 project-attributes">
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                        <!-- <img src="{{ STATIC_URL }}img/project_img.png" /> -->
+                        {% if logo %}
+                            <img src="{{ logo.url }} " />
+                        {% elif project.logo %}
+                            <img src="{{ project.logo.url }} " />
+                        {% endif %}
+                        {% comment %}
+                        {{ project_form.logo.errors }}
+                        {{ project_form.logo }}
+                        {% endcomment %}
+                    </a>
+                    <span>
+                        {{ project_form.title|attr:"class:input-medium"|attr:"required"}}
+                        {{ project_form.title.errors }}
+                        {{ project_form.key.errors }}
+                    </span>
+                </div>
+                <div class="span4">
+                    <div class="uri"><span>bitfund.org/ </span>{{ project_form.key|attr:"class:input-medium"|attr:"required" }}</div>
+                </div>
+                <div class="span4 text-right">
+                    <div class="project-meta">
+                        <a href="{% url bitfund.project.views.budget project_key=project.key %}">quit edit mode</a>
+                        <button type="submit" value="Save" id="save-budget" class="button button-small gray">Save</button>
+                        <button type="submit" class="button button-small gray">{% if project.is_public %}unpublish{% else %}publish{% endif %}</button>
+                    </div>
                 </div>
             </div>
-        </div></div>
+        </div>
 
         <div class="row-fluid budget-n-goals">
             <div class="span4 budget-column">

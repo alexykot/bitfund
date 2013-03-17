@@ -20,7 +20,7 @@
                             <li><button data-amount="1">1</button></li>
                             <li><button data-amount="2">2</button></li>
                             <li><button data-amount="5">5</button></li>
-                           <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
+                           <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                 
@@ -30,7 +30,7 @@
                                 {{ need.pledge_form.pledge_amount.errors }}
                                 {{ need.pledge_form.pledge_amount }}
                             </li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}"
                                    id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>
@@ -56,10 +56,10 @@
                 <div class="row-fluid">
                     <div class="span4">
                         <ul>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-onetime"
                            id="need-onetime-switch-{{ need.id }}" class="kf_need_onetime"
                            data-need_id="{{ need.id }}">onetime</a></li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly"
                            id="need-monthly-switch-{{ need.id }}" class="kf_need_monthly active"
                            data-need_id="{{ need.id }}">monthly</a></li>
                        </ul>
@@ -73,7 +73,7 @@
                             <li><button data-amount="10">10</button></li>
                             <li><button data-amount="15">15</button></li>
                             <li><button data-amount="25">25</button></li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                                id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                         <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
@@ -83,7 +83,7 @@
                             <li><button data-amount="1">1</button></li>
                             <li><button data-amount="2">2</button></li>
                             <li><button data-amount="5">5</button></li>
-                           <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
                            id="link-need-more-{{ need.id }}">more</a></li>
                         </ul> 
                     
@@ -93,7 +93,7 @@
                                 {{ need.pledge_form.pledge_amount.errors }}
                                 {{ need.pledge_form.pledge_amount }}
                             </li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}"
                                    id="link-need-less-{{ need.id }}">less</a></li>
                         </ul>
                     </div>

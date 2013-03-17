@@ -163,7 +163,7 @@ button, .button {
     padding-top: 15px;
 }
 
-.logo a:hover {
+.logo a:hover, .logo a:active {
     text-decoration: none;
 }
 
@@ -206,7 +206,7 @@ button, .button {
 
 /* Container ==================*/
 
-/* Page 1 - Available projects */
+/* Index - Available projects */
 .masthead {
     padding: 50px 0 20px;
     position: relative;
@@ -381,7 +381,7 @@ button.go {
 .support-form h5 {
     margin-top: 4px;
 }
-/* Page 2 - Dependent projects */
+/* Dependent projects */
 
 .header {
     display: table;
@@ -515,7 +515,7 @@ noindex:-o-prefocus, .project-meta {
     margin-right: 10px;
 }
 
-/* Page 3 =====================*/
+/* Budget 3 =====================*/
 
 .project-goals {
     padding-bottom:0;
@@ -715,22 +715,22 @@ ul.chart-div-legend {
 }
 
 
-.need-pledge-controls > .row-fluid a:visited, .support-form h4 a:visited {
+.dotted-border a:visited, .support-form h4 a:visited {
     color: #577000;
 }
 
-.need-pledge-controls > .row-fluid .span4 a.active {
+.dotted-border a.active {
     border: none;
     color: #333;
     font-weight: bold;
     font-size: 16px;
 }
 
-.need-pledge-controls > .row-fluid a, .support-form h4 a {
+.dotted-border a, .support-form h4 a {
     border-bottom: 1px dashed #577000;
 }
 
-.need-pledge-controls > .row-fluid a:hover, .support-form h4 a:hover, .need-pledge-controls > .row-fluid .span4 a.active, .support-form h4 a:active {
+.dotted-border a:hover, .support-form h4 a:hover, .dotted-border a.active, .support-form h4 a:active {
     text-decoration: none;
 }
 
@@ -808,6 +808,29 @@ ul.chart-div-legend {
     font-size: 20px;
 }
 
+/* Goal =======================*/
+
+.goal-info {
+    padding: 0 25px 20px;
+}
+
+.goal-info .span8 iframe {
+    height: 350px;
+    width: 560px;
+}
+
+.goal-info .span4 > * , .goal-info .dotted-border, .goal-info .text-center {
+    margin-bottom: 20px;
+}
+
+.goal-info > p {
+    margin-top: 10px;
+}
+
+.goal-info > p b {
+    font-size: 16px;
+    font-weight: normal;
+}
 /* Footer =====================*/
 
 .footer {

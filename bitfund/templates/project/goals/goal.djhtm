@@ -114,166 +114,167 @@
 {% block content %}
 
 <div class="project-goals">
-
-    <div class="row-fluid project-attributes">
-        <div class="span9">
-            <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                <img src="{{ STATIC_URL }}img/project_img.png" />
-                {% comment %}
-                {% if logo %}
-                    <img src="{{ logo.url }} " />
-                {% elif project.logo %}
-                    <img src="{{ project.logo.url }} " />
-                {% endif %}
-                {% endcomment %}
+    <div class="header">
+        <div class="row-fluid">
+            <div class="span8 project-attributes">
+                <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                    <img src="{{ STATIC_URL }}img/project_img.png" />
+                    {% comment %}
+                    {% if logo %}
+                        <img src="{{ logo.url }} " />
+                    {% elif project.logo %}
+                        <img src="{{ project.logo.url }} " />
+                    {% endif %}
+                    {% endcomment %}
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
-        </div>
-        <div class="span3">
-            {% if project_edit_access %}
-                <a href="{% url bitfund.project.views.edit_goals project_key=project.key goal_key=goal.key %}">edit</a> <br>
-                <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
-                    {% csrf_token %}
-                    <input type="submit"
-                           value="{% if goal.is_public %}unpublish{% else %}publish{% endif %}"></form>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="span12">
-            {{goal.title}}
-        </div>
-        <div class="span12">
-            {{goal.brief}}
-        </div>
-        <div class="span8">
-            {% if goal.youtube_video_id %}
-
-                <div id="ytplayer"></div>
-
-                <script>
-                    // Load the IFrame Player API code asynchronously.
-                    var tag = document.createElement('script');
-                    tag.src = "https://www.youtube.com/player_api";
-                    var firstScriptTag = document.getElementsByTagName('script')[0];
-                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-                    // Replace the 'ytplayer' element with an <iframe> and
-                    // YouTube player after the API code downloads.
-                    var player;
-                    function onYouTubePlayerAPIReady() {
-                        player = new YT.Player('ytplayer', {
-                            height: '390',
-                            width: '620',
-                            videoId: '{{ goal.youtube_video_id }}'
-                        });
-                    }
-                </script>
-            {% elif goal.vimeo_video_id  %}
-                <iframe src="http://player.vimeo.com/video/{{ goal.vimeo_video_id }}" width="620" height="390" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-            {% elif goal.image %}
-                <img src="{{ goal.image.url }}" />
-            {% endif %}
-        </div>
-        <div class="span4">
-            <div class="row">
-                <div class="span4 pull-right">
-                    <div class="span2 pull-left">
-                        Launched: {{goal.date_starting|date:"DATE_FORMAT"}} <br />
-                        Ending: {{goal.date_ending|date:"DATE_FORMAT"}}
-                    </div>
-                </div>
-
-                <div class="span1 kf_chart_container">
-                    <div id="goal-{{goal.id}}-chart"></div>
-                    <span>{{goal.total_percent}}%</span>
-                </div>
-                <div class="span1">
-                    {{ site_currency_sign }}
-                    {{goal.pledges_amount}} <br />
-                    <span class="kf_small">pledged</span>
-                </div>
-
-                {% if goal.days_to_end > 1 %}
-                    <div class="span1">
-                        {{goal.days_to_end}} <br />
-                        <span class="kf_small">days to go</span>
-                    </div>
-                {% elif goal.hours_to_end > 0 %}
-                    <div class="span1">
-                        {{goal.hours_to_end}} <br />
-                        <span class="kf_small">hours to go</span>
-                    </div>
-                {% else %}
-                    <div class="span1">
-                        ENDED
-                    </div>
+            </div>
+            <div class="span2"></div>
+            <div class="span2 text-right">
+                <div class="project-meta">
+                {% if project_edit_access %}
+                    <a href="{% url bitfund.project.views.edit_goals project_key=project.key goal_key=goal.key %}">edit</a>
+                    <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
+                        {% csrf_token %}
+                        <button type="submit" class="button button-small gray">{% if goal.is_public %}unpublish{% else %}publish{% endif %}</button>
+                    </form>
                 {% endif %}
-                <div class="span1 kf_time">
-                    {{goal.pledging_users_count}} <br />
-                    <span class="kf_small">backers</span>
-                </div>
-                <div class="span4">
-                    ${{goal.amount}} <br />
-                    <span class="kf_small">asked</span>
                 </div>
             </div>
-
-            {% if goal.last_transaction %}
-                You're pledging {{ site_currency_sign }}{{ goal.last_transaction.transaction_amount|floatformat:2 }}
-            {% endif %}
-
-            <form action="" method="post" id="form-pledge-goal">
-                <div class="row">
-                    {% csrf_token %}
-                    {{ goal.pledge_form.non_field_errors }}
-                    <ul class="amount-buttons" id="options-button-set">
-                        <li>{{ site_currency_sign }}</li>
-                        <li><button data-amount="2">2</button></li>
-                        <li><button data-amount="5">5</button></li>
-                        <li><button data-amount="10">10</button></li>
-                        <li><button data-amount="15">15</button></li>
-                        <li><button data-amount="25">25</button></li>
-                        <li><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}#select-more"
-                               id="link-more">more</a></li>
-                    </ul>
-                    <ul id="pledge-amount-field" style="display: none;">
-                        <li>{{ site_currency_sign }}</li>
-                        <li>
-                            {{ goal.pledge_form.pledge_amount.errors }}
-                            {{ goal.pledge_form.pledge_amount }}
-                        </li>
-                        <li><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"
-                               id="link-less">less</a></li>
-                    </ul>
-                </div>
-                <div class="row">
-                    {% if goal.last_transaction %}
-                        <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                type="submit">Update pledge</button>
-                        <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='drop' %}"
-                                type="submit" >Cancel pledge</button>
-                    {% else %}
-                        <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                type="submit">Pledge</button>
-                    {% endif %}
-                </div>
-                {% if not request.user.is_authenticated %}
-                    <div class="centered" id="login-links-{{ need.id }}">
-                        <span class="orange-bg">{% include "core/login/login-with-links.djhtm" %}</span>
-                    </div>
-                {% endif %}
-                {% if not request.user.is_payment_card_attached %}
-                    <div class="centered">
-                        <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
-                    </div>
-                {% endif %}
-            </form>
-        </div>
-        <div class="span8">
-            {{goal.long_text|safe }}
         </div>
     </div>
+
+    <div class="goal-info">
+        <h3>{{goal.title}}</h3>
+        <p>{{goal.brief}}</p>
+
+        <div class="row-fluid">
+            <div class="span8">
+                {% if goal.youtube_video_id %}
+
+                    <div id="ytplayer"></div>
+
+                    <script>
+                        // Load the IFrame Player API code asynchronously.
+                        var tag = document.createElement('script');
+                        tag.src = "https://www.youtube.com/player_api";
+                        var firstScriptTag = document.getElementsByTagName('script')[0];
+                        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                        // Replace the 'ytplayer' element with an <iframe> and
+                        // YouTube player after the API code downloads.
+                        var player;
+                        function onYouTubePlayerAPIReady() {
+                            player = new YT.Player('ytplayer', {
+                                height: '390',
+                                width: '620',
+                                videoId: '{{ goal.youtube_video_id }}'
+                            });
+                        }
+                    </script>
+                {% elif goal.vimeo_video_id  %}
+                    <iframe src="http://player.vimeo.com/video/{{ goal.vimeo_video_id }}" width="620" height="390" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+                {% elif goal.image %}
+                    <img src="{{ goal.image.url }}" />
+                {% endif %}
+            </div>
+
+            <div class="span4">
+                <div class="clearfix">
+                    <div class="pull-right">Launched: {{goal.date_starting|date:"DATE_FORMAT"}}<br>
+                    Ending: {{goal.date_ending|date:"DATE_FORMAT"}}</div>
+                </div>
+                <div class="row">
+                    <div class="span1 kf_chart_container">
+                        <div id="goal-{{goal.id}}-chart"></div>
+                        <span>{{goal.total_percent}}%</span>
+                    </div>
+                    <div class="span1">
+                        {{ site_currency_sign }}
+                        {{goal.pledges_amount}} <br />
+                        <span class="kf_small">pledged</span>
+                    </div>
+
+                    {% if goal.days_to_end > 1 %}
+                        <div class="span1">
+                            {{goal.days_to_end}} <br />
+                            <span class="kf_small">days to go</span>
+                        </div>
+                    {% elif goal.hours_to_end > 0 %}
+                        <div class="span1">
+                            {{goal.hours_to_end}} <br />
+                            <span class="kf_small">hours to go</span>
+                        </div>
+                    {% else %}
+                        <div class="span1">
+                            ENDED
+                        </div>
+                    {% endif %}
+                    <div class="span1 kf_time">
+                        {{goal.pledging_users_count}} <br />
+                        <span class="kf_small">backers</span>
+                    </div>
+                    <div class="span4">
+                        ${{goal.amount}} <br />
+                        <span class="kf_small">asked</span>
+                    </div>
+                </div>
+
+                {% if goal.last_transaction %}
+                    You're pledging {{ site_currency_sign }}{{ goal.last_transaction.transaction_amount|floatformat:2 }}
+                {% endif %}
+
+                <form action="" method="post" id="form-pledge-goal">
+                        {% csrf_token %}
+                        {{ goal.pledge_form.non_field_errors }}
+                    <div class="need-pledge-controls">
+                        <div class="row-fluid">
+                            <ul class="amount-buttons" id="options-button-set">
+                                <li>{{ site_currency_sign }}</li>
+                                <li><button data-amount="2">2</button></li>
+                                <li><button data-amount="5">5</button></li>
+                                <li><button data-amount="10">10</button></li>
+                                <li><button data-amount="15">15</button></li>
+                                <li><button data-amount="25">25</button></li>
+                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}#select-more"
+                                       id="link-more">more</a></li>
+                            </ul>
+                            <ul id="pledge-amount-field" style="display: none;" class="less-input">
+                                <li>{{ site_currency_sign }}</li>
+                                <li>
+                                    {{ goal.pledge_form.pledge_amount.errors }}
+                                    {{ goal.pledge_form.pledge_amount }}
+                                </li>
+                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"
+                                       id="link-less">less</a></li>
+                            </ul>
+                        </div>
+                        <div class="text-center">
+                            {% if goal.last_transaction %}
+                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
+                                        type="submit" class="button gray">Update pledge</button>
+                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='drop' %}"
+                                        type="submit" class="button gray" >Cancel pledge</button>
+                            {% else %}
+                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
+                                        type="submit" class="button gray">Pledge</button>
+                            {% endif %}
+                        </div>
+                        {% if not request.user.is_authenticated %}
+                            <div class="text-center" id="login-links-{{ need.id }}">
+                                <span class="orange-bg">{% include "core/login/login-with-links.djhtm" %}</span>
+                            </div>
+                        {% endif %}
+                        {% if not request.user.is_payment_card_attached %}
+                            <div class="text-center">
+                                <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <p>{{goal.long_text|safe }}</p>
+    </div><!-- goal-info -->
 
 </div>
 
