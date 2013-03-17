@@ -11,7 +11,23 @@ from bitfund.core.settings.project import CALCULATIONS_PRECISION
 from bitfund.project.models import *
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 
-class CreateProjectForm(forms.ModelForm):
+class CreateProjectForm(forms.Form):
+    title = forms.CharField(max_length=255, required=True)
+
+    # def clean_key(self):
+    #     key     = self.cleaned_data['key'].lower()
+    #
+    #     regex   = re.compile('^[a-z0-9-._]{1,}$')
+    #     if not regex.search(smart_unicode(key)):
+    #         raise ValidationError(_(u'Allowed chars - latin, numeric, dash, dot, underscore.'), code='invalid')
+    #
+    #     regex   = re.compile('^[a-z]{1}')
+    #     if not regex.search(smart_unicode(key)):
+    #         raise ValidationError(_(u'Must start with a latin.'), code='invalid')
+    #
+    #     return key
+
+class EditProjectForm(forms.ModelForm):
     def __init__(self, *args, **kw):
         super(forms.ModelForm, self).__init__(*args, **kw)
         self.fields.keyOrder = [
@@ -21,10 +37,10 @@ class CreateProjectForm(forms.ModelForm):
             'logo',
             'brief',
             ]
-    
+
     def clean_key(self):
         key     = self.cleaned_data['key'].lower()
-        
+
         regex   = re.compile('^[a-z0-9-._]{1,}$')
         if not regex.search(smart_unicode(key)):
             raise ValidationError(_(u'Allowed chars - latin, numeric, dash, dot, underscore.'), code='invalid')

@@ -41,7 +41,7 @@ def budget_edit(request, project_key):
     template_data['budget'] = _prepare_project_budget_template_data(request, project)
 
     if request.method == 'POST' :
-        template_data['project_form'] = CreateProjectForm(request.POST, instance=project)
+        template_data['project_form'] = EditProjectForm(request.POST, instance=project)
         all_valid = True
 
         if not template_data['project_form'].is_valid() :
@@ -68,7 +68,7 @@ def budget_edit(request, project_key):
 
             return redirect('bitfund.project.views.budget_edit', project_key=project.key)
     else :
-        template_data['project_form'] = CreateProjectForm(instance=project)
+        template_data['project_form'] = EditProjectForm(instance=project)
 
         #NEEDS
         template_data['project_needs'] = []
