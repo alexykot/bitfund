@@ -232,14 +232,13 @@
                                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more" id="link-more">more</a></li>
                                         </ul>
                                 
-                                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none" class="less-input">
+                                        <ul style="display: none" class="less-input">
                                             <li>{{ site_currency_sign }}</li>
-                                            <li>
+                                            <li id="pledge-amount-field">
                                                 {{ pledge_form.pledge_amount.errors }}
                                                 {{ pledge_form.pledge_amount }}
                                             </li>
-                                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}"
-                                                   id="link-less">less</a></li>
+                                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}" id="link-less">less</a></li>
                                         </ul>
                                     </div>
                                     <div class="span3 text-right">
