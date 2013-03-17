@@ -61,7 +61,7 @@ class Project(models.Model):
 
     # calculates total donations from all sources accounting for the budget income (goals pledges excluded)
     def getTotalMonthlyDonations(self, monthdate=None):
-        return self.getPledgesMonthlyTotal(monthdate) + self.getOtherSourcesMonthlyTotal(monthdate) + self.getRedonationsMonthlyTotal(monthdate) 
+        return self.getTotalMonthlyPledges(monthdate) + self.getTotalMonthlyOtherSources(monthdate) + self.getTotalMonthlyRedonations(monthdate)
 
     # gets total monthly budget for project, i.e. sum of all active needs
     def getTotalMonthlyBudget(self, monthdate=None):
@@ -101,6 +101,7 @@ class Project(models.Model):
                             .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                                       tzinfo=monthdate.tzinfo))
                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
                             .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                             ) or 0
 
@@ -120,6 +121,7 @@ class Project(models.Model):
                                .filter(transaction_datetime__lt=datetime(monthdate.year, monthdate.month + 1, 1,
                                                                          tzinfo=monthdate.tzinfo))
                                .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
                                .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                                ) or 0
 

@@ -49,9 +49,11 @@ urlpatterns += patterns('bitfund.pledger.views',
                         (r'^account/{0,}$', 'user_profile_overview'),
                         (r'^user/(?P<username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
                         (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
+                        (r'^account/{0,}$', 'user_profile_overview'),
 
-                        (r'^pledger/account/attach_card/{0,}$', 'attach_card'),
-                        (r'^pledger/account/attach_card/return-to/(?P<return_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'attach_card'),
+                        (r'^account/existing_similar_projects/{0,}$', 'existing_similar_projects'),
+
+                        (r'^account/attach_card/return-to/(?P<return_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'attach_card'),
 
                         )
 
@@ -65,6 +67,7 @@ urlpatterns += patterns('bitfund.project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<action>pledge|drop){0,}$', 'goal_view'),
 
+    (r'^chart_test/{0,}$', 'chart_image'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/need/(?P<need_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/{0,}$', 'chart_image'),

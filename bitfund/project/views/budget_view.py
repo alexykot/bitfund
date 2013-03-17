@@ -73,17 +73,6 @@ def budget(request, project_key):
 
 
 @disallow_not_public_unless_maintainer
-def chart_image(request, project_key, need_key=None, goal_key=None):
-    chart_filename = 'out.png'
-    chart_fullpath = STATICFILES_DIRS[0]+"img/charts/"+chart_filename
-
-    response = HttpResponse(mimetype='image/png')
-    response['Content-Length'] = os.path.getsize(chart_fullpath)
-    response.write(open(chart_fullpath, 'r').read())
-
-    return response
-
-@disallow_not_public_unless_maintainer
 def linked_projects(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 
