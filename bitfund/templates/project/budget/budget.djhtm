@@ -247,9 +247,12 @@
             <div class="row-fluid ">
                 {% for goal in project_goals %}
                     <div class="span4">
+                        {% comment %}
                         {% if goal.image %}
                             <img src="{{ goal.image.url }}"/>
                         {% endif %}
+                        {% endcomment %}
+                        <img src="{{ STATIC_URL }}img/corona.png" />
                         <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                         <p>{{ goal.brief }}</p>
                         <div class="span3">
