@@ -135,7 +135,7 @@
                     <a href="{% url bitfund.project.views.edit_goals project_key=project.key goal_key=goal.key %}">edit</a>
                     <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
                         {% csrf_token %}
-                        <button type="submit" class="button button-small gray">{% if goal.is_public %}unpublish{% else %}publish{% endif %}</button>
+                        <a href="#" class="button button-small gray">{% if goal.is_public %}unpublish{% else %}publish{% endif %}</a>
                     </form>
                 {% endif %}
                 </div>

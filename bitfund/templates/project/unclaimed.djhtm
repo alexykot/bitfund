@@ -138,10 +138,12 @@
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
                 </div>
                 <div class="span2">
-                    <h2>Unclaimed</h2>
+                    <span class="unclaimed">unclaimed</span>
                 </div>
-                <div class="span2 project-meta">
-                    <a href="{% url bitfund.project.views.claim project_key=project.key %}" class="button button-small gray">claim project</a>
+                <div class="span2 text-right">
+                    <div class="project-meta">
+                        <a href="{% url bitfund.project.views.claim project_key=project.key %}" class="button button-small gray">claim project</a>
+                    </div>
                 </div>
             </div>
         </div>
