@@ -594,25 +594,38 @@ a.arrow-left-white, a.arrow-right-white {
     padding: 15px 0 5px;
 }
 
+.chart-div-large, .chart-div-medium, .chart-div-small {
+    position: relative;
+}
+
+.chart-div-large span, .chart-div-medium span, .chart-div-small span {
+    position: absolute;
+}
+
 .chart-div-large {
-    background: url("../img/chart_div.png") no-repeat;
-    line-height: 85px;
-    text-align: center;
+    height: 120px;
+}
+
+.chart-div-large img {
+    height: 85px;
     width: 85px;
 }
 
-.chart-div-medium {
-    background: url("../img/need_chart.png") no-repeat;
-    display: inline-block;
+.chart-div-large span {
+    line-height: 85px;
+    z-index: 100;
+    width: 85px;
+}
+
+.chart-div-medium img, .chart-div-small img {
+    height: 53px;
+    width: 53px;
+}
+
+.chart-div-medium span, .chart-div-small span {
     font-size: 12px;
     line-height: 53px;
     width: 53px;
-    text-align: center;
-}
-
-.chart-div-small {
-    line-height: 50px;
-    font-size: 10px;
 }
 
 ul.chart-div-legend {
@@ -659,7 +672,7 @@ ul.chart-div-legend {
     display: table-row;
 }
 
-.goal > .row-fluid > .span3 div span {
+.goal > .row-fluid > .span3 .pull-right > span {
     display: table-cell;
     vertical-align: middle;
 }

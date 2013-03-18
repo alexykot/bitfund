@@ -154,8 +154,9 @@
                 <div>
                     <div class="row-fluid">
                         <div class="span4">
-                            <div class="chart-div-large" id="chartdiv">
-                                <span class="kf_percent">&infin;</span>
+                            <div class="chart-div-large">
+                                <span class="text-center">&infin;</span>
+                                <img src="{{ STATIC_URL }}img/chart_div.png" class="chart-div-large" />
                             </div>
                         </div>
                         <div class="span4 text-center">

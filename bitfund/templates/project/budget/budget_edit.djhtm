@@ -135,14 +135,13 @@
                 </h5>
                 <div>
                     <div class="row-fluid">
-                        <div class="span4">
-                            <div class="chart-div-large" id="chartdiv">
+                        <div class="span4 chart-div-large">
                             {% if budget.total_gained_percent == -1 %}
-                                <span class="kf_percent">&infin;</span>
+                                <span class="text-center">&infin;</span>
                             {% else %}
-                                <span class="kf_percent">{{ budget.total_gained_percent }}%</span>
+                                <span class="text-center">{{ budget.total_gained_percent }}%</span>
                             {% endif %}
-                            </div>
+                            <img src="{{ STATIC_URL }}img/chart_div.png" class="chart-div-large" />
                         </div>
                         <div class="span4 text-center">
                             <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
