@@ -12,8 +12,6 @@
         function toggleMore(showMore) {
             $('form#form-pledge #pledge-amount-field').toggle(showMore);
             $('form#form-pledge #options-button-sets').toggle(!showMore);
-            $('form#form-pledge #link-more').toggle(!showMore);
-            $('form#form-pledge #link-less').toggle(showMore);
         }
 
         function selectAmount(amount) {
@@ -139,26 +137,15 @@
                         {% endcomment %}
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
                 </div>
-                    <div class="span2">
-                        <h2>Unclaimed</h2>
-                    </div>
-                <div class="span2 text-right">
-                    <div class="project-meta">
-                    {% if project_edit_access %}
-                        <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
-                        <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
-                            {% csrf_token %}
-                            <button type="submit" class="button button-small gray">{% if project.is_public %}unpublish{% else %}publish{% endif %}</button>
-                        </form>
-                    {% endif %}
-                    </div>
+                <div class="span2">
+                    <h2>Unclaimed</h2>
                 </div>
             </div>
         </div>
 
         <div class="row-fluid budget-n-goals">
             <div class="span4 budget-column">
-                <h5>No budget</h5>
+                <h5>&nbsp;</h5>
                 <div>
                     <div class="row-fluid">
                         <div class="span4">
@@ -195,14 +182,12 @@
             </div>
 
             <div class="span8 goals-column">
-                <h5> No budget items defined </h5>
+                <h5> Unclaimed, no budget</h5>
                 <div>
                     <div class="goal">
                         <div class="row-fluid">
                             <div class="span12">
-                                <p>{{ project.title }} is unclaimed and has no specific budget, but you can still
-                                    <a href="{% url bitfund.project.views.budget project_key=project.key %}#support-generally" id="support-generally">support it</a>
-                                </p>
+                                <p>{{ project.title }} is unclaimed and has no specific budget, but you can still support it</p>
                             </div>
                         </div>
                         <form action="{% url bitfund.project.views.unclaimed project_key=project.key%}" id="form-pledge" method="post">
@@ -216,8 +201,8 @@
                                     {% csrf_token %}
                                     {{ pledge_form.non_field_errors }}
                                     {{ pledge_form.pledge_type }}
-                                    <div class="span6" id="options-button-sets">
-                                        <ul class="amount-buttons">
+                                    <div class="span6">
+                                        <ul class="amount-buttons" id="options-button-sets">
                                             <li>{{ site_currency_sign }}</li>
                                             <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-0.25"
                                                         data-amount="0.25">0,25</button></li>
@@ -232,9 +217,9 @@
                                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more" id="link-more">more</a></li>
                                         </ul>
                                 
-                                        <ul style="display: none" class="less-input">
+                                        <ul id="pledge-amount-field" style="display: none" class="less-input">
                                             <li>{{ site_currency_sign }}</li>
-                                            <li id="pledge-amount-field">
+                                            <li>
                                                 {{ pledge_form.pledge_amount.errors }}
                                                 {{ pledge_form.pledge_amount }}
                                             </li>
