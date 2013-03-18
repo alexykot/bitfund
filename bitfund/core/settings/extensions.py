@@ -29,7 +29,6 @@ AUTH_PROFILE_MODULE = 'pledger.Profile'
 # django-tastypie
 TASTYPIE_FULL_DEBUG = True
 
-
 #social auth
 TWITTER_CONSUMER_KEY         = ''
 TWITTER_CONSUMER_SECRET      = ''

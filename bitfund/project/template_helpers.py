@@ -1,9 +1,12 @@
+import os
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
 import math
 
-from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT, CHART_IMAGE_TYPE
+from bitfund.core.settings.server import STATIC_ROOT
 from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal
@@ -258,3 +261,25 @@ def _prepare_empty_project_template_data(request, project, pledge_form=None) :
                 template_data['pledge_form'].initial['pledge_amount'] = template_data['pledge_subscription'].amount
 
     return template_data
+
+
+# gets correct relative path to chart image (can be used either locally to form absolute path or as a part of URL)
+# creates required dirs if absent
+def _get_chart_relative_filename(project_key, size, need_id=None, goal_id=None) :
+    path = ''
+    path = os.path.join(path, project_key)
+
+    if need_id is not None :
+        path = os.path.join(path, 'need_'+need_id)
+
+    if goal_id is not None :
+        path = os.path.join(path, 'need_'+goal_id)
+
+    filename = size+'.'+CHART_IMAGE_TYPE
+    relfilepath = os.path.join(path, filename)
+    absfilepath = os.path.join(STATIC_ROOT, relfilepath)
+
+    if not os.path.exists(os.path.dirname(absfilepath)) :
+        os.makedirs(os.path.dirname(absfilepath))
+
+    return relfilepath

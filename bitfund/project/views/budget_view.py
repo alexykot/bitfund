@@ -8,10 +8,6 @@ from django.utils.encoding import smart_str
 from django.utils.timezone import utc, now
 
 from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
-                                           RGBCOLOR_DONUT_CHART_BACKGROUND,
-                                           RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
-                                           RGBCOLOR_DONUT_CHART_PLEDGES,
-                                           RGBCOLOR_DONUT_CHART_REDONATIONS,
                                            MINIMAL_DEFAULT_PLEDGES_RADIANT,
                                            MINIMAL_DEFAULT_REDONATIONS_RADIANT,
                                            MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT,
@@ -31,10 +27,6 @@ def budget(request, project_key):
                      'request': request,
                      'today': datetime.utcnow().replace(tzinfo=utc).today(),
                      'site_currency_sign': SITE_CURRENCY_SIGN,
-                     'chartPledgesColor': RGBCOLOR_DONUT_CHART_PLEDGES,
-                     'chartRedonationsColor': RGBCOLOR_DONUT_CHART_REDONATIONS,
-                     'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
-                     'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
     }
 
     #GENERAL PROJECT INFO
