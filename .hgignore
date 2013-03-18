@@ -2,6 +2,7 @@ syntax: glob
 bitfund/web/.settings/*
 bitfund/web/uploads/*
 bitfund/web/static/*
+bitfund/static/img/charts/*
 logs/*
 .idea/*
 bitfund/core/settings/server.py
