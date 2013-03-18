@@ -102,11 +102,11 @@
                     {% endcomment %}
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
-            {% if not project.is_public %}
                 <div class="span2">
-                    <span class="unpublished">unpublished</span>
+                    {% if not project.is_public %}
+                        <span class="unpublished">unpublished</span>
+                    {% endif %}
                 </div>
-            {% endif %}
             <div class="span2 text-right">
                 <div class="project-meta">
                 {% if project_edit_access %}
