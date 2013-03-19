@@ -197,3 +197,18 @@ def maintainer_verication(request):
     template_data = {'request'   : request, }
 
     return render_to_response('core/maintainer_verication.djhtm', template_data, context_instance=RequestContext(request))
+
+def about(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/about.djhtm', template_data, context_instance=RequestContext(request))
+
+def stats(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/stats.djhtm', template_data, context_instance=RequestContext(request))
+
+def faq(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/faq.djhtm', template_data, context_instance=RequestContext(request))

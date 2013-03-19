@@ -138,12 +138,15 @@
             </div>
 
             <div class="span8 goals-column">
-                <h5> Unclaimed, no budget</h5>
+                <h5> Unclaimed project, no budget</h5>
                 <div>
                     <div class="goal">
                         <div class="row-fluid">
                             <div class="span12">
-                                <p>{{ project.title }} is unclaimed and has no specific budget, but you can still support it</p>
+                                <p>{{ project.title }} is unclaimed. This means that somebody has shown his gratitude and
+                                    offered support, but the project owner, community, foundation or whoever else is running it
+                                    has not shown up yet to collect.</p>
+                                <p>Obvioulsy also nobody has specified monthly budget yet, still you can support it</p>
                             </div>
                         </div>
                         <form action="{% url bitfund.project.views.unclaimed project_key=project.key%}" id="form-pledge" method="post">
