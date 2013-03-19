@@ -7,18 +7,15 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jqplot.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jqplot.donutRenderer.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/bitfund.js"></script>
     {% comment %}
     {% load dajaxice_templatetags %}
     {% dajaxice_js_import %}
-{% endcomment %}
+    {% endcomment %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap.min.css"/>
     <!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-responsive.min.css"/>-->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery.jqplot.min.css"/>
 
 
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bitfund.css"/>

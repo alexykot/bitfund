@@ -8,11 +8,7 @@ from django.utils.encoding import smart_str
 from django.utils.timezone import utc, now
 
 from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
-                                           MINIMAL_DEFAULT_PLEDGES_RADIANT,
-                                           MINIMAL_DEFAULT_REDONATIONS_RADIANT,
-                                           MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT,
                                            )
-from bitfund.core.settings.server import STATIC_ROOT, STATICFILES_DIRS
 from bitfund.project.decorators import user_is_project_maintainer, disallow_not_public_unless_maintainer, redirect_not_active
 from bitfund.project.models import *
 from bitfund.project.template_helpers import _prepare_need_item_template_data, _prepare_project_budget_template_data, _prepare_empty_project_template_data, _prepare_goal_item_template_data

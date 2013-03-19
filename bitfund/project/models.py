@@ -65,25 +65,23 @@ class Project(models.Model):
 
     # gets total monthly budget for project, i.e. sum of all active needs
     def getTotalMonthlyBudget(self, monthdate=None):
-        getcontext().prec = CALCULATIONS_PRECISION
-
         if monthdate is None:
             monthdate = now()
             
         lasting = Decimal((ProjectNeed.objects
-                              .filter(project=self.id)
+                              .filter(project_id=self.id)
                               .filter(is_public=True)
                               .filter(date_ending=None)
                               .aggregate(Sum('amount'))['amount__sum']
                               ) or 0)
+
         limited = Decimal((ProjectNeed.objects
-                              .filter(project=self.id)
+                              .filter(project_id=self.id)
                               .filter(is_public=True)
                               .filter(date_starting__lte=datetime(monthdate.year, monthdate.month, 1, tzinfo=monthdate.tzinfo))
                               .filter(date_ending__gt=datetime(monthdate.year, monthdate.month+1, 1, tzinfo=monthdate.tzinfo))
                               .aggregate(Sum('amount'))['amount__sum']
                               ) or 0)
-                               
         return limited+lasting
 
     # gets total monthly transactions recorded sum by transaction type

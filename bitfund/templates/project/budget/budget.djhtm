@@ -87,8 +87,7 @@
                         {% else %}
                             <span class="text-center">{{ budget.total_gained_percent }}%</span>
                         {% endif %}
-                        <img src="{% url bitfund.project.views.chart_image_project project_key=project.key size='medium'%}" class="chart-div-large" />
-{#                        <img src="{{ STATIC_URL }}img/chart_div.png" class="chart-div-large" />#}
+                        <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" id="budget_chart_image" />
                     </div>
                     <div class="span4 text-center">
                         <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}</div>
@@ -155,8 +154,8 @@
                                     <br>
                                     of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
                                     <span class="chart-div-medium">
-                                        <span class="text-center">100%</span>
-                                        <img src="{{ STATIC_URL }}img/chart_div_medium.png" />
+                                        <span class="text-center">{{ need.pledged_percent|floatformat:0  }}%</span>
+                                        <img src="{% url bitfund.project.views.chart_image_need project_key=project.key need_id=need.id chart_size='small'%}" id="need-chart-img-{{ need.id }}" />
                                     </span>
                                 </div>
                             </div>
@@ -191,24 +190,25 @@
     </div>
     {% if project_goals_count %}
         <div class="current-goals">
-            <a href="#" class="add-goal">add goal</a>
+            {% if project_edit_access %}
+                <a href="#" class="add-goal">add goal</a>
+            {% endif %}
             <h3>Current goals</h3>
             <p>Apart from the project budget the community be grateful gor help with this goals.</p>
             <div class="row-fluid ">
                 {% for goal in project_goals %}
                     <div class="span4">
-                        {% comment %}
                         {% if goal.image %}
                             <img src="{{ goal.image.url }}"/>
+                        {% else %}
+                            <img src="{{ STATIC_URL }}img/goal_no_image.png" />
                         {% endif %}
-                        {% endcomment %}
-                        <img src="{{ STATIC_URL }}img/corona.png" />
                         <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                         <p>{{ goal.brief }}</p>
                         <div class="span3">
                             <div class="chart-div-small">
                                 <span class="text-center">{{ goal.total_percent }}%</span>
-                                <img src="{{ STATIC_URL }}img/chart_div_small.png" />
+                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
                             </div>
                         </div>
                         <div class="span3 text-center">

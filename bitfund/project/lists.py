@@ -7,6 +7,8 @@ DONATION_TYPES_CHOICES = Choices(
 
 PROJECT_STATUS_CHOICES = Choices('unclaimed', 'active', 'inactive', 'archived')
 
+PROJECT_CHART_SIZES = Choices('small', 'medium', 'large')
+
 """
 PROJECT_OUTLINK_TYPES = (
     ('site', u'Project website'),

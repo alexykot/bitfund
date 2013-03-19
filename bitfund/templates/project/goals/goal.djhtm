@@ -22,42 +22,6 @@
         }
 
         $(document).ready(function () {
-
-            /*
-            var goal{{goal.id}}OtherRadiant = {{goal.other_sources_radiant}};
-            var goal{{goal.id}}DonationsRadiant = {{goal.donations_radiant}};
-
-            var goal{{goal.id}}BackgroundSeries = [
-                ['a', 100],
-                ['b', 100]
-            ];
-            var goal{{goal.id}}BackgroundDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}BackgroundSeries], {
-                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#EDEBEA", "#EDEBEA" ],
-                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-            });
-
-            var goal{{goal.id}}OtherSeries = [
-                ['c', (goal{{goal.id}}OtherRadiant + goal{{goal.id}}DonationsRadiant)],
-                ['d', (360 - (goal{{goal.id}}OtherRadiant + goal{{goal.id}}DonationsRadiant))]
-            ];
-            var goal{{goal.id}}OtherDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}OtherSeries], {
-                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#E32D4B", "rgba(0,0,0,0)"],
-                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-            });
-
-            var goal{{goal.id}}DonationsSeries = [
-                ['a', (goal{{goal.id}}DonationsRadiant)],
-                ['b', 360 - goal{{goal.id}}DonationsRadiant]
-            ];
-            var goal{{goal.id}}DonationsDonut = $.jqplot('goal-{{goal.id}}-chart', [goal{{goal.id}}DonationsSeries], {
-                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#AECCEB", "rgba(0,0,0,0)"],
-                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-            });
-            */
-
             $('#link-more, #link-less').click(function(event){
                 event.preventDefault();
                 toggleMore($(this).attr('id') == 'link-more');
@@ -186,6 +150,8 @@
                 <div class="row">
                     <div class="span1 kf_chart_container">
                         <div id="goal-{{goal.id}}-chart"></div>
+                        <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='medium' %}" id="goal-chart"/>
+
                         <span>{{goal.total_percent}}%</span>
                     </div>
                     <div class="span1">

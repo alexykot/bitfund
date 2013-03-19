@@ -205,91 +205,10 @@
 
         $('#need-total-donations-{{ need.id }}').text('{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}');
 
-        window.backgroundDonut.destroy();
-        window.otherDonut.destroy();
-        window.redonationsDonut.destroy();
-        window.pledgesDonut.destroy();
-
-        window.need{{need.id}}BackgroundDonut.destroy();
-        window.need{{need.id}}OtherDonut.destroy();
-        window.need{{need.id}}DonationsSumDonut.destroy();
-
-
-        var pledgesRadiant = {{ budget.pledges_radiant }};
-        var redonationsRadiant = {{ budget.redonations_radiant }};
-        var otherRadiant = {{ budget.other_sources_radiant }};
-
-        var backgroundSeries = [
-            ['a', 100],
-            ['b', 100]
-        ];
-        window.backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
-            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-            seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
-            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 94, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-        });
-
-        var otherSeries = [
-            ['c', (otherRadiant + redonationsRadiant + pledgesRadiant)],
-            ['d', (360 - (otherRadiant + redonationsRadiant + pledgesRadiant))]
-        ];
-        window.otherDonut = $.jqplot('chartdiv', [otherSeries], {
-            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-            seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
-            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 8, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 98, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-        });
-
-        var redonationsSeries = [
-            ['c', (redonationsRadiant + pledgesRadiant)],
-            ['d', (360 - (redonationsRadiant + pledgesRadiant))]
-        ];
-        window.redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
-            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-            seriesColors: [ "#"+redonationsColor, "rgba(0,0,0,0)"],
-            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 14, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 105, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-        });
-
-        var pledgesSeries = [
-            ['a', (pledgesRadiant)],
-            ['b', 360 - pledgesRadiant]
-        ];
-        window.pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
-            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-            seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
-            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-        });
+        $('#budget_chart_image').attr('src', $('#budget_chart_image').attr('src')+'?'+Math.random());
+        $('#need-chart-img-{{ need.id }}').attr('src', $('#need-chart-img-{{ need.id }}').attr('src')+'?'+Math.random());
 
     {% endif %}
-/*
-        var need{{need.id}}DonationsSumRadiant = {{need.donations_sum_radiant}};
-        var need{{need.id}}OtherRadiant = {{need.other_sources_radiant}};
 
-        var need{{need.id}}BackgroundSeries = [['a', 100],['b', 100]];
-        window.need{{need.id}}BackgroundDonut = $.jqplot('need-{{need.id}}-chart', [need{{need.id}}BackgroundSeries], {
-            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-            seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
-            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 2, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 40, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-        });
-
-        var need{{need.id}}OtherSeries = [
-            ['c', (need{{need.id}}OtherRadiant + need{{need.id}}DonationsSumRadiant)],
-            ['d', (360 - (need{{need.id}}OtherRadiant + need{{need.id}}DonationsSumRadiant))]
-        ];
-        window.need{{need.id}}OtherDonut = $.jqplot('need-{{need.id}}-chart', [need{{need.id}}OtherSeries], {
-            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-            seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
-            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 42, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-        });
-
-        var need{{need.id}}DonationsSumSeries = [
-            ['a', (need{{need.id}}DonationsSumRadiant)],
-            ['b', 360 - need{{need.id}}DonationsSumRadiant]
-        ];
-        window.need{{need.id}}DonationsSumDonut = $.jqplot('need-{{need.id}}-chart', [need{{need.id}}DonationsSumSeries], {
-            grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-            seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
-            seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 6, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 45, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-        });
-*/
     });
 </script>

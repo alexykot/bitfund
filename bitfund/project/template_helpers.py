@@ -1,3 +1,4 @@
+from decimal import Decimal
 import os
 from django.core.files.storage import default_storage
 from django.db import transaction
@@ -5,7 +6,7 @@ from django.db.models import Sum
 from django.utils.timezone import now
 import math
 
-from bitfund.core.settings.project import MINIMAL_DEFAULT_PLEDGES_RADIANT, MINIMAL_DEFAULT_REDONATIONS_RADIANT, MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT, CHART_IMAGE_TYPE
+from bitfund.core.settings.project import CHART_IMAGE_TYPE
 from bitfund.core.settings.server import STATIC_ROOT
 from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
@@ -52,19 +53,7 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
     if request.user.id == project.maintainer_id :
         user_is_project_maintainer = True
 
-
-    need_pledges_n_redonations_total = need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal()
-    need_other_sources_total = need.getOtherSourcesMonthlyTotal()
-
-    if (need.amount > 0) :
-        donations_sum_radiant = min(360, round(360 * (need_pledges_n_redonations_total / need.amount)))
-        other_sources_radiant = min(360, round(360 * (need_other_sources_total / need.amount)))
-    else :
-        donations_sum_radiant = 360
-        other_sources_radiant = 360
-    if donations_sum_radiant == 0 and other_sources_radiant == 0 :
-        donations_sum_radiant = MINIMAL_DEFAULT_PLEDGES_RADIANT
-        other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
+    donated_total = need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal() + need.getOtherSourcesMonthlyTotal()
 
     result = {'id': need.id,
               'title': need.title,
@@ -72,16 +61,13 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
               'amount': need.amount,
               'is_public': need.is_public,
               'sort_order': need.sort_order,
-              'full_total': need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal() +
-                            need.getOtherSourcesMonthlyTotal(),
+              'full_total': donated_total,
+              'pledged_percent': (donated_total/need.amount*100),
               'pledge_form': pledge_need_form,
               'last_pledge_transaction': last_pledge_transaction,
               'previous_pledges_count': previous_pledges_count,
               'pledge_subscription': pledge_subscription,
               'user_is_project_maintainer': user_is_project_maintainer,
-              'donations_sum_radiant': donations_sum_radiant,
-              'other_sources_radiant': other_sources_radiant,
-
     }
 
     return result
@@ -91,17 +77,12 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
         pledge_goal_form = PledgeProjectGoalForm()
 
     pledges_amount = goal.getTotalPledges() + goal.getTotalRedonations()
-    donations_radiant = min(360, round(360 * (pledges_amount / goal.amount)))
     total_percent = int(math.ceil((pledges_amount*100) / goal.amount))
 
     # other sources are not used at the moment
     # other_sources_amount = goal.getTotalOtherSources()
-    # other_sources_radiant = min(360, round(360 * (other_sources_amount / goal.amount)))
     # total_percent = int(math.ceil(((donations_amount+other_sources_amount)*100) / goal.amount))
 
-    if not (donations_radiant) :
-        donations_radiant     = MINIMAL_DEFAULT_PLEDGES_RADIANT
-        # other_sources_radiant = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
 
     pledging_users_count = (DonationTransaction.objects
                           .filter(accepting_project_id=project.id)
@@ -152,7 +133,6 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
               'days_to_end': days_to_end,
               'hours_to_end': hours_to_end,
               'pledges_amount': pledges_amount,
-              'pledges_radiant': donations_radiant,
               'pledging_users_count': pledging_users_count,
               'total_percent': total_percent,
               'pledge_form': pledge_goal_form,
@@ -196,32 +176,9 @@ def _prepare_project_budget_template_data(request, project) :
 
     #donut chart radiants
     if (budget_data['project_monthly_budget'] > 0) :
-        budget_data['pledges_radiant'] = min(360, round(
-            360 * (pledges_needs_total_sum / budget_data['project_monthly_budget'])))
-        budget_data['redonations_radiant'] = min(360, round(
-            360 * (redonations_total_sum / budget_data['project_monthly_budget'])))
-        budget_data['other_sources_radiant'] = min(360, round(
-            360 * (other_sources_total_sum / budget_data['project_monthly_budget'])))
-
         budget_data['total_gained_percent'] = int(round(
             ((pledges_needs_total_sum+redonations_total_sum+other_sources_total_sum) * 100) / budget_data['project_monthly_budget']))
-        if not (budget_data['pledges_radiant'] or budget_data['redonations_radiant'] or budget_data['other_sources_radiant']) :
-            budget_data['pledges_radiant'] = MINIMAL_DEFAULT_PLEDGES_RADIANT
-            budget_data['redonations_radiant'] = MINIMAL_DEFAULT_REDONATIONS_RADIANT
-            budget_data['other_sources_radiant'] = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
     else :
-        if pledges_needs_total_sum > 0 :
-            budget_data['pledges_radiant'] = 360
-        else :
-            budget_data['pledges_radiant'] = MINIMAL_DEFAULT_PLEDGES_RADIANT
-        if redonations_total_sum > 0 :
-            budget_data['redonations_radiant'] = 360
-        else :
-            budget_data['redonations_radiant'] = MINIMAL_DEFAULT_REDONATIONS_RADIANT
-        if other_sources_total_sum > 0 :
-            budget_data['other_sources_radiant'] = 360
-        else :
-            budget_data['other_sources_radiant'] = MINIMAL_DEFAULT_OTHER_SOURCES_RADIANT
         budget_data['total_gained_percent'] = -1
 
     return budget_data
@@ -265,7 +222,7 @@ def _prepare_empty_project_template_data(request, project, pledge_form=None) :
 
 # gets correct relative path to chart image (can be used either locally to form absolute path or as a part of URL)
 # creates required dirs if absent
-def _get_chart_relative_filename(project_key, size, need_id=None, goal_id=None) :
+def _get_chart_relative_filename(project_key, chart_size, need_id=None, goal_id=None) :
     path = ''
     path = os.path.join(path, project_key)
 
@@ -275,7 +232,7 @@ def _get_chart_relative_filename(project_key, size, need_id=None, goal_id=None) 
     if goal_id is not None :
         path = os.path.join(path, 'need_'+goal_id)
 
-    filename = size+'.'+CHART_IMAGE_TYPE
+    filename = chart_size+'.'+CHART_IMAGE_TYPE
     relfilepath = os.path.join(path, filename)
     absfilepath = os.path.join(STATIC_ROOT, relfilepath)
 

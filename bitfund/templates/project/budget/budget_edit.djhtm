@@ -6,57 +6,7 @@
 
 {% block pagescripts %}
     <script type="text/javascript">
-
-        var backgroundColor = '{{ chartBackgroundColor }}';
-        var otherColor = '{{ chartOtherColor }}';
-        var redonationsColor = '{{ chartRedonationsColor }}';
-        var pledgesColor = '{{ chartPledgesColor }}';
-
         $(document).ready(function () {
-            var pledgesRadiant = {{ budget.pledges_radiant }};
-            var redonationsRadiant = {{ budget.redonations_radiant }};
-            var otherRadiant = {{ budget.other_sources_radiant }};
-
-            var backgroundSeries = [
-                ['a', 100],
-                ['b', 100]
-            ];
-            window.backgroundDonut = $.jqplot('chartdiv', [backgroundSeries], {
-                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#"+backgroundColor, "#"+backgroundColor ],
-                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 4, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 94, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-            });
-
-            var otherSeries = [
-                ['c', (otherRadiant + redonationsRadiant + pledgesRadiant)],
-                ['d', (360 - (otherRadiant + redonationsRadiant + pledgesRadiant))]
-            ];
-            window.otherDonut = $.jqplot('chartdiv', [otherSeries], {
-                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#"+otherColor, "rgba(0,0,0,0)"],
-                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 8, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 98, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-            });
-
-            var redonationsSeries = [
-                ['c', (redonationsRadiant + pledgesRadiant)],
-                ['d', (360 - (redonationsRadiant + pledgesRadiant))]
-            ];
-            window.redonationsDonut = $.jqplot('chartdiv', [redonationsSeries], {
-                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#"+redonationsColor, "rgba(0,0,0,0)"],
-                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 14, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 105, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-            });
-
-            var pledgesSeries = [
-                ['a', (pledgesRadiant)],
-                ['b', 360 - pledgesRadiant]
-            ];
-            window.pledgesDonut = $.jqplot('chartdiv', [pledgesSeries], {
-                grid: {drawBorder: false, drawGridlines: false, background: 'rgba(0,0,0,0)', shadow: false, },
-                seriesColors: [ "#"+pledgesColor, "rgba(0,0,0,0)"],
-                seriesDefaults: {renderer: $.jqplot.DonutRenderer, rendererOptions: {thickness: 18, sliceMargin: 0, startAngle: -90, ringMargin: -14, diameter: 110, showDataLabels: false, shadow: false, highlightMouseOver: false, }},
-            });
-
             $('#button-add-need').click(function(event){
                 event.preventDefault();
 
@@ -141,7 +91,7 @@
                             {% else %}
                                 <span class="text-center">{{ budget.total_gained_percent }}%</span>
                             {% endif %}
-                            <img src="{{ STATIC_URL }}img/chart_div.png" class="chart-div-large" />
+                            <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" />
                         </div>
                         <div class="span4 text-center">
                             <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
