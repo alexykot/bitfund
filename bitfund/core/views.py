@@ -17,9 +17,6 @@ from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMET
 
 
 def index(request):
-    from social_auth.backends import BACKENDS
-    print BACKENDS
-
     template_data = {'request': request,
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      }
