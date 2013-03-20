@@ -39,14 +39,11 @@
         <div class="row-fluid">
             <div class="span8 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                    <img src="{{ STATIC_URL }}img/project_img.png" />
-                    {% comment %}
-                    {% if logo %}
-                        <img src="{{ logo.url }} " />
-                    {% elif project.logo %}
+                    {% if project.logo %}
                         <img src="{{ project.logo.url }} " />
+                    {% else %}
+                        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                     {% endif %}
-                    {% endcomment %}
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
                 <div class="span2">
@@ -178,7 +175,7 @@
 
             <div class="maintain text-right">
 
-                <p>Budget is maintained by community ambassador <a href="{% url bitfund.pledger.views.user_profile_overview username=project.maintainer.username %}">{{ project.maintainer.username }}</a>, this is because <a href="#">community decided so</a><br>
+                <p>This budget for {{ project.title }} is maintained by community ambassador <a href="{% url bitfund.pledger.views.user_profile_overview username=project.maintainer.username %}">{{ project.maintainer.username }}</a>, this is because <a href="#">community decided so</a><br>
                     {% if project.is_maintainer_confirmed %}
                         his right to maintain is <span><a href="#">verified</span>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">vote to dethrone</a>
                     {% else %}

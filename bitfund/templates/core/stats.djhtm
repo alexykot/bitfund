@@ -1,0 +1,7 @@
+{% extends "core/base.djhtm" %}
+
+{% block content %}
+
+
+{% endblock %}
+

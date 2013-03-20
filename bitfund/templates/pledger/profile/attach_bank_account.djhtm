@@ -1,0 +1,11 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %} {{ user.username }} - projects - {% endblock %}
+
+{% block pagescripts %}
+
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}

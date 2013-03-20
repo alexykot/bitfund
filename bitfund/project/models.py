@@ -61,7 +61,13 @@ class Project(models.Model):
 
     # calculates total donations from all sources accounting for the budget income (goals pledges excluded)
     def getTotalMonthlyDonations(self, monthdate=None):
-        return self.getTotalMonthlyPledges(monthdate) + self.getTotalMonthlyOtherSources(monthdate) + self.getTotalMonthlyRedonations(monthdate)
+        needs_total = 0
+        needs, goals = self.getTotalMonthlyPledges(monthdate)
+        needs_total = needs_total+needs
+        needs, goals = self.getTotalMonthlyOtherSources(monthdate)
+        needs_total = needs_total+needs
+        needs_total = needs_total+self.getTotalMonthlyRedonations(monthdate)
+        return needs_total
 
     # gets total monthly budget for project, i.e. sum of all active needs
     def getTotalMonthlyBudget(self, monthdate=None):

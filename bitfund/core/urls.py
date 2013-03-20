@@ -19,7 +19,8 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^admin/{0,}', include(admin.site.urls)),
+    #url(r'^admin/{0,}', include(admin.site.urls)),
+
     url(r'', include('social_auth.urls')),
 )
 
@@ -37,7 +38,11 @@ urlpatterns += patterns('bitfund.core.views',
     (r'^/{0,}$', 'index'),
     (r'^projects{0,}/{0,}$', redirect_to, {'url': '/'}),
     (r'^pledger{0,}/{0,}$', redirect_to, {'url': '/'}),
+    (r'^search_project/{0,}$', 'search_project'),
     (r'^login/{0,}$', 'login'),
+    (r'^about/{0,}$', 'about'),
+    (r'^stats/{0,}$', 'stats'),
+    (r'^faq/{0,}$', 'faq'),
     (r'^logout/{0,}$', 'logout'),
     (r'^register/{0,}$', 'register'),
     (r'^maintainer_verication/{0,}$', 'maintainer_verication'),
@@ -50,10 +55,12 @@ urlpatterns += patterns('bitfund.pledger.views',
                         (r'^user/(?P<username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
                         (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
                         (r'^account/{0,}$', 'user_profile_overview'),
+                        (r'^account/projects/{0,}$', 'user_profile_projects'),
 
                         (r'^account/existing_similar_projects/{0,}$', 'existing_similar_projects'),
 
-                        (r'^account/attach_card/return-to/(?P<return_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'attach_card'),
+                        (r'^account/attach_bank_card/{0,}$', 'attach_bank_card'),
+                        (r'^account/attach_bank_account/{0,}$', 'attach_bank_account'),
 
                         )
 

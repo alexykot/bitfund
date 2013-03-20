@@ -6,8 +6,9 @@ from bitfund.core.settings.server import *
 #this is custom project settings not related to django, but used in this project 
 from bitfund.core.settings.project import *
 
-#this is django extensions settings 
+#this is django extensions settings
 from bitfund.core.settings.extensions import *
+
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -138,6 +139,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'bitfund.core.context_processors.user_is_stranger',
 )
 
+
+AUTH_PROFILE_MODULE = 'bitfund.pledger.views.Profile'
 
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',

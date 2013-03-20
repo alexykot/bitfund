@@ -206,7 +206,6 @@ def _prepare_user_pledges_monthly_history_data(request, user) :
                        'monthly_pledged_projects': monthly_pledged_projects,
                        'onetime_pledged_projects': onetime_pledged_projects,
                        }
-        # print monthly_data
         pledges_monthly_history.append(monthly_data)
 
 

@@ -82,7 +82,7 @@
         <div class="row-fluid">
             <div class="span8 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                    <img src="{{ STATIC_URL }}img/project_img.png" />
+                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                     {% comment %}
                     {% if logo %}
                         <img src="{{ logo.url }} " />

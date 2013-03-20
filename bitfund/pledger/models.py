@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
@@ -29,13 +29,31 @@ USER_PROJECT_STATUS_CHOICES = Choices(
     ('community_ambassador', u'Community Ambassador'),
 )
 
+class ProfileManager(UserManager):
+    def create_user(self, username, email=None, password=None):
+        cleaned_data = super(UserManager, self).create_user()
+
+        now = timezone.now()
+        if not username:
+            raise ValueError('The given username must be set')
+        email = UserManager.normalize_email(email)
+        user = self.model(username=username, email=email,
+                          is_staff=False, is_active=True, is_superuser=False,
+                          last_login=now, date_joined=now)
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+
 class Profile(User):
-    user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='my_profile')
+    user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='profile')
     api_token = models.CharField(max_length=255, unique=True)
     donation_amount_is_public = models.BooleanField(default=True)
     projects_list_is_public = models.BooleanField(default=False)
     status_in_project = models.CharField(max_length=80, choices=USER_PROJECT_STATUS_CHOICES,
                                          default=USER_PROJECT_STATUS_CHOICES.sole_developer)
+    objects = ProfileManager()
 
     # calculates total donations from this user to certain project
     def getTotalDonationsByProject(self, project):
@@ -44,6 +62,8 @@ class Profile(User):
                                       .aggregate(Sum('transaction_amount'))['transaction_amount__sum']) or 0
 
         return Decimal(user_project_donations_sum).quantize(Decimal('0.01'))
+
+
 
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely
@@ -173,17 +193,10 @@ class DonationTransaction(models.Model):
                 # fixed redonation_amount is a part of this project's budget. Here we're getting
                 # the % representation of that part.
                 current_redonation_percent = Decimal((project_i_depend_on.redonation_amount) / project_current_budget).quantize(Decimal('0.01'))
-                print '------------------------'
-
-                print 'project_i_depend_on.redonation_amount '+str(project_i_depend_on.redonation_amount)
-                print 'project_current_budget '+str(project_current_budget)
 
                 # multiply % representation on parent transaction's amount - getting the amount we're going
                 # to redonate in this transaction
-                print 'current_redonation_percent '+str(current_redonation_percent)
-                print 'self.transaction_amount '+str(self.transaction_amount)
                 current_redonation_amount = Decimal(self.transaction_amount*current_redonation_percent).quantize(Decimal('0.01'))
-                print 'current_redonation_amount '+str(current_redonation_amount)
 
                 # getting total of already sent redonations from this project to that one.
                 total_current_redonations = (DonationTransaction.objects
@@ -192,10 +205,8 @@ class DonationTransaction(models.Model):
                                              .filter(accepting_project_id=project_i_depend_on.dependee_project.id)
                                              .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
                                             )
-                print 'total_current_redonations '+str(total_current_redonations)
 
                 total_current_redonations = Decimal(total_current_redonations or 0)
-                print 'total_current_redonations '+str(total_current_redonations)
 
                 # if (existing_redonations + current_redonation) makes up bigger amount than total
                 # fixed redonation - redonation is capped
@@ -208,9 +219,6 @@ class DonationTransaction(models.Model):
                     # redonation amount - nothing else to be redonated here then, omiting this cycle.
                     if current_redonation_amount <= 0 :
                         continue
-
-                print 'current_redonation_amount '+str(current_redonation_amount)
-                print '------------------------'
 
             # if there is no fixed redonation, maybe there is a percentage
             elif project_i_depend_on.redonation_percent > 0 :

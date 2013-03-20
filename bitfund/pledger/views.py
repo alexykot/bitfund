@@ -40,11 +40,6 @@ def user_profile_overview(request, username=None, external_service=None, externa
         return render_to_response('pledger/profile/own_overview.djhtm', template_data, context_instance=RequestContext(request))
 
 
-@login_required
-def attach_card(request):
-    return render_to_response('default.djhtm', {}, context_instance=RequestContext(request))
-
-
 def existing_similar_projects(request):
     template_data = {'request': request,
                      'today': now().today(),
@@ -75,3 +70,15 @@ def existing_similar_projects(request):
 
 
     return render_to_response('pledger/profile/ajax-existing_similar_projects.djhtm', template_data, context_instance=RequestContext(request))
+
+@login_required
+def user_profile_projects(request, username=None, external_service=None, external_username=None):
+    return render_to_response('pledger/profile/projects.djhtm', {}, context_instance=RequestContext(request))
+
+@login_required
+def attach_bank_card(request):
+    return render_to_response('pledger/profile/attach_bank_card.djhtm', {}, context_instance=RequestContext(request))
+
+@login_required
+def attach_bank_account(request):
+    return render_to_response('pledger/profile/attach_bank_account.djhtm', {}, context_instance=RequestContext(request))

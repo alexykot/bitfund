@@ -6,6 +6,7 @@ bitfund/static/img/charts/*
 logs/*
 .idea/*
 bitfund/core/settings/server.py
+bitfund/core/settings/secrets.py
 
 syntax: regexp
 
