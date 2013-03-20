@@ -91,17 +91,26 @@ def claim(request, project_key):
 
     return render_to_response('project/claim.djhtm', template_data, context_instance=RequestContext(request))
 
-@redirect_active
 @disallow_not_public_unless_maintainer
 def maintainer_verification(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    template_data = {'project': project,
+                     'request': request,
+                     'today': now().today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
     return render_to_response('project/claim.djhtm', template_data, context_instance=RequestContext(request))
 
-@redirect_active
 @disallow_not_public_unless_maintainer
-def maintainer_verification(request, project_key):
-    return render_to_response('project/claim.djhtm', template_data, context_instance=RequestContext(request))
+def vote_maintainer(request, project_key, action=None):
+    project = get_object_or_404(Project, key=project_key)
 
-@redirect_active
-@disallow_not_public_unless_maintainer
-def vote_maintainer(request, project_key):
-    return render_to_response('project/claim.djhtm', template_data, context_instance=RequestContext(request))
+    template_data = {'project': project,
+                     'request': request,
+                     'today': now().today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
+    return render_to_response('project/vote_maintainer.djhtm', template_data, context_instance=RequestContext(request))
