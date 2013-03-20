@@ -1,76 +1,81 @@
 <div class="span6">
-    {% for project in similar_projects_list_part1 %}
-        <ul>
-            <li><a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                <div class="row-fluid">
-                    <div class="span4">
-                        <div class="media">
-                            {% if project.logo %}
-                                <img class="media-object pull-left" src="{{ project.logo.url }} " />
-                            {% else %}
-                                <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                            {% endif %}
-                            <div class="media-body">
-                                <h5 class="media-heading">{{ project.title }}</h5>
-                                {% if project.links_count > 0 %}
-                                    <div>{{ project.links_count }} link{{ project.links_count|pluralize }}</div>
-                                {% else %}
-                                    <div>&nbsp;</div>
-                                {% endif %}
-                                {% if project.status == project_status_list.active %}
-                                    <div class="active-state">active</div>
-                                {% elif project.status == project_status_list.unclaimed %}
-                                    <div class="unclaimed-state">unclaimed</div>
-                                {% else %}
-                                    <div class="achieved-state">inactive</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    {% if project.monthly_budget > 0 %}
-                        <div class="span5 text-center">
-                            <span>{{ site_currency_sign }}{{ project.monthly_budget|floatformat:2 }}</span><br>
-                            <span>asked this month</span>
-                        </div>
+    {% if results_count %}
 
-                        <div class="span3">
-                            <div class="pull-right">
-                                {% if project.monthly_total_donations %}
-                                    <span>{{ site_currency_sign }}{{ project.monthly_total_donations|floatformat:2 }}</span>
+        {% for project in similar_projects_list_part1 %}
+            <ul>
+                <li><a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div class="media">
+                                {% if project.logo %}
+                                    <img class="media-object pull-left" src="{{ project.logo.url }} " />
+                                {% else %}
+                                    <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
                                 {% endif %}
-                                <span class="chart-div-medium">
-                                    {{ project.monthly_total_donations_percent|floatformat:0 }}%
-                                    <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" id="budget_chart_image" />
-                                </span>
+                                <div class="media-body">
+                                    <h5 class="media-heading">{{ project.title }}</h5>
+                                    {% if project.links_count > 0 %}
+                                        <div>{{ project.links_count }} link{{ project.links_count|pluralize }}</div>
+                                    {% else %}
+                                        <div>&nbsp;</div>
+                                    {% endif %}
+                                    {% if project.status == project_status_list.active %}
+                                        <div class="active-state">active</div>
+                                    {% elif project.status == project_status_list.unclaimed %}
+                                        <div class="unclaimed-state">unclaimed</div>
+                                    {% else %}
+                                        <div class="achieved-state">inactive</div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    {% else %}
-                        <div class="span3">
-                            <div class="pull-right">
-                                {% if project.monthly_total_donations %}
-                                    <span>{{ site_currency_sign }}{{ project.monthly_total_donations|floatformat:2 }}</span>
-                                {% endif %}
-                                {% if project.monthly_total_donations_percent == -1 %}
-                                    <span class="chart-div-medium">
-                                        &infin;
-                                        <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" id="budget_chart_image" />
-                                    </span>
-                                {% else %}
+                        {% if project.monthly_budget > 0 %}
+                            <div class="span5 text-center">
+                                <span>{{ site_currency_sign }}{{ project.monthly_budget|floatformat:2 }}</span><br>
+                                <span>asked this month</span>
+                            </div>
+
+                            <div class="span3">
+                                <div class="pull-right">
+                                    {% if project.monthly_total_donations %}
+                                        <span>{{ site_currency_sign }}{{ project.monthly_total_donations|floatformat:2 }}</span>
+                                    {% endif %}
                                     <span class="chart-div-medium">
                                         {{ project.monthly_total_donations_percent|floatformat:0 }}%
                                         <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" id="budget_chart_image" />
                                     </span>
-                                {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </a></li>
-        </ul>
-        <div class="text-right" style="display: none;">
-            <a href="#" class="arrow-left">Previuos</a>
-        </div>
-    {% endfor %}
+                        {% else %}
+                            <div class="span3">
+                                <div class="pull-right">
+                                    {% if project.monthly_total_donations %}
+                                        <span>{{ site_currency_sign }}{{ project.monthly_total_donations|floatformat:2 }}</span>
+                                    {% endif %}
+                                    {% if project.monthly_total_donations_percent == -1 %}
+                                        <span class="chart-div-medium">
+                                            &infin;
+                                            <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" id="budget_chart_image" />
+                                        </span>
+                                    {% else %}
+                                        <span class="chart-div-medium">
+                                            {{ project.monthly_total_donations_percent|floatformat:0 }}%
+                                            <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" id="budget_chart_image" />
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </a></li>
+            </ul>
+            <div class="text-right" style="display: none;">
+                <a href="#" class="arrow-left">Previuos</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        Nothing found for {{ search_string }}
+    {% endif %}
 </div>
 
 
@@ -195,3 +200,4 @@
         </div>
     {% endfor %}
 </div>
+

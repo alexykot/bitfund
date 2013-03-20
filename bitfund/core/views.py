@@ -59,8 +59,9 @@ def search_project(request):
                              .filter(title__icontains=search_string)
     )
 
-    if projects_list.count() == 0 :
-        return HttpResponseNotFound()
+    template_data['search_string'] = search_string
+    template_data['results_count'] = projects_list.count()
+
 
     template_data['project_status_list'] = PROJECT_STATUS_CHOICES
     template_data['similar_projects_list_part1'] = []

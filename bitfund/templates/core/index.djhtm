@@ -1,7 +1,5 @@
 {% extends "core/base.djhtm" %}
 
-
-
 {% block pagescripts %}
     <script type="text/javascript">
         function searchProjects(event){
@@ -10,12 +8,12 @@
                 $('#search-result').load('{% url bitfund.core.views.search_project %}?search_string='+search_string,
                         null,
                         function(responseText, textStatus, XMLHttpRequest){
-                            if (textStatus == 'success'){
-                                $('#search-result').toggle(true);
-                            } else {
-                                $('#search-result').toggle(false);
-                            }
+                            $('#search-result').toggle(true);
+                            $('#create_project_form_container').toggle(true);
                         });
+            } else {
+                $('#search-result').toggle(false);
+                $('#create_project_form_container').toggle(false);
             }
         }
 
@@ -46,11 +44,11 @@
         <h4>What project will you support today?</h4>
         <div class="input-append">
           <input class="span3" id="appendedInputButton" type="text">
-          <button class="go" type="button" id="go-button">Go</button>
+          <button class="go" type="button" id="go-button">Search</button>
         </div>
     </div>
     
-    <div class="search-result row-fluid" id="search-result"></div>
+    <div class="search-result row-fluid" id="search-result" style="display: none"></div>
     <div class="support-form text-center" id="create_project_form_container" style="display: none">
         <h4>Didn't find the project you want to support? <a href="#">Support it anyway!</a></h4>
             <div class="row-fluid">
