@@ -250,7 +250,7 @@ button.go {
     padding: 5px 9px;
 }
 
-.available-projects, .dependent-projects, .project-goals {
+.available-projects, .dependent-projects, .project-goals,  .profile-page {
     background-color:   #FFFFFF;
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
@@ -271,38 +271,38 @@ button.go {
     margin-left: 0;
 }
 
-.available-projects .span3 > a, .available-projects .span6 ul li > a {
+.available-projects .span3 > a, .available-projects .span6 ul li > a, .profile-page .span3 > a {
     border: 1px solid #ccc;
     display: block;
     margin-top: 15px;
 }
 
-.available-projects .span3 a:hover, .available-projects .span6 ul li > a:hover {
+.available-projects .span3 a:hover, .available-projects .span6 ul li > a:hover, .profile-page .span3 a:hover {
     border: 1px solid #89b001;
     text-decoration: none;
 }
 
-.available-projects .span3 .media, .available-projects .span6 ul li > a {
+.available-projects .span3 .media, .available-projects .span6 ul li > a, .profile-page .span3 .media {
     color: #3d3d3d;
     padding: 10px;
     text-align: left;
 }
 
-.available-projects .span3 .media {
+.available-projects .span3 .media, .profile-page .span3 .media {
     height: 55px;
 }
 
-.available-projects .media-body {
+.available-projects .media-body, .profile-page .span3 .media {
     line-height: 18px;
 }
 
-.available-projects .media-heading {
+.available-projects .media-heading, .profile-page .span3 .media-heading {
     font-weight: bold;
     line-height: 18px;
     margin: 0;
 }
 
-.available-projects .media-object {
+.available-projects .media-object, .profile-page .span3 .media-object {
     height: 55px;
     width: 55px;
 }
@@ -889,7 +889,45 @@ ul.chart-div-legend {
     font-weight: normal;
 }
 
+/* Profile-page own-overview ===============*/
 
+.profile-page {
+    padding: 30px;
+}
+
+.profile-page > .row-fluid > div:first-of-type {
+    border-right: 1px solid #ccc;
+}
+
+.profile-page .header .media-body {
+    margin-left: 10px;
+}
+
+.profile-page .header .media-body > div {
+    display: inline-block;
+}
+.profile-page .header .media-body div div {
+    font-size: 50px;
+}
+
+.profile-page dt {
+    font-weight: normal;
+}
+
+.pledges-history h3 {
+    display: inline-block;
+    background-color: #f2f2f2;
+}
+
+.pledges-history ul li {
+    text-align: center;
+}
+
+/* Profile-page projects ======*/
+
+.profile-page .span3 a {
+    margin-top: 0;
+}
 /* Footer =====================*/
 
 .footer {

@@ -32,33 +32,23 @@
 {% block content %}
 {% load widget_tweaks %}
 
-<div class="row available-projects">
-
-    <div class="row">
-        <div class="span2">
-            <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
-        </div>
-        <div class="span9">
-            <div class="row">
-                <h1>{{ user.username }} gives</h1>
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.giving_monthly }} <br />
+<div class="profile-page">
+    <div class="media">
+        <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
+        <div class="media-body">
+            <h5 class="media-heading">{{ user.username }} gives</h5>
+            
+                <div>
+                <div>{{ site_currency_sign }}{{ user.public.giving_monthly }}</div>
                 this month
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.gave_totally }} <br />
-                overall
-            </div>
-        </div>
-        <div class="span9">
-            <div class="span1">
-                <button class="button gray active">profile</button>
-            </div>
-            <div class="span1">
-                <button class="button gray">pledges</button>
-            </div>
-            <div class="span4 pull-right">
+                </div>
+                <div>
+                    <div>{{ site_currency_sign }}{{ user.public.gave_totally }}</div>
+                    overall
+                </div>
+            <button class="button gray active">profile</button>
+            <button class="button gray">pledges</button>
+            <div class="pull-right">
                 {% if user.public.maintained_projects_count %}
                     <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">projects</a>
                 {% endif %}
@@ -77,101 +67,101 @@
             </div>
         </div>
     </div>
-    <div class="span6">
 
-        <div class="row">
-            <div class="span6">
-                <h2>Pledges overview</h2>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="span2 text-right">
-                You've joined
-            </div>
-            <div class="span3">
-                {{ user.date_joined|naturaltime }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="span2 text-right">
-            You're giving monthly
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.giving_monthly }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="span2 text-right">
-                You gave totally
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.gave_totally }}
-            </div>
-        </div>
-
-        <div class="span5">
-            <h2>Pledges history:</h2>
-        </div>
+    <div class="row-fluid">
         <div class="span6">
-            <ul>
+            <h3>Pledges overview</h3>
+            <dl class="dl-horizontal">
+                <dt>You've joined</dt>
+                <dd>{{ user.date_joined|naturaltime }}</dd>
+                <dt>You're giving monthly</dt>
+                <dd>{{ site_currency_sign }}{{ user.public.giving_monthly }}</dd>
+                <dt>You gave totally</dt>
+                <dd>{{ site_currency_sign }}{{ user.public.gave_totally }}</dd>
+            </dl>
+            <h3>Pledges history:</h3>
+            <ul class="pledges-history">
                 {% for month in user.pledges_history %}
                     {% if month.monthly_total > 0 %}
-                        <hr />
-                        <li>
-                            <div class="row">
-                                <div class="span3">
-                                {{ month.date|date:"M o" }}
-                                </div>
-
-                                <div class="span3 pull-right">
-                                    {{ site_currency_sign }}{{ month.monthly_total }}
-                                </div>
+                    <li>
+                        <h3>{{ month.date|date:"M o" }}
+                            <span>{{ site_currency_sign }}{{ month.monthly_total }}</span>
+                        </h3>
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <ul>
+                                    <li>Monthly pledges</li>
+                                    {% for project_pledge in month.monthly_pledged_projects %}
+                                        {% if project_pledge.project_key %}
+                                            <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a></li>
+                                        {% else %}
+                                        <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
+                                        {% endif %}
+                                    {% empty %}
+                                        <li>none</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
-
-                            <div class="row">
-                                <div class="span3">
-                                    <ul>
-                                        <li>Monthly pledges</li>
-                                        {% for project_pledge in month.monthly_pledged_projects %}
-                                            {% if project_pledge.project_key %}
-                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a></li>
-                                            {% else %}
-                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
-                                            {% endif %}
-                                        {% empty %}
-                                            <li>none</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-
-                                <div class="span3">
-                                    <ul>
-                                        <li>Onetime pledges</li>
-                                        {% for project_pledge in month.onetime_pledged_projects %}
-                                            {% if project_pledge.project_key %}
-                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a></li>
-                                            {% else %}
-                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
-                                            {% endif %}
-                                        {% empty %}
-                                            <li>none</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
+                            <div class="span6">
+                                <ul>
+                                    <li>Onetime pledges</li>
+                                    {% for project_pledge in month.onetime_pledged_projects %}
+                                        {% if project_pledge.project_key %}
+                                            <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a></li>
+                                        {% else %}
+                                            <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
+                                        {% endif %}
+                                    {% empty %}
+                                        <li>none</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
-                        </li>
+                        </div>
+                    </li>
                     {% endif %}
                 {% empty %}
                     <li>you've not pledged any projects yet</li>
                 {% endfor %}
             </ul>
         </div>
-    </div>
-    <div class="span5">
-        <div class="row">
-             <h2>Connected accounts</h2>
+
+        <div class="span6 connected-accounts">
+            <h3>Connected accounts</h3>
+            <dl class="dl-horizontal">
+                <dt><img src="{{ STATIC_URL }}img/github_icon.png" /></dt>
+                <dd>
+                    <div class="media">
+                        <img class="media-object pull-left" data-src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
+                        <div class="media-body">
+                            <a href="#" class="media-heading">alekseykot (Alex Kot)</a>
+                            <div>on Twitter</div>
+                        </div>
+                    </div>
+                </dd>
+                <dt><img src="{{ STATIC_URL }}img/twitter_icon.png" /></dt>
+                <dd>
+                    <div class="media">
+                        <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
+                        <div class="media-body">
+                            <a href="#" class="media-heading">alexeykot</a>
+                            <div>on Github</div>
+                        </div>
+                    </div>
+                </dd>
+                <dt><img src="{{ STATIC_URL }}img/credit_card_icon.png" /></dt>
+                <dd>
+                    <div class="media">
+                        <div class="media-body">
+                            <div class="media-heading"><a href="#">Credit Card</a><i class="icon-ok"></i>
+                                <a href="#">Bank account</a><i class="icon-remove"></i>
+                                </div>
+                            <div>on Balanced Payments</div>
+                        </div>
+                    </div>
+                </dd>
+            </dl>
         </div>
     </div>
+            
 </div>
 {% endblock %}
