@@ -589,8 +589,8 @@ a.arrow-left-white, a.arrow-right-white {
     margin: 0 15px;
 }
 
-.budget-column .pledged, .backers {
-    font-size: 25px;
+.pledged, .backers, .days-to-go {
+    font-size: 25px;st
     padding: 15px 0 5px;
 }
 
@@ -602,8 +602,8 @@ a.arrow-left-white, a.arrow-right-white {
     position: absolute;
 }
 
-.chart-div-large {
-    height: 120px;
+.budget-column .chart-div-large {
+    height: 110px;
 }
 
 .chart-div-large img {
@@ -636,7 +636,7 @@ ul.chart-div-legend {
     border-radius: 6px;
     display: inline-block;
     height: 12px;
-    margin: 5px 5px 0 0;
+    margin-right: 5px;
     width: 12px;
 }
 
@@ -713,11 +713,11 @@ ul.chart-div-legend {
     cursor: move;
 }
 
-.need-pledge-controls {
+.goals-column .need-pledge-controls {
     margin-bottom: 10px;
 }
 
-.need-pledge-controls ul {
+.goals-column .need-pledge-controls ul {
     margin-left: 0;
 }
 
@@ -823,25 +823,73 @@ ul.chart-div-legend {
 
 .goal-info {
     padding: 0 25px 20px;
+    position: relative;
 }
 
-.goal-info .span8 iframe {
-    height: 350px;
-    width: 560px;
+.goal-info > .row-fluid {
+    position: relative;
 }
 
-.goal-info .span4 > * , .goal-info .dotted-border, .goal-info .text-center {
+.goal-info > span:first-of-type {
+    font-size: 12px;
+    position: absolute;
+    top: 10px;
+    right: 30px;
+}
+
+.goal-info > .row-fluid .span7 {
+    width: 530px;
+}
+
+.goal-info > .row-fluid > .span5 {
+    width: 340px;
+}
+
+.goal-info .span7 iframe {
+    height: 330px;
+    width: 530px;
+}
+
+.goal-info .chart-div-large {
+    margin-bottom: 10px;
+    margin-left:20px;
+}
+
+.goal-info .span5 .span4 {
+    font-size: 16px;
+}
+
+.goal-info .span5 .span3 {
+    margin-left: 0;
+    width: 85px;
+}
+
+.goal-info .span3 div, .goal-info .span4 div, .goal-info .dotted-border, .goal-info form button {
     margin-bottom: 20px;
 }
 
+.goal-info form {
+    bottom: 0;
+    margin-bottom: 0;
+    margin-left: 20px;
+    position: absolute;
+}
+
+.budget-state span {
+    display: block;
+    font-size: 25px;
+}
+
 .goal-info > p {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .goal-info > p b {
     font-size: 16px;
     font-weight: normal;
 }
+
+
 /* Footer =====================*/
 
 .footer {

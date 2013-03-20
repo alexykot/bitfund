@@ -110,9 +110,9 @@
     <div class="goal-info">
         <h3>{{goal.title}}</h3>
         <p>{{goal.brief}}</p>
-
+        <span>Launched: {{goal.date_starting|date:"DATE_FORMAT"}}</span>
         <div class="row-fluid">
-            <div class="span8">
+            <div class="span7">
                 {% if goal.youtube_video_id %}
 
                     <div id="ytplayer"></div>
@@ -142,58 +142,54 @@
                 {% endif %}
             </div>
 
-            <div class="span4">
-                <div class="clearfix">
-                    <div class="pull-right">Launched: {{goal.date_starting|date:"DATE_FORMAT"}}<br>
-                    Ending: {{goal.date_ending|date:"DATE_FORMAT"}}</div>
-                </div>
-                <div class="row">
-                    <div class="span1 kf_chart_container">
-                        <div id="goal-{{goal.id}}-chart"></div>
-                        <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='medium' %}" id="goal-chart"/>
-
-                        <span>{{goal.total_percent}}%</span>
-                    </div>
-                    <div class="span1">
-                        {{ site_currency_sign }}
-                        {{goal.pledges_amount}} <br />
-                        <span class="kf_small">pledged</span>
-                    </div>
-
-                    {% if goal.days_to_end > 1 %}
-                        <div class="span1">
-                            {{goal.days_to_end}} <br />
-                            <span class="kf_small">days to go</span>
+            <div class="span5">
+                <div class="row-fluid">
+                    <div class="span5">
+                        <div class="chart-div-large" id="goal-{{goal.id}}-chart">
+                            <span class="text-center">{{goal.total_percent}}%</span>
+                            <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='medium' %}" id="goal-chart"/>
                         </div>
-                    {% elif goal.hours_to_end > 0 %}
-                        <div class="span1">
-                            {{goal.hours_to_end}} <br />
-                            <span class="kf_small">hours to go</span>
-                        </div>
-                    {% else %}
-                        <div class="span1">
-                            ENDED
-                        </div>
-                    {% endif %}
-                    <div class="span1 kf_time">
-                        {{goal.pledging_users_count}} <br />
-                        <span class="kf_small">backers</span>
+                        <ul class="chart-div-legend">
+                            <li><span class="green-marker"></span>Backers support</li>
+                            <li><span class="olive-marker"></span>Linked projects</li>
+                            <li><span class="yellow-marker"></span>Other sources</li>
+                        </ul> 
+                       
                     </div>
                     <div class="span4">
-                        ${{goal.amount}} <br />
-                        <span class="kf_small">asked</span>
+                        <div class="budget-state"><span>{{ site_currency_sign }}
+                        {{goal.pledges_amount}}</span>
+                        pledged</div>
+
+                        {% if goal.days_to_end > 1 %}
+                        <div class="budget-state"><span>{{goal.days_to_end}}</span>
+                        days to go</div>
+                        {% elif goal.hours_to_end > 0 %}
+                        <div class="budget-state"><span>{{goal.hours_to_end}}</span>
+                        days to go</div>
+                        {% else %}
+                        <div class="budget-state"><span>ENDED</span></div>
+                        {% endif %}
+
+                        <div class="budget-state"><span>{{goal.pledging_users_count}}</span>
+                        backers</div>
+                    </div>
+                    <div class="span3">
+                        <div>{{ site_currency_sign }}{{goal.amount}}<br>
+                        asked</div>
+                        <div>ends:<br>
+                        {{goal.date_ending|date:"DATE_FORMAT"}}</div>
                     </div>
                 </div>
-
+                  
+                
                 {% if goal.last_transaction %}
                     You're pledging {{ site_currency_sign }}{{ goal.last_transaction.transaction_amount|floatformat:2 }}
                 {% endif %}
-
                 <form action="" method="post" id="form-pledge-goal">
                         {% csrf_token %}
                         {{ goal.pledge_form.non_field_errors }}
-                    <div class="need-pledge-controls">
-                        <div class="row-fluid">
+                    <div class="need-pledge-controls text-center">
                             <ul class="amount-buttons" id="options-button-set">
                                 <li>{{ site_currency_sign }}</li>
                                 <li><button data-amount="2">2</button></li>
@@ -213,8 +209,7 @@
                                 <li class="dotted-border"><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"
                                        id="link-less">less</a></li>
                             </ul>
-                        </div>
-                        <div class="text-center">
+                        <div>
                             {% if goal.last_transaction %}
                                 <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
                                         type="submit" class="button gray">Update pledge</button>
@@ -226,12 +221,12 @@
                             {% endif %}
                         </div>
                         {% if not request.user.is_authenticated %}
-                            <div class="text-center" id="login-links-{{ need.id }}">
+                            <div id="login-links-{{ need.id }}">
                                 <span class="orange-bg">{% include "core/login/login-with-links.djhtm" %}</span>
                             </div>
                         {% endif %}
                         {% if not request.user.is_payment_card_attached %}
-                            <div class="text-center">
+                            <div>
                                 <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
                             </div>
                         {% endif %}
