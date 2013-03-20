@@ -33,7 +33,7 @@
                     {% comment %} {% if logo %} 
                         <img src="{{ logo.url }}" />
                     {% elif project.logo %} {% endcomment %}
-                        <img src="{% comment %} {{ project.logo.url }} {% endcomment %} {{ STATIC_URL }}img/project_img.png" />
+                        <img src="{% comment %} {{ project.logo.url }} {% endcomment %} {{ STATIC_URL }}img/project_no_logo.png" />
                     {% comment %} {% endif %} {% endcomment %}
                 </a>
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>

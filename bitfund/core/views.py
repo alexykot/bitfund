@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth import authenticate
@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 from django.template import RequestContext
 from django.core.validators import validate_email
 from django.core.mail import send_mail
+from bitfund.core.decorators import ajax_required
 
 from bitfund.core.models import *
 from bitfund.core.forms import *
@@ -42,6 +43,47 @@ def index(request):
                                                 )
 
     return render_to_response('core/index.djhtm', template_data, context_instance=RequestContext(request))
+
+@ajax_required
+def search_project(request):
+    template_data = {'request': request,
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
+    search_string = request.GET['search_string']
+
+    projects_list = (Project.objects
+                             .exclude(status=PROJECT_STATUS_CHOICES.inactive)
+                             .exclude(status=PROJECT_STATUS_CHOICES.archived)
+                             .exclude(is_public=False)
+                             .filter(title__icontains=search_string)
+    )
+
+    if projects_list.count() == 0 :
+        return HttpResponseNotFound()
+
+    template_data['project_status_list'] = PROJECT_STATUS_CHOICES
+    template_data['similar_projects_list_part1'] = []
+    template_data['similar_projects_list_part2'] = []
+    index = 0
+    count = projects_list.count()
+    for project in projects_list :
+        project.monthly_total_donations = project.getTotalMonthlyDonations()
+
+        project.monthly_budget = project.getTotalMonthlyBudget()
+
+        if project.monthly_budget > 0 :
+            project.monthly_total_donations_percent = project.monthly_total_donations/project.monthly_budget*100
+        else :
+            project.monthly_total_donations_percent = -1
+
+        if index < count :
+            template_data['similar_projects_list_part1'].append(project)
+        else :
+            template_data['similar_projects_list_part2'].append(project)
+        index = index+1
+
+    return render_to_response('core/ajax-index_search_projects.djhtm', template_data, context_instance=RequestContext(request))
 
 
 def login(request):

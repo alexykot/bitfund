@@ -39,14 +39,11 @@
         <div class="row-fluid">
             <div class="span8 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                    <img src="{{ STATIC_URL }}img/project_img.png" />
-                    {% comment %}
-                    {% if logo %}
-                        <img src="{{ logo.url }} " />
-                    {% elif project.logo %}
+                    {% if project.logo %}
                         <img src="{{ project.logo.url }} " />
+                    {% else %}
+                        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                     {% endif %}
-                    {% endcomment %}
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
                 <div class="span2">

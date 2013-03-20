@@ -3,7 +3,7 @@
         <div class="row">
             <div class="span4">
                 <div class="media">
-                    <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_img.png" />
+                    <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
                     <div class="media-body">
                         <h5 class="media-heading">{{ project.title }}</h5>
                         <div>5 min</div>
