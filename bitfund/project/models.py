@@ -18,7 +18,7 @@ class ProjectCategory(models.Model):
     date_added    = models.DateTimeField('date added', default=now())
 
 class Project(models.Model):
-    maintainer = models.ForeignKey(User, default=0)
+    maintainer = models.ForeignKey(User, default=-1, on_delete=models.PROTECT)
     key = models.CharField(max_length=80, unique=True)
     title = models.CharField(max_length=255)
     brief = models.CharField(max_length=255, null=True, blank=True)
@@ -33,6 +33,7 @@ class Project(models.Model):
     def __unicode__(self):
         return self.title
 
+    #gets a list of top linked projects
     @classmethod
     def getTopLinkedProjects(cls):
         top_linked_list = (Project.objects
@@ -43,6 +44,21 @@ class Project(models.Model):
         )
 
         return top_linked_list
+
+    #creates unique project key from the provided title
+    @classmethod
+    def slugifyKey(cls, title):
+        from django.template.defaultfilters import slugify
+        key = slugify(title)
+
+        same_key_projects = Project.objects.filter(key__exact=key)
+        index = 0
+        while same_key_projects.count() > 0 :
+            key = key+str(index)
+            same_key_projects = Project.objects.filter(key__exact=key)
+            index = index+1
+
+        return key
 
     # calculates total backers count (goals backers included)
     def getTotalMonthlyBackers(self, monthdate=None):

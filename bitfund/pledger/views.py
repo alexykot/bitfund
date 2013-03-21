@@ -35,7 +35,21 @@ def user_profile_overview(request, username=None, external_service=None, externa
         request.user.public = _prepare_user_public_template_data(request, request.user)
         #request.user.pledges_history = _prepare_user_pledges_monthly_history_data(request, request.user)
         template_data['request'] = request
-        template_data['create_project_form'] = CreateProjectForm()
+
+        if request.method == 'POST' :
+            template_data['create_project_form'] = CreateProjectForm(request.POST)
+            if template_data['create_project_form'].is_valid() :
+                project = Project()
+                project.title = template_data['create_project_form'].cleaned_data['title']
+                project.key = Project.slugifyKey(project.title)
+                project.is_public = False
+                project.maintainer_id = request.user.id
+                project.status = PROJECT_STATUS_CHOICES.active
+                project.save()
+                return redirect('bitfund.project.views.budget_edit', project_key=project.key)
+
+        else :
+            template_data['create_project_form'] = CreateProjectForm()
 
         return render_to_response('pledger/profile/own_overview.djhtm', template_data, context_instance=RequestContext(request))
 

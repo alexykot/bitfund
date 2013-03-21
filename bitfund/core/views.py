@@ -1,6 +1,6 @@
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_user_login
 from django.contrib.auth import logout as django_user_logout
@@ -22,6 +22,18 @@ def index(request):
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      }
 
+    if request.method == 'POST' :
+        template_data['create_project_form'] = CreateProjectForm(request.POST)
+        if template_data['create_project_form'].is_valid() :
+            project = Project()
+            project.title = template_data['create_project_form'].cleaned_data['title']
+            project.key = Project.slugifyKey(project.title)
+            project.save()
+            return redirect('bitfund.project.views.unclaimed', project_key=project.key)
+
+    else :
+        template_data['create_project_form'] = CreateProjectForm()
+
     template_data['new_projects_list'] = (Project.objects
                                           .filter(is_public=True)
                                           .filter(status=PROJECT_STATUS_CHOICES.active)
@@ -41,6 +53,7 @@ def index(request):
                                                 .order_by('-date_added')
                                                 [:PROJECTS_IN_HOMEPAGE_COLUMN]
                                                 )
+
 
     return render_to_response('core/index.djhtm', template_data, context_instance=RequestContext(request))
 
