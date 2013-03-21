@@ -93,3 +93,19 @@ def goal_toggle(request, project_key, goal_key):
 
     return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)
 
+
+@login_required
+@user_is_project_maintainer
+def goal_edit(request, project_key, goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    goal = get_object_or_404(ProjectGoal, key=goal_key)
+
+    template_data = {'project' : project,
+                     'goal' : goal,
+                     'request' : request,
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'today'   : datetime.utcnow().replace(tzinfo=utc).today(),
+                     }
+
+    return render_to_response('project/goals/goal_edit.djhtm', template_data, context_instance=RequestContext(request))
+
