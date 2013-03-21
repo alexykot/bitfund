@@ -209,13 +209,22 @@
                             </div>
                         </div>
                         <div class="span3 text-center">
-                            <div>${{ goal.donations_amount }}</div>
+                            <div>${{ goal.pledges_amount }}</div>
                             <div>pledged</div>
                         </div>
-                        <div class="span4 text-center">
-                            <div>{{ goal.days_to_end }}</div>
-                            <div>days to go</div>
-                        </div>
+                        {% if goal.days_to_end > 1 %}
+                            <div class="span4 text-center">
+                                <div>{{ goal.days_to_end }}</div>
+                                <div>days to go</div>
+                            </div>
+                        {% elif goal.hours_to_end > 0 %}
+                            <div class="span4 text-center">
+                                <div>{{ goal.hours_to_end }}</div>
+                                <div>hours to go</div>
+                            </div>
+                        {% else %}
+                            <div class="budget-state"><span>ENDED</span></div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>

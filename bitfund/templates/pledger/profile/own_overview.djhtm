@@ -36,7 +36,14 @@
 
     <div class="row">
         <div class="span2">
-            <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
+            {% if profile.gravatar_id %}
+                <img src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=160" />
+            {% elif profile.twitter_pic_url %}
+                <img src="{{ profile.twitter_pic_url }}" width="160" height="160" />
+            {% else %}
+                {% load gravatar %}
+                <img src="{% gravatar_for_user request.user 160 %}" />
+            {% endif %}
         </div>
         <div class="span9">
             <div class="row">
@@ -110,6 +117,13 @@
                 {{ site_currency_sign }}{{ user.public.gave_totally }}
             </div>
         </div>
+        <div class="row">
+            <div class="span6">
+                Programs key: {{ profile.api_token }} (?)
+            </div>
+        </div>
+
+
 
         <div class="span5">
             <h2>Pledges history:</h2>

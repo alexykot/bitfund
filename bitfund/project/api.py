@@ -25,7 +25,7 @@ def checkUserToken(user_token):
     import base64
     user = None
     if user_token is None or Profile.objects.filter(donation_is_public=True).filter(api_token=user_token).count() != 1 :
-        user_token = base64.urlsafe_b64encode(os.urandom(32))
+        user_token = Profile.generateAPIToken()
     else :
         user = Profile.objects.get(api_token=user_token).user
         

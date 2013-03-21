@@ -26,9 +26,10 @@ TIME_TO_SHOW_HOURS = 48 #when it's time to show hours instead of days for "time 
 DEFAULT_MONTHLY_DONATION_AMOUNT = 1 # default donation in $
 DEFAULT_ONETIME_DONATION_AMOUNT = 5 # default donation in $
 
-#internal API
+#web API
 API_USER_TOKEN_PARAM_NAME = 'userToken'
 API_TARGET_MONTH_PARAM_NAME = 'targetMonth'
+API_KEY_LENGTH = 32
 
 #Currecies
 SITE_CURRENCY_CODE = 'USD'

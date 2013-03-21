@@ -1,18 +1,15 @@
 log in with
-{% comment %}
 {% if request.get_full_path == '/' %}
-    <a href="{% url socialauth_begin 'twitter' %}">twitter</a>,
-    <a href="{% url socialauth_begin 'github' %}">github</a>,
-    <a href="{% url socialauth_begin 'google' %}">google</a> or
-    <a href="{% url socialauth_begin 'facebook' %}">facebook</a>
+    <a href="{% url socialauth_begin 'twitter' %}">twitter</a> or
+    <a href="{% url socialauth_begin 'github' %}">github</a>
+{#    <a href="{% url socialauth_begin 'google' %}">google</a> or#}
+{#    <a href="{% url socialauth_begin 'facebook' %}">facebook</a>#}
 {% else %}
-    <a href="{% url socialauth_begin 'twitter' %}?next={{ request.get_full_path }}">twitter</a>,
-    <a href="{% url socialauth_begin 'github' %}?next={{ request.get_full_path }}">github</a>,
-    <a href="{% url socialauth_begin 'google' %}?next={{ request.get_full_path }}">google</a> or
-    <a href="{% url socialauth_begin 'facebook' %}?next={{ request.get_full_path }}">facebook</a>
+    <a href="{% url socialauth_begin 'twitter' %}?next={{ request.get_full_path }}">twitter</a> or
+    <a href="{% url socialauth_begin 'github' %}?next={{ request.get_full_path }}">github</a>
+{#    <a href="{% url socialauth_begin 'google' %}?next={{ request.get_full_path }}">google</a> or#}
+{#    <a href="{% url socialauth_begin 'facebook' %}?next={{ request.get_full_path }}">facebook</a>#}
 {% endif %}
+{% comment %}
+<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">deprecated internal login</a>,
 {% endcomment %}
-<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">twitter</a>,
-<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">github</a>,
-<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">google</a> or
-<a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">facebook</a>

@@ -1,3 +1,5 @@
+import base64
+import os
 from django.db import models
 from django.contrib.auth.models import User, UserManager
 from django.utils.timezone import now
@@ -5,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
 
 from model_utils import Choices
+from bitfund.core.settings.project import API_KEY_LENGTH
 
 from bitfund.project.models import *
 
@@ -32,6 +35,8 @@ USER_PROJECT_STATUS_CHOICES = Choices(
 class Profile(User):
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='profile')
     api_token = models.CharField(max_length=255, unique=True)
+    gravatar_id = models.CharField(max_length=255, null=True, blank=True)
+    twitter_pic_url = models.CharField(max_length=1000, null=True, blank=True)
     donation_amount_is_public = models.BooleanField(default=True)
     projects_list_is_public = models.BooleanField(default=False)
     status_in_project = models.CharField(max_length=80, choices=USER_PROJECT_STATUS_CHOICES,
@@ -45,22 +50,27 @@ class Profile(User):
 
         return Decimal(user_project_donations_sum).quantize(Decimal('0.01'))
 
-
+    @classmethod
+    def generateAPIToken(cls):
+        return str(base64.urlsafe_b64encode(os.urandom(1000)))[0:API_KEY_LENGTH]
 
 #part of the social auth pipeline, creates new user profile
 #def save_user_profile(sender, user_id, user, is_new, **kwargs):
 def save_user_profile(request, *args, **kwargs):
-    # profile = Profile()
-    # profile.user_id = user.id
-    # profile.save()
-    # print sender
-    # print user_id
-    # print user
-    print args
     print kwargs
 
-    return None
+    if kwargs['is_new'] :
+        profile = Profile()
+        profile.user_id = kwargs['user'].id
+        profile.api_token = Profile.generateAPIToken()
+        if 'gravatar_id' in kwargs['response'] and kwargs['response']['gravatar_id'] != '' :
+            profile.gravatar_id = kwargs['response']['gravatar_id']
+        if 'profile_image_url' in kwargs['response'] :
+            profile.twitter_pic_url = kwargs['response']['profile_image_url']
 
+        profile.save()
+
+    return None
 
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely

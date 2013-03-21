@@ -166,7 +166,7 @@
                         days to go</div>
                         {% elif goal.hours_to_end > 0 %}
                         <div class="budget-state"><span>{{goal.hours_to_end}}</span>
-                        days to go</div>
+                        hours to go</div>
                         {% else %}
                         <div class="budget-state"><span>ENDED</span></div>
                         {% endif %}

@@ -85,9 +85,11 @@ INSTALLED_APPS = (
     'guardian',         # object permissions checking
     'easy_thumbnails',  # easier thumbnailing
     'tastypie',         # API framework
-    'social_auth',       # authentication via various big name sites
+    'social_auth',      # authentication via various big name sites
     'model_utils',      # models utilities
-    'selectable',       # select fields ajax autocomplete lookups
+    'gravatar',         # gravatar avatars
+
+    #'selectable',       # select fields ajax autocomplete lookups
 )
 
 # A sample logging configuration. The only tangible logging

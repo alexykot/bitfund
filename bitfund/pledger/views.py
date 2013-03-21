@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from bitfund.core.settings.project import SITE_CURRENCY_SIGN
+from bitfund.pledger.models import Profile
 from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data
 from bitfund.project.forms import CreateProjectForm
 from bitfund.project.lists import PROJECT_STATUS_CHOICES
@@ -26,15 +27,21 @@ def user_profile_overview(request, username=None, external_service=None, externa
     elif request.user.is_authenticated():
         user = request.user
 
+    if user.id > 0 :
+        profile = get_object_or_404(Profile, user_id=user.id)
+
     if user.id != request.user.id :
         user.public = _prepare_user_public_template_data(request, user)
         template_data['user'] = user
+        template_data['profile'] = profile
 
         return render_to_response('pledger/profile/public.djhtm', template_data, context_instance=RequestContext(request))
     else :
         request.user.public = _prepare_user_public_template_data(request, request.user)
         #request.user.pledges_history = _prepare_user_pledges_monthly_history_data(request, request.user)
         template_data['request'] = request
+        template_data['profile'] = profile
+        print template_data['profile'].api_token
 
         if request.method == 'POST' :
             template_data['create_project_form'] = CreateProjectForm(request.POST)
@@ -86,7 +93,16 @@ def existing_similar_projects(request):
     return render_to_response('pledger/profile/ajax-existing_similar_projects.djhtm', template_data, context_instance=RequestContext(request))
 
 @login_required
-def user_profile_projects(request, username=None, external_service=None, external_username=None):
+def user_profile_projects(request):
+    template_data = {'request': request,
+                     'today': now().today(),
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     }
+
+
+
+
+
     return render_to_response('pledger/profile/projects.djhtm', {}, context_instance=RequestContext(request))
 
 @login_required
