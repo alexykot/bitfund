@@ -96,15 +96,11 @@
         </div>
     </div>
     <hr>
-    <div class="header">
-        <div class="row-fluid">
-            <div class="span12 project-attributes">
-                <a href="#">
-                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
-                <a href="#">KDE</a>
-            </div>
-        </div>
+    <div class="project-attributes">
+        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+        <span>KDE</span>
     </div>
+           
 
     <table>
         <tr>
@@ -130,14 +126,17 @@
                     <dd><strong>$500</strong> in 50 pledges</dd>
                     <dt>Monthly pledges:</dt>
                     <dd><strong>$250</strong> in 20 subscribtions</dd>
+                </dl>
+                <dl class="dl-horizontal">
                     <dt>Relations paid in:</dt>
                     <dd><strong>$250</strong> from 20 projects</dd>
                     <dt>Relations paid owt:</dt>
                     <dd><strong>$100</strong> to 15 projects</dd>
                     <dt><a href="#">manage relations</a></dt>
-                
-                    <dt><strong>Current balance:</strong></dt>
-                    <dd>$850</dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt><h4><strong>Current balance:</strong></h4></dt>
+                    <dd><h4><strong>$850</strong></h4></dd>
                     <dt><a href="#">attach bank account</a></dt>
                 </dl>
 
@@ -147,35 +146,47 @@
                 		<h4>Feb 2013</h4>
                 		<dl class="dl-horizontal">
                 			<dt>Starting balance:</dt>
-                			<dd>$2000</dd>
+                			<dd><strong>$2000</strong></dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                 			<dt>Onetime pledges:</dt>
     		                <dd><strong>$500</strong> in 50 pledges</dd>
     		                <dt>Monthly pledges:</dt>
     		                <dd><strong>$250</strong> in 20 subscribtions</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
     		                <dt>Relations paid in:</dt>
     		                <dd><strong>$250</strong> from 20 projects</dd>
     		                <dt>Relations paid owt:</dt>
     		                <dd><strong>$100</strong> to 15 projects</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
     		                <dt>Withdrawn</dt>
-    		                <dd>$200</dd>
+    		                <dd><strong>$200</strong></dd>
     		            </dl>
                 	</li>
                 	<li>
                 		<h4>Jan 2013</h4>
                 		<dl class="dl-horizontal">
-                			<dt>Starting balance:</dt>
-                			<dd>$2000</dd>
-                			<dt>Onetime pledges:</dt>
-    		                <dd><strong>$500</strong> in 50 pledges</dd>
-    		                <dt>Monthly pledges:</dt>
-    		                <dd><strong>$250</strong> in 20 subscribtions</dd>
-    		                <dt>Relations paid in:</dt>
-    		                <dd><strong>$250</strong> from 20 projects</dd>
-    		                <dt>Relations paid owt:</dt>
-    		                <dd><strong>$100</strong> to 15 projects</dd>
-    		                <dt>Withdrawn</dt>
-    		                <dd>$200</dd>
-    		            </dl>
+                            <dt>Starting balance:</dt>
+                            <dd><strong>$2000</strong></dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Onetime pledges:</dt>
+                            <dd><strong>$500</strong> in 50 pledges</dd>
+                            <dt>Monthly pledges:</dt>
+                            <dd><strong>$250</strong> in 20 subscribtions</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Relations paid in:</dt>
+                            <dd><strong>$250</strong> from 20 projects</dd>
+                            <dt>Relations paid owt:</dt>
+                            <dd><strong>$100</strong> to 15 projects</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Withdrawn</dt>
+                            <dd><strong>$200</strong></dd>
+                        </dl>
                 	</li>
                 </ul>
             </td>

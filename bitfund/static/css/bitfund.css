@@ -979,10 +979,18 @@ ul.chart-div-legend {
     margin: 0 20px;
 }
 
-.profile-page .header .project-attributes img {
-    margin-left: 0;
+.profile-page .project-attributes {
+    margin: 30px 0;
+}
+
+.profile-page div.project-attributes img {
     height: 45px;
     width: 45px;
+}
+
+.profile-page > div.project-attributes span {
+    font-size: 30px;
+    vertical-align: middle;
 }
 
 .profile-page .span3 a {
@@ -992,6 +1000,14 @@ ul.chart-div-legend {
 .profile-page > table td h3 {
     line-height: 15px;
     margin: 0 0 30px;
+}
+
+.profile-page .right dl h4 {
+    margin: 0;
+}
+
+.profile-page .right dl:last-child, .profile-page .right ul {
+    margin-bottom: 0;
 }
 
 .profile-page table td.left {
