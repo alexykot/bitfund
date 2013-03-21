@@ -10,172 +10,177 @@
 {% load widget_tweaks %}
 
 <div class="profile-page">
-	<div class="header">
-	    <div class="media">
-	        <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
-	        <div class="media-body">
-	            <h5 class="media-heading">{{ user.username }} gives</h5>
-	            
-	                <div>
-	                <div>{{ site_currency_sign }}{{ user.public.giving_monthly }}</div>
-	                this month
-	                </div>
-	                <div>
-	                    <div>{{ site_currency_sign }}{{ user.public.gave_totally }}</div>
-	                    overall
-	                </div>
-	            <button class="button gray active">profile</button>
-	            <button class="button gray">pledges</button>
-	            <div class="pull-right">
-	                {% if user.public.maintained_projects_count %}
-	                    <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">projects</a>
-	                {% endif %}
-	                <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >create project</a>
-	                <div id="create-project-popup" style="display:none; border: 1px solid #577000;">
-	                    <form action="" method="post">
-	                        {{ create_project_form.title.errors }}
-	                        {{ create_project_form.title|attr:"required" }}
-	                        <button type="submit">create project</button>
-	                    </form>
-	                    <div id="similar-projects-block" style="display:none;">
-	                        <div class="row">existing similar projects</div>
-	                        <ul id="similar-projects-list"></ul>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-
-    <hr>
-    <div class="row-fluid">
-    	<div class="span3">
-    		<a href="#">
-                <div class="media">
-                    <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                    <div class="media-body">
-                        <h4 class="media-heading">KDE</h4>
-                        <div>{{ site_currency_sign }}153</div>
-                        <div>15%</div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    	<div class="span3">
-    		<a href="#">
-                <div class="media">
-                    <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                    <div class="media-body">
-                        <h4 class="media-heading">KDE</h4>
-                        <div>{{ site_currency_sign }}153</div>
-                        <div>15%</div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    	<div class="span3">
-    		<a href="#">
-                <div class="media">
-                    <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                    <div class="media-body">
-                        <h4 class="media-heading">KDE</h4>
-                        <div>{{ site_currency_sign }}153</div>
-                        <div>15%</div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    	<div class="span3">
-    		<a href="#">
-                <div class="media">
-                    <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                    <div class="media-body">
-                        <h4 class="media-heading">KDE</h4>
-                        <div>{{ site_currency_sign }}153</div>
-                        <div>15%</div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-    <hr>
-
-    <div class="row-fluid">
-        <div class="span4">
-            <h3>Budget</h3>
-            <div class="row-fluid">
-            	<div class="span5 chart-div-large">
-	            	<span class="text-center">&infin;</span>
-	            	<img src="{{ STATIC_URL }}img/chart_div.png" />
-	            </div>
-            	<div class="span5">
-            		<div><strong>$500</strong> / month<br>in 5 active needs</div>
-            		<div><strong>$2000</strong><br>in 5 active goals</div>
-            		<a href="#" class="text-right">edit budget</a>
-            	</div>
+    <section class="profile-info">
+        <div class="row-fluid">
+            <div class="span2">
+                <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
             </div>
-         
-            
+            <div class="span10">
+                <div class="row">
+                    <div class="span3">maintainer gives</div>
+                    <div class="span3">
+                        <span><strong>$12</strong></span><br>
+                        this month
+                    </div>
+                    <div class="span3">
+                        <span><strong>$23</strong></span><br>
+                        overall
+                    </div>
+                </div>
+                <ul class="inline">
+                    <li>
+                        <button class="button gray active">Profile</button>
+                    </li>
+                    <li>
+                        <button class="button gray">Pledges</button>
+                    </li>
+                    <li>
+                        <button class="button gray">My pledges</button>
+                    </li>
+                </ul>              
+           </div>
         </div>
-
-        <div class="span8 connected-accounts">
-            <h3>Connected accounts</h3>
-            <dl class="dl-horizontal">
-                <dt>Onetime pledges:</dt>
-                <dd><strong>$500</strong> in 50 pledges</dd>
-                <dt>Monthly pledges:</dt>
-                <dd><strong>$250</strong> in 20 subscribtions</dd>
-                <dt>Relations paid in:</dt>
-                <dd><strong>$250</strong> from 20 projects</dd>
-                <dt>Relations paid owt:</dt>
-                <dd><strong>$100</strong> to 15 projects</dd>
-                <dt><a href="#">manage relations</a></dt>
-
-                <dt><strong>Current balance:</strong></dt>
-                <dd>$850</dd>
-                <dt><a href="#">attach bank account</a></dt>
-            </dl>
-
-            <h3>Balance history</h3>
-            <ul>
-            	<li>
-            		<h4>Feb 2013</h4>
-            		<dl class="dl-horizontal">
-            			<dt>Starting balance:</dt>
-            			<dd>$2000</dd>
-            			<dt>Onetime pledges:</dt>
-		                <dd><strong>$500</strong> in 50 pledges</dd>
-		                <dt>Monthly pledges:</dt>
-		                <dd><strong>$250</strong> in 20 subscribtions</dd>
-		                <dt>Relations paid in:</dt>
-		                <dd><strong>$250</strong> from 20 projects</dd>
-		                <dt>Relations paid owt:</dt>
-		                <dd><strong>$100</strong> to 15 projects</dd>
-		                <dt>Withdrawn</dt>
-		                <dd>$200</dd>
-		            </dl>
-            	</li>
-            	<li>
-            		<h4>Jan 2013</h4>
-            		<dl class="dl-horizontal">
-            			<dt>Starting balance:</dt>
-            			<dd>$2000</dd>
-            			<dt>Onetime pledges:</dt>
-		                <dd><strong>$500</strong> in 50 pledges</dd>
-		                <dt>Monthly pledges:</dt>
-		                <dd><strong>$250</strong> in 20 subscribtions</dd>
-		                <dt>Relations paid in:</dt>
-		                <dd><strong>$250</strong> from 20 projects</dd>
-		                <dt>Relations paid owt:</dt>
-		                <dd><strong>$100</strong> to 15 projects</dd>
-		                <dt>Withdrawn</dt>
-		                <dd>$200</dd>
-		            </dl>
-            	</li>
-            </ul>
-            
+    </section>
+	
+    <hr>
+    <div class="projects-band">
+        <div class="row-fluid">
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
-            
+    <hr>
+    <div class="header">
+        <div class="row-fluid">
+            <div class="span12 project-attributes">
+                <a href="#">
+                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+                <a href="#">KDE</a>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <tr>
+            <td class="left">
+                <h3>Budget</h3>
+                <div class="row-fluid">
+                	<div class="span5 chart-div-large">
+    	            	<span class="text-center">&infin;</span>
+    	            	<img src="{{ STATIC_URL }}img/chart_div.png" />
+    	            </div>
+                	<div class="span6">
+                		<p><strong>$500</strong> / month<br>in 5 active needs</p>
+                		<p><strong>$2000</strong><br>in 5 active goals</p>
+                		<a href="#" class="pull-right">edit budget</a>
+                	</div>
+                </div>
+            </td>
+
+            <td class="right">
+                <h3>Connected accounts</h3>
+                <dl class="dl-horizontal">
+                    <dt>Onetime pledges:</dt>
+                    <dd><strong>$500</strong> in 50 pledges</dd>
+                    <dt>Monthly pledges:</dt>
+                    <dd><strong>$250</strong> in 20 subscribtions</dd>
+                    <dt>Relations paid in:</dt>
+                    <dd><strong>$250</strong> from 20 projects</dd>
+                    <dt>Relations paid owt:</dt>
+                    <dd><strong>$100</strong> to 15 projects</dd>
+                    <dt><a href="#">manage relations</a></dt>
+                
+                    <dt><strong>Current balance:</strong></dt>
+                    <dd>$850</dd>
+                    <dt><a href="#">attach bank account</a></dt>
+                </dl>
+
+                <h3>Balance history</h3>
+                <ul>
+                	<li>
+                		<h4>Feb 2013</h4>
+                		<dl class="dl-horizontal">
+                			<dt>Starting balance:</dt>
+                			<dd>$2000</dd>
+                			<dt>Onetime pledges:</dt>
+    		                <dd><strong>$500</strong> in 50 pledges</dd>
+    		                <dt>Monthly pledges:</dt>
+    		                <dd><strong>$250</strong> in 20 subscribtions</dd>
+    		                <dt>Relations paid in:</dt>
+    		                <dd><strong>$250</strong> from 20 projects</dd>
+    		                <dt>Relations paid owt:</dt>
+    		                <dd><strong>$100</strong> to 15 projects</dd>
+    		                <dt>Withdrawn</dt>
+    		                <dd>$200</dd>
+    		            </dl>
+                	</li>
+                	<li>
+                		<h4>Jan 2013</h4>
+                		<dl class="dl-horizontal">
+                			<dt>Starting balance:</dt>
+                			<dd>$2000</dd>
+                			<dt>Onetime pledges:</dt>
+    		                <dd><strong>$500</strong> in 50 pledges</dd>
+    		                <dt>Monthly pledges:</dt>
+    		                <dd><strong>$250</strong> in 20 subscribtions</dd>
+    		                <dt>Relations paid in:</dt>
+    		                <dd><strong>$250</strong> from 20 projects</dd>
+    		                <dt>Relations paid owt:</dt>
+    		                <dd><strong>$100</strong> to 15 projects</dd>
+    		                <dt>Withdrawn</dt>
+    		                <dd>$200</dd>
+    		            </dl>
+                	</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+           
 </div>
 {% endblock %}

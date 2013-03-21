@@ -7,5 +7,47 @@
 {% endblock %}
 
 {% block content %}
+{% load widget_tweaks %}
 
+<div class="profile-page">
+    <div class="media">
+        <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
+        <div class="media-body">
+            <h5 class="media-heading">{{ user.username }} gives</h5>
+            
+                <div>
+                <div>{{ site_currency_sign }}{{ user.public.giving_monthly }}</div>
+                this month
+                </div>
+                <div>
+                    <div>{{ site_currency_sign }}{{ user.public.gave_totally }}</div>
+                    overall
+                </div>
+            <button class="button gray active">profile</button>
+            <button class="button gray">pledges</button>
+            <div class="pull-right">
+                {% if user.public.maintained_projects_count %}
+                    <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">projects</a>
+                {% endif %}
+                <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >create project</a>
+                <div id="create-project-popup" style="display:none; border: 1px solid #577000;">
+                    <form action="" method="post">
+                        {{ create_project_form.title.errors }}
+                        {{ create_project_form.title|attr:"required" }}
+                        <button type="submit">create project</button>
+                    </form>
+                    <div id="similar-projects-block" style="display:none;">
+                        <div class="row">existing similar projects</div>
+                        <ul id="similar-projects-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <form class="text-centr">
+    </form>
+            
+</div>
 {% endblock %}

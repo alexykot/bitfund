@@ -54,6 +54,10 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
+hr {
+    border-top: 1px solid #ccc;
+}
+
 a:active, a:visited {
     color: #89b001;
 } 
@@ -769,7 +773,7 @@ ul.chart-div-legend {
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
 }
 
-.amount-buttons button:active, .amount-buttons button.active {
+.amount-buttons button:active, .amount-buttons button.active, .profile-info .button:active {
     border: none;
     background-color: #577000;
     color: #fff;
@@ -895,38 +899,114 @@ ul.chart-div-legend {
     padding: 30px;
 }
 
+.profile-info {
+    margin-bottom: 30px;
+}
+
+.profile-info .span10 .row {
+    margin-left: 0;
+}
+
+.profile-info .span10 .span3 span {
+    font-size: 40px;
+    line-height: 40px;
+}
+
+.profile-info ul.inline {
+    margin-top: 30px;
+}
+
+.profile-info ul.inline #create-project-link {
+    line-height: 35px;
+}
+
+.profile-info .span10 .span3:first-of-type  {
+    font-size: 16px;
+    line-height: 40px;
+}
+
+.profile-page  section .span6 h3 {
+    line-height: 25px;
+    margin-top: 20px;
+}
+
+.profile-page .left > div {
+    border-right: 1px solid #ccc;
+    padding-right: 20px;
+}
+
 .profile-page > .row-fluid > div:first-of-type {
     border-right: 1px solid #ccc;
-}
-
-.profile-page .header .media-body {
-    margin-left: 10px;
-}
-
-.profile-page .header .media-body > div {
-    display: inline-block;
-}
-.profile-page .header .media-body div div {
-    font-size: 50px;
 }
 
 .profile-page dt {
     font-weight: normal;
 }
 
-.pledges-history h3 {
-    display: inline-block;
+.pledges-history, .pledges-history ul {
+    margin-left: 0;
+}
+
+.pledges-history li > .legend h4 {
     background-color: #f2f2f2;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 10px;
 }
 
-.pledges-history ul li {
-    text-align: center;
+.profile-page .right td:nth-child(odd) {
+    border-right: 1px solid #ccc;
+    height: 50px;
+    padding-right: 10px;
+    width: 50px
 }
 
+.profile-page .right td:nth-child(even) {
+    padding-left: 10px;
+}
+
+.profile-page .right td .media-object {
+    height: 32px;
+    width: 32px;
+}
+
+.profile-page .right td i {
+    margin-right: 10px;
+}
 /* Profile-page projects ======*/
+
+.profile-page .projects-band {
+    margin: 0 20px;
+}
+
+.profile-page .header .project-attributes img {
+    margin-left: 0;
+    height: 45px;
+    width: 45px;
+}
 
 .profile-page .span3 a {
     margin-top: 0;
+}
+
+.profile-page > table td h3 {
+    line-height: 15px;
+    margin: 0 0 30px;
+}
+
+.profile-page table td.left {
+    border-right: 1px solid #ccc;
+    padding-right: 20px;
+    vertical-align: top;
+    width: 260px;
+}
+
+.profile-page table td.right {
+    padding-left: 20px;
+}
+
+.profile-page table td.right ul h4 {
+    color: #7E7E7E;
 }
 /* Footer =====================*/
 
