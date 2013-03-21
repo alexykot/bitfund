@@ -14,18 +14,17 @@ from bitfund.project.lists import DONATION_TYPES_CHOICES
 class CreateProjectForm(forms.Form):
     title = forms.CharField(max_length=255, required=True)
 
-    # def clean_key(self):
-    #     key     = self.cleaned_data['key'].lower()
-    #
-    #     regex   = re.compile('^[a-z0-9-._]{1,}$')
-    #     if not regex.search(smart_unicode(key)):
-    #         raise ValidationError(_(u'Allowed chars - latin, numeric, dash, dot, underscore.'), code='invalid')
-    #
-    #     regex   = re.compile('^[a-z]{1}')
-    #     if not regex.search(smart_unicode(key)):
-    #         raise ValidationError(_(u'Must start with a latin.'), code='invalid')
-    #
-    #     return key
+    def clean_title(self):
+        title     = self.cleaned_data['title']
+
+        same_title_projects_count = Project.objects.filter(title__exact=title).count()
+
+        print same_title_projects_count
+
+        if same_title_projects_count > 0 :
+            raise ValidationError(_(u'Project with this title already exists, please claim it instead.'), code='invalid')
+
+        return title
 
 class EditProjectForm(forms.ModelForm):
     def __init__(self, *args, **kw):

@@ -29,31 +29,13 @@ USER_PROJECT_STATUS_CHOICES = Choices(
     ('community_ambassador', u'Community Ambassador'),
 )
 
-class ProfileManager(UserManager):
-    def create_user(self, username, email=None, password=None):
-        cleaned_data = super(UserManager, self).create_user()
-
-        now = timezone.now()
-        if not username:
-            raise ValueError('The given username must be set')
-        email = UserManager.normalize_email(email)
-        user = self.model(username=username, email=email,
-                          is_staff=False, is_active=True, is_superuser=False,
-                          last_login=now, date_joined=now)
-
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-
 class Profile(User):
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='profile')
     api_token = models.CharField(max_length=255, unique=True)
     donation_amount_is_public = models.BooleanField(default=True)
     projects_list_is_public = models.BooleanField(default=False)
     status_in_project = models.CharField(max_length=80, choices=USER_PROJECT_STATUS_CHOICES,
-                                         default=USER_PROJECT_STATUS_CHOICES.sole_developer)
-    objects = ProfileManager()
+                                         null=True, blank=True)
 
     # calculates total donations from this user to certain project
     def getTotalDonationsByProject(self, project):
@@ -63,6 +45,21 @@ class Profile(User):
 
         return Decimal(user_project_donations_sum).quantize(Decimal('0.01'))
 
+
+
+#part of the social auth pipeline, creates new user profile
+#def save_user_profile(sender, user_id, user, is_new, **kwargs):
+def save_user_profile(request, *args, **kwargs):
+    # profile = Profile()
+    # profile.user_id = user.id
+    # profile.save()
+    # print sender
+    # print user_id
+    # print user
+    print args
+    print kwargs
+
+    return None
 
 
 

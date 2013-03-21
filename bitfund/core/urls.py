@@ -84,6 +84,7 @@ urlpatterns += patterns('bitfund.project.views',
     #claims
     (r'^unclaimed/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'unclaimed'),
     (r'^claim/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'claim'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/vote_maintainer/{0,}$', 'vote_maintainer'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/vote_maintainer/(?P<action>support|dethrone)/{0,}$', 'vote_maintainer'),
 
     #crud
