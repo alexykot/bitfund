@@ -7,5 +7,191 @@
 {% endblock %}
 
 {% block content %}
+{% load widget_tweaks %}
 
+<div class="profile-page">
+    <section class="profile-info">
+        <div class="row-fluid">
+            <div class="span2">
+                <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
+            </div>
+            <div class="span10">
+                <div class="row">
+                    <div class="span3">maintainer gives</div>
+                    <div class="span3">
+                        <span><strong>$12</strong></span><br>
+                        this month
+                    </div>
+                    <div class="span3">
+                        <span><strong>$23</strong></span><br>
+                        overall
+                    </div>
+                </div>
+                <ul class="inline">
+                    <li>
+                        <button class="button gray active">Profile</button>
+                    </li>
+                    <li>
+                        <button class="button gray">Pledges</button>
+                    </li>
+                    <li>
+                        <button class="button gray">My pledges</button>
+                    </li>
+                </ul>              
+           </div>
+        </div>
+    </section>
+	
+    <hr>
+    <div class="projects-band">
+        <div class="row-fluid">
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        	<div class="span3">
+        		<a href="#">
+                    <div class="media">
+                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        <div class="media-body">
+                            <h4 class="media-heading">KDE</h4>
+                            <div>{{ site_currency_sign }}153</div>
+                            <div>15%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="project-attributes">
+        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+        <span>KDE</span>
+    </div>
+           
+
+    <table>
+        <tr>
+            <td class="left">
+                <h3>Budget</h3>
+                <div class="row-fluid">
+                	<div class="span5 chart-div-large">
+    	            	<span class="text-center">&infin;</span>
+    	            	<img src="{{ STATIC_URL }}img/chart_div.png" />
+    	            </div>
+                	<div class="span6">
+                		<p><strong>$500</strong> / month<br>in 5 active needs</p>
+                		<p><strong>$2000</strong><br>in 5 active goals</p>
+                		<a href="#" class="pull-right">edit budget</a>
+                	</div>
+                </div>
+            </td>
+
+            <td class="right">
+                <h3>Connected accounts</h3>
+                <dl class="dl-horizontal">
+                    <dt>Onetime pledges:</dt>
+                    <dd><strong>$500</strong> in 50 pledges</dd>
+                    <dt>Monthly pledges:</dt>
+                    <dd><strong>$250</strong> in 20 subscribtions</dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>Relations paid in:</dt>
+                    <dd><strong>$250</strong> from 20 projects</dd>
+                    <dt>Relations paid owt:</dt>
+                    <dd><strong>$100</strong> to 15 projects</dd>
+                    <dt><a href="#">manage relations</a></dt>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt><h4><strong>Current balance:</strong></h4></dt>
+                    <dd><h4><strong>$850</strong></h4></dd>
+                    <dt><a href="#">attach bank account</a></dt>
+                </dl>
+
+                <h3>Balance history</h3>
+                <ul>
+                	<li>
+                		<h4>Feb 2013</h4>
+                		<dl class="dl-horizontal">
+                			<dt>Starting balance:</dt>
+                			<dd><strong>$2000</strong></dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                			<dt>Onetime pledges:</dt>
+    		                <dd><strong>$500</strong> in 50 pledges</dd>
+    		                <dt>Monthly pledges:</dt>
+    		                <dd><strong>$250</strong> in 20 subscribtions</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+    		                <dt>Relations paid in:</dt>
+    		                <dd><strong>$250</strong> from 20 projects</dd>
+    		                <dt>Relations paid owt:</dt>
+    		                <dd><strong>$100</strong> to 15 projects</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+    		                <dt>Withdrawn</dt>
+    		                <dd><strong>$200</strong></dd>
+    		            </dl>
+                	</li>
+                	<li>
+                		<h4>Jan 2013</h4>
+                		<dl class="dl-horizontal">
+                            <dt>Starting balance:</dt>
+                            <dd><strong>$2000</strong></dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Onetime pledges:</dt>
+                            <dd><strong>$500</strong> in 50 pledges</dd>
+                            <dt>Monthly pledges:</dt>
+                            <dd><strong>$250</strong> in 20 subscribtions</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Relations paid in:</dt>
+                            <dd><strong>$250</strong> from 20 projects</dd>
+                            <dt>Relations paid owt:</dt>
+                            <dd><strong>$100</strong> to 15 projects</dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Withdrawn</dt>
+                            <dd><strong>$200</strong></dd>
+                        </dl>
+                	</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+           
+</div>
 {% endblock %}

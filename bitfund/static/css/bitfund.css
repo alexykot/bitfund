@@ -54,6 +54,10 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
+hr {
+    border-top: 1px solid #ccc;
+}
+
 a:active, a:visited {
     color: #89b001;
 } 
@@ -250,7 +254,7 @@ button.go {
     padding: 5px 9px;
 }
 
-.available-projects, .dependent-projects, .project-goals {
+.available-projects, .dependent-projects, .project-goals,  .profile-page {
     background-color:   #FFFFFF;
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
@@ -271,38 +275,38 @@ button.go {
     margin-left: 0;
 }
 
-.available-projects .span3 > a, .available-projects .span6 ul li > a {
+.available-projects .span3 > a, .available-projects .span6 ul li > a, .profile-page .span3 > a {
     border: 1px solid #ccc;
     display: block;
     margin-top: 15px;
 }
 
-.available-projects .span3 a:hover, .available-projects .span6 ul li > a:hover {
+.available-projects .span3 a:hover, .available-projects .span6 ul li > a:hover, .profile-page .span3 a:hover {
     border: 1px solid #89b001;
     text-decoration: none;
 }
 
-.available-projects .span3 .media, .available-projects .span6 ul li > a {
+.available-projects .span3 .media, .available-projects .span6 ul li > a, .profile-page .span3 .media {
     color: #3d3d3d;
     padding: 10px;
     text-align: left;
 }
 
-.available-projects .span3 .media {
+.available-projects .span3 .media, .profile-page .span3 .media {
     height: 55px;
 }
 
-.available-projects .media-body {
+.available-projects .media-body, .profile-page .span3 .media {
     line-height: 18px;
 }
 
-.available-projects .media-heading {
+.available-projects .media-heading, .profile-page .span3 .media-heading {
     font-weight: bold;
     line-height: 18px;
     margin: 0;
 }
 
-.available-projects .media-object {
+.available-projects .media-object, .profile-page .span3 .media-object {
     height: 55px;
     width: 55px;
 }
@@ -769,7 +773,7 @@ ul.chart-div-legend {
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
 }
 
-.amount-buttons button:active, .amount-buttons button.active {
+.amount-buttons button:active, .amount-buttons button.active, .profile-info .button:active {
     border: none;
     background-color: #577000;
     color: #fff;
@@ -889,7 +893,137 @@ ul.chart-div-legend {
     font-weight: normal;
 }
 
+/* Profile-page own-overview ===============*/
 
+.profile-page {
+    padding: 30px;
+}
+
+.profile-info {
+    margin-bottom: 30px;
+}
+
+.profile-info .span10 .row {
+    margin-left: 0;
+}
+
+.profile-info .span10 .span3 span {
+    font-size: 40px;
+    line-height: 40px;
+}
+
+.profile-info ul.inline {
+    margin-top: 30px;
+}
+
+.profile-info ul.inline #create-project-link {
+    line-height: 35px;
+}
+
+.profile-info .span10 .span3:first-of-type  {
+    font-size: 16px;
+    line-height: 40px;
+}
+
+.profile-page  section .span6 h3 {
+    line-height: 25px;
+    margin-top: 20px;
+}
+
+.profile-page .left > div {
+    border-right: 1px solid #ccc;
+    padding-right: 20px;
+}
+
+.profile-page > .row-fluid > div:first-of-type {
+    border-right: 1px solid #ccc;
+}
+
+.profile-page dt {
+    font-weight: normal;
+}
+
+.pledges-history, .pledges-history ul {
+    margin-left: 0;
+}
+
+.pledges-history li > .legend h4 {
+    background-color: #f2f2f2;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 10px;
+}
+
+.profile-page .right td:nth-child(odd) {
+    border-right: 1px solid #ccc;
+    height: 50px;
+    padding-right: 10px;
+    width: 50px
+}
+
+.profile-page .right td:nth-child(even) {
+    padding-left: 10px;
+}
+
+.profile-page .right td .media-object {
+    height: 32px;
+    width: 32px;
+}
+
+.profile-page .right td i {
+    margin-right: 10px;
+}
+/* Profile-page projects ======*/
+
+.profile-page .projects-band {
+    margin: 0 20px;
+}
+
+.profile-page .project-attributes {
+    margin: 30px 0;
+}
+
+.profile-page div.project-attributes img {
+    height: 45px;
+    width: 45px;
+}
+
+.profile-page > div.project-attributes span {
+    font-size: 30px;
+    vertical-align: middle;
+}
+
+.profile-page .span3 a {
+    margin-top: 0;
+}
+
+.profile-page > table td h3 {
+    line-height: 15px;
+    margin: 0 0 30px;
+}
+
+.profile-page .right dl h4 {
+    margin: 0;
+}
+
+.profile-page .right dl:last-child, .profile-page table ul {
+    margin-bottom: 0;
+}
+
+.profile-page table td.left {
+    border-right: 1px solid #ccc;
+    padding-right: 20px;
+    vertical-align: top;
+    width: 260px;
+}
+
+.profile-page table td.right {
+    padding-left: 20px;
+}
+
+.profile-page table td.right ul h4 {
+    color: #7E7E7E;
+}
 /* Footer =====================*/
 
 .footer {

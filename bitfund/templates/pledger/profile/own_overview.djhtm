@@ -32,11 +32,11 @@
 {% block content %}
 {% load widget_tweaks %}
 
-<div class="row available-projects">
-
-    <div class="row">
-        <div class="span2">
-            {% if profile.gravatar_id %}
+<div class="profile-page">
+    <section class="profile-info">
+        <div class="row-fluid">
+            <div class="span2">
+               {% if profile.gravatar_id %}
                 <img src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=160" />
             {% elif profile.twitter_pic_url %}
                 <img src="{{ profile.twitter_pic_url }}" width="160" height="160" />
@@ -44,123 +44,92 @@
                 {% load gravatar %}
                 <img src="{% gravatar_for_user request.user 160 %}" />
             {% endif %}
-        </div>
-        <div class="span9">
-            <div class="row">
-                <h1>{{ user.username }} gives</h1>
+
             </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.giving_monthly }} <br />
-                this month
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.gave_totally }} <br />
-                overall
-            </div>
-        </div>
-        <div class="span9">
-            <div class="span1">
-                <button class="button gray active">profile</button>
-            </div>
-            <div class="span1">
-                <button class="button gray">pledges</button>
-            </div>
-            <div class="span4 pull-right">
-                {% if user.public.maintained_projects_count %}
-                    <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">projects</a>
-                {% endif %}
-                <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >create project</a>
-                <div id="create-project-popup" style="display:none; border: 1px solid #577000;">
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        {{ create_project_form.title.errors }}
-                        {{ create_project_form.title|attr:"required" }}
-                        <button type="submit">create project</button>
-                    </form>
-                    <div id="similar-projects-block" style="display:none;">
-                        <div class="row">existing similar projects</div>
-                        <ul id="similar-projects-list"></ul>
+            <div class="span10">
+                <div class="row">
+                    <div class="span3">{{ user.username }} gives</div>
+                    <div class="span3">
+                        <span>{{ site_currency_sign }}{{ user.public.giving_monthly }}</span><br>
+                        this month
+                    </div>
+                    <div class="span3">
+                        <span>{{ site_currency_sign }}{{ user.public.gave_totally }}</span><br>
+                        overall
                     </div>
                 </div>
-            </div>
+                <ul class="inline">
+                    <li>
+                        <button class="button gray active">Profile</button>
+                    </li>
+                    <li>
+                        <button class="button gray">Pledges</button>
+                    </li>
+                    <li class="pull-right">
+                        <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >Create project</a>
+                        <div id="create-project-popup" style="display:none; border: 1px solid #577000;">
+                            <form action="" method="post">
+                        {% csrf_token %}
+                                {{ create_project_form.title.errors }}
+                                {{ create_project_form.title|attr:"required" }}
+                                <button type="submit">create project</button>
+                            </form>
+                            <div id="similar-projects-block" style="display:none;">
+                                <div class="row">existing similar projects</div>
+                                <ul id="similar-projects-list"></ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="pull-right">{% if user.public.maintained_projects_count %}
+                            <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">Projects</a>
+                        {% endif %}
+                    </li>
+                </ul>              
+           </div>
         </div>
-    </div>
-    <div class="span6">
+    </section>
 
-        <div class="row">
-            <div class="span6">
-                <h2>Pledges overview</h2>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="span2 text-right">
-                You've joined
-            </div>
-            <div class="span3">
-                {{ user.date_joined|naturaltime }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="span2 text-right">
-            You're giving monthly
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.giving_monthly }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="span2 text-right">
-                You gave totally
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.gave_totally }}
-            </div>
-        </div>
-        <div class="row">
+    <table>
+        <tr>
+            <td class="left">
+                <h3>Pledges overview</h3>
+                <dl class="dl-horizontal">
+                    <dt>You've joined</dt>
+                    <dd>{{ user.date_joined|naturaltime }}</dd>
+                    <dt>You're giving monthly</dt>
+                    <dd>{{ site_currency_sign }}{{ user.public.giving_monthly }}</dd>
+                    <dt>You gave totally</dt>
+                    <dd>{{ site_currency_sign }}{{ user.public.gave_totally }}</dd>
+                </dl>
+		<div class="row">
             <div class="span6">
                 Programs key: {{ profile.api_token }} (?)
             </div>
         </div>
-
-
-
-        <div class="span5">
-            <h2>Pledges history:</h2>
-        </div>
-        <div class="span6">
-            <ul>
-                {% for month in user.pledges_history %}
-                    {% if month.monthly_total > 0 %}
-                        <hr />
+                <h3>Pledges history:</h3>
+                <ul class="pledges-history">
+                    {% for month in user.pledges_history %}
+                        {% if month.monthly_total > 0 %}
                         <li>
-                            <div class="row">
-                                <div class="span3">
-                                {{ month.date|date:"M o" }}
-                                </div>
-
-                                <div class="span3 pull-right">
-                                    {{ site_currency_sign }}{{ month.monthly_total }}
-                                </div>
+                            <div class="legend">
+                                <h4>{{ month.date|date:"M o" }}<span class="pull-right">Total <strong>{{ site_currency_sign }}{{ month.monthly_total }}</strong></span></h4>
                             </div>
-
-                            <div class="row">
-                                <div class="span3">
+                            <div class="row-fluid">
+                                <div class="span6 text-center">
                                     <ul>
                                         <li>Monthly pledges</li>
                                         {% for project_pledge in month.monthly_pledged_projects %}
                                             {% if project_pledge.project_key %}
                                                 <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  <a href="{% url bitfund.project.views.budget project_key=project_pledge.project_key %}">{{ project_pledge.project_title }}</a></li>
                                             {% else %}
-                                                <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
+                                            <li>{{ site_currency_sign }} {{ project_pledge.project_total_pledge }}  {{ project_pledge.project_title }}</li>
                                             {% endif %}
                                         {% empty %}
                                             <li>none</li>
                                         {% endfor %}
                                     </ul>
                                 </div>
-
-                                <div class="span3">
+                                <div class="span6 text-center">
                                     <ul>
                                         <li>Onetime pledges</li>
                                         {% for project_pledge in month.onetime_pledged_projects %}
@@ -176,17 +145,60 @@
                                 </div>
                             </div>
                         </li>
-                    {% endif %}
-                {% empty %}
-                    <li>you've not pledged any projects yet</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-    <div class="span5">
-        <div class="row">
-             <h2>Connected accounts</h2>
-        </div>
-    </div>
+                        {% endif %}
+                    {% empty %}
+                        <li>you've not pledged any projects yet</li>
+                    {% endfor %}
+                </ul>
+            </td>
+
+            <td class="right">
+                <h3>Connected accounts</h3>
+                <table>
+                    <tr>
+                        <td><img src="{{ STATIC_URL }}img/github_icon.png" /></td>
+                        <td>
+                            <div class="media">
+                                <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
+                                <div class="media-body">
+                                    <a href="#" class="media-heading">alekseykot (Alex Kot)</a>
+                                    <p><small>on Twitter</small></p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="{{ STATIC_URL }}img/twitter_icon.png" /></dt></td>
+                        <td>
+                            <div class="media">
+                                <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
+                                <div class="media-body">
+                                    <a href="#" class="media-heading">alexeykot</a>
+                                    <p><small>on Github</small></p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="{{ STATIC_URL }}img/credit_card_icon.png" /></td>
+                        <td>
+                            <div class="media">
+                                <div class="media-body">
+                                    <div class="media-heading">
+                                        <span>
+                                            <a href="#">Credit Card</a>:<i class="icon-ok"></i>   
+                                            <a href="#">Bank account</a>:<i class="icon-remove"></i>
+                                        </span>
+                                    </div>
+                                    <p><small>on Balanced Payments</small></p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <td>
+        </tr>
+    </table>
+            
 </div>
 {% endblock %}
