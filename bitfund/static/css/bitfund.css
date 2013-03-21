@@ -1006,7 +1006,7 @@ ul.chart-div-legend {
     margin: 0;
 }
 
-.profile-page .right dl:last-child, .profile-page .right ul {
+.profile-page .right dl:last-child, .profile-page table ul {
     margin-bottom: 0;
 }
 
