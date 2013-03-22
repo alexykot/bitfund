@@ -10,44 +10,86 @@
 {% load widget_tweaks %}
 
 <div class="profile-page">
-    <div class="media">
-        <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
-        <div class="media-body">
-            <h5 class="media-heading">{{ user.username }} gives</h5>
-            
-                <div>
-                <div>{{ site_currency_sign }}{{ user.public.giving_monthly }}</div>
-                this month
-                </div>
-                <div>
-                    <div>{{ site_currency_sign }}{{ user.public.gave_totally }}</div>
-                    overall
-                </div>
-            <button class="button gray active">profile</button>
-            <button class="button gray">pledges</button>
-            <div class="pull-right">
-                {% if user.public.maintained_projects_count %}
-                    <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">projects</a>
-                {% endif %}
-                <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >create project</a>
-                <div id="create-project-popup" style="display:none; border: 1px solid #577000;">
-                    <form action="" method="post">
-                        {{ create_project_form.title.errors }}
-                        {{ create_project_form.title|attr:"required" }}
-                        <button type="submit">create project</button>
-                    </form>
-                    <div id="similar-projects-block" style="display:none;">
-                        <div class="row">existing similar projects</div>
-                        <ul id="similar-projects-list"></ul>
+     <section class="profile-info">
+        <div class="row-fluid">
+            <div class="span2">
+                <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
+            </div>
+            <div class="span10">
+                <div class="row">
+                    <div class="span3">maintainer gives</div>
+                    <div class="span3">
+                        <span><strong>$12</strong></span><br>
+                        this month
+                    </div>
+                    <div class="span3">
+                        <span><strong>$23</strong></span><br>
+                        overall
                     </div>
                 </div>
-            </div>
+                <ul class="inline">
+                    <li>
+                        <button class="button gray active">Profile</button>
+                    </li>
+                    <li>
+                        <button class="button gray">Pledges</button>
+                    </li>
+                </ul> 
+                <div class="row">
+                    <div class="span4 offset3">
+                        <label class="checkbox">
+                            <input type="checkbox"> hide total giving from others
+                        </label>
+                    </div>
+                </div>             
+           </div>
         </div>
-    </div>
+    </section>
 
     <hr>
-    <form class="text-centr">
-    </form>
+    <div>
+        <form>
+            <fieldset>
+                <legend>Current: VISA **********6552</legend>
+                <h4>Required</h4>
+                <div class="inline-form">
+                    <div>
+                        <label>Credit card number</label>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <label>Expiration</label>
+                        <input type="text" placeholder="MM">
+                        <input type="text" placeholder="YYYY">
+                    </div>
+                    <div>
+                        <label>CVV</label>
+                        <input type="text">
+                    </div>
+                </div>
+
+                <h4>Optional</h4>
+                <label>Full name on card</label>
+                <input type="text" class="span4">
+                <label>Address 1</label>
+                <input type="text" class="span4">
+                <label>Address 1</label>
+                <input type="text" class="span4">
+                
+                <div class="inline-form">
+                    <div>
+                        <label>State of province</label>
+                        <input class="span2" type="text">
+                    </div>
+                    <div>
+                        <label>ZIP or postal code</label>
+                        <input class="span2" type="text">
+                    </div>
+                </div>
+                <button type="submit">
+            </fieldset>
+        </form>
+    </div>
             
 </div>
 {% endblock %}

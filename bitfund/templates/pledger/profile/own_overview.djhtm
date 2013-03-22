@@ -49,9 +49,9 @@
             <div class="span10">
                 <div class="row">
                     <div class="span3">{{ user.username }} gives</div>
-                    <div class="span3">
+                    <div class="span3"><div>
                         <span>{{ site_currency_sign }}{{ user.public.giving_monthly }}</span><br>
-                        this month
+                        this month</div>
                     </div>
                     <div class="span3">
                         <span>{{ site_currency_sign }}{{ user.public.gave_totally }}</span><br>

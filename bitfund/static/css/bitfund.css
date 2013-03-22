@@ -70,7 +70,7 @@ a:active, a:hover {
     text-decoration: underline;
 }
 
-a:focus, button:focus, input[type="text"]:focus, textarea:focus {
+a:focus, button:focus, input[type="text"]:focus, input[type="checkbox"]:focus, textarea:focus {
     outline: 0;
 }
 
@@ -78,7 +78,7 @@ ul {
     list-style-type: none;
 }
 
-button, .button, input[type="text"], textarea {
+button, .button, input[type="text"], input[type="checkbox"], textarea {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -873,10 +873,7 @@ ul.chart-div-legend {
 }
 
 .goal-info form {
-    bottom: 0;
-    margin-bottom: 0;
-    margin-left: 20px;
-    position: absolute;
+    margin: 40px 0 0 20px;
 }
 
 .budget-state span {
@@ -901,6 +898,7 @@ ul.chart-div-legend {
 
 .profile-info {
     margin-bottom: 30px;
+    position: relative;
 }
 
 .profile-info .span10 .row {
@@ -913,7 +911,9 @@ ul.chart-div-legend {
 }
 
 .profile-info ul.inline {
-    margin-top: 30px;
+    bottom: 0;
+    margin-bottom: 0;
+    position: absolute;
 }
 
 .profile-info ul.inline #create-project-link {
@@ -1023,6 +1023,13 @@ ul.chart-div-legend {
 
 .profile-page table td.right ul h4 {
     color: #7E7E7E;
+}
+
+/* Attach bank card ===========*/
+
+.profile-page form {
+    margin: 0 auto;
+    max-width: 350px;
 }
 /* Footer =====================*/
 

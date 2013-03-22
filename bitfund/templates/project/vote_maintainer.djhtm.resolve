@@ -1,0 +1,167 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %}Claim {{ project.title }} - {% endblock title %}
+
+{% block pagescripts %}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    </script>
+{% endblock pagescripts %}
+
+{% block content %}
+<<<<<<< local
+    <div class="project-goals">
+        
+        <div class="header">
+            <div class="row-fluid">
+                <div class="span8 project-attributes">
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        {% comment %}
+                        {% if logo %}
+                            <img src="{{ logo.url }} " />
+                        {% elif project.logo %}
+                            <img src="{{ project.logo.url }} " />
+                        {% endif %}
+                        {% endcomment %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
+                </div>
+                <div class="span2">
+                    <span class="unclaimed">unclaimed</span>
+                </div>
+                <div class="span2 text-right">
+                    <div class="project-meta">
+                        <a href="{% url bitfund.project.views.claim project_key=project.key %}" class="button button-small gray">claim project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid budget-n-goals">
+            <div class="span4 budget-column">
+                <h5>&nbsp;</h5>
+                <div>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div class="chart-div-large">
+                                <span class="text-center">&infin;</span>
+                                <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}"/>
+                            </div>
+                        </div>
+                        <div class="span4 text-center">
+                            <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
+                            <div>pledged</div>
+                        </div>
+                        <div class="span3 offset1 text-center">
+                            <div class="backers">{{ budget.donations_total_pledgers }}</div>
+                            <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <ul class="chart-div-legend">
+                                <li><span class="green-marker"></span>Backers support</li>
+                                <li><span class="olive-marker"></span>Linked projects</li>
+                                <li><span class="yellow-marker"></span>Other sources</li>
+                            </ul>
+                        </div>
+                        <div class="span6">
+                        {% if budget.redonations_total_sum %}
+                            <div class="sum-from-projects">{{ site_currency_sign }}{{ budget.redonations_total_sum }} received from </div>
+                            <a href="#">{{ budget.depending_on_me_projects_count }} dependant project</a>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="span8 goals-column">
+                <h5> Unclaimed project, no budget</h5>
+                <div>
+                    <div class="goal">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <p>{{ project.title }} is unclaimed. This means that somebody has shown his gratitude and
+                                    offered support, but the project owner, community, foundation or whoever else is running it
+                                    has not shown up yet to collect.</p>
+                                <p>Obvioulsy also nobody has specified monthly budget yet, still you can support it</p>
+                            </div>
+                        </div>
+                        <form action="{% url bitfund.project.views.unclaimed project_key=project.key%}" id="form-pledge" method="post">
+                            <div class="need-pledge-controls">
+                                <div class="row-fluid">
+                                    <div class="span3">
+                                        <ul>
+                                            <li>{% if pledge_subscription %}pledging monthly{% else %}pledge monthly{% endif %}</li>
+                                        </ul>
+                                    </div>
+                                    {% csrf_token %}
+                                    {{ pledge_form.non_field_errors }}
+                                    {{ pledge_form.pledge_type }}
+                                    <div class="span6">
+                                        <ul class="amount-buttons" id="options-button-sets">
+                                            <li>{{ site_currency_sign }}</li>
+                                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-0.25"
+                                                        data-amount="0.25">0,25</button></li>
+                                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-0.5"
+                                                        data-amount="0.5">0,5</button></li>
+                                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-1"
+                                                        data-amount="1">1</button></li>
+                                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-2"
+                                                        data-amount="2">2</button></li>
+                                            <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-5"
+                                                        data-amount="5">5</button></li>
+                                           <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more" id="link-more">more</a></li>
+                                        </ul>
+                                
+                                        <ul id="pledge-amount-field" style="display: none" class="less-input">
+                                            <li>{{ site_currency_sign }}</li>
+                                            <li>
+                                                {{ pledge_form.pledge_amount.errors }}
+                                                {{ pledge_form.pledge_amount }}
+                                            </li>
+                                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}" id="link-less">less</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="span3 text-right">
+                                        {% if pledge_subscription %}
+                                            <button type="submit" value="Update pledge" class="button orange">Update pledge</button>
+                                        {% else %}
+                                            <button type="submit" value="Pledge" class="button orange">Pledge</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if pledge_subscription %}
+                                    <div class="text-center">
+                                        <button class="button button-small gray" type="submit" value="withdraw pledge" id="button-drop-pledge">withdraw  pledge</button>
+                                    </div>
+                                {% endif %}
+                                {% if not request.user.is_authenticated %}
+                                    <div class="text-center" id="login-links">
+                                        <span class="orange-bg">to pledge &ndash; {% include "core/login/login-with-links.djhtm" %}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </form>
+
+                    <p>No funds will be actually transferred until the project will be claimed.</p>
+                    <p>Is this your project? <a href="{% url bitfund.project.views.claim project_key=project.key %}"    >Claim it!</a>
+                    </p>
+
+                </div><!-- goal -->
+            </div>
+        </div><!-- goals-column -->
+    </div>
+</div>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+        });
+    </script>
+
+
+=======
+>>>>>>> other
+{% endblock content %}
+
+
