@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now
-from bitfund.core.settings.project import SITE_CURRENCY_SIGN
+from bitfund.core.settings.project import SITE_CURRENCY_SIGN, GOAL_DEFAULT_TITLE
 from bitfund.project.decorators import redirect_not_active, disallow_not_public_unless_maintainer, user_is_project_maintainer
 
 from bitfund.project.models import *
@@ -88,10 +88,33 @@ def goal_toggle(request, project_key, goal_key):
     goal = get_object_or_404(ProjectGoal, key=goal_key)
 
     if request.method == 'POST' :
-        goal.is_public = not goal.is_public
-        goal.save()
+        if goal.is_public :
+            goal.is_public = not goal.is_public
+            goal.save()
+        # else :
+        #     if not goal.date_starting or not goal.date_ending or
 
     return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)
+
+@login_required
+@user_is_project_maintainer
+def goal_create(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    goal = ProjectGoal()
+    goal.project_id = project.id
+    goal.title = GOAL_DEFAULT_TITLE
+
+    if request.method == 'POST' :
+        form = CreateProjectGoalForm(request.POST)
+        if form.is_valid() :
+            goal.title = form.cleaned_data['title']
+
+    goal.key = ProjectGoal.slugifyKey(goal.project_id, goal.title)
+    goal.is_public = False
+    goal.save()
+
+    return redirect('bitfund.project.views.goal_edit', project_key=project.key, goal_key=goal.key)
 
 
 @login_required

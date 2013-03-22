@@ -81,33 +81,41 @@ urlpatterns += patterns('bitfund.project.views',
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
 
+    #pledge
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_empty_project/{0,}$', 'crud_pledge_empty_project'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_empty_project/(?P<action>pledge|drop_subscription|switch_monthly)/{0,}$', 'crud_pledge_empty_project'),
+
     #claims
     (r'^unclaimed/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'unclaimed'),
     (r'^claim/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'claim'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/vote_maintainer/{0,}$', 'vote_maintainer'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/vote_maintainer/(?P<action>support|dethrone)/{0,}$', 'vote_maintainer'),
 
-    #crud
+    #CrUD
+    ##projects
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit/{0,}$', 'budget_edit'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/toggle/{0,}$', 'project_toggle'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/toggle/{0,}$', 'goal_toggle'),
 
+    ##needs
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/add_need/{0,}$', 'add_need'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/{0,}$', 'crud_pledge_need'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_need/(?P<need_id>[0-9]{1,})/(?P<action>pledge|drop_subscription|switch_monthly)/{0,}$', 'crud_pledge_need'),
 
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_empty_project/{0,}$', 'crud_pledge_empty_project'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_empty_project/(?P<action>pledge|drop_subscription|switch_monthly)/{0,}$', 'crud_pledge_empty_project'),
-
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/add_need/{0,}$', 'add_need'),
-
+    ##goals
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal_create/{0,}$', 'goal_create'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/edit/{0,}$', 'goal_edit'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/toggle/{0,}$', 'goal_toggle'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit_goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_edit'),
     #(r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/delete_goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'delete_goal'),
 
+    ##project links
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/{0,}$', 'crud_linked_project'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/(?P<action>add)/{0,}$', 'crud_linked_project'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_linked_project/(?P<action>edit|drop|toggle_public)/(?P<linked_project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'crud_linked_project'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_bitfund_link/(?P<action>donate|refuse)/{0,}$', 'crud_bitfund_link'),
+
+
 
     #perfect URLs
     (r'^(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'budget'),
