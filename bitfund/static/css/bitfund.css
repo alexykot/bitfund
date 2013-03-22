@@ -773,7 +773,7 @@ ul.chart-div-legend {
     box-shadow:         0px 0px 5px rgba(50, 50, 50, 0.5);
 }
 
-.amount-buttons button:active, .amount-buttons button.active, .profile-info .button:active {
+.amount-buttons button:active, .amount-buttons button.active, .profile-info .button:active, .profile-info .button.active {
     border: none;
     background-color: #577000;
     color: #fff;
@@ -791,6 +791,7 @@ ul.chart-div-legend {
 
 .maintain {
     font-size: 12px;
+    margin: 15px 0;
     padding-right: 30px;
 }
 
@@ -819,7 +820,11 @@ ul.chart-div-legend {
     height: 196px;
 }
 
-.current-goals .centered div:first-child {
+.current-goals p {
+    min-height: 60px;
+}
+
+.current-goals .text-center div:first-child {
     font-size: 20px;
 }
 
@@ -873,7 +878,7 @@ ul.chart-div-legend {
 }
 
 .goal-info form {
-    margin: 40px 0 0 20px;
+    margin: 60px 0 0 20px;
 }
 
 .budget-state span {
@@ -901,8 +906,16 @@ ul.chart-div-legend {
     position: relative;
 }
 
+.profile-page .span2 {
+    height: 128px;
+}
+
 .profile-info .span10 .row {
     margin-left: 0;
+}
+
+.profile-info .span10 .text-center {
+    display: inline-block;
 }
 
 .profile-info .span10 .span3 span {
@@ -973,6 +986,7 @@ ul.chart-div-legend {
 .profile-page .right td i {
     margin-right: 10px;
 }
+
 /* Profile-page projects ======*/
 
 .profile-page .projects-band {
@@ -1068,10 +1082,13 @@ ul.chart-div-legend {
     margin-bottom: 20px;
 }
 
-.attach-card p span {
+.attach-card span {
     font-size: 8px;
 }
 
+.attach-card span strong {
+    font-size: 10px;
+}
 /* Footer =====================*/
 
 .footer {

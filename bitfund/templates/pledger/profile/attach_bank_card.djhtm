@@ -19,12 +19,16 @@
                 <div class="row">
                     <div class="span3">maintainer gives</div>
                     <div class="span3">
-                        <span><strong>$12</strong></span><br>
-                        this month
+                        <div class="text-center">
+                            <span><strong>$12</strong></span><br>
+                            this month
+                        </div>
                     </div>
                     <div class="span3">
-                        <span><strong>$23</strong></span><br>
-                        overall
+                        <div class="text-center">
+                            <span><strong>$23</strong></span><br>
+                            overall
+                        </div>
                     </div>
                 </div>
                 <ul class="inline">
@@ -97,8 +101,10 @@
         <div class="text-center">
             <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
             Here are their <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</small></p>
+
             <p><i class="icon-home"> </i> <i class="icon-camera"> </i> <i class="icon-road"> </i> <i class="icon-print"> </i></p>
-            <p><span>PAYMENTS BY </span><i class="icon-glass"> </i><small><strong> BALANCED</strong></small></span>
+
+            <span>PAYMENTS BY <i class="icon-glass"> </i><strong> BALANCED</strong></span>
         </div>
 
     </div>

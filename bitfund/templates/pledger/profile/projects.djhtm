@@ -19,12 +19,16 @@
                 <div class="row">
                     <div class="span3">maintainer gives</div>
                     <div class="span3">
-                        <span><strong>$12</strong></span><br>
-                        this month
+                        <div class="text-center">
+                            <span><strong>$12</strong></span><br>
+                            this month
+                        </div>
                     </div>
                     <div class="span3">
-                        <span><strong>$23</strong></span><br>
-                        overall
+                        <div class="text-center">
+                            <span><strong>$23</strong></span><br>
+                            overall
+                        </div>
                     </div>
                 </div>
                 <ul class="inline">
