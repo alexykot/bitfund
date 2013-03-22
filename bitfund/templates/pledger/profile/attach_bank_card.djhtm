@@ -47,48 +47,60 @@
     </section>
 
     <hr>
-    <div>
+    <div class="attach-card">
         <form>
             <fieldset>
-                <legend>Current: VISA **********6552</legend>
+                <legend><h4>Current: VISA **********6552</h4></legend>
                 <h4>Required</h4>
-                <div class="inline-form">
-                    <div>
+                <ul class="inline">
+                    <li>
                         <label>Credit card number</label>
-                        <input type="text">
-                    </div>
-                    <div>
+                        <input type="text" class="card-number">
+                    </li>
+                    <li>
                         <label>Expiration</label>
-                        <input type="text" placeholder="MM">
-                        <input type="text" placeholder="YYYY">
-                    </div>
-                    <div>
+                        <input type="text" placeholder="MM" class="month">
+                        <input type="text" placeholder="YYYY" class="year">
+                    </li>
+                    <li>
                         <label>CVV</label>
-                        <input type="text">
-                    </div>
-                </div>
+                        <input type="text" class="span1">
+                    </li>
+                </ul>
 
                 <h4>Optional</h4>
                 <label>Full name on card</label>
-                <input type="text" class="span4">
+                <input type="text" class="large">
                 <label>Address 1</label>
-                <input type="text" class="span4">
+                <input type="text" class="large">
                 <label>Address 1</label>
-                <input type="text" class="span4">
+                <input type="text" class="large">
                 
-                <div class="inline-form">
-                    <div>
+                <ul class="inline">
+                    <li>
                         <label>State of province</label>
-                        <input class="span2" type="text">
-                    </div>
-                    <div>
+                        <input type="text" class="medium">
+                    </li>
+                    <li>
                         <label>ZIP or postal code</label>
-                        <input class="span2" type="text">
-                    </div>
+                        <input type="text" class="medium">
+                    </li>
+                </ul>
+                <div class="text-center">
+                    <button type="submit" class="button gray">Save</button>
                 </div>
-                <button type="submit">
+                <div class="text-center">
+                    <button type="submit" class="button gray">Disconnect my credit card</button>
+                </div>
             </fieldset>
         </form>
+        <div class="text-center">
+            <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
+            Here are their <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</small></p>
+            <p><i class="icon-home"> </i> <i class="icon-camera"> </i> <i class="icon-road"> </i> <i class="icon-print"> </i></p>
+            <p><span>PAYMENTS BY </span><i class="icon-glass"> </i><small><strong> BALANCED</strong></small></span>
+        </div>
+
     </div>
             
 </div>

@@ -1027,10 +1027,51 @@ ul.chart-div-legend {
 
 /* Attach bank card ===========*/
 
-.profile-page form {
-    margin: 0 auto;
-    max-width: 350px;
+.attach-card form {
+    margin: 0 auto 40px;
+    width: 320px;
 }
+
+.attach-card ul {
+    margin-bottom: 30px;
+}
+
+.attach-card ul li {
+    padding: 0;
+}
+
+.attach-card input.large {
+    width: 306px;
+}
+
+.attach-card input.medium {
+    width: 144px;
+}
+
+.attach-card input.card-number {
+    margin-right: 5px;
+    width: 140px;
+}
+
+.attach-card ul input.month {
+    padding: 4px 5px;
+    width: 24px;
+}
+
+.attach-card ul input.year {
+    margin-right: 5px;
+    padding: 4px 5px;
+    width: 36px;
+}
+
+.attach-card button {
+    margin-bottom: 20px;
+}
+
+.attach-card p span {
+    font-size: 8px;
+}
+
 /* Footer =====================*/
 
 .footer {
