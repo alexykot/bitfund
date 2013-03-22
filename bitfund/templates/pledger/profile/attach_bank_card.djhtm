@@ -102,9 +102,14 @@
             <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
             Here are their <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</small></p>
 
-            <p><i class="icon-home"> </i> <i class="icon-camera"> </i> <i class="icon-road"> </i> <i class="icon-print"> </i></p>
+            <div>
+                <img src="{{ STATIC_URL }}img/american_express.png" />
+                <img src="{{ STATIC_URL }}img/mastercard.png" />
+                <img src="{{ STATIC_URL }}img/visa.png" />
+                <img src="{{ STATIC_URL }}img/discover.png" />
+            </div>
 
-            <span>PAYMENTS BY <i class="icon-glass"> </i><strong> BALANCED</strong></span>
+            <span>PAYMENTS BY <img src="{{ STATIC_URL }}img/credit_card_icon.png" /><strong>BALANCED</strong></span>
         </div>
 
     </div>

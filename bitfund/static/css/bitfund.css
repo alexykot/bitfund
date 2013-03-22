@@ -55,7 +55,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 hr {
-    border-top: 1px solid #ccc;
+    border-top-color: #ccc;
+}
+
+legend {
+    border-color: #ccc;
 }
 
 a:active, a:visited {
@@ -1040,11 +1044,11 @@ table.own-overview .right td i {
 /* Attach bank card ===========*/
 
 .attach-card form {
-    margin: 0 auto 40px;
+    margin: 30px auto 40px;
     width: 320px;
 }
 
-.attach-card ul {
+.attach-card legend, .attach-card ul {
     margin-bottom: 30px;
 }
 
@@ -1076,12 +1080,22 @@ table.own-overview .right td i {
     width: 36px;
 }
 
-.attach-card button {
+.attach-card button, .attach-card .text-center p {
     margin-bottom: 20px;
+}
+
+
+.attach-card img {
+    height: 20px;
 }
 
 .attach-card span {
     font-size: 8px;
+}
+
+.attach-card span img {
+    height: 10px;
+    vertical-align: text-top;
 }
 
 .attach-card span strong {
