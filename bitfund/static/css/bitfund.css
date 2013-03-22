@@ -927,6 +927,7 @@ ul.chart-div-legend {
     bottom: 0;
     margin-bottom: 0;
     position: absolute;
+    width: 735px;
 }
 
 .profile-info ul.inline #create-project-link {
@@ -938,18 +939,23 @@ ul.chart-div-legend {
     line-height: 40px;
 }
 
-.profile-page  section .span6 h3 {
-    line-height: 25px;
-    margin-top: 20px;
-}
-
-.profile-page .left > div {
+.profile-page table td.left {
     border-right: 1px solid #ccc;
     padding-right: 20px;
+    vertical-align: top;
 }
 
-.profile-page > .row-fluid > div:first-of-type {
-    border-right: 1px solid #ccc;
+.profile-page > table td h3 {
+    line-height: 15px;
+    margin: 0 0 30px;
+}
+
+.profile-page table td.right {
+    padding-left: 20px;
+}
+
+.profile-page table.own-overview td.left, table.own-overview td.right {
+    width: 420px;
 }
 
 .profile-page dt {
@@ -967,23 +973,27 @@ ul.chart-div-legend {
     padding: 0 10px;
 }
 
-.profile-page .right td:nth-child(odd) {
+table.own-overview .right td:nth-child(odd) {
     border-right: 1px solid #ccc;
     height: 50px;
     padding-right: 10px;
     width: 50px
 }
 
-.profile-page .right td:nth-child(even) {
+table.own-overview .right td:nth-child(even) {
     padding-left: 10px;
 }
 
-.profile-page .right td .media-object {
+table.own-overview .right td .media-object {
     height: 32px;
     width: 32px;
 }
 
-.profile-page .right td i {
+table.own-overview .right td .media-heading {
+    line-height: 14px;
+}
+
+table.own-overview .right td i {
     margin-right: 10px;
 }
 
@@ -1011,11 +1021,6 @@ ul.chart-div-legend {
     margin-top: 0;
 }
 
-.profile-page > table td h3 {
-    line-height: 15px;
-    margin: 0 0 30px;
-}
-
 .profile-page .right dl h4 {
     margin: 0;
 }
@@ -1024,18 +1029,11 @@ ul.chart-div-legend {
     margin-bottom: 0;
 }
 
-.profile-page table td.left {
-    border-right: 1px solid #ccc;
-    padding-right: 20px;
-    vertical-align: top;
-    width: 260px;
+.profile-page table.projects td.left {
+    min-width: 260px;
 }
 
-.profile-page table td.right {
-    padding-left: 20px;
-}
-
-.profile-page table td.right ul h4 {
+.profile-page table.projects td.right ul h4 {
     color: #7E7E7E;
 }
 

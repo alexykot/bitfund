@@ -106,7 +106,7 @@
     </div>
            
 
-    <table>
+    <table class="projects">
         <tr>
             <td class="left">
                 <h3>Budget</h3>

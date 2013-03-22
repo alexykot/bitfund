@@ -44,7 +44,6 @@
                 {% comment %} {% load gravatar %}
                 <img src="{% gravatar_for_user request.user 160 %}" />{% endcomment %}
             {% endif %}
-
             </div>
             <div class="span10">
                 <div class="row">
@@ -52,7 +51,7 @@
                     <div class="span3">
                         <div class="text-center">
                             <span>{{ site_currency_sign }}{{ user.public.giving_monthly }}</span><br>
-                            this month</div>
+                            this month
                         </div>
                     </div>
                     <div class="span3">
@@ -82,18 +81,17 @@
                                 <div class="row">existing similar projects</div>
                                 <ul id="similar-projects-list"></ul>
                             </div>
-                        </div>
                     </li>
                     <li class="pull-right">{% if user.public.maintained_projects_count %}
                             <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">Projects</a>
                         {% endif %}
-                    </li>
-                </ul>              
+                    </li> 
+                </ul>          
            </div>
         </div>
     </section>
 
-    <table>
+    <table class="own-overview">
         <tr>
             <td class="left">
                 <h3>Pledges overview</h3>
@@ -105,11 +103,11 @@
                     <dt>You gave totally</dt>
                     <dd>{{ site_currency_sign }}{{ user.public.gave_totally }}</dd>
                 </dl>
-		<div class="row">
-            <div class="span6">
-                Programs key: {{ profile.api_token }} (?)
-            </div>
-        </div>
+
+        		
+                <p>Programs key: {{ profile.api_token }} (?)</p>
+                    
+
                 <h3>Pledges history:</h3>
                 <ul class="pledges-history">
                     {% for month in user.pledges_history %}
@@ -165,8 +163,8 @@
                             <div class="media">
                                 <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
                                 <div class="media-body">
-                                    <a href="#" class="media-heading">alekseykot (Alex Kot)</a>
-                                    <p><small>on Twitter</small></p>
+                                    <p class="media-heading"><a href="#" >alekseykot (Alex Kot)</a></p>
+                                    <small>on Twitter</small>
                                 </div>
                             </div>
                         </td>
@@ -177,8 +175,8 @@
                             <div class="media">
                                 <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
                                 <div class="media-body">
-                                    <a href="#" class="media-heading">alexeykot</a>
-                                    <p><small>on Github</small></p>
+                                    <p class="media-heading"><a href="#" >alexeykot</a></p>
+                                    <small>on Github</small>
                                 </div>
                             </div>
                         </td>
@@ -188,13 +186,11 @@
                         <td>
                             <div class="media">
                                 <div class="media-body">
-                                    <div class="media-heading">
-                                        <span>
-                                            <a href="#">Credit Card</a>:<i class="icon-ok"></i>   
-                                            <a href="#">Bank account</a>:<i class="icon-remove"></i>
-                                        </span>
-                                    </div>
-                                    <p><small>on Balanced Payments</small></p>
+                                    <p class="media-heading">
+                                        <a href="#">Credit Card</a>:<i class="icon-ok"></i>   
+                                        <a href="#">Bank account</a>:<i class="icon-remove"></i>
+                                    </p>
+                                    <small>on Balanced Payments</small>
                                 </div>
                             </div>
                         </td>
