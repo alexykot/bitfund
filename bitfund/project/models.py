@@ -318,6 +318,21 @@ class ProjectGoal(models.Model):
     class Meta:
         unique_together = (("project", "key"),)
 
+    #creates per project unique goal key from the provided goal title
+    @classmethod
+    def slugifyKey(cls, project_id, title):
+        from django.template.defaultfilters import slugify
+        key = slugify(title)
+
+        same_key_projects = ProjectGoal.objects.filter(project_id=project_id).filter(key__exact=key)
+        index = 0
+        while same_key_projects.count() > 0 :
+            key = key+str(index)
+            same_key_projects = ProjectGoal.objects.filter(project_id=project_id).filter(key__exact=key)
+            index = index+1
+
+        return key
+
     # calculates total donations for a goal for given transaction_type4
     def getTotalByType(self, transaction_type):
         from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES

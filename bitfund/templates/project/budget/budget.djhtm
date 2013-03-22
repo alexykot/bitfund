@@ -1,4 +1,5 @@
 {% extends "core/base.djhtm" %}
+{% load widget_tweaks %}
 
 {% block title %}Budget - {{ project.title }} - {% endblock title %}
 
@@ -30,6 +31,14 @@
 
             $('#id_need-'+needId+'-pledge_amount').val(amount);
         }
+
+        $(document).ready(function () {
+            $('#create-goal-link').click(function(event){
+                event.preventDefault();
+                $('#create-goal-popup').toggle();
+            });
+        });
+
     </script>
 {% endblock pagescripts %}
 
@@ -188,7 +197,15 @@
     {% if project_goals_count %}
         <div class="current-goals">
             {% if project_edit_access %}
-                <a href="#" class="add-goal">add goal</a>
+                <a id="create-goal-link" href="{% url bitfund.project.views.goal_create project_key=project.key %}" class="add-goal">add goal</a>
+                <div id="create-goal-popup" style="display:none; border: 1px solid #577000;">
+                    <form action="{% url bitfund.project.views.goal_create project_key=project.key %}" method="post">
+                        {% csrf_token %}
+                        {{ create_goal_form.title.errors }}
+                        {{ create_goal_form.title|attr:"required" }}
+                        <button type="submit">create goal</button>
+                    </form>
+                </div>
             {% endif %}
             <h3>Current goals</h3>
             <p>Apart from the project budget the community be grateful gor help with this goals.</p>

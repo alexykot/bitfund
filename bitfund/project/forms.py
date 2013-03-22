@@ -111,7 +111,10 @@ class ProjectNeedForm(forms.ModelForm):
         return cleaned_data
 
 
-class CreateProjectGoalForm(forms.ModelForm):
+class CreateProjectGoalForm(forms.Form):
+    title = forms.CharField(max_length=255)
+
+class EditProjectGoalForm(forms.ModelForm):
     amount = forms.DecimalField(max_value=9999999999, min_value=0.01, decimal_places=2, max_digits=12, required=True)
 
     def __init__(self, *args, **kw):
