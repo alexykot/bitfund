@@ -91,8 +91,10 @@ def goal_toggle(request, project_key, goal_key):
         if goal.is_public :
             goal.is_public = not goal.is_public
             goal.save()
-        # else :
-        #     if not goal.date_starting or not goal.date_ending or
+        else :
+            if goal.isValidForPublic() :
+                goal.is_public = not goal.is_public
+                goal.save()
 
     return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)
 

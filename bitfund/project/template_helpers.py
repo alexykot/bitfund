@@ -77,9 +77,12 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
         pledge_goal_form = PledgeProjectGoalForm()
 
     pledges_amount = goal.getTotalPledges() + goal.getTotalRedonations()
-    total_percent = int(math.ceil((pledges_amount*100) / goal.amount))
+    if goal.amount > 0 :
+        total_percent = int(math.ceil((pledges_amount*100) / goal.amount))
+    else :
+        total_percent = -1
 
-    # other sources are not used at the moment
+        # other sources are not used at the moment
     # other_sources_amount = goal.getTotalOtherSources()
     # total_percent = int(math.ceil(((donations_amount+other_sources_amount)*100) / goal.amount))
 
@@ -107,15 +110,23 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
         last_transaction = False
 
 
-    datetime_to_end = (goal.date_ending - now())
-    if goal.date_ending < now() :
-        is_expired = True
-        days_to_end = 0
-        hours_to_end = 0
+    if goal.date_ending is not None :
+        datetime_to_end = (goal.date_ending - now())
+        is_time_uncertain = False
+        if goal.date_ending < now() :
+            is_expired = True
+            days_to_end = 0
+            hours_to_end = 0
+        else :
+            is_expired = False
+            days_to_end = int(datetime_to_end.days)
+            hours_to_end = int(datetime_to_end.days * 24 + math.ceil(datetime_to_end.seconds / 3600))
     else :
         is_expired = False
-        days_to_end = int(datetime_to_end.days)
-        hours_to_end = int(datetime_to_end.days * 24 + math.ceil(datetime_to_end.seconds / 3600))
+        is_time_uncertain = True
+        days_to_end = 0
+        hours_to_end = 0
+
 
     result = {'id': goal.id,
               'key': goal.key,
@@ -129,6 +140,7 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
               'amount': goal.amount,
               'is_public': goal.is_public,
               'is_expired': is_expired,
+              'is_time_uncertain': is_time_uncertain,
               'date_ending': goal.date_ending,
               'days_to_end': days_to_end,
               'hours_to_end': hours_to_end,
