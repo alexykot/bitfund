@@ -151,31 +151,35 @@
                             <li><span class="olive-marker"></span>Linked projects</li>
                             <li><span class="yellow-marker"></span>Other sources</li>
                         </ul> 
-                       
                     </div>
-                    <div class="span4">
-                        <div class="budget-state"><span>{{ site_currency_sign }}
-                        {{goal.pledges_amount}}</span>
-                        pledged</div>
-
-                        {% if goal.days_to_end > 1 %}
-                        <div class="budget-state"><span>{{goal.days_to_end}}</span>
-                        days to go</div>
-                        {% elif goal.hours_to_end > 0 %}
-                        <div class="budget-state"><span>{{goal.hours_to_end}}</span>
-                        hours to go</div>
-                        {% else %}
-                        <div class="budget-state"><span>ENDED</span></div>
-                        {% endif %}
-
-                        <div class="budget-state"><span>{{goal.pledging_users_count}}</span>
-                        backers</div>
-                    </div>
-                    <div class="span3">
-                        <div>{{ site_currency_sign }}{{goal.amount}}<br>
-                        asked</div>
-                        <div>ends:<br>
-                        {{goal.date_ending|date:"DATE_FORMAT"}}</div>
+                    <div class="span7">
+                        <div>
+                            <div class="budget-state"><span>{{ site_currency_sign }}
+                                {{goal.pledges_amount}}</span>
+                                pledged
+                            </div>
+                            <div><p><small>{{ site_currency_sign }}{{goal.amount}}<br>
+                                asked</small></p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="budget-state"><span>{{goal.pledging_users_count}}</span>
+                                backers</div>
+                            <div><small>ends:<br>
+                                {{goal.date_ending|date:"DATE_FORMAT"}}</small>
+                            </div>
+                        </div>
+                        <div>
+                            {% if goal.days_to_end > 1 %}
+                            <div class="budget-state"><span>{{goal.days_to_end}}</span>
+                            days to go</div>
+                            {% elif goal.hours_to_end > 0 %}
+                            <div class="budget-state"><span>{{goal.hours_to_end}}</span>
+                            hours to go</div>
+                            {% else %}
+                            <div class="budget-state"><span>ENDED</span></div>
+                            {% endif %} 
+                        </div>                  
                     </div>
                 </div>
                   
@@ -209,12 +213,12 @@
                         <div>
                             {% if goal.last_transaction %}
                                 <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                        type="submit" class="orange gray">Update pledge</button>
+                                        type="submit" class="orange button">Update pledge</button>
                                 <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='drop' %}"
-                                        type="submit" class="orange gray" >Cancel pledge</button>
+                                        type="submit" class="orange button" >Cancel pledge</button>
                             {% else %}
                                 <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                        type="submit" class="orange gray">Pledge</button>
+                                        type="submit" class="orange button">Pledge</button>
                             {% endif %}
                         </div>
                         {% if not request.user.is_authenticated %}

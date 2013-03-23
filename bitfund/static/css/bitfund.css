@@ -523,6 +523,10 @@ noindex:-o-prefocus, .project-meta {
     padding-bottom:0;
 }
 
+.budget-n-goals {
+    margin-bottom: 15px;
+}
+
 .project-goals input {
     height: auto;
     margin-bottom: 0;
@@ -733,6 +737,9 @@ ul.chart-div-legend {
     line-height: 35px;
 }
 
+.need-pledge-controls .text-center {
+    margin-bottom: 10px;
+}
 
 .dotted-border a:visited, .support-form h4 a:visited {
     color: #577000;
@@ -795,7 +802,7 @@ ul.chart-div-legend {
 
 .maintain {
     font-size: 12px;
-    margin: 15px 0;
+    margin-bottom: 15px;
     padding-right: 30px;
 }
 
@@ -850,7 +857,7 @@ ul.chart-div-legend {
     right: 30px;
 }
 
-.goal-info > .row-fluid .span7 {
+.goal-info > .row-fluid > .span7 {
     width: 530px;
 }
 
@@ -868,21 +875,24 @@ ul.chart-div-legend {
     margin-left:20px;
 }
 
-.goal-info .span5 .span4 {
-    font-size: 16px;
-}
-
-.goal-info .span5 .span3 {
-    margin-left: 0;
-    width: 85px;
-}
-
-.goal-info .span3 div, .goal-info .span4 div, .goal-info .dotted-border, .goal-info form button {
+.goal-info .span5 .span7 > div, .goal-info .dotted-border, .goal-info form button {
     margin-bottom: 20px;
 }
 
+.goal-info .span5 .span7 > div > div {
+    display: inline-block;
+}
+
+.goal-info .budget-state {
+    width: 120px;
+}
+
+.goal-info .span5 .span7 p {
+    line-height: 16px;
+}
+
 .goal-info form {
-    margin: 60px 0 0 20px;
+    margin: 50px 0 0 20px;
 }
 
 .budget-state span {
