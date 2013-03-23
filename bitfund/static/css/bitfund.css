@@ -959,7 +959,7 @@ ul.chart-div-legend {
     vertical-align: top;
 }
 
-.profile-page > table td h3 {
+.profile-page > table td > h3:first-of-type {
     line-height: 15px;
     margin: 0 0 30px;
 }
@@ -991,6 +991,18 @@ table.own-overview td.left, table.own-overview td.right, table.public td.left, t
     line-height: 30px;
     height: 30px;
     padding: 0 10px;
+}
+
+.pledges-history .span6 {
+    padding-left: 10px;
+}
+
+.pledges-history .span6 th {
+    font-weight: normal;
+}
+
+.pledges-history .span6 td a {
+    margin-left: 5px;
 }
 
 .pledges-history li.not-pledged, table.public div dl {
@@ -1138,6 +1150,19 @@ table.public div dl dd {
 
 .attach-card p strong {
     font-size: 10px;
+}
+
+/* Attach bank account */ 
+select.month {
+    width: 110px;
+}
+
+select.date {
+    width: 55px;
+}
+
+select.year {
+    width: 70px;
 }
 /* Footer =====================*/
 

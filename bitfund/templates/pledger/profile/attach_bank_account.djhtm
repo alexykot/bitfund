@@ -54,34 +54,13 @@
     <div class="attach-card">
         <form>
             <fieldset>
-                <legend><h4>Current: VISA **********6552</h4></legend>
-                <div class="text-center">
-                    <button type="submit" class="button gray">Disconnect my credit card</button>
-                </div>
-                <hr>
-                <h4>Required</h4>
-                <ul class="inline">
-                    <li>
-                        <label>Credit card number</label>
-                        <input type="text" class="card-number">
-                    </li>
-                    <li>
-                        <label>Expiration</label>
-                        <input type="text" placeholder="MM" class="month">
-                        <input type="text" placeholder="YYYY" class="year">
-                    </li>
-                    <li>
-                        <label>CVV</label>
-                        <input type="text" class="span1">
-                    </li>
-                </ul>
-
-                <h4>Optional</h4>
-                <label>Full name on card</label>
+                <legend><h4>Identity verification</h4></legend>
+                
+                <label>Your legal name</label>
                 <input type="text" class="large">
-                <label>Address 1</label>
+                <label>Street address</label>
                 <input type="text" class="large">
-                <label>Address 1</label>
+                <label>City</label>
                 <input type="text" class="large">
                 
                 <ul class="inline">
@@ -94,6 +73,49 @@
                         <input type="text" class="medium">
                     </li>
                 </ul>
+                <label>Country</label>
+                <input type="text" class="large">
+                <label>Contact phone number</label>
+                <input type="text" class="large">
+
+                <label>Date of birth</label>
+                <ul class="inline">
+                    <li>
+		                <select class="month">
+						    <option>January</option>
+						    <option>February</option>
+						    <option>March</option>
+						    <option>April</option>
+						    <option>May</option>
+						</select>
+					</li>
+					<li>
+						<select class="date">
+						    <option>1</option>
+						    <option>2</option>
+						    <option>3</option>
+						    <option>4</option>
+						    <option>31</option>
+						</select>
+					</li>
+					<li>
+						<select class="year">
+						    <option>1990</option>
+						    <option>1991</option>
+						    <option>1992</option>
+						    <option>1993</option>
+						</select>
+					</li>
+				</ul>
+
+                <h4>Routing information</h4>
+                <label>Name on bank account</label>
+                <input type="text" class="large">
+                <label>Bank account number</label>
+                <input type="text" class="large">
+                <label>Routing number</label>
+                <input type="text" class="large">
+                
                 <div class="text-center">
                     <button type="submit" class="button gray">Save</button>
                 </div>
@@ -102,15 +124,7 @@
         <div class="text-center">
             <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
             Here are their <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</small></p>
-
-            <div>
-                <img src="{{ STATIC_URL }}img/american_express.png" />
-                <img src="{{ STATIC_URL }}img/mastercard.png" />
-                <img src="{{ STATIC_URL }}img/visa.png" />
-                <img src="{{ STATIC_URL }}img/discover.png" />
-            </div>
-
-            <p><span>PAYMENTS BY </span><img src="{{ STATIC_URL }}img/credit_card_icon.png" /><strong>BALANCED</strong></p>
+	        <p><span>PAYMENTS BY </span><img src="{{ STATIC_URL }}img/credit_card_icon.png" /><strong>BALANCED</strong></p>
         </div>
 
     </div>
