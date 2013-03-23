@@ -38,10 +38,9 @@ def user_profile_overview(request, username=None, external_service=None, externa
         return render_to_response('pledger/profile/public.djhtm', template_data, context_instance=RequestContext(request))
     else :
         request.user.public = _prepare_user_public_template_data(request, request.user)
-        #request.user.pledges_history = _prepare_user_pledges_monthly_history_data(request, request.user)
+        request.user.pledges_history = _prepare_user_pledges_monthly_history_data(request, request.user)
         template_data['request'] = request
         template_data['profile'] = profile
-        print template_data['profile'].api_token
 
         if request.method == 'POST' :
             template_data['create_project_form'] = CreateProjectForm(request.POST)

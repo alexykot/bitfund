@@ -37,12 +37,12 @@
         <div class="row-fluid">
             <div class="span2">
                {% if profile.gravatar_id %}
-                <img src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=160" />
+                <img src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=128" />
             {% elif profile.twitter_pic_url %}
-                <img src="{{ profile.twitter_pic_url }}" width="160" height="160" />
+                <img src="{{ profile.twitter_pic_url }}" width="128" height="128" />
             {% else %}
-                {% comment %} {% load gravatar %}
-                <img src="{% gravatar_for_user request.user 160 %}" />{% endcomment %}
+                {% load gravatar %}
+                <img src="{% gravatar_for_user request.user 128 %}" />
             {% endif %}
             </div>
             <div class="span10">
@@ -50,13 +50,13 @@
                     <div class="span3">{{ user.username }} gives</div>
                     <div class="span3">
                         <div class="text-center">
-                            <span>{{ site_currency_sign }}{{ user.public.giving_monthly }}</span><br>
+                            <span>{{ site_currency_sign }}{{ user.public.giving_monthly|floatformat:2 }}</span><br>
                             this month
                         </div>
                     </div>
                     <div class="span3">
                         <div class="text-center">
-                            <span>{{ site_currency_sign }}{{ user.public.gave_totally }}</span><br>
+                            <span>{{ site_currency_sign }}{{ user.public.gave_totally|floatformat:2 }}</span><br>
                             overall
                         </div>
                     </div>
@@ -104,11 +104,7 @@
                     <dd>{{ site_currency_sign }}{{ user.public.gave_totally }}</dd>
                 </dl>
 
-        		
-                <p>Programs key: {{ profile.api_token }} (?)</p>
-                    
-
-                <h3>Pledges history:</h3>
+                <h3>Pledges history</h3>
                 <ul class="pledges-history">
                     {% for month in user.pledges_history %}
                         {% if month.monthly_total > 0 %}
@@ -155,6 +151,10 @@
             </td>
 
             <td class="right">
+                <h3>Account key</h3>
+                    <ul class="pledges-history">
+                        <li class="not-pledged">{{ profile.api_token }}</li>
+                    </ul>
                 <h3>Connected accounts</h3>
                 <table class="connected-accounts">
                     <tr>
@@ -163,19 +163,19 @@
                             <div class="media">
                                 <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
                                 <div class="media-body">
-                                    <p class="media-heading"><a href="#" >alekseykot (Alex Kot)</a></p>
+                                    <p class="media-heading"><a href="#" >alexykot (Alex Kot)</a></p>
                                     <small>on Twitter</small>
                                 </div>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td><img src="{{ STATIC_URL }}img/twitter_icon.png" /></dt></td>
+                        <td><img src="{{ STATIC_URL }}img/twitter_icon.png" /></td>
                         <td>
                             <div class="media">
                                 <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
                                 <div class="media-body">
-                                    <p class="media-heading"><a href="#" >alexeykot</a></p>
+                                    <p class="media-heading"><a href="#" >alexykot</a></p>
                                     <small>on Github</small>
                                 </div>
                             </div>

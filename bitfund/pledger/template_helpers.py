@@ -48,8 +48,6 @@ def _prepare_user_public_template_data(request, user) :
     if profile.projects_list_is_public and supported_projects_count >= MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC :
         template_data['is_supported_projects_list_public'] = True
 
-    template_data['is_supported_projects_list_public'] = True
-
     supported_projects_keys_list = (DonationTransaction.objects
                                                 .filter(pledger_user_id=user.id)
                                                 .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)

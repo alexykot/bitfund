@@ -1,4 +1,5 @@
 import os
+from django.db.models.query_utils import Q
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -46,32 +47,41 @@ def budget(request, project_key):
     template_data['empty_project'] = _prepare_empty_project_template_data(request, project)
 
     #GOALS
-    project_goals = (ProjectGoal.objects
-                     .filter(project_id=project.id)
-                     .filter(is_public=True)
-                     .filter(date_ending__gt=now())
-                     .filter(date_starting__lt=now())
-                     .order_by('sort_order')
-    )
-    template_data['project_goals'] = []
-    template_data['project_goals_count'] = project_goals.count()
-    if template_data['project_goals_count'] > 0 :
-        for goal in project_goals:
-            template_data['project_goals'].append(_prepare_goal_item_template_data(request, project, goal))
 
     if template_data['project_edit_access'] :
-        project_inactive_goals = (ProjectGoal.objects
+        project_published_goals = (ProjectGoal.objects
+                                     .filter(project_id=project.id)
+                                     .filter(is_public=True)
+                                     .order_by('sort_order')
+        )
+        template_data['project_published_goals'] = []
+        template_data['project_published_goals_count'] = project_published_goals.count()
+        if template_data['project_published_goals'] > 0 :
+            for goal in project_published_goals:
+                template_data['project_published_goals'].append(_prepare_goal_item_template_data(request, project, goal))
+
+        project_unpublished_goals = (ProjectGoal.objects
                                  .filter(project_id=project.id)
                                  .filter(is_public=False)
-                                 .exclude(date_ending__gt=now())
-                                 .exclude(date_starting__lt=now())
                                  .order_by('sort_order')
         )
-        template_data['project_inactive_goals'] = []
-        template_data['project_inactive_goals_count'] = project_goals.count()
-        if template_data['project_inactive_goals'] > 0 :
-            for goal in project_inactive_goals:
-                template_data['project_inactive_goals'].append(_prepare_goal_item_template_data(request, project, goal))
+        template_data['project_unpublished_goals'] = []
+        template_data['project_unpublished_goals_count'] = project_unpublished_goals.count()
+        if template_data['project_unpublished_goals'] > 0 :
+            for goal in project_unpublished_goals:
+                template_data['project_unpublished_goals'].append(_prepare_goal_item_template_data(request, project, goal))
+    else :
+        project_goals = (ProjectGoal.objects
+                         .filter(project_id=project.id)
+                         .filter(is_public=True)
+                         .filter(date_starting__lt=now())
+                         .order_by('sort_order')
+        )
+        template_data['project_public_goals'] = []
+        template_data['project_public_goals_count'] = project_goals.count()
+        if template_data['project_public_goals_count'] > 0 :
+            for goal in project_goals:
+                template_data['project_public_goals'].append(_prepare_goal_item_template_data(request, project, goal))
 
 
     return render_to_response('project/budget/budget.djhtm', template_data, context_instance=RequestContext(request))

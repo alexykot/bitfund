@@ -43,13 +43,13 @@
                     <dt>{{ user.username }} has joined</dt>
                     <dd>{{ user.date_joined|naturaltime }}</dd>
                     <dt>{{ user.username }} giving monthly</dt>
-                    <dd>{{ site_currency_sign }}{{ user.public.giving_monthly }}</dd>
+                    <dd>{{ site_currency_sign }}{{ user.public.giving_monthly|floatformat:2 }}</dd>
                     <dt>{{ user.username }} gave totally</dt>
-                    <dd>{{ site_currency_sign }}{{ user.public.gave_totally }}</dd>
+                    <dd>{{ site_currency_sign }}{{ user.public.gave_totally|floatformat:2 }}</dd>
                 </dl>
                 <div>
                     {% if user.public.maintained_projects_count %}
-                    <h3>Projects maintained:</h3>
+                    <h3>Projects maintained</h3>
                     <dl class="dl-horizontal">
                         {% for project in user.public.maintained_public_projects_list %}
                             <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></li>
@@ -57,12 +57,11 @@
                         {% if user.public.maintained_unpublished_projects_count %}
                             <dt>3 unpublished projects</dt>
                         {% endif %}
-                        <dd>lllllllll</dd>
                     </dl>
                     {% endif %}
 
                     {% if user.public.is_supported_projects_list_public %}
-                    <h3>Projects supported:</h3>
+                    <h3>Projects supported</h3>
                     <dl class="dl-horizontal">
                         {% for supported_project in user.public.supported_projects_list %}
                             <dt>{% if supported_project.key %}
@@ -71,7 +70,6 @@
                                     {{ supported_project.title }}
                                 {% endif %}
                             </dt>
-                            <dd>popopopop</dd>
                         {% endfor %}
                     </dl>
                     {% endif %}
