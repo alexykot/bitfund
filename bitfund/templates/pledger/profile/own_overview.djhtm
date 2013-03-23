@@ -149,7 +149,7 @@
                         </li>
                         {% endif %}
                     {% empty %}
-                        <li>you've not pledged any projects yet</li>
+                        <li class="not-pledged">you've not pledged any projects yet</li>
                     {% endfor %}
                 </ul>
             </td>

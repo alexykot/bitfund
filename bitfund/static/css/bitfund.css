@@ -978,6 +978,10 @@ table.own-overview td.left, table.own-overview td.right, table.public td.left, t
     padding: 0 10px;
 }
 
+.pledges-history li.not-pledged, table.public div dl {
+    margin-left: 30px;
+}
+
 table.connected-accounts td:nth-child(odd) {
     border-right: 1px solid #ccc;
     height: 50px;
@@ -1003,10 +1007,6 @@ table.connected-accounts td i {
 }
 
 /* Profile-page public */
-
-table.public div dl {
-    margin-left: 30px;
-}
 
 table.public div dl dt {
     max-width: 120px;
