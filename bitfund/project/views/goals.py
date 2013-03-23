@@ -96,7 +96,10 @@ def goal_toggle(request, project_key, goal_key):
                 goal.is_public = not goal.is_public
                 goal.save()
 
-    return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)
+    if 'next' in request.GET :
+        return redirect(request.GET['next'])
+    else :
+        return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)
 
 @login_required
 @user_is_project_maintainer
