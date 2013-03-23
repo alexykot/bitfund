@@ -333,6 +333,36 @@ class ProjectGoal(models.Model):
 
         return key
 
+    def isValidForPublic(self):
+        is_valid = True
+
+        if self.title is None or self.title == '':
+            is_valid = False
+
+        if self.brief is None or self.brief == '':
+            is_valid = False
+
+        if self.long_text is None or self.long_text == '':
+            is_valid = False
+
+        if not self.amount < 0 :
+            is_valid = False
+
+        if self.image is None or not self.image.url == '' :
+            is_valid = False
+
+        if ((self.youtube_video_id is None or not self.youtube_video_id == '')
+            and (self.vimeo_video_id is None or not self.vimeo_video_id == ''))  :
+            is_valid = False
+
+        if self.date_ending is None :
+            is_valid = False
+
+        if self.date_starting is None :
+            is_valid = False
+
+        return is_valid
+
     # calculates total donations for a goal for given transaction_type4
     def getTotalByType(self, transaction_type):
         from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES

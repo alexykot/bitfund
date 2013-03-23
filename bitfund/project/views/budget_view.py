@@ -62,7 +62,7 @@ def budget(request, project_key):
     if template_data['project_edit_access'] :
         project_inactive_goals = (ProjectGoal.objects
                                  .filter(project_id=project.id)
-                                 .exclude(is_public=True)
+                                 .filter(is_public=False)
                                  .exclude(date_ending__gt=now())
                                  .exclude(date_starting__lt=now())
                                  .order_by('sort_order')
