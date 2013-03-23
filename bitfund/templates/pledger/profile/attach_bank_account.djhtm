@@ -7,5 +7,113 @@
 {% endblock %}
 
 {% block content %}
+{% load widget_tweaks %}
 
+<div class="profile-page">
+     <section class="profile-info">
+        <div class="row-fluid">
+            <div class="span2">
+                <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
+            </div>
+            <div class="span10">
+                <div class="row">
+                    <div class="span3">maintainer gives</div>
+                    <div class="span3">
+                        <div class="text-center">
+                            <span><strong>$12</strong></span><br>
+                            this month
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="text-center">
+                            <span><strong>$23</strong></span><br>
+                            overall
+                        </div>
+                    </div>
+                </div>
+                <ul class="inline">
+                    <li>
+                        <button class="button gray active">Profile</button>
+                    </li>
+                    <li>
+                        <button class="button gray">Pledges</button>
+                    </li>
+                </ul> 
+                <div class="row">
+                    <div class="span4 offset3">
+                        <label class="checkbox">
+                            <input type="checkbox"> hide total giving from others
+                        </label>
+                    </div>
+                </div>             
+           </div>
+        </div>
+    </section>
+
+    <hr>
+    <div class="attach-card">
+        <form>
+            <fieldset>
+                <legend><h4>Current: VISA **********6552</h4></legend>
+                <div class="text-center">
+                    <button type="submit" class="button gray">Disconnect my credit card</button>
+                </div>
+                <hr>
+                <h4>Required</h4>
+                <ul class="inline">
+                    <li>
+                        <label>Credit card number</label>
+                        <input type="text" class="card-number">
+                    </li>
+                    <li>
+                        <label>Expiration</label>
+                        <input type="text" placeholder="MM" class="month">
+                        <input type="text" placeholder="YYYY" class="year">
+                    </li>
+                    <li>
+                        <label>CVV</label>
+                        <input type="text" class="span1">
+                    </li>
+                </ul>
+
+                <h4>Optional</h4>
+                <label>Full name on card</label>
+                <input type="text" class="large">
+                <label>Address 1</label>
+                <input type="text" class="large">
+                <label>Address 1</label>
+                <input type="text" class="large">
+                
+                <ul class="inline">
+                    <li>
+                        <label>State of province</label>
+                        <input type="text" class="medium">
+                    </li>
+                    <li>
+                        <label>ZIP or postal code</label>
+                        <input type="text" class="medium">
+                    </li>
+                </ul>
+                <div class="text-center">
+                    <button type="submit" class="button gray">Save</button>
+                </div>
+            </fieldset>
+        </form>
+        <div class="text-center">
+            <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
+            Here are their <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</small></p>
+
+            <div>
+                <img src="{{ STATIC_URL }}img/american_express.png" />
+                <img src="{{ STATIC_URL }}img/mastercard.png" />
+                <img src="{{ STATIC_URL }}img/visa.png" />
+                <img src="{{ STATIC_URL }}img/discover.png" />
+            </div>
+
+            <p><span>PAYMENTS BY </span><img src="{{ STATIC_URL }}img/credit_card_icon.png" /><strong>BALANCED</strong></p>
+        </div>
+
+    </div>
+            
+</div>
 {% endblock %}
