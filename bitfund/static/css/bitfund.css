@@ -956,6 +956,7 @@ ul.chart-div-legend {
 
 .profile-page table td.right {
     padding-left: 20px;
+    vertical-align: top;
 }
 
 table.own-overview td.left, table.own-overview td.right, table.public td.left, table.public td.right {
@@ -1015,6 +1016,7 @@ table.public div dl dt {
 table.public div dl dd {
     margin-left: 100px;
 }
+
 /* Profile-page projects ======*/
 
 .profile-page .projects-band {
