@@ -209,12 +209,12 @@
                         <div>
                             {% if goal.last_transaction %}
                                 <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                        type="submit" class="button gray">Update pledge</button>
+                                        type="submit" class="orange gray">Update pledge</button>
                                 <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='drop' %}"
-                                        type="submit" class="button gray" >Cancel pledge</button>
+                                        type="submit" class="orange gray" >Cancel pledge</button>
                             {% else %}
                                 <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                        type="submit" class="button gray">Pledge</button>
+                                        type="submit" class="orange gray">Pledge</button>
                             {% endif %}
                         </div>
                         {% if not request.user.is_authenticated %}

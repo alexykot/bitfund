@@ -967,6 +967,11 @@ table.own-overview td.left, table.own-overview td.right, table.public td.left, t
     font-weight: normal;
 }
 
+.profile-page .dl-horizontal dt {
+    overflow: visible;
+    white-space: normal;
+}
+
 .pledges-history, .pledges-history ul {
     margin-left: 0;
 }
