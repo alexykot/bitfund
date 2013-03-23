@@ -958,7 +958,7 @@ ul.chart-div-legend {
     padding-left: 20px;
 }
 
-.profile-page table.own-overview td.left, table.own-overview td.right {
+table.own-overview td.left, table.own-overview td.right, table.public td.left, table.public td.right {
     width: 420px;
 }
 
@@ -977,30 +977,44 @@ ul.chart-div-legend {
     padding: 0 10px;
 }
 
-table.own-overview .right td:nth-child(odd) {
+table.connected-accounts td:nth-child(odd) {
     border-right: 1px solid #ccc;
     height: 50px;
     padding-right: 10px;
     width: 50px
 }
 
-table.own-overview .right td:nth-child(even) {
+table.connected-accounts td:nth-child(even) {
     padding-left: 10px;
 }
 
-table.own-overview .right td .media-object {
+table.connected-accounts td .media-object {
     height: 32px;
     width: 32px;
 }
 
-table.own-overview .right td .media-heading {
+table.connected-accounts td .media-heading {
     line-height: 14px;
 }
 
-table.own-overview .right td i {
+table.connected-accounts td i {
     margin-right: 10px;
 }
 
+/* Profile-page public */
+
+table.public div dl {
+    margin-left: 30px;
+}
+
+table.public div dl dt {
+    max-width: 120px;
+    text-align: left;
+}
+
+table.public div dl dd {
+    margin-left: 100px;
+}
 /* Profile-page projects ======*/
 
 .profile-page .projects-band {
@@ -1048,8 +1062,13 @@ table.own-overview .right td i {
     width: 320px;
 }
 
-.attach-card legend, .attach-card ul {
+.attach-card ul {
     margin-bottom: 30px;
+}
+
+.attach-card legend {
+    border: none;
+    margin-bottom: 20px;
 }
 
 .attach-card ul li {
@@ -1076,29 +1095,31 @@ table.own-overview .right td i {
 
 .attach-card ul input.year {
     margin-right: 5px;
-    padding: 4px 5px;
-    width: 36px;
+    padding: 4px;
+    width: 38px;
 }
 
-.attach-card button, .attach-card .text-center p {
+.attach-card .text-center p {
     margin-bottom: 20px;
 }
 
 
 .attach-card img {
     height: 20px;
+    width: 28px;
 }
 
-.attach-card span {
+.attach-card p span {
     font-size: 8px;
 }
 
-.attach-card span img {
+.attach-card p img {
     height: 10px;
-    vertical-align: text-top;
+    vertical-align: middle;
+    width: auto;
 }
 
-.attach-card span strong {
+.attach-card p strong {
     font-size: 10px;
 }
 /* Footer =====================*/

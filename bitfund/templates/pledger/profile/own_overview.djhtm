@@ -156,7 +156,7 @@
 
             <td class="right">
                 <h3>Connected accounts</h3>
-                <table>
+                <table class="connected-accounts">
                     <tr>
                         <td><img src="{{ STATIC_URL }}img/github_icon.png" /></td>
                         <td>

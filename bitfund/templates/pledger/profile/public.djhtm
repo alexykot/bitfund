@@ -9,97 +9,119 @@
 {% block content %}
 {% load widget_tweaks %}
 
-<div class="row available-projects">
-
-    <div class="row">
-        <div class="span2">
-            <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
-        </div>
-        <div class="span9">
-            <div class="row">
-                <h1>{{ user.username }} gives</h1>
+<div class="profile-page">
+    <section class="profile-info">
+        <div class="row-fluid">
+            <div class="span2">
+               <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
             </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.giving_monthly }} <br />
-                this month
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.gave_totally }} <br />
-                overall
-            </div>
-        </div>
-    </div>
-    <div class="span6">
-
-        {% if user.public.maintained_projects_count %}
-            <div class="row">
-                <div class="span6">
-                    <h2>Projects maintained:</h2>
+            <div class="span10">
+                <div class="row">
+                    <div class="span3">{{ user.username }} gives</div>
+                    <div class="span3">
+                        <div class="text-center">
+                            <span>{{ site_currency_sign }}{{ user.public.giving_monthly }}</span><br>
+                            this month
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="text-center">
+                            <span>{{ site_currency_sign }}{{ user.public.gave_totally }}</span><br>
+                            overall
+                        </div>
+                    </div>
                 </div>
             </div>
-            <ul>
-                {% for project in user.public.maintained_public_projects_list %}
-                    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></li>
-                {% endfor %}
-                {% if user.public.maintained_unpublished_projects_count %}
-                    <li>3 unpublished projects</li>
-                {% endif %}
-            </ul>
-        {% endif %}
+        </div>
+    </section>
 
-        <div class="row">
-            <div class="span6">
-                <h2>Pledges overview</h2>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="span2 text-right">
-                {{ user.username }} has joined
-            </div>
-            <div class="span3">
-                {{ user.date_joined|naturaltime }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="span2 text-right">
-            {{ user.username }} giving monthly
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.giving_monthly }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="span2 text-right">
-                {{ user.username }} totally gave
-            </div>
-            <div class="span3">
-                {{ site_currency_sign }}{{ user.public.gave_totally }}
-            </div>
-        </div>
-
-        {% if user.public.is_supported_projects_list_public %}
-            <div class="span5">
-                <h2>Projects supported:</h2>
-            </div>
-            <ul>
-                {% for supported_project in user.public.supported_projects_list %}
-                    <li>
-                        {% if supported_project.key %}
-                            <a href="{% url bitfund.project.views.budget project_key=supported_project.key %}">{{ supported_project.title }}</a>
-                        {% else %}
-                            {{ supported_project.title }}
+    <table class="public">
+        <tr>
+            <td class="left">
+                <h3>Pledges overview</h3>
+                <dl class="dl-horizontal">
+                    <dt>{{ user.username }} has joined</dt>
+                    <dd>{{ user.date_joined|naturaltime }}</dd>
+                    <dt>{{ user.username }} giving monthly</dt>
+                    <dd>{{ site_currency_sign }}{{ user.public.giving_monthly }}</dd>
+                    <dt>{{ user.username }} gave totally</dt>
+                    <dd>{{ site_currency_sign }}{{ user.public.gave_totally }}</dd>
+                </dl>
+                <div>
+                    {% if user.public.maintained_projects_count %}
+                    <h3>Projects maintained:</h3>
+                    <dl class="dl-horizontal">
+                        {% for project in user.public.maintained_public_projects_list %}
+                            <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></li>
+                        {% endfor %}
+                        {% if user.public.maintained_unpublished_projects_count %}
+                            <dt>3 unpublished projects</dt>
                         {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </div>
-    <div class="span5">
-        <div class="row">
-             <h2>Connected accounts</h2>
-        </div>
-    </div>
+                        <dd>lllllllll</dd>
+                    </dl>
+                    {% endif %}
 
+                    {% if user.public.is_supported_projects_list_public %}
+                    <h3>Projects supported:</h3>
+                    <dl class="dl-horizontal">
+                        {% for supported_project in user.public.supported_projects_list %}
+                            <dt>{% if supported_project.key %}
+                                    <a href="{% url bitfund.project.views.budget project_key=supported_project.key %}">{{ supported_project.title }}</a>
+                                {% else %}
+                                    {{ supported_project.title }}
+                                {% endif %}
+                            </dt>
+                            <dd>popopopop</dd>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+            </td>
+
+            <td class="right">
+                <h3>Connected accounts</h3>
+                <table class="connected-accounts">
+                    <tr>
+                        <td><img src="{{ STATIC_URL }}img/github_icon.png" /></td>
+                        <td>
+                            <div class="media">
+                                <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
+                                <div class="media-body">
+                                    <p class="media-heading"><a href="#" >alekseykot (Alex Kot)</a></p>
+                                    <small>on Twitter</small>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="{{ STATIC_URL }}img/twitter_icon.png" /></dt></td>
+                        <td>
+                            <div class="media">
+                                <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
+                                <div class="media-body">
+                                    <p class="media-heading"><a href="#" >alexeykot</a></p>
+                                    <small>on Github</small>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><img src="{{ STATIC_URL }}img/credit_card_icon.png" /></td>
+                        <td>
+                            <div class="media">
+                                <div class="media-body">
+                                    <p class="media-heading">
+                                        <a href="#">Credit Card</a>:<i class="icon-ok"></i>   
+                                        <a href="#">Bank account</a>:<i class="icon-remove"></i>
+                                    </p>
+                                    <small>on Balanced Payments</small>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <td>
+        </tr>
+    </table>
 </div>
 {% endblock %}
