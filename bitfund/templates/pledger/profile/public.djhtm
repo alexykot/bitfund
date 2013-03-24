@@ -39,7 +39,7 @@
         <tr>
             <td class="left">
                 <h3>Pledges overview</h3>
-                <dl class="dl-horizontal">
+                <dl class="dl-inline clearfix">
                     <dt>{{ user.username }} has joined</dt>
                     <dd>{{ user.date_joined|naturaltime }}</dd>
                     <dt>{{ user.username }} giving monthly</dt>
@@ -52,14 +52,14 @@
                     <h3>Projects maintained</h3>
                     <dl class="dl-horizontal">
                         {% for project in user.public.maintained_public_projects_list %}
-                            <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></li>
+                            <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></dt>
                         {% endfor %}
                         {% if user.public.maintained_unpublished_projects_count %}
-                            <dt>3 unpublished projects</dt>
+                            <dd>popopopo</dd>
                         {% endif %}
                     </dl>
                     {% endif %}
-
+                    <span>3 unpublished projects</span>
                     {% if user.public.is_supported_projects_list_public %}
                     <h3>Projects supported</h3>
                     <dl class="dl-horizontal">
@@ -70,6 +70,7 @@
                                     {{ supported_project.title }}
                                 {% endif %}
                             </dt>
+                            <dd>dddllll</dd>
                         {% endfor %}
                     </dl>
                     {% endif %}
