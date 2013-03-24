@@ -55,7 +55,7 @@
                             <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></li>
                         {% endfor %}
                         {% if user.public.maintained_unpublished_projects_count %}
-                            <dt>3 unpublished projects</dt>
+                            <dt>{{ user.public.maintained_unpublished_projects_count }} unpublished project{{ user.public.maintained_unpublished_projects_count|pluralize }}</dt>
                         {% endif %}
                     </dl>
                     {% endif %}
