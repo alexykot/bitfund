@@ -74,8 +74,9 @@ a:active, a:hover {
     text-decoration: underline;
 }
 
-a:focus, button:focus, input[type="text"]:focus, input[type="checkbox"]:focus, textarea:focus {
-    outline: 0;
+a:focus, button:focus, input[type="text"]:focus, input[type="checkbox"]:focus, textarea:focus, select:focus, option:focus {
+    border: none;
+    outline: none;
 }
 
 ul {
@@ -1086,73 +1087,86 @@ table.public div dl dd {
 
 /* Attach bank card ===========*/
 
-.attach-card form {
+.attachment form {
     margin: 30px auto 40px;
     width: 320px;
 }
 
-.attach-card ul {
-    margin-bottom: 30px;
+.attachment h4 {
+    margin-top: 20px;
 }
 
-.attach-card legend {
+.attachment legend {
     border: none;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
-.attach-card ul li {
+.attachment ul {
+    margin-bottom: 0;
+}
+
+.attachment ul li {
     padding: 0;
 }
 
-.attach-card input.large {
+.attachment button {
+    margin-top: 20px;
+}
+
+.attachment input.large {
     width: 306px;
 }
 
-.attach-card input.medium {
+.attachment input.medium {
     width: 144px;
 }
 
-.attach-card input.card-number {
+.attachment input.card-number {
     margin-right: 5px;
     width: 140px;
 }
 
-.attach-card ul input.month {
+.attachment ul input.month {
     padding: 4px 5px;
     width: 24px;
 }
 
-.attach-card ul input.year {
+.attachment ul input.year {
     margin-right: 5px;
     padding: 4px;
     width: 38px;
 }
 
-.attach-card .text-center p {
+.attachment .text-center p {
     margin-bottom: 20px;
 }
 
 
-.attach-card img {
+.attachment img {
     height: 20px;
     width: 28px;
 }
 
-.attach-card p span {
+.attachment p span {
     font-size: 8px;
 }
 
-.attach-card p img {
+.attachment p img {
     height: 10px;
     vertical-align: middle;
     width: auto;
 }
 
-.attach-card p strong {
+.attachment p strong {
     font-size: 10px;
 }
 
 /* Attach bank account */ 
+
+.attachment select {
+    background-color: #ececec;
+}
+
 select.month {
     width: 110px;
 }
