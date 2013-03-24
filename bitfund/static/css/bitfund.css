@@ -75,8 +75,7 @@ a:active, a:hover {
 }
 
 a:focus, button:focus, input[type="text"]:focus, input[type="checkbox"]:focus, textarea:focus, select:focus, option:focus {
-    border: none;
-    outline: none;
+    outline: 0 none;
 }
 
 ul {
