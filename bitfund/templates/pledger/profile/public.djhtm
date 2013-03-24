@@ -52,7 +52,7 @@
                     <h3>Projects maintained</h3>
                     <dl class="dl-horizontal">
                         {% for project in user.public.maintained_public_projects_list %}
-                            <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></li>
+                            <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></dt>
                         {% endfor %}
                         {% if user.public.maintained_unpublished_projects_count %}
                             <dt>{{ user.public.maintained_unpublished_projects_count }} unpublished project{{ user.public.maintained_unpublished_projects_count|pluralize }}</dt>

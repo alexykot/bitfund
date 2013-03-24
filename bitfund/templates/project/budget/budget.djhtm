@@ -229,7 +229,7 @@
                                 <div>{{ goal.hours_to_end }}</div>
                                 <div>hours to go</div>
                             </div>
-                        {% else %}
+                        {% elif goal.is_expired %}
                             <div class="budget-state"><span>ENDED</span></div>
                         {% endif %}
                         <div class="row-fluid">
@@ -292,7 +292,7 @@
                                 <div>{{ goal.hours_to_end }}</div>
                                 <div>hours to go</div>
                             </div>
-                        {% else %}
+                        {% elif goal.is_expired %}
                             <div class="budget-state"><span>ENDED</span></div>
                         {% endif %}
                         <div class="row-fluid">
