@@ -66,7 +66,6 @@ urlpatterns += patterns('bitfund.pledger.views',
 
 #PROJECTS
 urlpatterns += patterns('bitfund.project.views',
-    (r'^projects/create$', 'create'),
 
     #view
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'budget'),

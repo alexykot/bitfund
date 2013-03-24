@@ -1,6 +1,6 @@
 {% extends "core/base.djhtm" %}
 
-{% block title %}{{ project.title }} - unclaimed  - {% endblock title %}
+{% block title %}claim {{ project.title }} - {% endblock title %}
 
 {% block pagescripts %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">

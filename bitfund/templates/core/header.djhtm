@@ -1,16 +1,26 @@
 <div class="navbar">
     <ul class="nav pull-right">
         {% if request.user.is_authenticated and not user_is_stranger %}
-            <li>You are <a href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}">{{ request.user.username }}</a></li>
+            <li>
+                you are
+                <a href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}">{{ request.user.username }}</a>
+            </li>
             {% if request.user_projects_support_count %}
-                <li>You're supporting <a href="#">{{ request.user_projects_support_count }} project{{ request.user_projects_support_count|pluralize }}</a></li>
-            {% elif not request.user_projects_own_count %}
-                <li>You're not supporting any projects</li>
+                <li>you're supporting
+                    <a href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}">
+                        {{ request.user_projects_support_count }} project{{ request.user_projects_support_count|pluralize }}
+                    </a>
+                </li>
             {% endif %}
             {% if request.user_projects_own_count %}
-                <li>You own <a href="#">{{ request.user_projects_own_count }} project{{ request.user_projects_own_count|pluralize }}</a></li>
+                <li>
+                    you maintain
+                    <a href="{% url bitfund.pledger.views.user_profile_projects %}">
+                        {{ request.user_projects_own_count }} project{{ request.user_projects_own_count|pluralize }}
+                    </a>
+                </li>
             {% endif %}
-            <li><a href="{% url bitfund.core.views.logout %}">Sign out</a></li>
+            <li><a href="{% url bitfund.core.views.logout %}">sign out</a></li>
         {% else %}
             <li>{% include "core/login/login-with-links.djhtm" %}</li>
         {% endif %}

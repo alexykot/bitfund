@@ -35,7 +35,7 @@
 <div class="profile-page">
     <section class="profile-info">
         <div class="row-fluid">
-            <div class="span2">{% comment %}
+            <div class="span2">
                {% if profile.gravatar_id %}
                 <img src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=128" />
             {% elif profile.twitter_pic_url %}
@@ -43,7 +43,7 @@
             {% else %}
                 {% load gravatar %}
                 <img src="{% gravatar_for_user request.user 128 %}" />
-            {% endif %}{% endcomment %}
+            {% endif %}
             </div>
             <div class="span10">
                 <div class="row">

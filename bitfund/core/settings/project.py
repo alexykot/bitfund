@@ -16,7 +16,7 @@ BITFUND_OWN_PROJECT_ID = 5  #BitFund own project DB ID
 
 #homepage
 MAX_NEEDS_PER_PROJECT = 10
-MAX_GOALS_PER_PROJECT = 10
+MAX_PUBLIC_GOALS_PER_PROJECT = 3
 
 PROJECTS_IN_HOMEPAGE_COLUMN = 10
 
@@ -26,6 +26,8 @@ TIME_TO_SHOW_HOURS = 48 #when it's time to show hours instead of days for "time 
 DEFAULT_MONTHLY_DONATION_AMOUNT = 1 # default donation in $
 DEFAULT_ONETIME_DONATION_AMOUNT = 5 # default donation in $
 GOAL_DEFAULT_TITLE = u'Untitled goal'
+
+YOUTUBE_VIDEO_ID_LENGTH = 11 #length of videoID param in chars
 
 #web API
 API_USER_TOKEN_PARAM_NAME = 'userToken'

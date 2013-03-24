@@ -1,6 +1,6 @@
 {% extends "core/base.djhtm" %}
 
-{% block title %}{{ project.title }} - goal "{{goal.title}}"{% endblock title %}
+{% block title %}{{goal.title}} - {{ project.title }} - {% endblock title %}
 
 
 {% block pagescripts %}
@@ -86,17 +86,24 @@
                         <img src="{{ project.logo.url }} " />
                     {% else %}
                         <img src="{{ STATIC_URL }}img/project_goal_no_logo.png" />
-                    {% endif %}
+                    {% endif %}</a>
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
-            <div class="span2"></div>
+            <div class="span2">
+                {% if not goal.is_public %}
+                    <span class="unpublished">unpublished</span>
+                {% endif %}
+            </div>
             <div class="span2 text-right">
                 <div class="project-meta">
-                {% if project_edit_access %}
+                {% if project_edit_access and goal.is_editable %}
                     <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit goal</a>
-                    <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
+                    <form method="post"
+                          action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}?next={{ request.get_full_path }}">
                         {% csrf_token %}
-                        <a href="#" class="button button-small gray">{% if goal.is_public %}unpublish{% else %}publish{% endif %}</a>
+                        <button type="submit" class="button button-small gray">
+                            {% if goal.is_public %}unpublish{% else %}publish{% endif %}
+                        </button>
                     </form>
                 {% endif %}
                 </div>
@@ -105,9 +112,9 @@
     </div>
 
     <div class="goal-info">
-        <h3>{{goal.title}}</h3>
-        <p>{{goal.brief}}</p>
-        <span>Launched: {{goal.date_starting|date:"DATE_FORMAT"}}</span>
+        <h3>{{ goal.title }}</h3>
+        <p>{{ goal.brief }}</p>
+        <span>Launching: {{goal.date_starting|date:"DATE_FORMAT"}}</span>
         <div class="row-fluid">
             <div class="span7">
                 {% if goal.youtube_video_id %}
@@ -235,7 +242,7 @@
                 </form>
             </div>
         </div>
-        <p>{{goal.long_text|safe }}</p>
+        <p>{{goal.text|safe }}</p>
     </div><!-- goal-info -->
 
 </div>

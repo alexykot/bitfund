@@ -83,26 +83,6 @@ def goal_view(request, project_key, goal_key, action=None):
 
 @login_required
 @user_is_project_maintainer
-def goal_toggle(request, project_key, goal_key):
-    project = get_object_or_404(Project, key=project_key)
-    goal = get_object_or_404(ProjectGoal, key=goal_key)
-
-    if request.method == 'POST' :
-        if goal.is_public :
-            goal.is_public = not goal.is_public
-            goal.save()
-        else :
-            if goal.isValidForPublic() :
-                goal.is_public = not goal.is_public
-                goal.save()
-
-    if 'next' in request.GET :
-        return redirect(request.GET['next'])
-    else :
-        return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)
-
-@login_required
-@user_is_project_maintainer
 def goal_create(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 
@@ -135,5 +115,44 @@ def goal_edit(request, project_key, goal_key):
                      'today'   : datetime.utcnow().replace(tzinfo=utc).today(),
                      }
 
+    if request.method == 'POST' :
+        template_data['goal_edit_form'] = EditProjectGoalForm(request.POST, instance=goal)
+        if template_data['goal_edit_form'].is_valid() :
+
+            template_data['goal_edit_form'].save()
+            # {'date_ending': None, 'vimeo_video_id': u'', 'title': u'adasdasda', 'text': u'', 'image': None, 'youtube_video_id': u'',
+            #  'brief': u'', 'amount': Decimal('0'), 'key': u'adasdasda', 'date_starting': None}
+
+            return redirect('bitfund.project.views.goal_edit', project_key=project.key, goal_key=goal.key)
+
+
+
+
+    else :
+        template_data['goal_edit_form'] = EditProjectGoalForm(instance=goal)
+
+    template_data['goal'] = _prepare_goal_item_template_data(request, project, goal)
+
+
     return render_to_response('project/goals/goal_edit.djhtm', template_data, context_instance=RequestContext(request))
 
+
+@login_required
+@user_is_project_maintainer
+def goal_toggle(request, project_key, goal_key):
+    project = get_object_or_404(Project, key=project_key)
+    goal = get_object_or_404(ProjectGoal, key=goal_key)
+
+    if request.method == 'POST' :
+        if goal.is_public :
+            goal.is_public = not goal.is_public
+            goal.save()
+        else :
+            if goal.isValidForPublic() :
+                goal.is_public = not goal.is_public
+                goal.save()
+
+    if 'next' in request.GET :
+        return redirect(request.GET['next'])
+    else :
+        return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)

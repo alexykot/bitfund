@@ -7,7 +7,7 @@ from django.utils.timezone import utc, now
 from django.db.models import Count, Sum
 
 from bitfund.project.lists import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID, PROJECTS_IN_HOMEPAGE_COLUMN
+from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID, PROJECTS_IN_HOMEPAGE_COLUMN, MAX_PUBLIC_GOALS_PER_PROJECT
 
 
 class ProjectCategory(models.Model):
@@ -300,8 +300,7 @@ class ProjectGoal(models.Model):
     key = models.CharField(max_length=80)
     title = models.CharField(max_length=255)
     brief = models.CharField(max_length=255, null=True, blank=True)
-    short_text = models.TextField(null=True, blank=True)
-    long_text = models.TextField(null=True, blank=True)
+    text = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='project_goals/', null=True, blank=True)
     youtube_video_id = models.CharField(max_length=255, null=True, blank=True)
     vimeo_video_id = models.CharField(max_length=255, null=True, blank=True)
@@ -333,6 +332,7 @@ class ProjectGoal(models.Model):
 
         return key
 
+    #checks if the goal is allowed to go public
     def isValidForPublic(self):
         is_valid = True
 
@@ -342,7 +342,7 @@ class ProjectGoal(models.Model):
         if self.brief is None or self.brief == '':
             is_valid = False
 
-        if self.long_text is None or self.long_text == '':
+        if self.text is None or self.text == '':
             is_valid = False
 
         if not self.amount < 0 :
@@ -359,6 +359,10 @@ class ProjectGoal(models.Model):
             is_valid = False
 
         if self.date_starting is None :
+            is_valid = False
+
+        public_goals_count = ProjectGoal.objects.filter(project_id=self.project_id).filter(is_public=True).count()
+        if public_goals_count >= MAX_PUBLIC_GOALS_PER_PROJECT :
             is_valid = False
 
         return is_valid

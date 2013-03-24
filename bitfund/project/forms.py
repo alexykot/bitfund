@@ -1,5 +1,6 @@
 import re
 from decimal import Decimal, getcontext
+import urlparse
 
 from django.utils.encoding import smart_unicode
 from django.core.exceptions import ValidationError
@@ -7,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from bitfund.core.models import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION
+from bitfund.core.settings.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH
 from bitfund.project.models import *
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 
@@ -115,21 +116,100 @@ class CreateProjectGoalForm(forms.Form):
     title = forms.CharField(max_length=255)
 
 class EditProjectGoalForm(forms.ModelForm):
-    amount = forms.DecimalField(max_value=9999999999, min_value=0.01, decimal_places=2, max_digits=12, required=True)
-
-    def __init__(self, *args, **kw):
-        super(forms.ModelForm, self).__init__(*args, **kw)
-        self.fields.keyOrder = [
-            'title',
-            'amount',
-            'date_ending',
-            'key',
-            'brief',
-            ]
+    amount = forms.DecimalField(max_value=9999999999, min_value=0, decimal_places=2, max_digits=12)
 
     class Meta:
-        model   = ProjectGoal
-        fields  = {'key', 'title', 'date_ending', 'amount', 'brief', }
+        model = ProjectGoal
+        fields = {'key', 'title', 'brief', 'text',
+                  'image', 'youtube_video_id', 'vimeo_video_id',
+                  'amount',
+                  'date_starting', 'date_ending',
+                  }
+        widgets = { 'brief': forms.Textarea(),
+                   }
+
+    def clean_key(self):
+        key     = self.cleaned_data['key'].lower()
+
+        regex   = re.compile('^[a-z0-9-._]{1,}$')
+        if not regex.search(smart_unicode(key)):
+            raise ValidationError(_(u'Allowed chars - latin, numeric, dash, dot, underscore.'), code='invalid')
+
+        regex   = re.compile('^[a-z]{1}')
+        if not regex.search(smart_unicode(key)):
+            raise ValidationError(_(u'Must start with a latin.'), code='invalid')
+
+        same_key_projects_count = ProjectGoal.objects.filter(project_id=self.instance.project_id).filter(key__exact=key).count()
+        if same_key_projects_count > 0 :
+            raise ValidationError(_(u'Key already used in another goal for this project.'), code='invalid')
+
+        return key
+
+
+    # parses provided youtube link and cuts video_id out of it. parses these link patterns:
+    # http://[www.]youtube.com/[<anything>]?[<anything>&]v=iYWzMvlj2RQ[&<anything>]
+    # http://[www.]youtube.com/[<anything>]v/iYWzMvlj2RQ[?<anything>]
+    # http://[www.]youtube.com/[<anything>]embed/iYWzMvlj2RQ[?<anything>]
+    # http://youtu.be/iYWzMvlj2RQ[/<anything>][?<anything>]
+    def clean_youtube_video_id(self):
+        #yes, this is a full URL and not the id yet, no naming error here.
+        youtube_video_url = self.cleaned_data['youtube_video_id']
+        youtube_video_id = None
+
+        if youtube_video_url is None or youtube_video_url == '' :
+            return youtube_video_id
+
+        parsed_url = urlparse.urlparse(youtube_video_url)
+        if parsed_url.netloc == 'youtu.be' :
+            youtube_video_id = parsed_url.path.strip('/').split('/')[0]
+        elif parsed_url.netloc.strip('w.') == 'youtube.com' :
+            query_list = parsed_url.query.split('&')
+            for query_part in query_list :
+                query_part_parsed = query_part.split('=')
+
+                if query_part_parsed[0] == 'v' :
+                    youtube_video_id = query_part_parsed[1]
+                    break
+
+            # parameter 'v' not found in the URL query - let's look in the path
+            if youtube_video_id is None :
+                import itertools
+                path_list = parsed_url.path.strip('/').split('/')
+                for index, path_part in enumerate(path_list) :
+                    if path_part == 'v' or path_part == 'embed' :
+                        youtube_video_id = path_list[index+1]
+                        break
+                    elif len(path_part) == YOUTUBE_VIDEO_ID_LENGTH :
+                        youtube_video_id = path_part
+                        break
+
+        if youtube_video_id is None :
+            raise ValidationError(_(u'Youtube video URL invalid.'), code='invalid')
+
+        return youtube_video_id
+
+
+    # parses provided youtube link and cuts video_id out of it. parses these link patterns:
+    #  http://player.vimeo.com/video/47437305[?<anything>]
+    #  http://[www.]vimeo.com/47437305[?<anything>][#<anything>]
+    def clean_vimeo_video_id(self):
+        #yes, this is a full URL and not the id yet, no naming error here.
+        vimeo_video_url = self.cleaned_data['vimeo_video_id']
+        vimeo_video_id = None
+
+        if vimeo_video_url is None or vimeo_video_url == '' :
+            return vimeo_video_id
+
+        parsed_url = urlparse.urlparse(vimeo_video_url)
+        if parsed_url.netloc == 'player.vimeo.com' :
+            vimeo_video_id = parsed_url.path.strip('/').split('/')[1]
+        elif parsed_url.netloc.strip('w.') == 'vimeo.com' :
+            vimeo_video_id = parsed_url.path.strip('/')
+
+        if vimeo_video_id is None :
+            raise ValidationError(_(u'Youtube video URL invalid.'), code='invalid')
+
+        return vimeo_video_id
 
 class AddLinkedProjectForm(forms.Form):
     linked_project = forms.ModelChoiceField(queryset=Project.objects.all(), required=True, empty_label=u'Select Project')

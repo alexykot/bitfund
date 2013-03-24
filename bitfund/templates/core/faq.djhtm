@@ -1,5 +1,7 @@
 {% extends "core/base.djhtm" %}
 
+{% block title %} FAQ - {% endblock %}
+
 {% block content %}
 
 

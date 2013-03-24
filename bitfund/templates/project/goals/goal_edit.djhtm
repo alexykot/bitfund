@@ -1,75 +1,37 @@
 {% extends "core/base.djhtm" %}
+{% load widget_tweaks %}
 
-{% block title %}{{ project.title }} - goal "{{goal.title}}"{% endblock title %}
+{% block title %}edit {{goal.title}} - {{ project.title }} - {% endblock title %}
 
 
 {% block pagescripts %}
     <script type="text/javascript">
-        function toggleMore(showMore) {
-            $('#pledge-amount-field').toggle(showMore);
-            $('#options-button-set').toggle(!showMore);
+        function selectVideo(videotype){
+            $('input[type=text][id*=_video_id]').val('')
+            $('input[type=text][id*=_video_id]').prop('disabled', 'disabled');
+
+            $('#id_'+videotype+'_video_id').removeProp('disabled');
+
+            $('#video-type-youtube, #video-type-vimeo').removeClass('active');
+            $('#video-type-'+videotype).addClass('active');
         }
 
-        function selectAmount(amount) {
-            $('#options-button-set button').each(function(){
-                $(this).removeClass('active');
-                if (amount == $(this).data('amount')) {
-                    $(this).addClass('active');
-                }
-            });
-
-            $('#id_pledge_amount').val(amount);
-        }
 
         $(document).ready(function () {
-            $('#link-more, #link-less').click(function(event){
+            $('#video-type-youtube, #video-type-vimeo').click(function(event){
                 event.preventDefault();
-                toggleMore($(this).attr('id') == 'link-more');
+                selectVideo($(this).data('videotype'));
+                $('#id_'+videotype+'_video_id').focus();
             });
 
-            $('#options-button-set button').click(function(event){
-                event.preventDefault();
-                selectAmount($(this).data('amount'));
-            });
-
-            $('#pledge-amount-field input').keyup(function(){
-                selectAmount($(this).attr('value'));
-            });
-
-            $('form#form-pledge-goal button[type=submit]').click(function(event){
-                event.preventDefault();
-                $('form#form-pledge-goal').attr('action', $(this).data('action'));
-                $('form#form-pledge-goal').submit();
-            });
-
-
-        {% if goal.last_transaction %}
-            selectAmount({{ goal.last_transaction.transaction_amount}});
-        {% endif %}
-
-
-        {% if project_edit_access %}
-            $('#form-pledge-goal button, #form-pledge-goal input').attr('disabled', 'disabled');
-            $('#form-pledge-goal button, #form-pledge-goal input').attr('title', 'You cannot pledge your own project.');
-            $('#form-pledge-goal button, #form-pledge-goal input').attr('alt', 'You cannot pledge your own project.');
-        {% elif not request.user.is_authenticated  %}
-            $("form#form-pledge-goal button").click(function () {
-                $('#login-links').fadeOut(100);
-                $('#login-links').fadeIn(100);
-                $('#login-links').fadeOut(100);
-                $('#login-links').fadeIn(100);
-            });
-
-            $("form#form-pledge-goal ").submit(function(event){
-                event.preventDefault();
-                $('#login-links').fadeOut(100);
-                $('#login-links').fadeIn(100);
-                $('#login-links').fadeOut(100);
-                $('#login-links').fadeIn(100);
-            });
-        {% endif %}
-
-
+            {% if goal.youtube_video_id %}
+                selectVideo('youtube');
+            {% elif goal.vimeo_video_id  %}
+                selectVideo('vimeo');
+            {% else %}
+                {# set youtube by default #}
+                selectVideo('youtube');
+            {% endif %}
         });
     </script>
 {% endblock pagescripts %}
@@ -77,166 +39,134 @@
 
 {% block content %}
 
-<div class="project-goals">
-    <div class="header">
-        <div class="row-fluid">
-            <div class="span8 project-attributes">
-                <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
-                    {% comment %}
-                    {% if logo %}
-                        <img src="{{ logo.url }} " />
-                    {% elif project.logo %}
-                        <img src="{{ project.logo.url }} " />
-                    {% endif %}
-                    {% endcomment %}
-                <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
-            </div>
-            <div class="span2"></div>
-            <div class="span2 text-right">
-                <div class="project-meta">
-                {% if project_edit_access %}
-                    <a href="{% url bitfund.project.views.edit_goals project_key=project.key goal_key=goal.key %}">edit</a>
-                    <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
-                        {% csrf_token %}
-                        <a href="#" class="button button-small gray">{% if goal.is_public %}unpublish{% else %}publish{% endif %}</a>
-                    </form>
-                {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="goal-info">
-        <h3>{{goal.title}}</h3>
-        <p>{{goal.brief}}</p>
-        <span>Launched: {{goal.date_starting|date:"DATE_FORMAT"}}</span>
-        <div class="row-fluid">
-            <div class="span7">
-                {% if goal.youtube_video_id %}
-
-                    <div id="ytplayer"></div>
-
-                    <script>
-                        // Load the IFrame Player API code asynchronously.
-                        var tag = document.createElement('script');
-                        tag.src = "https://www.youtube.com/player_api";
-                        var firstScriptTag = document.getElementsByTagName('script')[0];
-                        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-                        // Replace the 'ytplayer' element with an <iframe> and
-                        // YouTube player after the API code downloads.
-                        var player;
-                        function onYouTubePlayerAPIReady() {
-                            player = new YT.Player('ytplayer', {
-                                height: '390',
-                                width: '620',
-                                videoId: '{{ goal.youtube_video_id }}'
-                            });
-                        }
-                    </script>
-                {% elif goal.vimeo_video_id  %}
-                    <iframe src="http://player.vimeo.com/video/{{ goal.vimeo_video_id }}" width="620" height="390" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-                {% elif goal.image %}
-                    <img src="{{ goal.image.url }}" />
-                {% endif %}
-            </div>
-
-            <div class="span5">
-                <div class="row-fluid">
-                    <div class="span5">
-                        <div class="chart-div-large" id="goal-{{goal.id}}-chart">
-                            <span class="text-center">{{goal.total_percent}}%</span>
-                            <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='medium' %}" id="goal-chart"/>
-                        </div>
-                        <ul class="chart-div-legend">
-                            <li><span class="green-marker"></span>Backers support</li>
-                            <li><span class="olive-marker"></span>Linked projects</li>
-                            <li><span class="yellow-marker"></span>Other sources</li>
-                        </ul> 
-                       
-                    </div>
-                    <div class="span4">
-                        <div class="budget-state"><span>{{ site_currency_sign }}
-                        {{goal.pledges_amount}}</span>
-                        pledged</div>
-
-                        {% if goal.days_to_end > 1 %}
-                        <div class="budget-state"><span>{{goal.days_to_end}}</span>
-                        days to go</div>
-                        {% elif goal.hours_to_end > 0 %}
-                        <div class="budget-state"><span>{{goal.hours_to_end}}</span>
-                        hours to go</div>
+    <div class="project-goals">
+        <div class="header">
+            <div class="row-fluid">
+                <div class="span8 project-attributes">
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                        {% if project.logo %}
+                            <img src="{{ project.logo.url }} " />
                         {% else %}
-                        <div class="budget-state"><span>ENDED</span></div>
+                            <img src="{{ STATIC_URL }}img/project_goal_no_logo.png" />
                         {% endif %}
-
-                        <div class="budget-state"><span>{{goal.pledging_users_count}}</span>
-                        backers</div>
-                    </div>
-                    <div class="span3">
-                        <div>{{ site_currency_sign }}{{goal.amount}}<br>
-                        asked</div>
-                        <div>ends:<br>
-                        {{goal.date_ending|date:"DATE_FORMAT"}}</div>
+                        <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
+                </div>
+                <div class="span4 text-right">
+                    <div class="project-meta">
+                        <a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">cancel</a>
+                        <button type="submit" form="goal-{{ goal.id }}-edit" class="button button-small gray">save</button>
+                        <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
+                            {% csrf_token %}
+                            <button type="" class="button button-small orange">{% if goal.is_public %}unpublish{% else %}publish{% endif %}</button>
+                        </form>
                     </div>
                 </div>
-                  
-                
-                {% if goal.last_transaction %}
-                    You're pledging {{ site_currency_sign }}{{ goal.last_transaction.transaction_amount|floatformat:2 }}
-                {% endif %}
-                <form action="" method="post" id="form-pledge-goal">
-                        {% csrf_token %}
-                        {{ goal.pledge_form.non_field_errors }}
-                    <div class="need-pledge-controls text-center">
-                            <ul class="amount-buttons" id="options-button-set">
-                                <li>{{ site_currency_sign }}</li>
-                                <li><button data-amount="2">2</button></li>
-                                <li><button data-amount="5">5</button></li>
-                                <li><button data-amount="10">10</button></li>
-                                <li><button data-amount="15">15</button></li>
-                                <li><button data-amount="25">25</button></li>
-                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}#select-more"
-                                       id="link-more">more</a></li>
-                            </ul>
-                            <ul id="pledge-amount-field" style="display: none;" class="less-input">
-                                <li>{{ site_currency_sign }}</li>
-                                <li>
-                                    {{ goal.pledge_form.pledge_amount.errors }}
-                                    {{ goal.pledge_form.pledge_amount }}
-                                </li>
-                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"
-                                       id="link-less">less</a></li>
-                            </ul>
-                        <div>
-                            {% if goal.last_transaction %}
-                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                        type="submit" class="button gray">Update pledge</button>
-                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='drop' %}"
-                                        type="submit" class="button gray" >Cancel pledge</button>
-                            {% else %}
-                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
-                                        type="submit" class="button gray">Pledge</button>
-                            {% endif %}
-                        </div>
-                        {% if not request.user.is_authenticated %}
-                            <div id="login-links-{{ need.id }}">
-                                <span class="orange-bg">{% include "core/login/login-with-links.djhtm" %}</span>
-                            </div>
-                        {% endif %}
-                        {% if not request.user.is_payment_card_attached %}
-                            <div>
-                                <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
-                            </div>
-                        {% endif %}
-                    </div>
-                </form>
             </div>
         </div>
-        <p>{{goal.long_text|safe }}</p>
-    </div><!-- goal-info -->
 
-</div>
+        <form method="post" action="" enctype="multipart/form-data" id="goal-{{ goal.id }}-edit">
+        {% csrf_token %}
+        <div class="goal-info">
+            {{ goal_edit_form.non_field_errors }}
+            <h3>{{ goal_edit_form.title.errors }}
+                {{ goal_edit_form.title }}</h3>
+            {{ goal_edit_form.key.errors }}
+            {{ goal_edit_form.key }}
+            <p>{{ goal_edit_form.brief.errors }}
+                {{ goal_edit_form.brief }}</p>
+            <span>Launching: {{ goal_edit_form.date_starting }}</span>
+            <div class="row-fluid">
+                <div class="span7">
+                    {% if goal.youtube_video_id %}
+                        <div id="ytplayer"></div>
+
+                        <script>
+                            var tag = document.createElement('script');
+                            tag.src = "https://www.youtube.com/player_api";
+                            var firstScriptTag = document.getElementsByTagName('script')[0];
+                            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                            var player;
+                            function onYouTubePlayerAPIReady() {
+                                player = new YT.Player('ytplayer', {
+                                    height: '390',
+                                    width: '620',
+                                    videoId: '{{ goal.youtube_video_id }}'
+                                });
+                            }
+                        </script>
+                    {% elif goal.vimeo_video_id  %}
+                        <iframe src="http://player.vimeo.com/video/{{ goal.vimeo_video_id }}" width="620" height="390" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+                    {% elif goal.image %}
+                        <img src="{{ goal.image.url }}" />
+                    {% endif %}
+
+                    <div class="row-fluid">
+                        <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}#select-youtube"
+                           id="video-type-youtube" data-videotype="youtube">youtube</a>
+                        {{ goal_edit_form.youtube_video_id.errors }}
+                        {{ goal_edit_form.youtube_video_id }}
+                    </div>
+                    <div class="row-fluid">
+                        <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}#select-vimeo"
+                           id="video-type-vimeo" data-videotype="vimeo">vimeo</a>
+                        {{ goal_edit_form.vimeo_video_id.errors }}
+                        {{ goal_edit_form.vimeo_video_id }}
+                    </div>
+                    <div class="row-fluid">
+                        {{ goal_edit_form.image.errors }}
+                        image {{ goal_edit_form.image }}
+                    </div>
+                </div>
+
+                <div class="span5">
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <div class="chart-div-large" id="goal-{{goal.id}}-chart">
+                                <span class="text-center">{{goal.total_percent}}%</span>
+                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='medium' %}" id="goal-chart"/>
+                            </div>
+                            <ul class="chart-div-legend">
+                                <li><span class="green-marker"></span>Backers support</li>
+                                <li><span class="olive-marker"></span>Linked projects</li>
+                                <li><span class="yellow-marker"></span>Other sources</li>
+                            </ul>
+                        </div>
+                        <div class="span7">
+                            <div>
+                                <div class="budget-state">
+                                    <span>
+                                        {{ site_currency_sign }}
+                                        {{ goal_edit_form.amount.errors }}
+                                        {{ goal_edit_form.amount }}
+                                    </span>
+                                    asking
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    {{ goal_edit_form.date_ending.errors }}
+                                    {{ goal_edit_form.date_ending }}
+                                    ends
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <p>
+                {{ goal_edit_form.text.error }}
+                {{ goal_edit_form.text }}
+            </p>
+            <div class="span4 text-right">
+                <div class="project-meta">
+                    <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">cancel</a>
+                    <button type="submit" form="goal-{{ goal.id }}-edit" class="button button-small gray">save</button>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
 
 {% endblock content %}

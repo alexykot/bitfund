@@ -1,5 +1,7 @@
 {% extends "core/base.djhtm" %}
 
+{% block title %} Stats - {% endblock %}
+
 {% block content %}
 
 

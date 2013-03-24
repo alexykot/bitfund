@@ -1,8 +1,8 @@
 {% extends "core/base.djhtm" %}
-
-{% block title %}Budget : {{ project.title }}{% endblock title %}
-
 {% load widget_tweaks %}
+
+{% block title %}edit {{ project.title }} - {% endblock title %}
+
 
 {% block pagescripts %}
     <script type="text/javascript">

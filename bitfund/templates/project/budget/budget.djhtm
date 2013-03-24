@@ -1,7 +1,7 @@
 {% extends "core/base.djhtm" %}
 {% load widget_tweaks %}
 
-{% block title %}Budget - {{ project.title }} - {% endblock title %}
+{% block title %}{{ project.title }} {% if not project.is_public %}(unpublished){% endif %} - {% endblock title %}
 
 {% block pagescripts %}
     <script type="text/javascript">
@@ -66,7 +66,9 @@
                     <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
                     <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
                         {% csrf_token %}
-                        <a href="#" class="button button-small gray">{% if project.is_public %}unpublish{% else %}publish{% endif %}</a>
+                        <button type="submit" class="button button-small gray">
+                            {% if project.is_public %}unpublish{% else %}publish{% endif %}
+                        </button>
                     </form>
                 {% endif %}
                 </div>
@@ -208,7 +210,9 @@
                             <img src="{{ STATIC_URL }}img/goal_no_image.png" />
                         {% endif %}
                         <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
-                        <p>{{ goal.brief }}</p>
+                        {% if goal.brief  %}
+                            <p>{{ goal.brief }}</p>
+                        {% endif %}
                         <div class="span3">
                             <div class="chart-div-small">
                                 <span class="text-center">{{ goal.total_percent }}%</span>
@@ -233,7 +237,7 @@
                             <div class="budget-state"><span>ENDED</span></div>
                         {% endif %}
                         <div class="row-fluid">
-                        {% if is_editable %}
+                        {% if goal.is_editable %}
                             <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit</a>
                         {% endif %}
                             <span class="button gray">sort</span>
@@ -271,7 +275,9 @@
                             <img src="{{ STATIC_URL }}img/goal_no_image.png" />
                         {% endif %}
                         <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
-                        <p>{{ goal.brief }}</p>
+                        {% if goal.brief  %}
+                            <p>{{ goal.brief }}</p>
+                        {% endif %}
                         <div class="span3">
                             <div class="chart-div-small">
                                 <span class="text-center">{{ goal.total_percent }}%</span>
@@ -296,7 +302,7 @@
                             <div class="budget-state"><span>ENDED</span></div>
                         {% endif %}
                         <div class="row-fluid">
-                            {% if is_editable %}
+                            {% if goal.is_editable %}
                                 <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit</a>
                             {% endif %}
 
@@ -354,20 +360,6 @@
                                     <div class="budget-state"><span>ENDED</span></div>
                                 {% endif %}
                             </div>
-                            {% if project_edit_access %}
-                                <div class="row-fluid">
-                                    <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit</a>
-                                    <span class="button gray">sort</span>
-
-                                    <form method="post"
-                                          action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}?next={{ request.get_full_path }}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="button button-small gray">
-                                            {% if goal.is_public %}unpublish{% else %}publish{% endif %}
-                                        </button>
-                                    </form>
-                                </div>
-                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>

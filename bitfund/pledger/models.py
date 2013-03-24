@@ -57,16 +57,14 @@ class Profile(User):
 #part of the social auth pipeline, creates new user profile
 #def save_user_profile(sender, user_id, user, is_new, **kwargs):
 def save_user_profile(request, *args, **kwargs):
-    print kwargs
-
     if kwargs['is_new'] :
         profile = Profile()
         profile.user_id = kwargs['user'].id
         profile.api_token = Profile.generateAPIToken()
         if 'gravatar_id' in kwargs['response'] and kwargs['response']['gravatar_id'] != '' :
             profile.gravatar_id = kwargs['response']['gravatar_id']
-        if 'profile_image_url' in kwargs['response'] :
-            profile.twitter_pic_url = kwargs['response']['profile_image_url']
+        if 'screen_name' in kwargs['response'] :
+            profile.twitter_pic_url = 'http://api.twitter.com/1/users/profile_image/'+kwargs['response']['screen_name']+'.png?size=original'
 
         profile.save()
 
@@ -329,19 +327,6 @@ class DonationTransaction(models.Model):
         for redonation_transaction in redonation_transactions_list :
             redonation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.cancelled
             redonation_transaction.save()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
