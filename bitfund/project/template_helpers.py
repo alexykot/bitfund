@@ -110,22 +110,22 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
         last_transaction = False
 
 
-    if goal.date_ending is not None :
-        datetime_to_end = (goal.date_ending - now())
-        is_time_uncertain = False
+    is_time_uncertain = False
+    is_expired = False
+    is_editable = True
+    days_to_end = 0
+    hours_to_end = 0
+    if goal.date_ending is not None and goal.date_starting is not None :
         if goal.date_ending < now() :
             is_expired = True
-            days_to_end = 0
-            hours_to_end = 0
-        else :
-            is_expired = False
+            is_editable = False
+        elif goal.date_starting < now() :
+            is_editable = False
+            datetime_to_end = (goal.date_ending - now())
             days_to_end = int(datetime_to_end.days)
             hours_to_end = int(datetime_to_end.days * 24 + math.ceil(datetime_to_end.seconds / 3600))
     else :
-        is_expired = False
         is_time_uncertain = True
-        days_to_end = 0
-        hours_to_end = 0
 
 
     result = {'id': goal.id,
@@ -139,6 +139,7 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
               'image': goal.image,
               'amount': goal.amount,
               'is_public': goal.is_public,
+              'is_editable': is_editable,
               'is_expired': is_expired,
               'is_time_uncertain': is_time_uncertain,
               'date_ending': goal.date_ending,

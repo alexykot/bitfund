@@ -348,11 +348,11 @@ class ProjectGoal(models.Model):
         if not self.amount < 0 :
             is_valid = False
 
-        if self.image is None or not self.image.url == '' :
+        if self.image is None :
             is_valid = False
 
-        if ((self.youtube_video_id is None or not self.youtube_video_id == '')
-            and (self.vimeo_video_id is None or not self.vimeo_video_id == ''))  :
+        if ((self.youtube_video_id is None or self.youtube_video_id == '')
+            and (self.vimeo_video_id is None or self.vimeo_video_id == ''))  :
             is_valid = False
 
         if self.date_ending is None :

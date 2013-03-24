@@ -832,7 +832,7 @@ ul.chart-div-legend {
     height: 196px;
 }
 
-.current-goals p {
+.current-goals .goals-list p {
     min-height: 60px;
 }
 

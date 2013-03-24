@@ -195,130 +195,128 @@
 
 
 
-    {% if project_inactive_goals_count and project_edit_access %}
+    {% if project_edit_access %}
 
-        {% if project_published_goals_count %}
-            <div class="current-goals">
-                <h3>Inactive goals</h3>
-                <div class="row-fluid ">
-                    {% for goal in project_published_goals %}
-                        <div class="span4">
-                            {% if goal.image %}
-                                <img src="{{ goal.image.url }}"/>
-                            {% else %}
-                                <img src="{{ STATIC_URL }}img/goal_no_image.png" />
-                            {% endif %}
-                            <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
-                            <p>{{ goal.brief }}</p>
-                            <div class="span3">
-                                <div class="chart-div-small">
-                                    <span class="text-center">{{ goal.total_percent }}%</span>
-                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
-                                </div>
-                            </div>
-                            <div class="span3 text-center">
-                                <div>${{ goal.pledges_amount }}</div>
-                                <div>pledged</div>
-                            </div>
-                            {% if goal.days_to_end > 1 %}
-                                <div class="span4 text-center">
-                                    <div>{{ goal.days_to_end }}</div>
-                                    <div>days to go</div>
-                                </div>
-                            {% elif goal.hours_to_end > 0 %}
-                                <div class="span4 text-center">
-                                    <div>{{ goal.hours_to_end }}</div>
-                                    <div>hours to go</div>
-                                </div>
-                            {% else %}
-                                <div class="budget-state"><span>ENDED</span></div>
-                            {% endif %}
-                            <div class="row-fluid">
-                                <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit</a>
-                                <span class="button gray">sort</span>
-
-                                <form method="post"
-                                      action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}?next={{ request.get_full_path }}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="button button-small gray">unpublish</button>
-                                </form>
+        <div class="current-goals">
+            <h3>Published goals</h3>
+            <div class="row-fluid ">
+                {% for goal in project_published_goals %}
+                    <div class="span4">
+                        {% if goal.image %}
+                            <img src="{{ goal.image.url }}"/>
+                        {% else %}
+                            <img src="{{ STATIC_URL }}img/goal_no_image.png" />
+                        {% endif %}
+                        <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
+                        <p>{{ goal.brief }}</p>
+                        <div class="span3">
+                            <div class="chart-div-small">
+                                <span class="text-center">{{ goal.total_percent }}%</span>
+                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
                             </div>
                         </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-
-        {% if project_unpublished_goals_count %}
-            <div class="current-goals">
-                <h3>Inactive goals</h3>
-                <div class="row-fluid ">
-                    {% for goal in project_unpublished_goals %}
-                        <div class="span4">
-                            {% if goal.image %}
-                                <img src="{{ goal.image.url }}"/>
-                            {% else %}
-                                <img src="{{ STATIC_URL }}img/goal_no_image.png" />
-                            {% endif %}
-                            <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
-                            <p>{{ goal.brief }}</p>
-                            <div class="span3">
-                                <div class="chart-div-small">
-                                    <span class="text-center">{{ goal.total_percent }}%</span>
-                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
-                                </div>
-                            </div>
-                            <div class="span3 text-center">
-                                <div>${{ goal.pledges_amount }}</div>
-                                <div>pledged</div>
-                            </div>
-                            {% if goal.days_to_end > 1 %}
-                                <div class="span4 text-center">
-                                    <div>{{ goal.days_to_end }}</div>
-                                    <div>days to go</div>
-                                </div>
-                            {% elif goal.hours_to_end > 0 %}
-                                <div class="span4 text-center">
-                                    <div>{{ goal.hours_to_end }}</div>
-                                    <div>hours to go</div>
-                                </div>
-                            {% else %}
-                                <div class="budget-state"><span>ENDED</span></div>
-                            {% endif %}
-                            <div class="row-fluid">
-                                <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit</a>
-                                <span class="button gray">sort</span>
-
-                                <form method="post"
-                                      action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}?next={{ request.get_full_path }}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="button button-small gray">publish</button>
-                                </form>
-                            </div>
+                        <div class="span3 text-center">
+                            <div>${{ goal.pledges_amount }}</div>
+                            <div>pledged</div>
                         </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
+                        {% if goal.days_to_end > 1 %}
+                            <div class="span4 text-center">
+                                <div>{{ goal.days_to_end }}</div>
+                                <div>days to go</div>
+                            </div>
+                        {% elif goal.hours_to_end > 0 %}
+                            <div class="span4 text-center">
+                                <div>{{ goal.hours_to_end }}</div>
+                                <div>hours to go</div>
+                            </div>
+                        {% elif goal.is_expired %}
+                            <div class="budget-state"><span>ENDED</span></div>
+                        {% endif %}
+                        <div class="row-fluid">
+                        {% if is_editable %}
+                            <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit</a>
+                        {% endif %}
+                            <span class="button gray">sort</span>
 
-    {% else %}
-        {% if project_goals_count %}
-            <div class="current-goals">
-                {% if project_edit_access %}
-                    <a id="create-goal-link" href="{% url bitfund.project.views.goal_create project_key=project.key %}" class="add-goal">add goal</a>
-                    <div id="create-goal-popup" style="display:none; border: 1px solid #577000;">
-                        <form action="{% url bitfund.project.views.goal_create project_key=project.key %}" method="post">
-                            {% csrf_token %}
-                            {{ create_goal_form.title.errors }}
-                            {{ create_goal_form.title|attr:"required" }}
-                            <button type="submit">create goal</button>
-                        </form>
+                            <form method="post"
+                                  action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}?next={{ request.get_full_path }}">
+                                {% csrf_token %}
+                                <button type="submit" class="button button-small gray">unpublish</button>
+                            </form>
+                        </div>
                     </div>
-                {% endif %}
+                {% empty %}
+                    <div class="span12"> none </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="current-goals">
+            <a id="create-goal-link" href="{% url bitfund.project.views.goal_create project_key=project.key %}" class="add-goal">add goal</a>
+            <div id="create-goal-popup" style="display:none; border: 1px solid #577000;">
+                <form action="{% url bitfund.project.views.goal_create project_key=project.key %}" method="post">
+                    {% csrf_token %}
+                    {{ create_goal_form.title.errors }}
+                    {{ create_goal_form.title|attr:"required" }}
+                    <button type="submit">create goal</button>
+                </form>
+            </div>
+            <h3>Unpublished goals</h3>
+            <div class="row-fluid ">
+                {% for goal in project_unpublished_goals %}
+                    <div class="span4">
+                        {% if goal.image %}
+                            <img src="{{ goal.image.url }}"/>
+                        {% else %}
+                            <img src="{{ STATIC_URL }}img/goal_no_image.png" />
+                        {% endif %}
+                        <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
+                        <p>{{ goal.brief }}</p>
+                        <div class="span3">
+                            <div class="chart-div-small">
+                                <span class="text-center">{{ goal.total_percent }}%</span>
+                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
+                            </div>
+                        </div>
+                        <div class="span3 text-center">
+                            <div>${{ goal.pledges_amount }}</div>
+                            <div>pledged</div>
+                        </div>
+                        {% if goal.days_to_end > 1 %}
+                            <div class="span4 text-center">
+                                <div>{{ goal.days_to_end }}</div>
+                                <div>days to go</div>
+                            </div>
+                        {% elif goal.hours_to_end > 0 %}
+                            <div class="span4 text-center">
+                                <div>{{ goal.hours_to_end }}</div>
+                                <div>hours to go</div>
+                            </div>
+                        {% elif goal.is_expired %}
+                            <div class="budget-state"><span>ENDED</span></div>
+                        {% endif %}
+                        <div class="row-fluid">
+                            {% if is_editable %}
+                                <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit</a>
+                            {% endif %}
+
+                            <form method="post"
+                                  action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}?next={{ request.get_full_path }}">
+                                {% csrf_token %}
+                                <button type="submit" class="button button-small gray">publish</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        {% if project_public_goals_count %}
+            <div class="current-goals">
                 <h3>Current goals</h3>
-                <p>Apart from the project budget the community be grateful gor help with this goals.</p>
-                <div class="row-fluid ">
-                    {% for goal in project_goals %}
+                <p>Apart from the project running budget the community be grateful for help with these goals.</p>
+                <div class="row-fluid goals-list">
+                    {% for goal in project_public_goals %}
                         <div class="span4">
                             {% if goal.image %}
                                 <img src="{{ goal.image.url }}"/>
