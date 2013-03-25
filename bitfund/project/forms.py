@@ -4,13 +4,15 @@ import urlparse
 
 from django.utils.encoding import smart_unicode
 from django.core.exceptions import ValidationError
+from django.utils.timezone import make_aware, now
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from bitfund.core.models import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH
+from bitfund.core.settings.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH, MIN_GOAL_TIMELENGTH_DAYS
 from bitfund.project.models import *
 from bitfund.project.lists import DONATION_TYPES_CHOICES
+
 
 class CreateProjectForm(forms.Form):
     title = forms.CharField(max_length=255, required=True)
@@ -19,8 +21,6 @@ class CreateProjectForm(forms.Form):
         title     = self.cleaned_data['title']
 
         same_title_projects_count = Project.objects.filter(title__exact=title).count()
-
-        print same_title_projects_count
 
         if same_title_projects_count > 0 :
             raise ValidationError(_(u'Project with this title already exists, please claim it instead.'), code='invalid')
@@ -117,6 +117,8 @@ class CreateProjectGoalForm(forms.Form):
 
 class EditProjectGoalForm(forms.ModelForm):
     amount = forms.DecimalField(max_value=9999999999, min_value=0, decimal_places=2, max_digits=12)
+    date_starting = forms.DateField(input_formats=('%m/%d/%Y',), required=False, widget=forms.DateInput(format='%m/%d/%Y'))
+    date_ending = forms.DateField(input_formats=('%m/%d/%Y',), required=False, widget=forms.DateInput(format='%m/%d/%Y'))
 
     class Meta:
         model = ProjectGoal
@@ -139,7 +141,11 @@ class EditProjectGoalForm(forms.ModelForm):
         if not regex.search(smart_unicode(key)):
             raise ValidationError(_(u'Must start with a latin.'), code='invalid')
 
-        same_key_projects_count = ProjectGoal.objects.filter(project_id=self.instance.project_id).filter(key__exact=key).count()
+        same_key_projects_count = (ProjectGoal.objects
+                                   .filter(project_id=self.instance.project_id)
+                                   .filter(key__exact=key)
+                                   .exclude(id=self.instance.id)
+                                   .count())
         if same_key_projects_count > 0 :
             raise ValidationError(_(u'Key already used in another goal for this project.'), code='invalid')
 
@@ -210,6 +216,24 @@ class EditProjectGoalForm(forms.ModelForm):
             raise ValidationError(_(u'Youtube video URL invalid.'), code='invalid')
 
         return vimeo_video_id
+
+    def clean(self):
+        cleaned_data = super(EditProjectGoalForm, self).clean()
+        date_starting = cleaned_data.get("date_starting")
+        date_ending = cleaned_data.get("date_ending")
+
+        if date_starting is None and self.instance.date_starting is not None:
+            date_starting = self.instance.date_starting
+        if date_ending is None and self.instance.date_ending is not None:
+            date_ending = self.instance.date_ending
+
+        if date_ending is not None and date_starting is not None :
+            goal_length_timedelta = date_ending-date_starting
+            if goal_length_timedelta.days < MIN_GOAL_TIMELENGTH_DAYS :
+                raise ValidationError(_(u'Goal must last at least '+str(MIN_GOAL_TIMELENGTH_DAYS)+u' days.'), code='invalid')
+
+        return cleaned_data
+
 
 class AddLinkedProjectForm(forms.Form):
     linked_project = forms.ModelChoiceField(queryset=Project.objects.all(), required=True, empty_label=u'Select Project')

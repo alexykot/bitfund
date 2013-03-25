@@ -21,7 +21,7 @@
             $('#video-type-youtube, #video-type-vimeo').click(function(event){
                 event.preventDefault();
                 selectVideo($(this).data('videotype'));
-                $('#id_'+videotype+'_video_id').focus();
+                $('#id_'+$(this).data('videotype')+'_video_id').focus();
             });
 
             {% if goal.youtube_video_id %}
@@ -32,6 +32,9 @@
                 {# set youtube by default #}
                 selectVideo('youtube');
             {% endif %}
+
+            $('.datePicker').datepicker();
+            $('#id_text').wysihtml5();
         });
     </script>
 {% endblock pagescripts %}
@@ -68,13 +71,15 @@
         {% csrf_token %}
         <div class="goal-info">
             {{ goal_edit_form.non_field_errors }}
+
             <h3>{{ goal_edit_form.title.errors }}
                 {{ goal_edit_form.title }}</h3>
             {{ goal_edit_form.key.errors }}
             {{ goal_edit_form.key }}
             <p>{{ goal_edit_form.brief.errors }}
                 {{ goal_edit_form.brief }}</p>
-            <span>Launching: {{ goal_edit_form.date_starting }}</span>
+            <span>{{ goal_edit_form.date_starting.errors }}
+                Launching: {{ goal_edit_form.date_starting|attr:"class:datePicker" }}</span>
             <div class="row-fluid">
                 <div class="span7">
                     {% if goal.youtube_video_id %}
@@ -146,7 +151,7 @@
                             <div>
                                 <div>
                                     {{ goal_edit_form.date_ending.errors }}
-                                    {{ goal_edit_form.date_ending }}
+                                    {{ goal_edit_form.date_ending|attr:"class:datePicker" }}
                                     ends
                                 </div>
                             </div>

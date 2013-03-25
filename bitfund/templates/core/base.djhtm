@@ -8,13 +8,14 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/wysihtml5-0.3.0.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap-wysihtml5.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/bitfund.js"></script>
-    {% comment %}
-    {% load dajaxice_templatetags %}
-    {% dajaxice_js_import %}
-    {% endcomment %}
+
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-wysihtml5.css"/>
+
     <!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-responsive.min.css"/>-->
 
 

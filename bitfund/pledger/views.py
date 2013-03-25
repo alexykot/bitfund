@@ -81,10 +81,12 @@ def existing_similar_projects(request):
     template_data['project_statuses'] = PROJECT_STATUS_CHOICES
     template_data['similar_projects_list'] = []
     for project in similar_projects_list :
-        #project.total_received_this_month = project.getTotalMonthlyDonations()
-
-        #monthly_budget = project.getTotalMonthlyBudget()
-
+        project.total_received_this_month = project.getTotalMonthlyDonations()
+        monthly_budget = project.getTotalMonthlyBudget()
+        if monthly_budget > 0 :
+            project.total_budget_fulfillment_percent = project.total_received_this_month/monthly_budget*100
+        else :
+            project.total_budget_fulfillment_percent = -1
 
         template_data['similar_projects_list'].append(project)
 

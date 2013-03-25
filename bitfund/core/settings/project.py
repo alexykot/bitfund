@@ -29,6 +29,8 @@ GOAL_DEFAULT_TITLE = u'Untitled goal'
 
 YOUTUBE_VIDEO_ID_LENGTH = 11 #length of videoID param in chars
 
+MIN_GOAL_TIMELENGTH_DAYS = 3 #minimal goal running time
+
 #web API
 API_USER_TOKEN_PARAM_NAME = 'userToken'
 API_TARGET_MONTH_PARAM_NAME = 'targetMonth'
