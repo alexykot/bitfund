@@ -1,12 +1,12 @@
 {% for project in similar_projects_list %}
-    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}">
-        <div class="row">
-            <div class="span4">
+    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}" class="projects-info-block">
+        <div class="row-fluid">
+            <div class="span7">
                 <div class="media">
-                    <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+                    <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
                     <div class="media-body">
                         <h5 class="media-heading">{{ project.title }}</h5>
-                        <div>5 min</div>
+                        <div>{{ site_currency_sign }}{{ project.getTotalMonthlyDonations }}</div>
                         {% if project.status == project_statuses.unclaimed %}
                             <div class="unclaimed-state">unclaimed</div>
                         {% elif project.status == project_statuses.active %}
@@ -14,11 +14,66 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
+            <div class="span5">
                 <div class="pull-right">
-                    <span>{{ site_currency_sign }}{{ project.getTotalMonthlyDonations }}</span>
-                    <span class="chart-div-medium">{{ project.total_budget_fulfillment_percent }}%</span>
+                    <span class="chart-div-medium">
+                        <span class="text-center">{{ project.total_budget_fulfillment_percent }}%</span>
+                        <img src="{{ STATIC_URL }}img/chart_div_medium.png" class="chart-div-large" id="budget_chart_image" />
+                    </span>
                 </div>
             </div>
         </div>
     </a></li>
+
+{#    <li>#}
+{#        <a href="#" class="projects-info-block">#}
+{#            <div class="row-fluid">#}
+{#                <div class="span7">#}
+{#                    <div class="media">#}
+{#                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />#}
+{#                        <div class="media-body">#}
+{#                            <h5 class="media-heading">KDE</h5>#}
+{#                            <div>155 links</div>#}
+{#                            <div class="active-state">active</div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="span5">#}
+{#                    <div class="pull-right">#}
+{#                        <span>$65</span>#}
+{#                                                    <span class="chart-div-medium">#}
+{#                                                        <span class="text-center">100%</span>#}
+{#                                                        <img src="{{ STATIC_URL }}img/chart_div_medium.png" class="chart-div-large" id="budget_chart_image" />#}
+{#                                                    </span>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </a>#}
+{#    </li>#}
+
+
+{#    <li><a href="{% url bitfund.project.views.budget project_key=project.key %}">#}
+{#        <div class="row">#}
+{#            <div class="span4">#}
+{#                <div class="media">#}
+{#                    <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />#}
+{#                    <div class="media-body">#}
+{#                        <h5 class="media-heading">{{ project.title }}</h5>#}
+{#                        <div>5 min</div>#}
+{#                        {% if project.status == project_statuses.unclaimed %}#}
+{#                            <div class="unclaimed-state">unclaimed</div>#}
+{#                        {% elif project.status == project_statuses.active %}#}
+{#                            <div class="active-state">active</div>#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="pull-right">#}
+{#                    <span>{{ site_currency_sign }}{{ project.getTotalMonthlyDonations }}</span>#}
+{#                    <span class="chart-div-medium">{{ project.total_budget_fulfillment_percent }}%</span>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </a></li>#}
+
 {% endfor %}

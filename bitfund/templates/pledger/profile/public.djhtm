@@ -49,17 +49,16 @@
                 </dl>
                 <div>
                     {% if user.public.maintained_projects_count %}
-                    <h3>Projects maintained</h3>
-                    <dl class="dl-horizontal">
-                        {% for project in user.public.maintained_public_projects_list %}
-                            <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></dt>
-                        {% endfor %}
+                        <h3>Maintained projects </h3>
+                        <dl class="dl-horizontal">
+                            {% for project in user.public.maintained_public_projects_list %}
+                                <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></dt>
+                            {% endfor %}
+                        </dl>
                         {% if user.public.maintained_unpublished_projects_count %}
-                            <dd>popopopo</dd>
+                            <span>3 unpublished projects</span>
                         {% endif %}
-                    </dl>
                     {% endif %}
-                    <span>3 unpublished projects</span>
                     {% if user.public.is_supported_projects_list_public %}
                     <h3>Projects supported</h3>
                     <dl class="dl-horizontal">
@@ -70,7 +69,6 @@
                                     {{ supported_project.title }}
                                 {% endif %}
                             </dt>
-                            <dd>dddllll</dd>
                         {% endfor %}
                     </dl>
                     {% endif %}
