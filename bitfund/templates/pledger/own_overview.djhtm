@@ -34,72 +34,8 @@
 {% load widget_tweaks %}
 
 <div class="profile-page">
-    <section class="profile-info">
-        <div class="row-fluid">
-            <div class="span2">{% comment %}
-               {% if profile.gravatar_id %}
-                <img src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=128" />
-            {% elif profile.twitter_pic_url %}
-                <img src="{{ profile.twitter_pic_url }}" width="128" height="128" />
-            {% else %}
-                {% load gravatar %}
-                <img src="{% gravatar_for_user request.user 128 %}" />
-            {% endif %} {% endcomment %}<img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
-            </div>
-            <div class="span10">
-                <div class="row">
-                    <div class="span3">{{ user.username }} gives</div>
-                    <div class="span3">
-                        <div class="text-center">
-                            <span>{{ site_currency_sign }}{{ user.public.giving_monthly|floatformat:2 }}</span><br>
-                            this month
-                        </div>
-                    </div>
-                    <div class="span3">
-                        <div class="text-center">
-                            <span>{{ site_currency_sign }}{{ user.public.gave_totally|floatformat:2 }}</span><br>
-                            overall
-                        </div>
-                    </div>
-                </div>
-                <ul class="inline">
-                    <li>
-                        <button class="button gray active">Profile</button>
-                    </li>
-                    <li>
-                        <button class="button gray">Pledges</button>
-                    </li>
-                    <li id="create-project-link-container" class="pull-right dotted-border">
-                        <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >create project</a>
-                    </li>
-                    {% if user.public.maintained_projects_count %}
-                        <li class="pull-right">
-                           <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray">Projects</a>
-                        </li>
-                    {% endif %}
-                    <div id="create-project-popup" style="display:none;">
-                        <form action="" method="post">
-                        {% csrf_token %}
-                        <div class="text-center">
-                            {{ create_project_form.title.errors }}
-                            {{ create_project_form.title|attr:"required" }}
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="button gray">create project</button>
-                        </div>
-                        </form>
-                        <div id="similar-projects-block" style="display:none;">
-                            <div class="text-center">Existing similar projects</div>
-                            <ul id="similar-projects-list">
-                            </ul>
-                        </div>
-                    </div>
-                </ul>  
-           </div>
-        </div>
-        
-    </section>
 
+    {% include "pledger/profile_header.djhtm" %}
 
     <table class="own-overview">
         <tr>

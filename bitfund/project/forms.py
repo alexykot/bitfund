@@ -163,7 +163,10 @@ class EditProjectGoalForm(forms.ModelForm):
         youtube_video_id = None
 
         if youtube_video_url is None or youtube_video_url == '' :
-            return youtube_video_id
+            if self.instance.youtube_video_id is not None :
+                return self.instance.youtube_video_id
+            else :
+                return youtube_video_id
 
         parsed_url = urlparse.urlparse(youtube_video_url)
         if parsed_url.netloc == 'youtu.be' :

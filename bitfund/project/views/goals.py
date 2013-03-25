@@ -116,7 +116,7 @@ def goal_edit(request, project_key, goal_key):
                      }
 
     if request.method == 'POST' :
-        template_data['goal_edit_form'] = EditProjectGoalForm(request.POST, instance=goal)
+        template_data['goal_edit_form'] = EditProjectGoalForm(data=request.POST, files=request.FILES, instance=goal)
         if template_data['goal_edit_form'].is_valid() :
 
             template_data['goal_edit_form'].save()

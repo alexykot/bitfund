@@ -1,17 +1,25 @@
-from decimal import Decimal
 import os
-from django.core.files.storage import default_storage
-from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
 import math
 
 from bitfund.core.settings.project import CHART_IMAGE_TYPE
 from bitfund.core.settings.server import STATIC_ROOT
-from bitfund.project.forms import PledgeProjectNeedForm, ProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
+from bitfund.project.forms import PledgeProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
+
+def _prepare_project_template_data(request, project):
+
+    project.total_donations = project.getTotalMonthlyDonations()
+    project.monthly_budget = project.getTotalMonthlyBudget()
+    if project.monthly_budget > 0 :
+        project.budget_filled_percent = project.total_donations/project.monthly_budget*100
+    else :
+        project.budget_filled_percent = -1
+
+    return project
 
 
 def _prepare_need_item_template_data(request, project, need, pledge_need_form=None) :
@@ -55,6 +63,11 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
 
     donated_total = need.getPledgesMonthlyTotal() + need.getRedonationsMonthlyTotal() + need.getOtherSourcesMonthlyTotal()
 
+    if need.amount > 0 :
+        pledged_percent = donated_total/need.amount*100
+    else :
+        pledged_percent = -1
+
     result = {'id': need.id,
               'title': need.title,
               'brief': need.brief,
@@ -62,7 +75,7 @@ def _prepare_need_item_template_data(request, project, need, pledge_need_form=No
               'is_public': need.is_public,
               'sort_order': need.sort_order,
               'full_total': donated_total,
-              'pledged_percent': (donated_total/need.amount*100),
+              'pledged_percent': pledged_percent,
               'pledge_form': pledge_need_form,
               'last_pledge_transaction': last_pledge_transaction,
               'previous_pledges_count': previous_pledges_count,

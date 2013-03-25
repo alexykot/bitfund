@@ -10,99 +10,42 @@
 {% load widget_tweaks %}
 
 <div class="profile-page">
-    <section class="profile-info">
-        <div class="row-fluid">
-            <div class="span2">
-                <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
-            </div>
-            <div class="span10">
-                <div class="row">
-                    <div class="span3">maintainer gives</div>
-                    <div class="span3">
-                        <div class="text-center">
-                            <span><strong>$12</strong></span><br>
-                            this month
-                        </div>
-                    </div>
-                    <div class="span3">
-                        <div class="text-center">
-                            <span><strong>$23</strong></span><br>
-                            overall
-                        </div>
-                    </div>
-                </div>
-                <ul class="inline">
-                    <li>
-                        <button class="button gray active">Profile</button>
-                    </li>
-                    <li>
-                        <button class="button gray">Pledges</button>
-                    </li>
-                    <li>
-                        <button class="button gray">My pledges</button>
-                    </li>
-                </ul>              
-           </div>
-        </div>
-    </section>
-	
+
+    {% include "pledger/profile_header.djhtm" %}
+
     <hr>
     <div class="projects-band">
         <div class="row-fluid">
-        	<div class="span3">
-        		<a href="#">
-                    <div class="media">
-                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                        <div class="media-body">
-                            <h4 class="media-heading">KDE</h4>
-                            <div>{{ site_currency_sign }}153</div>
-                            <div>15%</div>
+            {% for project in projects_list %}
+                <div class="span3">
+                    <a href="{% url bitfund.pledger.views.user_profile_projects project_key=project.key %}">
+                        <div class="media">
+                            {% if project.logo %}
+                                <img class="media-object pull-left" src="{{ project.logo.url }} " />
+                            {% else %}
+                                <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+                            {% endif %}
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div>{{ site_currency_sign }}{{ project.monthly_budget|floatformat:2 }}</div>
+                                {% if project.budget_filled_percent > 0 %}
+                                    <div>{{ project.budget_filled_percent|floatformat:0 }}%</div>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        	<div class="span3">
-        		<a href="#">
-                    <div class="media">
-                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                        <div class="media-body">
-                            <h4 class="media-heading">KDE</h4>
-                            <div>{{ site_currency_sign }}153</div>
-                            <div>15%</div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        	<div class="span3">
-        		<a href="#">
-                    <div class="media">
-                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                        <div class="media-body">
-                            <h4 class="media-heading">KDE</h4>
-                            <div>{{ site_currency_sign }}153</div>
-                            <div>15%</div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        	<div class="span3">
-        		<a href="#">
-                    <div class="media">
-                        <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                        <div class="media-body">
-                            <h4 class="media-heading">KDE</h4>
-                            <div>{{ site_currency_sign }}153</div>
-                            <div>15%</div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
+            {% endfor %}
         </div>
     </div>
     <hr>
     <div class="project-attributes">
-        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
-        <span>KDE</span>
+        {% if current_project.logo %}
+            <img class="media-object pull-left" src="{{ current_project.logo.url }} " />
+        {% else %}
+            <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+        {% endif %}
+        <span><a href="{% url bitfund.project.views.budget project_key=current_project.key %}">{{ current_project.title }}</a></span>
     </div>
            
 
@@ -112,13 +55,17 @@
                 <h3>Budget</h3>
                 <div class="row-fluid">
                 	<div class="span5 chart-div-large">
-    	            	<span class="text-center">&infin;</span>
-    	            	<img src="{{ STATIC_URL }}img/chart_div.png" />
+                        {% if current_project.budget_filled_percent > 0 %}
+                            <span class="text-center">{{ current_project.budget_filled_percent|floatformat:0 }}%</span>
+                        {% else %}
+                            <span class="text-center">&infin;</span>
+                        {% endif %}
+    	            	<img src="{% url bitfund.project.views.chart_image_project project_key=current_project.key chart_size='medium' %}" />
     	            </div>
                 	<div class="span6">
-                		<p><strong>$500</strong> / month<br>in 5 active needs</p>
-                		<p><strong>$2000</strong><br>in 5 active goals</p>
-                		<a href="#" class="pull-right">edit budget</a>
+                		<p><strong>{{ site_currency_sign }}{{ current_project.monthly_budget|floatformat:2 }}</strong> / month<br>in {{ current_project.active_needs_count }} active need{{ current_project.active_needs_count|pluralize }}</p>
+                		<p><strong>{{ site_currency_sign }}{{ current_project.active_goals_sum|floatformat:2 }}</strong><br>in {{ current_project.active_goals_count }} active goal{{ current_project.active_goals_count|pluralize }}</p>
+                		<a href="{% url bitfund.project.views.budget_edit project_key=current_project.key %}" class="pull-right">edit budget</a>
                 	</div>
                 </div>
             </td>

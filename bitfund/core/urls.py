@@ -56,6 +56,7 @@ urlpatterns += patterns('bitfund.pledger.views',
                         (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
                         (r'^account/{0,}$', 'user_profile_overview'),
                         (r'^account/projects/{0,}$', 'user_profile_projects'),
+                        (r'^account/projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'user_profile_projects'),
 
                         (r'^account/existing_similar_projects/{0,}$', 'existing_similar_projects'),
 

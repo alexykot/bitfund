@@ -1,3 +1,4 @@
+{% load widget_tweaks %}
 <form action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}"
       id="form-pledge-need-{{ need.id }}" data-need_id="{{ need.id }}" method="post">
     {{ need.pledge_form.pledge_type }}
@@ -28,7 +29,7 @@
                             <li>{{ site_currency_sign }}</li>
                             <li>
                                 {{ need.pledge_form.pledge_amount.errors }}
-                                {{ need.pledge_form.pledge_amount }}
+                                {{ need.pledge_form.pledge_amount|attr:"required" }}
                             </li>
                             <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}"
                                    id="link-need-less-{{ need.id }}">less</a></li>
@@ -91,7 +92,7 @@
                             <li>{{ site_currency_sign }}</li>
                             <li>
                                 {{ need.pledge_form.pledge_amount.errors }}
-                                {{ need.pledge_form.pledge_amount }}
+                                {{ need.pledge_form.pledge_amount|attr:"required" }}
                             </li>
                             <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}"
                                    id="link-need-less-{{ need.id }}">less</a></li>
