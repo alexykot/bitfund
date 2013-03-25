@@ -36,7 +36,7 @@
 <div class="profile-page">
     <section class="profile-info">
         <div class="row-fluid">
-            <div class="span2">
+            <div class="span2">{% comment %}
                {% if profile.gravatar_id %}
                 <img src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=128" />
             {% elif profile.twitter_pic_url %}
@@ -44,7 +44,7 @@
             {% else %}
                 {% load gravatar %}
                 <img src="{% gravatar_for_user request.user 128 %}" />
-            {% endif %}
+            {% endif %} {% endcomment %}<img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
             </div>
             <div class="span10">
                 <div class="row">
@@ -69,7 +69,7 @@
                     <li>
                         <button class="button gray">Pledges</button>
                     </li>
-                    <li id="create-project-link-container" class="pull-right">
+                    <li id="create-project-link-container" class="pull-right dotted-border">
                         <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >create project</a>
                     </li>
                     {% if user.public.maintained_projects_count %}
@@ -81,14 +81,66 @@
                         <form action="" method="post">
                         {% csrf_token %}
                         <div class="text-center">
-                                {{ create_project_form.title.errors }}
-                                {{ create_project_form.title|attr:"required" }}
-                                <button type="submit" class="button gray">create project</button>
-                            </div>
+                            {{ create_project_form.title.errors }}
+                            {{ create_project_form.title|attr:"required" }}
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="button gray">create project</button>
+                        </div>
                         </form>
-                        <div id="similar-projects-block" style="display:none;">
+                        <div id="similar-projects-block" style="display:block;">
                             <div class="text-center">Existing similar projects</div>
                             <ul id="similar-projects-list">
+                                <li>
+                                    <a href="#" class="projects-info-block">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+                                                </td>
+                                                <td>  
+                                                    <h5>KDE</h5>
+                                                    <div>155 links</div>
+                                                    <div class="active-state">active</div>
+                                                </td>
+                                                <td>
+                                                    <span>$65</span>
+                                                </td>
+                                                <td class="pull-right">
+                                                    <span class="chart-div-medium">
+                                                        <span class="text-center">100%</span>
+                                                        <img src="{{ STATIC_URL }}img/chart_div_medium.png" class="chart-div-large" id="budget_chart_image" />
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="projects-info-block">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+                                                </td>
+                                                <td>
+                                                    <h5>Shotwheel</h5>
+                                                    <div>155 links</div>
+                                                    <div class="unclaimed-state">unclaimed</div>
+                                                </td>
+                                                <td>
+                                                    <span>$6500</span>
+                                                </td>
+                                                <td class="pull-right">
+                                                    <span class="chart-div-medium">
+                                                        <span class="text-center">0%</span>
+                                                        <img src="{{ STATIC_URL }}img/chart_div_medium.png" class="chart-div-large" id="budget_chart_image" />
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

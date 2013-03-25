@@ -53,8 +53,10 @@
                         <dl class="dl-horizontal">
                             {% for project in user.public.maintained_public_projects_list %}
                                 <dt><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></dt>
+                                <dd>ppppp</dd>
                             {% endfor %}
                         </dl>
+
                         {% if user.public.maintained_unpublished_projects_count %}
                             <span>3 unpublished projects</span>
                         {% endif %}

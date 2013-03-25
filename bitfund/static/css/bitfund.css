@@ -74,6 +74,10 @@ a:active, a:hover {
     text-decoration: underline;
 }
 
+a:focus {
+    text-decoration: none;
+}
+
 a:focus, button:focus, input[type="text"]:focus, input[type="checkbox"]:focus, textarea:focus, select:focus, option:focus {
     outline: 0 none;
 }
@@ -300,11 +304,11 @@ button.go {
     height: 55px;
 }
 
-.available-projects .media-body, .profile-page .span3 .media, a.projects-info-block .media {
+.available-projects .media-body, .search-result table , .profile-page .span3 .media, a.projects-info-block table {
     line-height: 18px;
 }
 
-.available-projects .media-heading, .profile-page .span3 .media-heading, .projects-info-block .media-heading {
+.available-projects .media-heading, .search-result h5, .profile-page .span3 .media-heading, .projects-info-block h5 {
     font-weight: bold;
     line-height: 18px;
     margin: 0;
@@ -323,17 +327,18 @@ button.go {
     margin-bottom: 30px;
 }
 
-.search-result .span6 .text-center {
-    padding-top: 16px;
-    padding-left: 10px;
+.search-result table {
+    width: 100%;
 }
 
-.search-result .span6 .text-center span:first-of-type {
-    font-weight: bold;
+.search-result td.text-center {
+    vertical-align: bottom;
 }
 
-.search-result .span6 .span3 {
-    padding-top: 6px;
+.search-result td .chart-div-medium, .projects-info-block td .chart-div-medium {
+    display: block;
+    height: 53px;
+    width: 53px;
 }
 
 .active-state, .achieved-state, .unclaimed-state {
@@ -757,7 +762,7 @@ ul.chart-div-legend {
     border-bottom: 1px dashed #577000;
 }
 
-.dotted-border a:hover, .support-form h4 a:hover, .dotted-border a.active, .support-form h4 a:active {
+.dotted-border a:hover, .support-form h4 a:hover, .dotted-border a.active, .dotted-border a:active, .support-form h4 a:active {
     text-decoration: none;
 }
 
@@ -912,13 +917,18 @@ ul.chart-div-legend {
 
 /* Profile-page own-overview ===============*/
 
-li.create-project-active {
+.profile-info ul.inline li.create-project-active {
     background-color: #fff;
     border-left: 1px solid #577000;
     border-right: 1px solid #577000;
     border-top: 1px solid #577000;
+    padding: 0 4px;
     position: relative;
     z-index: 100;
+}
+
+.profile-info ul.inline li.create-project-active #create-project-link {
+    line-height: 33px;    
 }
 
 #create-project-popup {
@@ -927,8 +937,7 @@ li.create-project-active {
     padding: 15px;
     position: absolute;
     right: 0;
-    top: 35px;
-    max-width: 245px;
+    top: 33px;
     z-index: 10;
 }
 
@@ -940,8 +949,16 @@ li.create-project-active {
     margin-left: 0;
 }
 
-.projects-info-block .span5 span {
-    line-height: 54px;
+#similar-projects-list table {
+    width: 100%;
+}
+
+#similar-projects-list table td {
+    padding: 0 3px;
+}
+
+#similar-projects-list table td:first-of-type {
+    width: 56px;
 }
 
 .profile-page {
