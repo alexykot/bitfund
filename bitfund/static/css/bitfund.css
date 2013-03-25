@@ -1035,16 +1035,15 @@ table.own-overview td.left, table.own-overview td.right, table.public td.left, t
 .pledges-history, .pledges-history ul {
     margin-left: 0;
 }
+.pledges-history table {
+    width: 100%;
+}
 
 .pledges-history li > .legend h4 {
     background-color: #f2f2f2;
     line-height: 30px;
     height: 30px;
     padding: 0 10px;
-}
-
-.pledges-history .span6 {
-    padding-left: 10px;
 }
 
 .pledges-history .span6 th {
