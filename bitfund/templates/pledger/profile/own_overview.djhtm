@@ -86,7 +86,7 @@
                                 <button type="submit" class="button gray">create project</button>
                             </div>
                         </form>
-                        <div id="similar-projects-block" style="display:block;">
+                        <div id="similar-projects-block" style="display:none;">
                             <div class="text-center">Existing similar projects</div>
                             <ul id="similar-projects-list">
                             </ul>
