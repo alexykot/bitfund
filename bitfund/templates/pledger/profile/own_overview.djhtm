@@ -91,56 +91,6 @@
                         <div id="similar-projects-block" style="display:none;">
                             <div class="text-center">Existing similar projects</div>
                             <ul id="similar-projects-list">
-                                <li>
-                                    <a href="#" class="projects-info-block">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
-                                                </td>
-                                                <td>  
-                                                    <h5>KDE</h5>
-                                                    <div>155 links</div>
-                                                    <div class="active-state">active</div>
-                                                </td>
-                                                <td>
-                                                    <span>$65</span>
-                                                </td>
-                                                <td class="pull-right">
-                                                    <span class="chart-div-medium">
-                                                        <span class="text-center">100%</span>
-                                                        <img src="{{ STATIC_URL }}img/chart_div_medium.png" class="chart-div-large" id="budget_chart_image" />
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="projects-info-block">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <img src="{{ STATIC_URL }}img/project_no_logo.png" />
-                                                </td>
-                                                <td>
-                                                    <h5>Shotwheel</h5>
-                                                    <div>155 links</div>
-                                                    <div class="unclaimed-state">unclaimed</div>
-                                                </td>
-                                                <td>
-                                                    <span>$6500</span>
-                                                </td>
-                                                <td class="pull-right">
-                                                    <span class="chart-div-medium">
-                                                        <span class="text-center">0%</span>
-                                                        <img src="{{ STATIC_URL }}img/chart_div_medium.png" class="chart-div-large" id="budget_chart_image" />
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </a>
-                                </li>
                             </ul>
                         </div>
                     </div>
