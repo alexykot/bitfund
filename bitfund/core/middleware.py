@@ -43,7 +43,7 @@ class UserProjectsCountMiddleware(object):
 
             pledge_subscriotions = (DonationSubscription.objects
                                                     .filter(user__id=request.user.id)
-                                                    .filter(active=True)
+                                                    .filter(is_active=True)
                                                     .exclude(project__in=project_recent_transactions)
                                                     .values('project__id')
                                                     .distinct()

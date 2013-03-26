@@ -448,7 +448,7 @@ class ProjectGoalResource(ModelResource):
         goal_budget_outstanding['formatted'] = SITE_CURRENCY_SIGN + filters.floatformat(goal_budget_outstanding_sum, 2)
 
         bundle_or_obj.data['goal_profile_URL'] = 'http://' + request.META['HTTP_HOST'] + reverse(
-            'bitfund.project.views.goal_view', kwargs={'project_key': goal.project.key,
+            'bitfund.project.views.goal', kwargs={'project_key': goal.project.key,
                                                        'goal_key': goal.key, }) + '?' + API_USER_TOKEN_PARAM_NAME + '=' + user_token
         bundle_or_obj.data['goal_budget'] = goal_budget_total
         bundle_or_obj.data['goal_outstanding'] = goal_budget_outstanding

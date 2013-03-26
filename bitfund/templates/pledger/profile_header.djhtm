@@ -29,17 +29,17 @@
             </div>
             <ul class="inline">
                 <li>
-                    <a href="{% url bitfund.pledger.views.user_profile_overview %}" class="button gray {% if current_page == 'profile' %}active{% endif %}">Profile</a>
+                    <a href="{% url bitfund.pledger.views.profile %}" class="button gray {% if current_page == 'profile' %}active{% endif %}">Profile</a>
                 </li>
 {#                <li>#}
 {#                    <button class="button gray">Pledges</button>#}
 {#                </li>#}
                 <li id="create-project-link-container" class="pull-right dotted-border">
-                    <a id="create-project-link" href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}" >create project</a>
+                    <a id="create-project-link" href="{% url bitfund.pledger.views.profile username=request.user.username %}" >create project</a>
                 </li>
                 {% if user.public.maintained_projects_count %}
                     <li class="pull-right">
-                       <a href="{% url bitfund.pledger.views.user_profile_projects %}" class="button gray {% if current_page == 'projects' %}active{% endif %}">Projects</a>
+                       <a href="{% url bitfund.pledger.views.projects %}" class="button gray {% if current_page == 'projects' %}active{% endif %}">Projects</a>
                     </li>
                 {% endif %}
                 <div id="create-project-popup" style="display:none;">

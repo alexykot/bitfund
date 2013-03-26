@@ -20,7 +20,7 @@ from bitfund.project.template_helpers import _prepare_goal_item_template_data
 
 @redirect_not_active
 @disallow_not_public_unless_maintainer
-def goal_view(request, project_key, goal_key, action=None):
+def goal(request, project_key, goal_key, action=None):
     project = get_object_or_404(Project, key=project_key)
     goal = get_object_or_404(ProjectGoal, key=goal_key)
 
@@ -69,7 +69,7 @@ def goal_view(request, project_key, goal_key, action=None):
                     for existing_transaction in existing_transactions_list :
                         existing_transaction.cancel()
 
-            return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal.key)
+            return redirect('bitfund.project.views.goal', project_key=project.key, goal_key=goal.key)
         else :
             template_data['goal'] = _prepare_goal_item_template_data(request, project, goal, pledge_form)
 
@@ -155,4 +155,4 @@ def goal_toggle(request, project_key, goal_key):
     if 'next' in request.GET :
         return redirect(request.GET['next'])
     else :
-        return redirect('bitfund.project.views.goal_view', project_key=project.key, goal_key=goal_key)
+        return redirect('bitfund.project.views.goal', project_key=project.key, goal_key=goal_key)

@@ -1,7 +1,8 @@
 import os
-from django.db.models import Sum
-from django.utils.timezone import now
 import math
+
+from django.db.models import Sum
+from django.utils.timezone import utc, now
 
 from bitfund.core.settings.project import CHART_IMAGE_TYPE
 from bitfund.core.settings.server import STATIC_ROOT
@@ -9,6 +10,7 @@ from bitfund.project.forms import PledgeProjectNeedForm, PledgeNoBudgetProjectFo
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
+
 
 def _prepare_project_template_data(request, project):
 
@@ -167,7 +169,7 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
 
     return result
 
-
+# used on the project.views.budget page mainly
 def _prepare_project_budget_template_data(request, project) :
     budget_data = {}
 
@@ -208,7 +210,6 @@ def _prepare_project_budget_template_data(request, project) :
         budget_data['total_gained_percent'] = -1
 
     return budget_data
-
 
 
 def _prepare_empty_project_template_data(request, project, pledge_form=None) :
@@ -253,10 +254,10 @@ def _get_chart_relative_filename(project_key, chart_size, need_id=None, goal_id=
     path = os.path.join(path, project_key)
 
     if need_id is not None :
-        path = os.path.join(path, 'need_'+need_id)
+        path = os.path.join(path, 'need_'+str(need_id))
 
     if goal_id is not None :
-        path = os.path.join(path, 'need_'+goal_id)
+        path = os.path.join(path, 'need_'+str(goal_id))
 
     filename = chart_size+'.'+CHART_IMAGE_TYPE
     relfilepath = os.path.join(path, filename)

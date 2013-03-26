@@ -138,10 +138,11 @@ def chart_image_need(request, project_key, need_id, chart_size):
 
     return response
 
-def chart_image_goal(request, project_key, goal_id, chart_size):
-    goal = get_object_or_404(ProjectGoal, pk=goal_id)
+def chart_image_goal(request, project_key, goal_key, chart_size):
+    project = get_object_or_404(Project, key=project_key)
+    goal = get_object_or_404(ProjectGoal, project_id=project.id, key=goal_key)
 
-    chart_relpathname = _get_chart_relative_filename(project_key, chart_size, goal_id=goal_id)
+    chart_relpathname = _get_chart_relative_filename(project_key, chart_size, goal_id=goal.id)
     chart_abspathname = STATIC_ROOT+chart_relpathname
 
     pledges_degrees = min(TOTAL_DEGREES, round(TOTAL_DEGREES * ((goal.getTotalPledges()) / goal.amount)))

@@ -51,12 +51,12 @@ urlpatterns += patterns('bitfund.core.views',
 
 #USER ACCOUNT
 urlpatterns += patterns('bitfund.pledger.views',
-                        (r'^account/{0,}$', 'user_profile_overview'),
-                        (r'^user/(?P<username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
-                        (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'user_profile_overview'),
-                        (r'^account/{0,}$', 'user_profile_overview'),
-                        (r'^account/projects/{0,}$', 'user_profile_projects'),
-                        (r'^account/projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'user_profile_projects'),
+                        (r'^account/{0,}$', 'profile'),
+                        (r'^user/(?P<username>[a-z0-9-_.]{1,})/{0,}$', 'profile'),
+                        (r'^user/(?P<external_service>tw|gh|gg|fb)/(?P<external_username>[a-z0-9-_.]{1,})/{0,}$', 'profile'),
+                        (r'^account/{0,}$', 'profile'),
+                        (r'^account/projects/{0,}$', 'projects'),
+                        (r'^account/projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'projects'),
 
                         (r'^account/existing_similar_projects/{0,}$', 'existing_similar_projects'),
 
@@ -71,13 +71,13 @@ urlpatterns += patterns('bitfund.project.views',
     #view
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'budget'),
 
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<action>pledge|drop){0,}$', 'goal_view'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<action>pledge|drop){0,}$', 'goal'),
 
     #charts
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/(?P<chart_size>medium|small|large)/{0,}$', 'chart_image_project'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/need/(?P<need_id>[0-9]{1,})/chart/(?P<chart_size>medium|small|large)/{0,}$', 'chart_image_need'),
-    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_id>[0-9]{1,})/chart/(?P<chart_size>medium|small|large)/{0,}$', 'chart_image_goal'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/goal/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/chart/(?P<chart_size>medium|small|large)/{0,}$', 'chart_image_goal'),
 
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/linked_projects/{0,}$', 'linked_projects'),
 
@@ -119,7 +119,7 @@ urlpatterns += patterns('bitfund.project.views',
 
     #perfect URLs
     (r'^(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'budget'),
-    (r'^(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal_view'),
+    (r'^(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/(?P<goal_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'goal'),
 )
 
 

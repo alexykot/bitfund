@@ -186,7 +186,7 @@
         </div>
     </div>
     <div class="maintain text-right">
-        <p>This budget for {{ project.title }} is maintained by community ambassador <a href="{% url bitfund.pledger.views.user_profile_overview username=project.maintainer.username %}">{{ project.maintainer.username }}</a>, this is because <a href="#">community decided so</a><br>
+        <p>This budget for {{ project.title }} is maintained by community ambassador <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>, this is because <a href="#">community decided so</a><br>
             {% if project.is_maintainer_confirmed %}
                 his right to maintain is <span><a href="#">verified</a></span>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">vote to dethrone</a>
             {% else %}
@@ -209,7 +209,7 @@
                         {% else %}
                             <img src="{{ STATIC_URL }}img/goal_no_image.png" />
                         {% endif %}
-                        <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
+                        <h4><a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                         {% if goal.brief  %}
                             <p>{{ goal.brief }}</p>
                         {% endif %}
@@ -274,7 +274,7 @@
                         {% else %}
                             <img src="{{ STATIC_URL }}img/goal_no_image.png" />
                         {% endif %}
-                        <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
+                        <h4><a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                         {% if goal.brief  %}
                             <p>{{ goal.brief }}</p>
                         {% endif %}
@@ -329,7 +329,7 @@
                             {% else %}
                                 <img src="{{ STATIC_URL }}img/goal_no_image.png" />
                             {% endif %}
-                            <h4><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
+                            <h4><a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                             <p>{{ goal.brief }}</p>
                             <div class="row-fluid">
                                 <div class="span4">

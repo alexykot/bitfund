@@ -3,11 +3,11 @@
         {% if request.user.is_authenticated and not user_is_stranger %}
             <li>
                 you are
-                <a href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}">{{ request.user.username }}</a>
+                <a href="{% url bitfund.pledger.views.profile username=request.user.username %}">{{ request.user.username }}</a>
             </li>
             {% if request.user_projects_support_count %}
                 <li>you're supporting
-                    <a href="{% url bitfund.pledger.views.user_profile_overview username=request.user.username %}">
+                    <a href="{% url bitfund.pledger.views.profile username=request.user.username %}">
                         {{ request.user_projects_support_count }} project{{ request.user_projects_support_count|pluralize }}
                     </a>
                 </li>
@@ -15,7 +15,7 @@
             {% if request.user_projects_own_count %}
                 <li>
                     you maintain
-                    <a href="{% url bitfund.pledger.views.user_profile_projects %}">
+                    <a href="{% url bitfund.pledger.views.projects %}">
                         {{ request.user_projects_own_count }} project{{ request.user_projects_own_count|pluralize }}
                     </a>
                 </li>

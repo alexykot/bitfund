@@ -5,16 +5,18 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
+from django.utils.datetime_safe import datetime
+
 from bitfund.core.settings.project import SITE_CURRENCY_SIGN
-from bitfund.pledger.models import Profile
-from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data
+from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES
+from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
 from bitfund.project.forms import CreateProjectForm
 from bitfund.project.lists import PROJECT_STATUS_CHOICES
 from bitfund.project.models import Project, ProjectGoal
-from bitfund.project.template_helpers import _prepare_project_template_data
+from bitfund.project.template_helpers import _prepare_project_template_data, _prepare_goal_item_template_data
 
 
-def user_profile_overview(request, username=None, external_service=None, external_username=None):
+def profile(request, username=None, external_service=None, external_username=None):
     template_data = {'request': request,
                      'today': now().today(),
                      'site_currency_sign': SITE_CURRENCY_SIGN,
@@ -97,13 +99,11 @@ def existing_similar_projects(request):
     return render_to_response('pledger/ajax-existing_similar_projects.djhtm', template_data, context_instance=RequestContext(request))
 
 @login_required
-def user_profile_projects(request, project_key=None):
-    template_data = {'request': request,
-                     'today': now().today(),
+def projects(request, project_key=None):
+    template_data = {'today': now().today(),
                      'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'current_page': 'projects',
                      }
-
-    template_data['current_page'] = 'projects'
 
     projects_list = Project.objects.filter(maintainer_id=request.user.id)
     template_data['projects_list'] = []
@@ -119,20 +119,63 @@ def user_profile_projects(request, project_key=None):
 
     template_data['current_project'] = _prepare_project_template_data(request, current_project)
     template_data['current_project'].active_needs_count = current_project.getNeedsCount()
-
     template_data['current_project'].active_goals_count = (ProjectGoal.objects
                                                            .filter(project_id=current_project.id)
                                                            .filter(is_public=True)
                                                            .count()
                                                             )
-    template_data['current_project'].active_goals_sum = (ProjectGoal.objects
+    active_goals_list = (ProjectGoal.objects
                                                          .filter(project_id=current_project.id)
                                                          .filter(is_public=True)
-                                                         .aggregate(Sum('amount'))['amount__sum']
-                                                        ) or 0
+                                                            )
+
+    template_data['current_project'].active_goals_list = []
+    for goal in active_goals_list :
+        template_data['current_project'].active_goals_list.append(_prepare_goal_item_template_data(request, current_project, goal))
 
     request.user.public = _prepare_user_public_template_data(request, request.user)
 
+    total_transactions = (DonationTransaction.objects
+                          .filter(accepting_project_id=current_project.id)
+                          .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                          .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                          .count()
+    )
+
+    template_data['current_project'].budget_history = []
+    if total_transactions > 0 :
+        month_upper_bound = (DonationTransaction.objects
+                             .filter(accepting_project_id=current_project.id)
+                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                             .order_by('-transaction_datetime')[0]
+        ).transaction_datetime
+
+        month_lower_bound = (DonationTransaction.objects
+                             .filter(accepting_project_id=current_project.id)
+                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                             .order_by('transaction_datetime')[0]
+        ).transaction_datetime
+
+        index_year = int(month_lower_bound.year)
+        index_month = int(month_lower_bound.month)
+        while True :
+            current_month = datetime(year=index_year, month=index_month, day=1, tzinfo=now().tzinfo)
+            if current_month > month_upper_bound :
+                break
+
+            index_month = index_month+1
+            if index_month > 12 :
+                index_year = index_year+1
+                index_month = 1
+
+            if now().year == current_month.year and now().month == current_month.month :
+                template_data['current_project'].budget = _prepare_project_budget_history_template_data(request, current_project, current_month)
+            else :
+                template_data['current_project'].budget_history.append(_prepare_project_budget_history_template_data(request, current_project, current_month))
+
+    template_data['request'] = request
 
     return render_to_response('pledger/projects.djhtm', template_data, context_instance=RequestContext(request))
 

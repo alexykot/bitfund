@@ -2,9 +2,11 @@ import calendar
 from django.db.models import Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import now
-from bitfund.core.settings.project import MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC
 
-from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, Profile
+from bitfund.core.helpers import add_months
+from bitfund.core.settings.project import MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC
+from bitfund.core.helpers import add_months
+from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, Profile, DONATION_TRANSACTION_TYPES_CHOICES, DonationSubscription
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import Project
 
@@ -208,3 +210,88 @@ def _prepare_user_pledges_monthly_history_data(request, user) :
 
 
     return pledges_monthly_history
+
+
+
+# used on the pledger.views.projects page
+# TODO refactor this and previous methods, merge and split functionality into several more granular chunks, unify entity naming
+def _prepare_project_budget_history_template_data(request, project, monthdate=None) :
+    budget_month_history_data = {}
+
+    budget_month_history_data['starting_balance'] = 0
+    budget_month_history_data['withdrawn'] = 0
+    budget_month_history_data['ending_balance'] = 0
+
+    if monthdate is None :
+        monthdate = datetime(now().year, now().month, 1, tzinfo=now().tzinfo)
+
+    budget_month_history_data['month'] = monthdate
+
+    this_month_start = monthdate
+    next_month_start = add_months(monthdate, 1)
+
+
+    onetime_pledges_monthly = (DonationTransaction.objects
+                               .filter(accepting_project_id=project.id)
+                               .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
+                               .filter(pledger_donation_type=DONATION_TYPES_CHOICES.onetime)
+                               .filter(transaction_datetime__gte=this_month_start)
+                               .filter(transaction_datetime__lt=next_month_start)
+                               .exclude(accepting_goal__isnull=False)
+                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+    )
+
+    budget_month_history_data['onetime_pledges_monthly_total'] = (onetime_pledges_monthly
+                                                    .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
+                                                   ) or 0
+    budget_month_history_data['onetime_pledges_monthly_count'] = onetime_pledges_monthly.count()
+    budget_month_history_data['onetime_pledges_monthly_users_count'] = onetime_pledges_monthly.values('pledger_username').distinct().count()
+
+    monthly_pledges_monthly = (DonationTransaction.objects
+                               .filter(accepting_project_id=project.id)
+                               .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
+                               .filter(pledger_donation_type=DONATION_TYPES_CHOICES.monthly)
+                               .filter(transaction_datetime__gte=this_month_start)
+                               .filter(transaction_datetime__lt=next_month_start)
+                               .exclude(accepting_goal__isnull=False)
+                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                               .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+    )
+
+    budget_month_history_data['monthly_pledges_monthly_total'] = (monthly_pledges_monthly
+                                                    .aggregate(Sum('transaction_amount'))['transaction_amount__sum']) or 0
+    budget_month_history_data['subscription_count'] = (DonationSubscription.objects
+                                         .filter(project_id=project.id)
+                                         .filter(is_active=True)
+                                         .count())
+
+
+    redonations_paidin_monthly = (DonationTransaction.objects
+                                    .filter(accepting_project_id=project.id)
+                                    .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.redonation)
+                                    .filter(transaction_datetime__gte=this_month_start)
+                                    .filter(transaction_datetime__lt=next_month_start)
+                                    .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                    .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+    )
+    budget_month_history_data['redonations_paidin_monthly_total'] = (redonations_paidin_monthly
+                                                         .aggregate(Sum('transaction_amount'))['transaction_amount__sum']) or 0
+    budget_month_history_data['redonations_paidin_monthly_projects_count'] = redonations_paidin_monthly.values('redonation_project_key').distinct().count()
+
+
+    redonations_paidout_monthly = (DonationTransaction.objects
+                                    .filter(redonation_project_id=project.id)
+                                    .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.redonation)
+                                    .filter(transaction_datetime__gte=this_month_start)
+                                    .filter(transaction_datetime__lt=next_month_start)
+                                    .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                    .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+    )
+    budget_month_history_data['redonations_paidout_monthly_total'] = (redonations_paidout_monthly
+                                                         .aggregate(Sum('transaction_amount'))['transaction_amount__sum']) or 0
+    budget_month_history_data['redonations_paidout_monthly_projects_count'] = redonations_paidout_monthly.values('accepting_project_key').distinct().count()
+
+
+    return budget_month_history_data
+

@@ -107,10 +107,6 @@ class Project(models.Model):
         return limited+lasting
 
 
-    def getTotalActiveGoalsSum(self):
-
-        return Decimal(goals_sum).quantize(Decimal('0.01'))
-
     # gets total monthly transactions recorded sum by transaction type
     def getTotalMonthlyNeedsByType(self, transaction_type, monthdate=None):
         from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES

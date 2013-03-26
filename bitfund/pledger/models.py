@@ -76,7 +76,7 @@ class DonationSubscription(models.Model):
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
     datetime_added = models.DateTimeField('date added', default=now())
-    active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     needs = models.ManyToManyField(ProjectNeed, through='DonationSubscriptionNeeds')
 

@@ -205,7 +205,7 @@
                                 <li><button data-amount="10">10</button></li>
                                 <li><button data-amount="15">15</button></li>
                                 <li><button data-amount="25">25</button></li>
-                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}#select-more"
+                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}#select-more"
                                        id="link-more">more</a></li>
                             </ul>
                             <ul id="pledge-amount-field" style="display: none;" class="less-input">
@@ -214,17 +214,17 @@
                                     {{ goal.pledge_form.pledge_amount.errors }}
                                     {{ goal.pledge_form.pledge_amount }}
                                 </li>
-                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key %}"
+                                <li class="dotted-border"><a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}"
                                        id="link-less">less</a></li>
                             </ul>
                         <div>
                             {% if goal.last_transaction %}
-                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
+                                <button data-action="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key action='pledge' %}"
                                         type="submit" class="orange button">Update pledge</button>
-                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='drop' %}"
+                                <button data-action="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key action='drop' %}"
                                         type="submit" class="orange button" >Cancel pledge</button>
                             {% else %}
-                                <button data-action="{% url bitfund.project.views.goal_view project_key=project.key goal_key=goal.key action='pledge' %}"
+                                <button data-action="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key action='pledge' %}"
                                         type="submit" class="orange button">Pledge</button>
                             {% endif %}
                         </div>
