@@ -186,11 +186,50 @@
         </div>
     </div>
     <div class="maintain text-right">
-        <p>This budget for {{ project.title }} is maintained by community ambassador <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>, this is because <a href="#">community decided so</a><br>
-            {% if project.is_maintainer_confirmed %}
-                his right to maintain is <span><a href="#">verified</a></span>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">vote to dethrone</a>
+        <p>
+            This budget is maintained by {{ project.get_maintainer_status_display }}
+            <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>,
+            this is because
+            {% if project.maintainer_reason_url %}
+                <a href="{{ project.maintainer_reason_url }}">{{ project.maintainer_reason_text }}</a>
             {% else %}
-                his right to maintain is <span><a href="#">unverified</a></span>&nbsp;&nbsp;&nbsp;&nbsp;<span><a href="#">vote to support</a></span>&nbsp;&nbsp;&nbsp;<a href="#">vote against</a>
+                {{ project.maintainer_reason_text }}
+            {% endif %}
+            <br>
+
+            {% if project_edit_access %}
+                your right to maintain is
+                {% if project.is_maintainer_confirmed %}
+                    <span><a href="#">verified</a></span>
+                {% else %}
+                    <span><a href="#">unverified</a></span>
+                {% endif %}
+            {% elif vote_maintainer %}
+                his right to maintain is
+                {% if project.is_maintainer_confirmed %}
+                    <span><a href="#">verified</a></span>
+                {% else %}
+                    <span><a href="#">unverified</a></span>
+                {% endif %}
+                &nbsp;&nbsp;&nbsp;&nbsp;you have
+                {% if vote_maintainer.vote %}
+                    voted in support on
+                {% else %}
+                    voted against on
+                {% endif %}
+                {{ vote_maintainer.date_voted }}
+            {% else %}
+                {% if project.is_maintainer_confirmed %}
+                    his right to maintain is <span><a href="#">verified</a></span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">vote to dethrone</a>
+                {% else %}
+                    his right to maintain is <span><a href="#">unverified</a></span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span><a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='support' %}">
+                        vote to support</a></span>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">vote against</a>
+                {% endif %}
             {% endif %}
         </p>
     </div>
@@ -216,7 +255,7 @@
                         <div class="span3">
                             <div class="chart-div-small">
                                 <span class="text-center">{{ goal.total_percent }}%</span>
-                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
+                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='small'%}" />
                             </div>
                         </div>
                         <div class="span3 text-center">
@@ -281,7 +320,7 @@
                         <div class="span3">
                             <div class="chart-div-small">
                                 <span class="text-center">{{ goal.total_percent }}%</span>
-                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
+                                <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='small'%}" />
                             </div>
                         </div>
                         <div class="span3 text-center">
@@ -339,7 +378,7 @@
                                         {% else %}
                                             <span class="text-center">{{ goal.total_percent }}%</span>
                                         {% endif %}
-                                        <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='small'%}" />
+                                        <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='small'%}" />
                                     </div>
                                 </div>
                                 <div class="span4 text-center">

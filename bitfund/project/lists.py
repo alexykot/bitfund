@@ -9,6 +9,15 @@ PROJECT_STATUS_CHOICES = Choices('unclaimed', 'active', 'inactive', 'archived')
 
 PROJECT_CHART_SIZES = Choices('small', 'medium', 'large')
 
+PROJECT_USER_STATUS_CHOICES = Choices(
+    ('sole_developer', u'sole developer'),
+    ('benevolent_dictator', u'benevolent dictator'),
+    ('foundation', u'FOUNDATION'),
+    ('community_ambassador', u'community ambassador'),
+    )
+
+PROJECT_MAINTAINER_VOTE = Choices('support', 'dethrone')
+
 """
 PROJECT_OUTLINK_TYPES = (
     ('site', u'Project website'),

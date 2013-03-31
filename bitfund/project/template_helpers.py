@@ -8,7 +8,7 @@ from bitfund.core.settings.project import CHART_IMAGE_TYPE
 from bitfund.core.settings.server import STATIC_ROOT
 from bitfund.project.forms import PledgeProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
-from bitfund.project.models import ProjectNeed, ProjectGoal
+from bitfund.project.models import ProjectNeed, ProjectGoal, ProjectMaintainerVote
 from bitfund.pledger.models import DonationTransaction, DonationSubscription, DonationSubscriptionNeeds, DONATION_TRANSACTION_STATUSES_CHOICES
 
 

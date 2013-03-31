@@ -151,7 +151,7 @@
                     <div class="span5">
                         <div class="chart-div-large" id="goal-{{goal.id}}-chart">
                             <span class="text-center">{{goal.total_percent}}%</span>
-                            <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_id=goal.id chart_size='medium' %}" id="goal-chart"/>
+                            <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='medium' %}" id="goal-chart"/>
                         </div>
                         <ul class="chart-div-legend">
                             <li><span class="green-marker"></span>Backers support</li>

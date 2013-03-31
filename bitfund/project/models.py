@@ -22,13 +22,18 @@ class Project(models.Model):
     key = models.CharField(max_length=80, unique=True)
     title = models.CharField(max_length=255)
     brief = models.CharField(max_length=255, null=True, blank=True)
-    categories = models.ManyToManyField(ProjectCategory)
+    categories = models.ManyToManyField(ProjectCategory) #not used at the moment
     logo = models.ImageField(upload_to='project_logo/', null=True, blank=True)
     date_added = models.DateTimeField('date added', default=now())
     is_public = models.BooleanField(default=True)
     status = models.CharField(max_length=80, choices=PROJECT_STATUS_CHOICES, default=PROJECT_STATUS_CHOICES.unclaimed)
     is_refused_to_give_to_bitfund = models.BooleanField(default=False)
-    #is_maintainer_confirmed = models.BooleanField(default=False)
+    maintainer_status = models.CharField(max_length=80, choices=PROJECT_USER_STATUS_CHOICES,
+                                                    default=PROJECT_USER_STATUS_CHOICES.sole_developer,
+                                                    null=True, blank=True)
+    maintainer_reason_text = models.CharField(max_length=255, null=True, blank=True)
+    maintainer_reason_url = models.CharField(max_length=255, null=True, blank=True)
+    is_maintainer_confirmed = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title
@@ -227,6 +232,13 @@ class Project(models.Model):
         else :
             return False
 
+class ProjectMaintainerVote(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    maintainer = models.ForeignKey(User, related_name='maintainer', on_delete=models.PROTECT)
+    user = models.ForeignKey(User, related_name='user', on_delete=models.PROTECT)
+    vote = models.BooleanField(default=True) #True means support, False - against
+    comment = models.CharField(max_length=255, null=True, blank=True)
+    date_voted = models.DateTimeField('date added', default=now())
 
 class ProjectGratefulUsers(models.Model):
     project = models.ForeignKey(Project)

@@ -2,7 +2,7 @@
 from decimal import getcontext
 
 #misc project related
-PROJECT_VERSION = '0.6'
+PROJECT_VERSION = '0.8'
 
 SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE = 'hidden-entrance'
 PROTOTYPE_LANDING_PAGE_URL = '/index.htm'

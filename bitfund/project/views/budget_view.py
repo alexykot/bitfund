@@ -46,6 +46,8 @@ def budget(request, project_key):
 
     template_data['empty_project'] = _prepare_empty_project_template_data(request, project)
 
+    #template_data['maintainer_status_text'] = PROJECT_USER_STATUS_CHOICES.get_maintainer_status_choices_display(project.maintainer_status)
+
     #GOALS
 
     if template_data['project_edit_access'] :
@@ -82,6 +84,19 @@ def budget(request, project_key):
         if template_data['project_public_goals_count'] > 0 :
             for goal in project_goals:
                 template_data['project_public_goals'].append(_prepare_goal_item_template_data(request, project, goal))
+
+
+    if request.user.is_authenticated() :
+        vote = (ProjectMaintainerVote.objects
+                .filter(project_id=project.id)
+                .filter(user_id=request.user.id))
+        if vote.count() > 0 :
+            template_data['user_voted'] = True
+            template_data['user_vote'] = vote[0].vote
+        else :
+            template_data['user_voted'] = False
+    else :
+        template_data['user_voted'] = False
 
 
     return render_to_response('project/budget/budget.djhtm', template_data, context_instance=RequestContext(request))

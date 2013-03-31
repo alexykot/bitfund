@@ -25,13 +25,6 @@ DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
     ('cancelled', u'Cancelled'), # trasaction cancelled by the issuer
 )
 
-USER_PROJECT_STATUS_CHOICES = Choices(
-    ('sole_developer', u'Sole Developer'),
-    ('benevolent_dictator', u'Benevolent Dictator'),
-    ('foundation', u'Foundation'),
-    ('community_ambassador', u'Community Ambassador'),
-)
-
 class Profile(User):
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='profile')
     api_token = models.CharField(max_length=255, unique=True)
@@ -39,8 +32,6 @@ class Profile(User):
     twitter_pic_url = models.CharField(max_length=1000, null=True, blank=True)
     donation_amount_is_public = models.BooleanField(default=True)
     projects_list_is_public = models.BooleanField(default=False)
-    status_in_project = models.CharField(max_length=80, choices=USER_PROJECT_STATUS_CHOICES,
-                                         null=True, blank=True)
 
     # calculates total donations from this user to certain project
     def getTotalDonationsByProject(self, project):

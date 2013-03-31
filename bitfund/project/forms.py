@@ -1,3 +1,4 @@
+from django.forms.widgets import HiddenInput
 import re
 from decimal import Decimal, getcontext
 import urlparse
@@ -56,26 +57,6 @@ class EditProjectForm(forms.ModelForm):
         fields  = {'key', 'title', 'brief', 'logo', 'is_public'}
         widgets = {'is_public'    : forms.RadioSelect(choices=YES_NO_CHOICES),
                    }
-
-#a form for new backers, email only. 
-class NewBackerForm(forms.Form):
-    user_email  = forms.EmailField(label=_('Please tell us your email so we could remind you about pledges you\'ll enter today'), required = True)
-
-#a one-field form for need or goal amount
-class SupportProjectForm(forms.Form):
-    amount      = forms.DecimalField(max_value=9999999999, min_value=0, decimal_places=2, max_digits=12, required=False)
-    need        = forms.IntegerField(widget=forms.HiddenInput, required=False)
-    goal        = forms.IntegerField(widget=forms.HiddenInput, required=False)
-    is_monthly  = forms.BooleanField(required=False)
-
-class ProjectNeedsGoalsListForm(forms.Form):
-    needsgoals = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-
-    def __init__(self, project_needsgoals_choices=[], *args, **kw):
-        super(forms.Form, self).__init__(*args, **kw)
-        
-        self.fields['needsgoals'].choices = project_needsgoals_choices
-    
 
 class ProjectNeedForm(forms.ModelForm):
     title = forms.CharField(max_length=255, required=False)
@@ -332,3 +313,23 @@ class PledgeProjectGoalForm(forms.Form):
 class PledgeNoBudgetProjectForm(forms.Form):
     pledge_type = forms.ChoiceField(required=True, widget=forms.HiddenInput, choices=DONATION_TYPES_CHOICES)
     pledge_amount = forms.DecimalField(decimal_places=8, required=True)
+
+class VoteMaintainerForm(forms.Form):
+    vote = forms.BooleanField(widget=forms.HiddenInput)
+    maintainer = forms.ModelChoiceField(queryset=User.objects.all()) #reinitialised in __init__
+    comment = forms.CharField(max_length=255, required=False, widget=forms.Textarea)
+
+    def __init__(self, project, *args, **kw):
+        super(VoteMaintainerForm, self).__init__(*args, **kw)
+
+        maintainer_queryset = User.objects.filter(id=project.maintainer_id)
+        self.fields['maintainer'] = forms.ModelChoiceField(queryset=maintainer_queryset, widget=HiddenInput)
+
+    def clean(self):
+        cleaned_data = super(VoteMaintainerForm, self).clean()
+
+        if (('vote' not in cleaned_data or cleaned_data['vote'] == False)
+            and ('comment' not in cleaned_data or cleaned_data['comment'] == '')) :
+            raise ValidationError(_(u'Please explain why you\'re voting against.'), code='invalid')
+
+        return cleaned_data
