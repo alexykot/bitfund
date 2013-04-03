@@ -113,7 +113,7 @@
             {% endif %}
             {% if not request.user.is_payment_card_attached %}
                 <div class="text-center">
-                    <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
+                    <span class="orange-bg">you don't have <a href="{% url bitfund.pledger.views.attach_bank_card %}">payment card attached</a></span>
                 </div>
             {% endif %}
             </div>

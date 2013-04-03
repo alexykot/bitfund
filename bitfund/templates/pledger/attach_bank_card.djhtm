@@ -3,7 +3,29 @@
 {% block title %} attach payment card - {{ user.username }} - {% endblock %}
 
 {% block pagescripts %}
+<script type="text/javascript" src="https://js.balancedpayments.com/v1/balanced.js"></script>
+<script type="text/javascript">
+    balanced.init('{{ balanced_marketplace_uri }}');
+</script>
+<script type="text/javascript">
+{#    var cardData = {#}
+{#    "name": "Test",                 // Optional#}
+{#    "card_number": "4111 1111 1111 1111",#}
+{#    "expiration_month": 2,#}
+{#    "expiration_year": 2014,#}
+{#    };#}
 
+
+    $(document).ready(function () {
+{#        balanced.card.create(cardData, function(response) {#}
+{#            alert(response.status);#}
+{#            alert(response.error);#}
+{#            alert(JSON.stringify(response.data));#}
+{##}
+{##}
+{#            );#}
+    });
+</script>
 {% endblock %}
 
 {% block content %}

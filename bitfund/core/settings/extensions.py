@@ -49,3 +49,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.load_extra_data',
     'social_auth.backends.pipeline.user.update_user_details'
 )
+
+
+#balanced payments
+BALANCED = {
+    'API_KEY': BALANCED_API_KEY,
+    'MARKETPLACE_URI' : '/v1/marketplaces/TEST-MP7aWutSXeCp94yZ8E39fYZU',
+    }

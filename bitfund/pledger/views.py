@@ -1,3 +1,5 @@
+import balanced
+
 from django.db.models.aggregates import Sum
 from django.http import HttpResponseNotFound
 from django.contrib.auth.models import User
@@ -7,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.utils.datetime_safe import datetime
 
+from bitfund.core.settings.extensions import BALANCED
 from bitfund.core.settings.project import SITE_CURRENCY_SIGN
 from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES
 from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
@@ -181,7 +184,16 @@ def projects(request, project_key=None):
 
 @login_required
 def attach_bank_card(request):
-    return render_to_response('pledger/attach_bank_card.djhtm', {}, context_instance=RequestContext(request))
+    template_data = {'request':request,
+                     'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'current_page': 'profile',
+                     }
+
+
+    #balanced
+
+    return render_to_response('pledger/attach_bank_card.djhtm', template_data, context_instance=RequestContext(request))
 
 @login_required
 def attach_bank_account(request):
