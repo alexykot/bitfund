@@ -42,11 +42,10 @@
             <div class="row-fluid">
                 <div class="span4 project-attributes">
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                        <!-- <img src="{{ STATIC_URL }}img/project_img.png" /> -->
-                        {% if logo %}
-                            <img src="{{ logo.url }} " />
-                        {% elif project.logo %}
+                        {% if project.logo %}
                             <img src="{{ project.logo.url }} " />
+                        {% else %}
+                            <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                         {% endif %}
                         {% comment %}
                         {{ project_form.logo.errors }}
@@ -65,8 +64,7 @@
                 <div class="span4 text-right">
                     <div class="project-meta">
                         <a href="{% url bitfund.project.views.budget project_key=project.key %}">quit edit mode</a>
-                        <a href="#" value="Save" id="save-budget" class="button button-small gray">Save</a>
-                        <a href="#" class="button button-small gray">{% if project.is_public %}unpublish{% else %}publish{% endif %}</a>
+                        <button type="submit" value="Save" id="save-budget" class="button gray">Save</button>
                     </div>
                 </div>
             </div>
@@ -150,10 +148,21 @@
                     {% endfor %}
                 </div>
                 <button id="button-add-need" class="button gray pull-right">add need</button>
-                
             </div><!-- goals-column -->
 
         </div><!-- budget-n-goals -->
+        <div class="maintain text-right">
+            <p> {{ project_form.maintainer_status.errors }}
+                This budget is maintained by {{ project_form.maintainer_status }}
+                <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>,
+                this is because
+                {{ project_form.maintainer_reason_text.errors }}
+                {{ project_form.maintainer_reason_text|attr:"required"|attr:"placeholder:text" }}
+                {{ project_form.maintainer_reason_url.errors }}
+                {{ project_form.maintainer_reason_url|attr:"placeholder:url" }}
+            </p>
+        </div>
+
     </form>
 
 </div><!-- project-goals -->

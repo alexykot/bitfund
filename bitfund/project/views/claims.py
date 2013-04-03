@@ -10,8 +10,8 @@ from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
                                            RGBCOLOR_DONUT_CHART_REDONATIONS,
                                            )
 from bitfund.pledger.models import DonationSubscription
-from bitfund.project.decorators import disallow_not_public_unless_maintainer, redirect_active, user_is_not_project_maintainer
-from bitfund.project.forms import PledgeNoBudgetProjectForm, VoteMaintainerForm
+from bitfund.project.decorators import disallow_not_public_unless_maintainer, redirect_active, user_is_not_project_maintainer, user_not_voted_maintainer_yet, user_not_reported_project_yet
+from bitfund.project.forms import PledgeNoBudgetProjectForm, VoteMaintainerForm, ClaimProjectForm
 from bitfund.project.models import *
 from bitfund.project.template_helpers import _prepare_project_budget_template_data
 
@@ -62,7 +62,7 @@ def unclaimed(request, project_key):
             return redirect('bitfund.project.views.unclaimed', project_key=project.key)
         else :
 
-            return render_to_response('project/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
+            return render_to_response('project/claims_votes/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
     else :
         template_data['pledge_form'] = PledgeNoBudgetProjectForm(initial={'pledge_type':DONATION_TYPES_CHOICES.monthly})
         pledge_subscription = (DonationSubscription.objects
@@ -71,7 +71,8 @@ def unclaimed(request, project_key):
         if pledge_subscription.count() == 1 :
             template_data['pledge_subscription'] = pledge_subscription[0]
 
-    return render_to_response('project/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('project/claims_votes/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
+
 
 @redirect_active
 @disallow_not_public_unless_maintainer
@@ -82,30 +83,32 @@ def claim(request, project_key):
                      'request': request,
                      'today': now().today(),
                      'site_currency_sign': SITE_CURRENCY_SIGN,
-                     'chartPledgesColor': RGBCOLOR_DONUT_CHART_PLEDGES,
-                     'chartRedonationsColor': RGBCOLOR_DONUT_CHART_REDONATIONS,
-                     'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
-                     'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
                      }
-    #BUDGET, pledges, redonations, other sources, donut charts radiants
-    template_data['budget'] = _prepare_project_budget_template_data(request, project)
 
-    return render_to_response('project/claim.djhtm', template_data, context_instance=RequestContext(request))
+    if request.method == 'POST' :
+        template_data['claim_form'] = ClaimProjectForm(data=request.POST, initial={'maintainer_username':request.user.username})
+        if template_data['claim_form'].is_valid() :
+            project.maintainer_id = request.user.id
+            project.maintainer_status = template_data['claim_form'].cleaned_data['maintainer_role']
+            project.maintainer_reason_text = template_data['claim_form'].cleaned_data['maintainer_reason_text']
+            project.maintainer_reason_url = template_data['claim_form'].cleaned_data['maintainer_reason_url']
+            project.status = PROJECT_STATUS_CHOICES.active
+            project.is_maintainer_confirmed = False
+            project.save()
 
-# @disallow_not_public_unless_maintainer
-# def maintainer_verification(request, project_key):
-#     project = get_object_or_404(Project, key=project_key)
-#
-#     template_data = {'project': project,
-#                      'request': request,
-#                      'today': now().today(),
-#                      'site_currency_sign': SITE_CURRENCY_SIGN,
-#                      }
-#
-#     return render_to_response('project/claim.djhtm', template_data, context_instance=RequestContext(request))
+            return redirect('bitfund.project.views.budget', project_key=project.key)
+        else :
+            return render_to_response('project/claims_votes/claim.djhtm', template_data, context_instance=RequestContext(request))
+
+    else :
+        template_data['claim_form'] = ClaimProjectForm(initial={'maintainer_username':request.user.username})
+
+    return render_to_response('project/claims_votes/claim.djhtm', template_data, context_instance=RequestContext(request))
+
 
 @login_required
 @user_is_not_project_maintainer
+@user_not_voted_maintainer_yet
 def vote_maintainer(request, project_key, action=None):
     project = get_object_or_404(Project, key=project_key)
 
@@ -139,4 +142,18 @@ def vote_maintainer(request, project_key, action=None):
 
 
 
-    return render_to_response('project/vote_maintainer.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('project/claims_votes/vote_maintainer.djhtm', template_data, context_instance=RequestContext(request))
+
+@login_required
+@user_is_not_project_maintainer
+@user_not_reported_project_yet
+def report(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
+    project_report = ProjectReport()
+    project_report.project_id = project.id
+    project_report.reporter_id = request.user.id
+    project_report.save()
+
+    return redirect('bitfund.project.views.budget', project_key=project.key)
+

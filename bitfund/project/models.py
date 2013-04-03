@@ -32,7 +32,7 @@ class Project(models.Model):
                                                     default=PROJECT_USER_STATUS_CHOICES.sole_developer,
                                                     null=True, blank=True)
     maintainer_reason_text = models.CharField(max_length=255, null=True, blank=True)
-    maintainer_reason_url = models.CharField(max_length=255, null=True, blank=True)
+    maintainer_reason_url = models.TextField(null=True, blank=True)
     is_maintainer_confirmed = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -239,6 +239,12 @@ class ProjectMaintainerVote(models.Model):
     vote = models.BooleanField(default=True) #True means support, False - against
     comment = models.CharField(max_length=255, null=True, blank=True)
     date_voted = models.DateTimeField('date added', default=now())
+
+class ProjectReport(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    reporter = models.ForeignKey(User, on_delete=models.PROTECT)
+    comment = models.CharField(max_length=255, null=True, blank=True)
+    date_reported = models.DateTimeField('date added', default=now())
 
 class ProjectGratefulUsers(models.Model):
     project = models.ForeignKey(Project)

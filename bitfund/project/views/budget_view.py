@@ -87,16 +87,26 @@ def budget(request, project_key):
 
 
     if request.user.is_authenticated() :
+        report = (ProjectReport.objects
+                    .filter(project_id=project.id)
+                    .filter(reporter_id=request.user.id)
+                    )
+        if report.count() > 0 :
+            template_data['project_report'] = report[0]
+        else :
+            template_data['project_report'] = False
         vote = (ProjectMaintainerVote.objects
                 .filter(project_id=project.id)
                 .filter(user_id=request.user.id))
         if vote.count() > 0 :
-            template_data['user_voted'] = True
-            template_data['user_vote'] = vote[0].vote
+            template_data['maintainer_vote'] = vote[0]
         else :
-            template_data['user_voted'] = False
+            template_data['maintainer_vote'] = False
     else :
-        template_data['user_voted'] = False
+        template_data['maintainer_vote'] = False
+        template_data['project_report'] = False
+
+
 
 
     return render_to_response('project/budget/budget.djhtm', template_data, context_instance=RequestContext(request))

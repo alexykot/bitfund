@@ -1,0 +1,114 @@
+{% extends "core/base.djhtm" %}
+{% load widget_tweaks %}
+{% block title %}claim {{ project.title }} - {% endblock title %}
+
+{% block pagescripts %}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        $(document).ready(function () {
+
+            $('#id_maintainer_reason_text, #id_maintainer_reason_url').keyup(function(event){
+                $('#maintainer-reason-link').attr('href', $('#id_maintainer_reason_url').val());
+                $('#maintainer-reason-link').text($('#id_maintainer_reason_text').val());
+            });
+            $('#id_maintainer_role').change(function(event){
+                $('#maintainer-project-role').text($(this).find('option:selected').text());
+            });
+
+
+            {% if pledge_subscription %}
+                selectAmount({{ pledge_subscription.amount }});
+            {% endif %}
+
+            $('#options-button-sets button').click(function(event){
+                event.preventDefault();
+                selectAmount($(this).data('amount'));
+            });
+
+            $('li#pledge-amount-field input').keyup(function(){
+                selectAmount($(this).attr('value'));
+            });
+
+            $('#button-drop-pledge').click(function(event){
+                event.preventDefault()
+                selectAmount(0);
+                $("form#form-pledge").submit();
+            });
+
+
+
+
+        });
+    </script>
+{% endblock pagescripts %}
+
+{% block content %}
+    <div class="project-goals">
+        
+        <div class="header">
+            <div class="row-fluid">
+                <div class="span8 project-attributes">
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                        {% if project.logo %}
+                            <img src="{{ project.logo.url }} " />
+                        {% else %}
+                            <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+                        {% endif %}
+                    </a>
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
+                </div>
+                <div class="span2">
+                    <span class="unclaimed">unclaimed</span>
+                </div>
+                <div class="span2">
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid budget-n-goals">
+            <div class="span12 budget-column">
+                <h5>&nbsp;</h5>
+                <div>
+                    <div class="row-fluid">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {{ claim_form.errors }}
+                            You're claiming a right to maintain budget for {{ project.title }}. Please provide a few bits about yourself.
+                            <br />
+                            Information you will provide here will be public.
+                            <br /><br />
+                            You are {{ claim_form.maintainer_role }}<br />
+                            You're known as {{ claim_form.maintainer_username|attr:"disabled"  }}<br />
+                            You claim the project because {{ claim_form.maintainer_reason_text }}<br />
+                            Optional link to detailed public explanation, community discussion, foundation press release etc {{ claim_form.maintainer_reason_url }}<br />
+                            <button type="submit" class="button gray">Claim</button> <a href="{% url bitfund.project.views.unclaimed project_key=project.key %}">cancel</a>
+                        </form>
+                        <br /><br /><br />
+                        On the project page information you're providing will look like this:
+
+                        <div class="maintain text-right">
+                            <p>
+                                This budget is maintained by <span id="maintainer-project-role"></span>
+                                <a href="{% url bitfund.pledger.views.profile username=request.user.username %}">{{ request.user.username }}</a>,
+                                this is because
+                                <a href="" id="maintainer-reason-link"></a>
+
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- goals-column -->
+    </div>
+</div>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+        });
+    </script>
+
+
+{% endblock content %}
+
+

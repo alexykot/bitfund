@@ -1,13 +1,12 @@
-from django.forms.widgets import HiddenInput
 import re
-from decimal import Decimal, getcontext
 import urlparse
+from decimal import Decimal, getcontext
 
 from django.utils.encoding import smart_unicode
 from django.core.exceptions import ValidationError
-from django.utils.timezone import make_aware, now
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+from django.forms.widgets import HiddenInput
 
 from bitfund.core.models import *
 from bitfund.core.settings.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH, MIN_GOAL_TIMELENGTH_DAYS
@@ -29,15 +28,7 @@ class CreateProjectForm(forms.Form):
         return title
 
 class EditProjectForm(forms.ModelForm):
-    def __init__(self, *args, **kw):
-        super(forms.ModelForm, self).__init__(*args, **kw)
-        self.fields.keyOrder = [
-            'title',
-            'key',
-            'is_public',
-            'logo',
-            'brief',
-            ]
+    maintainer_reason_url = forms.URLField(required=False)
 
     def clean_key(self):
         key     = self.cleaned_data['key'].lower()
@@ -54,9 +45,10 @@ class EditProjectForm(forms.ModelForm):
     
     class Meta:
         model   = Project
-        fields  = {'key', 'title', 'brief', 'logo', 'is_public'}
-        widgets = {'is_public'    : forms.RadioSelect(choices=YES_NO_CHOICES),
-                   }
+        fields  = {'key', 'title', 'brief', 'logo',
+                   'maintainer_status',
+                   'maintainer_reason_text', 'maintainer_reason_url',
+        }
 
 class ProjectNeedForm(forms.ModelForm):
     title = forms.CharField(max_length=255, required=False)
@@ -315,9 +307,10 @@ class PledgeNoBudgetProjectForm(forms.Form):
     pledge_amount = forms.DecimalField(decimal_places=8, required=True)
 
 class VoteMaintainerForm(forms.Form):
-    vote = forms.BooleanField(widget=forms.HiddenInput)
+    vote = forms.BooleanField(widget=forms.HiddenInput, required=False)
     maintainer = forms.ModelChoiceField(queryset=User.objects.all()) #reinitialised in __init__
     comment = forms.CharField(max_length=255, required=False, widget=forms.Textarea)
+
 
     def __init__(self, project, *args, **kw):
         super(VoteMaintainerForm, self).__init__(*args, **kw)
@@ -330,6 +323,13 @@ class VoteMaintainerForm(forms.Form):
 
         if (('vote' not in cleaned_data or cleaned_data['vote'] == False)
             and ('comment' not in cleaned_data or cleaned_data['comment'] == '')) :
-            raise ValidationError(_(u'Please explain why you\'re voting against.'), code='invalid')
+            self._errors['comment'] = _(u'Please explain why you\'re voting against.')
+            #raise ValidationError(_(u'Please explain why you\'re voting against.'), code='invalid')
 
         return cleaned_data
+
+class ClaimProjectForm(forms.Form):
+    maintainer_role = forms.ChoiceField(choices=PROJECT_USER_STATUS_CHOICES, required=True)
+    maintainer_username = forms.CharField(max_length=255, required=False)
+    maintainer_reason_text = forms.CharField(max_length=255, required=True)
+    maintainer_reason_url = forms.CharField(required=False)

@@ -85,11 +85,14 @@ urlpatterns += patterns('bitfund.project.views',
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_empty_project/{0,}$', 'crud_pledge_empty_project'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/crud_pledge_empty_project/(?P<action>pledge|drop_subscription|switch_monthly)/{0,}$', 'crud_pledge_empty_project'),
 
-    #claims
+    #claims, votes, reports
     (r'^unclaimed/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'unclaimed'),
     (r'^claim/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'claim'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/maintainer_vote/{0,}$', 'vote_maintainer'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/maintainer_vote/(?P<action>support|dethrone)/{0,}$', 'vote_maintainer'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/report/{0,}$', 'report'),
+
+
 
     #CrUD
     ##projects

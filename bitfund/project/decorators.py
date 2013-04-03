@@ -89,3 +89,40 @@ def redirect_active(view):
             return view(request, project_key=project_key, *args, **kwargs)
 
     return _wrapped_view
+
+
+def user_not_voted_maintainer_yet(view):
+    @wraps(view)
+    def _wrapped_view(request, *args, **kwargs):
+        project_key = kwargs.pop('project_key')
+        project = get_object_or_404(Project, key=project_key)
+        project_maintainer_votes_count = (ProjectMaintainerVote.objects
+                                          .filter(project_id=project.id)
+                                          .filter(maintainer_id=project.maintainer_id)
+                                          .filter(user_id=request.user.id)
+                                          .count()
+                                            )
+        if project_maintainer_votes_count != 0:
+            return redirect('bitfund.project.views.budget', project_key=project_key)
+        else:
+            return view(request, project_key=project_key, *args, **kwargs)
+
+    return _wrapped_view
+
+
+def user_not_reported_project_yet(view):
+    @wraps(view)
+    def _wrapped_view(request, *args, **kwargs):
+        project_key = kwargs.pop('project_key')
+        project = get_object_or_404(Project, key=project_key)
+        project_reports_count = (ProjectReport.objects
+                                          .filter(project_id=project.id)
+                                          .filter(reporter_id=request.user.id)
+                                          .count()
+        )
+        if project_reports_count != 0:
+            return redirect('bitfund.project.views.budget', project_key=project_key)
+        else:
+            return view(request, project_key=project_key, *args, **kwargs)
+
+    return _wrapped_view

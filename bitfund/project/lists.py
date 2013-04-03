@@ -12,7 +12,7 @@ PROJECT_CHART_SIZES = Choices('small', 'medium', 'large')
 PROJECT_USER_STATUS_CHOICES = Choices(
     ('sole_developer', u'sole developer'),
     ('benevolent_dictator', u'benevolent dictator'),
-    ('foundation', u'FOUNDATION'),
+    ('foundation', u'foundation representative'),
     ('community_ambassador', u'community ambassador'),
     )
 

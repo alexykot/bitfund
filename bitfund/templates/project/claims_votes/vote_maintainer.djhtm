@@ -1,5 +1,5 @@
 {% extends "core/base.djhtm" %}
-
+{% load widget_tweaks %}
 {% block title %}{{ project.title }} - unclaimed  - {% endblock title %}
 
 {% block pagescripts %}
@@ -26,6 +26,7 @@
                         {% else %}
                             <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                         {% endif %}
+                    </a>
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
                 </div>
             </div>
@@ -68,14 +69,15 @@
                     <div>
                         <form action="" method="post">
                             {% csrf_token %}
+                            {{ vote_form.errors }}
                             I'm voting against
                             <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>.
-                            The vote is not recallable.
-                            {{ vote_form.errors }}
+                            I understand that this vote is public and cannot be .
                             {{ vote_form.maintainer }}
                             {{ vote_form.vote }}
                             <p>I'm voting so because:</p>
-                            {{ vote_form.comment }}
+                            {{ vote_form.comment.errors }}
+                            {{ vote_form.comment|attr:"required" }}
                             <button type="submit" class="button button-small gray">Dethrone</button>
                             <a href="{% url bitfund.project.views.budget project_key=project.key %}">cancel</a>
                         </form>

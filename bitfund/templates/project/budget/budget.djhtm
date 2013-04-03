@@ -53,6 +53,7 @@
                     {% else %}
                         <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                     {% endif %}
+                </a>
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
                 <div class="span2">
@@ -204,7 +205,7 @@
                 {% else %}
                     <span><a href="#">unverified</a></span>
                 {% endif %}
-            {% elif vote_maintainer %}
+            {% elif maintainer_vote %}
                 his right to maintain is
                 {% if project.is_maintainer_confirmed %}
                     <span><a href="#">verified</a></span>
@@ -212,12 +213,19 @@
                     <span><a href="#">unverified</a></span>
                 {% endif %}
                 &nbsp;&nbsp;&nbsp;&nbsp;you have
-                {% if vote_maintainer.vote %}
-                    voted in support on
+                {% if maintainer_vote.vote %}
+                    {% if maintainer_vote.comment == '' %}
+                        voted in support on {{ maintainer_vote.date_voted|date:"SHORT_DATE_FORMAT" }}
+                    {% else %}
+                        <span style="border-bottom: 1px dashed #333333; cursor: help;" class="dotted-border" title="{{ maintainer_vote.comment }}">voted in support on {{ maintainer_vote.date_voted|date:"SHORT_DATE_FORMAT" }}</span>
+                    {% endif %}
                 {% else %}
-                    voted against on
+                    {% if maintainer_vote.comment == '' %}
+                        voted against on {{ maintainer_vote.date_voted|date:"SHORT_DATE_FORMAT" }}
+                    {% else %}
+                        <span style="border-bottom: 1px dashed #333333; cursor: help;" title="{{ maintainer_vote.comment }}">voted against on {{ maintainer_vote.date_voted|date:"SHORT_DATE_FORMAT" }}</span>
+                    {% endif %}
                 {% endif %}
-                {{ vote_maintainer.date_voted }}
             {% else %}
                 {% if project.is_maintainer_confirmed %}
                     his right to maintain is <span><a href="#">verified</a></span>
@@ -232,6 +240,15 @@
                 {% endif %}
             {% endif %}
         </p>
+        {% if project_report %}
+            <br />
+            <p>project reported on {{ project_report.date_reported|date:"SHORT_DATE_FORMAT" }}</p>
+        {% elif not project_edit_access %}
+            <br /><p><a href="{% url bitfund.project.views.report project_key=project.key %}"
+               onclick="return confirm('You\'re going to report this project as fake, malicious, unapropriate or similar unwanted content. Are you sure?')">report project</a>
+            as fake, malicious or unapropriate</p>
+        {% endif %}
+
     </div>
 
 
