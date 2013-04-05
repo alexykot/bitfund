@@ -54,5 +54,5 @@ SOCIAL_AUTH_PIPELINE = (
 #balanced payments
 BALANCED = {
     'API_KEY': BALANCED_API_KEY,
-    'MARKETPLACE_URI' : '/v1/marketplaces/TEST-MP7aWutSXeCp94yZ8E39fYZU',
+    'MARKETPLACE_URI' : ' 	/v1/marketplaces/TEST-MP7aWutSXeCp94yZ8E39fYZU',
     }

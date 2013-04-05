@@ -1,6 +1,6 @@
 <div class="navbar">
     <ul class="nav pull-right">
-        {% if request.user.is_authenticated and not user_is_stranger %}
+        {% if request.user.is_authenticated %}
             <li>
                 you are
                 <a href="{% url bitfund.pledger.views.profile username=request.user.username %}">{{ request.user.username }}</a>

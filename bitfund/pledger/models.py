@@ -61,6 +61,20 @@ def save_user_profile(request, *args, **kwargs):
 
     return None
 
+#bank card data. only pieces that safe and allowed to store here
+class BankCard(User):
+    user = models.OneToOneField(User, unique=True)
+    uri = models.CharField(max_length=255, unique=True)
+    brand = models.CharField(max_length=25)
+    last_four_digits = models.CharField(max_length=4)
+    is_valid = models.BooleanField()
+    name_on_card = models.CharField(max_length=255, null=True, blank=True)
+    address_1 = models.CharField(max_length=255, null=True, blank=True)
+    address_2 = models.CharField(max_length=255, null=True, blank=True)
+    state = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    country_code = models.CharField(max_length=5, null=True, blank=True)
+
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely
 class DonationSubscription(models.Model):
@@ -88,6 +102,7 @@ class DonationSubscription(models.Model):
 
         for subscription_pending_transaction in subscription_pending_transactions_list :
             subscription_pending_transaction.cancel()
+
 
 class DonationSubscriptionNeeds(models.Model):
     donation_subscription = models.ForeignKey(DonationSubscription)
