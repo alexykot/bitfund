@@ -156,8 +156,8 @@
                             <div class="media">
                                 <div class="media-body">
                                     <p class="media-heading">
-                                        <a href="#">Credit Card</a>:<i class="icon-ok"></i>   
-                                        <a href="#">Bank account</a>:<i class="icon-remove"></i>
+                                        <a href="{% url bitfund.pledger.views.attach_bank_card %}">Credit Card</a>:<i class="icon-ok"></i>
+                                        <a href="{% url bitfund.pledger.views.attach_bank_account %}">Bank account</a>:<i class="icon-remove"></i>
                                     </p>
                                     <small>on Balanced Payments</small>
                                 </div>

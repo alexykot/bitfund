@@ -1,7 +1,6 @@
 import balanced
 
-from django.db.models.aggregates import Sum
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
@@ -184,14 +183,27 @@ def projects(request, project_key=None):
 
 @login_required
 def attach_bank_card(request):
+    request.user.public = _prepare_user_public_template_data(request, request.user)
+
     template_data = {'request':request,
                      'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      'current_page': 'profile',
                      }
 
+    if request.method == 'POST' and request.is_ajax() :
+        card_uri = request.POST['card_uri']
 
-    #balanced
+        print BALANCED['API_KEY']
+
+        balanced.configure(BALANCED['API_KEY'])
+        card_data = balanced.Card.find(card_uri)
+        print card_data
+
+
+
+
+#return HttpResponse()
 
     return render_to_response('pledger/attach_bank_card.djhtm', template_data, context_instance=RequestContext(request))
 
