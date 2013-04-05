@@ -8,6 +8,9 @@
     balanced.init('{{ balanced_marketplace_uri }}');
 </script>
 <script type="text/javascript">
+
+
+
 {#    var cardData = {#}
 {#    "name": "Test",                 // Optional#}
 {#    "card_number": "4111 1111 1111 1111",#}
@@ -17,6 +20,36 @@
 
 
     $(document).ready(function () {
+
+
+{#        {#}
+{#            "security_code_check": "passed",#}
+{#                "_type": "card",#}
+{#                "hash": "05d3cc40ecfe60fb8931e2a398de16ddd36c031492499aacf5735b7a3e5a29b4",#}
+{#                "country_code": "USA",#}
+{#                "brand": "Visa",#}
+{#                "expiration_month": 2,#}
+{#                "_uris": {},#}
+{#            "meta": {#}
+{#            "country": "GB",#}
+{#                    "region": "",#}
+{#                    "city_town": "Ruislip",#}
+{#                    "address_2": ""#}
+{#                },#}
+{#            "last_four": "6552",#}
+{#                "id": "CC3SdTxOaMhlKfPZJZCxhN3y",#}
+{#                "account": null,#}
+{#                "postal_code_check": "failed",#}
+{#                "name": "MR O KOTENKO",#}
+{#                "expiration_year": 2014,#}
+{#                "created_at": "2013-04-04T22:46:32.708776Z",#}
+{#                "uri": "/v1/marketplaces/MP12Xw5lL6iaILtqImIoroDL/cards/CC3SdTxOaMhlKfPZJZCxhN3y",#}
+{#                "card_type": "visa",#}
+{#                "is_valid": true,#}
+{#                "postal_code": "HA4 8JB",#}
+{#                "street_address": "65a High Street"#}
+{#        }#}
+
 {#        balanced.card.create(cardData, function(response) {#}
 {#            alert(response.status);#}
 {#            alert(response.error);#}
@@ -76,7 +109,7 @@
     <div class="attachment">
         <form>
             <fieldset>
-                <legend><h4>Current: VISA **********6552</h4></legend>
+                <legend><h4>Current: {{ user_bank_card.brand }} ****-****-****-{{ user_bank_card.last_four_digits }}</h4></legend>
                 <div class="text-center">
                     <button type="submit" class="button gray">Disconnect my credit card</button>
                 </div>

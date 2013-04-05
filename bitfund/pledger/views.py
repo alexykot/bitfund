@@ -1,7 +1,6 @@
 import balanced
 
-from django.db.models.aggregates import Sum
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
@@ -11,7 +10,7 @@ from django.utils.datetime_safe import datetime
 
 from bitfund.core.settings.extensions import BALANCED
 from bitfund.core.settings.project import SITE_CURRENCY_SIGN
-from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES
+from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, BankCard
 from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
 from bitfund.project.forms import CreateProjectForm
 from bitfund.project.lists import PROJECT_STATUS_CHOICES
@@ -191,10 +190,76 @@ def attach_bank_card(request):
                      }
 
 
-    #balanced
+    if request.method == 'POST' and request.is_ajax() :
+        card_uri = request.POST['card_uri']
+        balanced.configure(BALANCED['API_KEY'])
+
+        try :
+            card_balanced_data = balanced.Card.find(card_uri)
+        except balanced.exc.HTTPError:
+            return HttpResponseNotFound()
+
+        bank_card = BankCard.objects.filter(user_id=request.user.id)
+        if bank_card.count() == 0 :
+            bank_card = BankCard()
+            bank_card.user_id = request.user.id
+        else :
+            bank_card = bank_card[0]
+
+        bank_card.uri = card_uri
+        bank_card.brand = card_balanced_data.brand
+        bank_card.last_four_digits = card_balanced_data.last_four
+        bank_card.is_valid = card_balanced_data.is_valid
+        try:
+            bank_card.name_on_card = card_balanced_data.name
+        except AttributeError:
+            pass
+        try:
+            bank_card.address_1 = card_balanced_data.street_address
+        except AttributeError:
+            pass
+        try:
+            bank_card.address_2 = card_balanced_data.street_address
+        except AttributeError:
+            pass
+        try:
+            bank_card.city = card_balanced_data.city
+        except AttributeError:
+            pass
+        try:
+            bank_card.state = card_balanced_data.region
+        except AttributeError:
+            pass
+        try:
+            bank_card.country_code = card_balanced_data.country_code
+        except AttributeError:
+            pass
+
+        bank_card.save()
+
+        return HttpResponse()
+
+    user_bank_card = BankCard.objects.filter(user_id=request.user.id)
+    if user_bank_card.count() > 0 :
+        template_data['user_bank_card'] = user_bank_card[0]
 
     return render_to_response('pledger/attach_bank_card.djhtm', template_data, context_instance=RequestContext(request))
 
 @login_required
 def attach_bank_account(request):
-    return render_to_response('pledger/attach_bank_account.djhtm', {}, context_instance=RequestContext(request))
+    template_data = {'request':request,
+                     'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'current_page': 'profile',
+                     }
+
+    if request.method == 'POST' and request.is_ajax() :
+
+        return HttpResponse()
+
+    user_bank_card = BankCard.objects.filter(user_id=request.user.id)
+    if user_bank_card.count() > 0 :
+        template_data['user_bank_account'] = user_bank_card[0]
+
+
+    return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
