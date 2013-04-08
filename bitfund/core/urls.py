@@ -60,7 +60,8 @@ urlpatterns += patterns('bitfund.pledger.views',
 
                         (r'^account/existing_similar_projects/{0,}$', 'existing_similar_projects'),
 
-                        (r'^account/attach_bank_card/{0,}$', 'attach_bank_card'),
+                        (r'^account/attach_bank_card/{0,1}$', 'attach_bank_card'),
+                        (r'^account/attach_bank_card/(?P<action>detach|attach)/{0,}$', 'attach_bank_card'),
                         (r'^account/attach_bank_account/{0,}$', 'attach_bank_account'),
 
                         )

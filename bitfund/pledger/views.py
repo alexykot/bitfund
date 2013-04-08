@@ -1,4 +1,5 @@
 import balanced
+from django_countries.countries import COUNTRIES as COUNTRIES_LIST
 
 from django.http import HttpResponseNotFound, HttpResponse
 from django.contrib.auth.models import User
@@ -182,15 +183,16 @@ def projects(request, project_key=None):
     return render_to_response('pledger/projects.djhtm', template_data, context_instance=RequestContext(request))
 
 @login_required
-def attach_bank_card(request):
+def attach_bank_card(request, action=None):
     template_data = {'request':request,
                      'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      'current_page': 'profile',
+                     'COUNTRIES_LIST' : COUNTRIES_LIST,
                      }
 
 
-    if request.method == 'POST' and request.is_ajax() :
+    if request.method == 'POST' and request.is_ajax() and action == 'attach':
         card_uri = request.POST['card_uri']
         balanced.configure(BALANCED['API_KEY'])
 
@@ -238,10 +240,23 @@ def attach_bank_card(request):
         bank_card.save()
 
         return HttpResponse()
+    elif request.method == 'POST' and action == 'detach':
+        current_card = BankCard.objects.filter(user_id=request.user.id)
+        if current_card.count() > 0 :
+            current_card = current_card[0]
+            balanced.configure(BALANCED['API_KEY'])
+            current_balanced_card = balanced.Card.find(current_card.uri)
+            if current_balanced_card :
+                current_balanced_card.is_valid = False
+                current_balanced_card.save()
+            current_card.delete()
+        return redirect('bitfund.pledger.views.attach_bank_card')
 
-    user_bank_card = BankCard.objects.filter(user_id=request.user.id)
-    if user_bank_card.count() > 0 :
-        template_data['user_bank_card'] = user_bank_card[0]
+    current_card = BankCard.objects.filter(user_id=request.user.id)
+    if current_card.count() > 0 :
+        template_data['current_card'] = current_card[0]
+
+    request.user.public = _prepare_user_public_template_data(request, request.user)
 
     return render_to_response('pledger/attach_bank_card.djhtm', template_data, context_instance=RequestContext(request))
 

@@ -62,7 +62,7 @@ def save_user_profile(request, *args, **kwargs):
     return None
 
 #bank card data. only pieces that safe and allowed to store here
-class BankCard(User):
+class BankCard(models.Model):
     user = models.OneToOneField(User, unique=True)
     uri = models.CharField(max_length=255, unique=True)
     brand = models.CharField(max_length=25)

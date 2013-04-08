@@ -50,8 +50,10 @@
 
             balanced.card.create(cardData, function(response) {
                 if (response.status == 201) {
-                    $.post('{% url bitfund.pledger.views.attach_bank_card %}', {'card_uri': response.data.uri,
-                                                                                'csrfmiddlewaretoken': '{{ csrf_token }}'});
+                    $.post('{% url bitfund.pledger.views.attach_bank_card action='attach' %}', {'card_uri': response.data.uri,
+                                                                                'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(){
+                        window.location.reload();
+                    });
                 } else {
                     for (var i in response.error) {
                         $('<li>'+response.error[i]+'</li>').appendTo($('#errors-list'));
@@ -85,6 +87,7 @@
             $('#attach_card_form').toggle(false);
             $('#attach-card-link-container').toggle(true);
         });
+
     });
 </script>
 {% endblock %}
@@ -98,8 +101,9 @@
     <div class="attachment">
         <fieldset>
             {% if current_card %}
-            <form id="disconnect_card_form" action="#" method="post">
-                <legend><h4>Current: {{ current_card.type }} ***********{{ current_card.last_four }}</h4></legend>
+            <form id="disconnect_card_form" action="{% url bitfund.pledger.views.attach_bank_card action='detach' %}" method="post">
+                {% csrf_token %}
+                <legend><h4>Current: {{ current_card.brand }} ****-****-****-{{ current_card.last_four_digits }}</h4></legend>
                 <div class="text-center">
                     <button type="submit" class="button gray">Disconnect my credit card</button>
                 </div>
@@ -150,7 +154,11 @@
                     </li>
                 </ul>
                 <label>Country</label>
-                <select name="" id=""></select>
+                <select name="cc_country" id="cc_country">
+                    {% for country in COUNTRIES_LIST %}
+                        <option value="{{ country.0 }}">{{ country.1 }}</option>
+                    {% endfor %}
+                </select>
                 <div class="text-center">
                     {% if current_card %}
                         <small>this will erase your current card data</small><br>
