@@ -61,7 +61,7 @@ def save_user_profile(request, *args, **kwargs):
 
     return None
 
-#bank card data. only pieces that safe and allowed to store here
+#bank card data. contains only pieces that are safe and allowed to be stored on our side
 class BankCard(models.Model):
     user = models.OneToOneField(User, unique=True)
     uri = models.CharField(max_length=255, unique=True)
@@ -74,6 +74,12 @@ class BankCard(models.Model):
     state = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
     country_code = models.CharField(max_length=5, null=True, blank=True)
+
+
+#bank account data. contains only pieces that are safe and allowed to be stored on our side
+class BankAccount(models.Model):
+    user = models.OneToOneField(User, unique=True)
+    uri = models.CharField(max_length=255, unique=True)
 
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely

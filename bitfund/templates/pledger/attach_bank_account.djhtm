@@ -1,87 +1,135 @@
 {% extends "core/base.djhtm" %}
 
-{% block title %} attach bank account - {{ user.username }} - {% endblock %}
+{% block title %} {% if request.user_has_bank_account_attached %}attach {% endif %}bank account - {{ user.username }} - {% endblock %}
 
 {% block pagescripts %}
+    <script type="text/javascript" src="https://js.balancedpayments.com/v1/balanced.js"></script>
+    <script type="text/javascript">
+        balanced.init('{{ balanced_marketplace_uri }}');
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#attach_account_form').submit(function(event){
+                event.preventDefault();
+                $('#errors-list').text('');
 
-{% endblock %}
+                var accountData = {"card_number": $('#cc_num').val(),
+                    "security_code": $('#cc_cvv').val(),
+                    "name": $('#cc_name').val(),
+                    "street_address": $('#cc_address1').val(),
+                    "region": $('#cc_state').val(),
+                    "meta": {"address_2": $('#cc_address2').val(),
+                        "region": $('#cc_state').val(),
+                        "city_town": $('#cc_town').val(),
+                        "country": $('#cc_country').val()},
+                    "postal_code": $('#cc_zip').val(),
+                    "expiration_month": $('#cc_mm').val(),
+                    "expiration_year": $('#cc_yyyy').val(),
+                    "system_timezone": 1,
+                    "user_agent": navigator.userAgent,
+                    "language": navigator.language
+                };
+
+                var errors = false;
+                if (!balanced.card.isSecurityCodeValid(cardData.card_number, cardData.security_code)) {
+                    $('<li>CVV invalid</li>').appendTo($('#errors-list'));
+                    var errors = true;
+                }
+
+                if (!balanced.card.isCardNumberValid(cardData.card_number)) {
+                    $('<li>credit card number invalid</li>').appendTo($('#errors-list'));
+                    var errors = true;
+                }
+
+                if (!balanced.card.isExpiryValid(cardData.expiration_month, cardData.expiration_year)) {
+                    $('<li>Expiration date invalid</li>').appendTo($('#errors-list'));
+                    var errors = true;
+                }
+
+                balanced.card.create(cardData, function(response) {
+                    if (response.status == 201) {
+                        $.post('{% url bitfund.pledger.views.attach_bank_card action='attach' %}', {'card_uri': response.data.uri,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(){
+                            window.location.reload();
+                        });
+                    } else {
+                        for (var i in response.error) {
+                            $('<li>'+response.error[i]+'</li>').appendTo($('#errors-list'));
+                        }
+                    }
+
+                    result = {"security_code_check": "unknown",
+                        "_type": "card",
+                        "hash": "59a807cdbb5e404cce61fa5ff4a763907de83fc268f6000d4dfdc34eccf01da7",
+                        "country_code": "USA",
+                        "brand": "Visa",
+                        "expiration_month": "2",
+                        "meta": {"region": "", "city_town": "", "address_2": ""},
+                        "last_four": "6552",
+                        "id": "CC2EcweoBJUZoHvlUCU5RENG",
+                        "postal_code_check": "unknown", "name": "", "expiration_year": "2014", "created_at": "2013-04-03T20:44:54.823071Z", "uri": "/v1/marketplaces/TEST-MP7aWutSXeCp94yZ8E39fYZU/cards/CC2EcweoBJUZoHvlUCU5RENG", "card_type": "visa", "is_valid": "true", "postal_code": "", "street_address": ""}
+
+
+                });
+
+            });
+
+            $('#attach-new-card').click(function(event){
+                event.preventDefault();
+                $('#attach_card_form').toggle(true);
+                $('#attach-card-link-container').toggle(false);
+            });
+
+            $('#attach-card-cancel').click(function(event){
+                event.preventDefault();
+                $('#attach_card_form').toggle(false);
+                $('#attach-card-link-container').toggle(true);
+            });
+
+        });
+    </script>
+{% endblock pagescripts %}
 
 {% block content %}
 {% load widget_tweaks %}
 
 <div class="profile-page">
-     <section class="profile-info">
-        <div class="row-fluid">
-            <div class="span2">
-                <img src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128" />
-            </div>
-            <div class="span10">
-                <div class="row">
-                    <div class="span3">maintainer gives</div>
-                    <div class="span3">
-                        <div class="text-center">
-                            <span><strong>$12</strong></span><br>
-                            this month
-                        </div>
-                    </div>
-                    <div class="span3">
-                        <div class="text-center">
-                            <span><strong>$23</strong></span><br>
-                            overall
-                        </div>
-                    </div>
-                </div>
-                <ul class="inline">
-                    <li>
-                        <button class="button gray active">Profile</button>
-                    </li>
-                    <li>
-                        <button class="button gray">Pledges</button>
-                    </li>
-                </ul> 
-                <div class="row">
-                    <div class="span4 offset3">
-                        <label class="checkbox">
-                            <input type="checkbox"> hide total giving from others
-                        </label>
-                    </div>
-                </div>             
-           </div>
-        </div>
-    </section>
+
+    {% include "pledger/profile_header.djhtm" %}
 
     <hr>
     <div class="attachment">
-        <form>
+        <form action="" method="post" id="attach_account_form">
             <fieldset>
+                <div id="errors-list"></div>
                 <legend><h4>Identity verification</h4></legend>
                 
                 <label>Your legal name</label>
-                <input type="text" class="large">
+                <input type="text" class="large" id="ba_name">
                 <label>Street address</label>
-                <input type="text" class="large">
+                <input type="text" class="large" id="ba_address">
                 <label>City</label>
-                <input type="text" class="large">
+                <input type="text" class="large" id="ba_city">
                 
                 <ul class="inline">
                     <li>
                         <label>State of province</label>
-                        <input type="text" class="medium">
+                        <input type="text" class="medium" id="ba_region">
                     </li>
                     <li>
                         <label>ZIP or postal code</label>
-                        <input type="text" class="medium">
+                        <input type="text" class="medium" id="ba_zip">
                     </li>
                 </ul>
                 <label>Country</label>
-                <input type="text" class="large">
+                <input type="text" value="United States of Жmerinca" disabled="disabled" class="large" id="ba_country">
                 <label>Contact phone number</label>
-                <input type="text" class="large">
+                <input type="text" class="large" id="ba_phone">
 
                 <label>Date of birth</label>
                 <ul class="inline">
                     <li>
-		                <select class="month">
+		                <select class="month" id="ba_dob_year">
 						    <option>January</option>
 						    <option>February</option>
 						    <option>March</option>
@@ -90,7 +138,7 @@
 						</select>
 					</li>
 					<li>
-						<select class="date">
+						<select class="date" id="ba_dob_day">
 						    <option>1</option>
 						    <option>2</option>
 						    <option>3</option>
@@ -99,7 +147,7 @@
 						</select>
 					</li>
 					<li>
-						<select class="year">
+						<select class="year" id="ba_dob_month">
 						    <option>1990</option>
 						    <option>1991</option>
 						    <option>1992</option>
@@ -110,11 +158,11 @@
 
                 <h4>Routing information</h4>
                 <label>Name on bank account</label>
-                <input type="text" class="large">
+                <input type="text" class="large" id="ba_name_on_account">
                 <label>Bank account number</label>
-                <input type="text" class="large">
+                <input type="text" class="large" id="ba_account_number">
                 <label>Routing number</label>
-                <input type="text" class="large">
+                <input type="text" class="large" id="ba_routing_account">
                 
                 <div class="text-center">
                     <button type="submit" class="button gray">Save</button>
@@ -123,7 +171,8 @@
         </form>
         <div class="text-center">
             <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
-            Here are their <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</small></p>
+                Here are their <a href="https://www.balancedpayments.com/terms">Terms of Service</a>
+                and <a href="https://www.balancedpayments.com/privacy">Privacy Policy</a>.</small></p>
 	        <p><span>PAYMENTS BY </span><img src="{{ STATIC_URL }}img/credit_card_icon.png" /><strong>BALANCED</strong></p>
         </div>
 

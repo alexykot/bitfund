@@ -7,7 +7,7 @@ from django.conf import settings
 from django.utils.timezone import now
 
 from bitfund.core.settings.project import PROTOTYPE_LANDING_PAGE_URL, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE, API_USER_TOKEN_PARAM_NAME
-from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES, DonationSubscription
+from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES, DonationSubscription, BankCard, BankAccount
 from bitfund.project.lists import PROJECT_STATUS_CHOICES, DONATION_TYPES_CHOICES
 from bitfund.project.models import Project
 
@@ -57,8 +57,22 @@ class UserProjectsCountMiddleware(object):
                                                .aggregate(Count('key'))['key__count']
                                               ) or 0
 
-        return None;
+        return None
 
+class UserCardAccountCheckMiddleware(object):
+    def process_request(self, request):
+        request.user_has_bank_card_attached = False
+        request.user_has_bank_account_attached = False
+        if request.user.is_authenticated():
+            current_card = BankCard.objects.filter(user_id=request.user.id)
+            if current_card.count() > 0 :
+                request.user_has_bank_card_attached = True
+
+            current_account = BankAccount.objects.filter(user_id=request.user.id)
+            if current_account.count() > 0 :
+                request.user_has_bank_account_attached = True
+
+        return None
 
 class SaveUserTokenMiddleware(object):
     def process_request(self, request):
