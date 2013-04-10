@@ -11,6 +11,7 @@ from django.utils.datetime_safe import datetime
 
 from bitfund.core.settings.extensions import BALANCED
 from bitfund.core.settings.project import SITE_CURRENCY_SIGN
+from bitfund.pledger.forms import BankAccountUnderwritingForm, BANK_ACCOUNT_ENTITY_TYPE_CHOICES
 from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, BankCard, BankAccount
 from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
 from bitfund.project.forms import CreateProjectForm
@@ -268,14 +269,61 @@ def attach_bank_account(request):
                      'current_page': 'profile',
                      }
 
-    if request.method == 'POST' and request.is_ajax() :
-
-        return HttpResponse()
-
+    template_data['user_bank_account'] = False
     user_bank_account = BankAccount.objects.filter(user_id=request.user.id)
     if user_bank_account.count() > 0 :
         template_data['user_bank_account'] = user_bank_account[0]
 
+    if template_data['user_bank_account'] :
+        form_initial={'ba_entity_type':BANK_ACCOUNT_ENTITY_TYPE_CHOICES.person,
+                      'ba_business_country': 'United States of America',
+                      'ba_person_country': 'United States of America',
+                      'ba_business_name' : template_data['user_bank_account'].ba_business_name,
+                      'ba_business_phone' : template_data['user_bank_account'].ba_business_phone,
+                      'ba_business_email' : template_data['user_bank_account'].ba_business_email,
+                      'ba_business_tax' : template_data['user_bank_account'].ba_business_tax,
+                      'ba_business_address' : template_data['user_bank_account'].ba_business_address,
+                      'ba_business_city' : template_data['user_bank_account'].ba_business_city,
+                      'ba_business_region' : template_data['user_bank_account'].ba_business_region,
+                      'ba_business_zip' : template_data['user_bank_account'].ba_business_zip,
+                      'ba_business_country' : template_data['user_bank_account'].ba_business_country,
+
+                      'ba_person_name' : template_data['user_bank_account'].ba_person_name,
+                      'ba_person_phone' : template_data['user_bank_account'].ba_person_phone,
+                      'ba_person_address' : template_data['user_bank_account'].ba_person_address,
+                      'ba_person_city' : template_data['user_bank_account'].ba_person_city,
+                      'ba_person_region' : template_data['user_bank_account'].ba_person_region,
+                      'ba_person_zip' : template_data['user_bank_account'].ba_person_zip,
+                      'ba_person_country' : template_data['user_bank_account'].ba_person_country,
+                      }
+    else :
+        form_initial={'ba_entity_type':BANK_ACCOUNT_ENTITY_TYPE_CHOICES.person,
+                      'ba_business_country': 'United States of America',
+                      'ba_person_country': 'United States of America',
+                      }
+
     request.user.public = _prepare_user_public_template_data(request, request.user)
+
+
+    if request.method == 'POST' :
+        template_data['bank_account_underwriting_form'] = BankAccountUnderwritingForm(initial=form_initial,
+                                                                                      data=request.POST)
+        if template_data['bank_account_underwriting_form'].is_valid() :
+            balanced.configure(BALANCED['API_KEY'])
+            bank_account_uri = template_data['bank_account_underwriting_form'].cleaned_data['ba_uri']
+            balanced_bank_account = balanced.BankAccount.find(bank_account_uri)
+
+            current_bank_account = BankAccount.objects.filter(user_id=request.user.id)
+            if user_bank_account.count() > 0 :
+                template_data['user_bank_account'] = user_bank_account[0]
+
+                # current_bank_account. = balanced_bank_account.
+
+
+            return redirect('bitfund.pledger.views.attach_bank_account')
+        else :
+            return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
+
+    template_data['bank_account_underwriting_form'] = BankAccountUnderwritingForm(initial=form_initial)
 
     return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))

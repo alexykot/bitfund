@@ -25,6 +25,11 @@ DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
     ('cancelled', u'Cancelled'), # trasaction cancelled by the issuer
 )
 
+BANK_ACCOUNT_ENTITY_TYPE_CHOICES = Choices(
+    ('person', u'Individual'),
+    ('business', u'Organisation'),
+    )
+
 class Profile(User):
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='profile')
     api_token = models.CharField(max_length=255, unique=True)
@@ -80,6 +85,26 @@ class BankCard(models.Model):
 class BankAccount(models.Model):
     user = models.OneToOneField(User, unique=True)
     uri = models.CharField(max_length=255, unique=True)
+    entity_type = models.CharField(max_length=255, choices=BANK_ACCOUNT_ENTITY_TYPE_CHOICES,
+                                   default=BANK_ACCOUNT_ENTITY_TYPE_CHOICES.person)
+
+    ba_business_name = models.CharField(max_length=255, null=True, blank=True)
+    ba_business_phone = models.CharField(max_length=255, null=True, blank=True)
+    ba_business_email = models.CharField(max_length=255, null=True, blank=True)
+    ba_business_tax = models.CharField(max_length=255, null=True, blank=True)
+    ba_business_address = models.CharField(max_length=255, null=True, blank=True)
+    ba_business_city = models.CharField(max_length=255, null=True, blank=True)
+    ba_business_region = models.CharField(max_length=255, null=True, blank=True)
+    ba_business_zip = models.CharField(max_length=15, null=True, blank=True)
+    ba_business_country = models.CharField(max_length=255, null=True, blank=True)
+
+    ba_person_name = models.CharField(max_length=255, null=True, blank=True)
+    ba_person_phone = models.CharField(max_length=255, null=True, blank=True)
+    ba_person_address = models.CharField(max_length=255, null=True, blank=True)
+    ba_person_city = models.CharField(max_length=255, null=True, blank=True)
+    ba_person_region = models.CharField(max_length=255, null=True, blank=True)
+    ba_person_zip = models.CharField(max_length=255, null=True, blank=True)
+    ba_person_country = models.CharField(max_length=255, null=True, blank=True)
 
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely
