@@ -1,5 +1,6 @@
 import base64
 import os
+import balanced
 from django.db import models
 from django.contrib.auth.models import User, UserManager
 from django.utils.timezone import now
@@ -16,7 +17,6 @@ DONATION_TRANSACTION_TYPES_CHOICES = Choices(
     ('other_source', u'Other Source'), # income from other source, stated by the project maintainers
     ('redonation', u'Redonation'), # redonation from a pledge on a depended project
 )
-
 DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
     ('pending', u'Pending, Unpaid'), # transaction for the monthly pledge for current month, month end not reached yet, not processed through payment yet
     ('unpaid', u'Confirmed, Unpaid'), # trasaction for the monthly pledge when month end reached, or from onetime pledge at any time, not processed through payment yet
@@ -66,9 +66,32 @@ def save_user_profile(request, *args, **kwargs):
 
     return None
 
+class BalancedAccount(models.Model):
+    user = models.OneToOneField(User, unique=True)
+    uri = models.CharField(max_length=255, unique=True)
+
+    #returns BalancedAccount for this user. If there is no account - creates it.
+    @classmethod
+    def getAccount(cls, user_id):
+        existing_account = cls.objects.filter(user_id=user_id)
+        if existing_account.count() > 0 :
+            return existing_account[0]
+        else :
+            balanced_account = balanced.Account().save()
+
+            new_account = cls()
+            new_account.user_id = user_id
+            new_account.uri = balanced_account.uri
+            new_account.save()
+
+            return new_account
+
+
+
 #bank card data. contains only pieces that are safe and allowed to be stored on our side
 class BankCard(models.Model):
     user = models.OneToOneField(User, unique=True)
+    balanced_account = models.OneToOneField(BalancedAccount, unique=True)
     uri = models.CharField(max_length=255, unique=True)
     brand = models.CharField(max_length=25)
     last_four_digits = models.CharField(max_length=4)
@@ -84,27 +107,12 @@ class BankCard(models.Model):
 #bank account data. contains only pieces that are safe and allowed to be stored on our side
 class BankAccount(models.Model):
     user = models.OneToOneField(User, unique=True)
+    balanced_account = models.OneToOneField(BalancedAccount, unique=True)
     uri = models.CharField(max_length=255, unique=True)
-    entity_type = models.CharField(max_length=255, choices=BANK_ACCOUNT_ENTITY_TYPE_CHOICES,
-                                   default=BANK_ACCOUNT_ENTITY_TYPE_CHOICES.person)
-
-    ba_business_name = models.CharField(max_length=255, null=True, blank=True)
-    ba_business_phone = models.CharField(max_length=255, null=True, blank=True)
-    ba_business_email = models.CharField(max_length=255, null=True, blank=True)
-    ba_business_tax = models.CharField(max_length=255, null=True, blank=True)
-    ba_business_address = models.CharField(max_length=255, null=True, blank=True)
-    ba_business_city = models.CharField(max_length=255, null=True, blank=True)
-    ba_business_region = models.CharField(max_length=255, null=True, blank=True)
-    ba_business_zip = models.CharField(max_length=15, null=True, blank=True)
-    ba_business_country = models.CharField(max_length=255, null=True, blank=True)
-
-    ba_person_name = models.CharField(max_length=255, null=True, blank=True)
-    ba_person_phone = models.CharField(max_length=255, null=True, blank=True)
-    ba_person_address = models.CharField(max_length=255, null=True, blank=True)
-    ba_person_city = models.CharField(max_length=255, null=True, blank=True)
-    ba_person_region = models.CharField(max_length=255, null=True, blank=True)
-    ba_person_zip = models.CharField(max_length=255, null=True, blank=True)
-    ba_person_country = models.CharField(max_length=255, null=True, blank=True)
+    last_four = models.CharField(max_length=4)
+    bank_name = models.CharField(max_length=255)
+    is_valid = models.BooleanField(default=True)
+    is_underwritten = models.BooleanField(default=False)
 
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely

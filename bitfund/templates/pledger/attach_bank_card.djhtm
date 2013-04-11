@@ -99,7 +99,7 @@
     <div class="attachment">
         <fieldset>
             {% if current_card %}
-            <form id="disconnect_card_form" action="{% url bitfund.pledger.views.attach_bank_card action='detach' %}" method="post">
+            <form id="disconnect_account_form" action="{% url bitfund.pledger.views.attach_bank_card action='detach' %}" method="post">
                 {% csrf_token %}
                 <legend><h4>Current: {{ current_card.brand }} ****-****-****-{{ current_card.last_four_digits }}</h4></legend>
                 <div class="text-center">
@@ -108,7 +108,7 @@
                 <hr>
             </form>
             <div class="text-center" id="attach-card-link-container">
-                <a href="{% url bitfund.pledger.views.attach_bank_card %}" id="attach-new-card">attach new card</a><br>
+                <a href="{% url bitfund.pledger.views.attach_bank_card %}" id="attach-new-card">attach different card</a><br>
             </div>
             {% endif %}
             <form id="attach_card_form" action="#" method="post" {% if current_card %}style="display: none;"{% endif %}>

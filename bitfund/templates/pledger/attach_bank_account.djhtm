@@ -19,7 +19,7 @@
             selectEntityType($('input[type=radio][name=ba_entity_type]:checked').val());
             $('input[type=radio][name=ba_entity_type]').click(function(){
                 selectEntityType($(this).val());
-            })
+            });
 
             $('#account_routing_form').submit(function(event){
                 event.preventDefault();
@@ -34,8 +34,11 @@
 
                 balanced.bankAccount.create(bankAccountData, function(response) {
                     if (response.status == 201) {
-                        $('#id_ba_uri').val(response.data.uri);
-                        $('#identity_form').submit();
+                        $.post('{% url bitfund.pledger.views.attach_bank_account action='attach' %}', {'account_uri': response.data.uri,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(){
+                            $('#identity_form').submit();
+                        });
+
                     } else {
 {#                        for (var i in response.error) {#}
 {#                            $('<li>'+i+': '+response.error[i]+'</li>').appendTo($('#errors-list'));#}
@@ -58,121 +61,155 @@
 
     <hr>
     <div class="attachment">
-            <fieldset>
+        {% if existing_bank_account %}
+            <form id="disconnect_account_form" action="{% url bitfund.pledger.views.attach_bank_card action='detach' %}" method="post">
+                {% csrf_token %}
+                <legend><h4>Account: #******{{ existing_bank_account.last_four }} with {{ existing_bank_account.bank_name }}</h4></legend>
+                <div class="text-center">
+                    <button type="submit" class="button gray">Disconnect my account</button>
+                </div>
+                <hr>
+            </form>
+            <div class="text-center" id="attach-card-link-container">
+                <a href="{% url bitfund.pledger.views.attach_bank_card %}" id="attach-new-account">attach different account</a><br>
+            </div>
+            {% if not existing_bank_account.is_underwritten %}
+                <fieldset>
+                    <form action="{% url bitfund.pledger.views.attach_bank_account action='underwrite' %}" method="post" id="identity_form">
+                        {% csrf_token %}
+                        {{ bank_account_underwriting_form.ba_uri }}
+                        <legend><h4>Confirm account owner identity</h4></legend>
+                        {{ bank_account_underwriting_form.non_field_errors }}
+                        <legend><h4>Entity</h4></legend>
+                        {{ bank_account_underwriting_form.ba_entity_type.errors }}
+                        {{ bank_account_underwriting_form.ba_entity_type }}
 
-                <form action="" method="post" id="identity_form">
-                    {% csrf_token %}
-                    {{ bank_account_underwriting_form.ba_uri }}
-                    <legend><h4>Entity</h4></legend>
-                    {{ bank_account_underwriting_form.ba_entity_type }}
+                        <div id="business_identity_fields" style="display: none">
+                            <legend><h4>Organisation identity verification</h4></legend>
 
-                    <div id="business_identity_fields" style="display: none">
-                        <legend><h4>Organisation identity verification</h4></legend>
+                            <label>Organisation name</label>
+                            {{ bank_account_underwriting_form.ba_business_name.errors }}
+                            {{ bank_account_underwriting_form.ba_business_name|attr:"class:large"|attr:"required" }}
 
-                        <label>Organisation name</label>
-                        {{ bank_account_underwriting_form.ba_business_name|attr:"class:large"|attr:"required" }}
+                            <label>Contact phone number</label>
+                            {{ bank_account_underwriting_form.ba_business_phone.errors }}
+                            {{ bank_account_underwriting_form.ba_business_phone|attr:"class:large"|attr:"required" }}
 
-                        <label>Contact phone number</label>
-                        {{ bank_account_underwriting_form.ba_business_phone|attr:"class:large"|attr:"required" }}
+                            <label>Contact email address</label>
+                            {{ bank_account_underwriting_form.ba_business_email.errors }}
+                            {{ bank_account_underwriting_form.ba_business_email|attr:"class:large"|attr:"required" }}
 
-                        <label>Contact email address</label>
-                        {{ bank_account_underwriting_form.ba_business_email|attr:"class:large"|attr:"required" }}
+                            <label>Tax ID</label>
+                            {{ bank_account_underwriting_form.ba_business_tax.errors }}
+                            {{ bank_account_underwriting_form.ba_business_tax|attr:"class:large" }}
 
-                        <label>Tax ID</label>
-                        {{ bank_account_underwriting_form.ba_business_tax|attr:"class:large" }}
+                            <label>Street address</label>
+                            {{ bank_account_underwriting_form.ba_business_address.errors }}
+                            {{ bank_account_underwriting_form.ba_business_address|attr:"class:large"|attr:"required" }}
+                            <label>City</label>
+                            {{ bank_account_underwriting_form.ba_business_city.errors }}
+                            {{ bank_account_underwriting_form.ba_business_city|attr:"class:large" }}
 
-                        <label>Street address</label>
-                        {{ bank_account_underwriting_form.ba_business_address|attr:"class:large"|attr:"required" }}
-                        <label>City</label>
-                        {{ bank_account_underwriting_form.ba_business_city|attr:"class:large" }}
+                            <ul class="inline">
+                                <li>
+                                    <label>State of province</label>
+                                    {{ bank_account_underwriting_form.ba_business_region.errors }}
+                                    {{ bank_account_underwriting_form.ba_business_region|attr:"class:medium" }}
+                                </li>
+                                <li>
+                                    <label>ZIP or postal code</label>
+                                    {{ bank_account_underwriting_form.ba_business_zip.errors }}
+                                    {{ bank_account_underwriting_form.ba_business_zip|attr:"class:medium"|attr:"required" }}
+                                </li>
+                            </ul>
+                            <label>Country</label>
+                            {{ bank_account_underwriting_form.ba_business_country.errors }}
+                            {{ bank_account_underwriting_form.ba_business_country|attr:"class:large"|attr:"disabled" }}
+                        </div>
 
-                        <ul class="inline">
-                            <li>
-                                <label>State of province</label>
-                                {{ bank_account_underwriting_form.ba_business_region|attr:"class:medium" }}
-                            </li>
-                            <li>
-                                <label>ZIP or postal code</label>
-                                {{ bank_account_underwriting_form.ba_business_zip|attr:"class:medium"|attr:"required" }}
-                            </li>
-                        </ul>
-                        <label>Country</label>
-                        {{ bank_account_underwriting_form.ba_business_country|attr:"class:large"|attr:"disabled" }}
-                    </div>
+                        <div id="person_identity_fields" style="display: none">
+                            <legend><h4>Individual identity verification</h4></legend>
 
-                    <div id="person_identity_fields" style="display: none">
-                        <legend><h4>Individual identity verification</h4></legend>
+                            <label>Your legal name</label>
+                            {{ bank_account_underwriting_form.ba_person_name.errors }}
+                            {{ bank_account_underwriting_form.ba_person_name|attr:"class:large"|attr:"required" }}
+                            <label>Contact phone number</label>
+                            {{ bank_account_underwriting_form.ba_person_phone.errors }}
+                            {{ bank_account_underwriting_form.ba_person_phone|attr:"class:large"|attr:"required" }}
+                            <label>Street address</label>
+                            {{ bank_account_underwriting_form.ba_person_address.errors }}
+                            {{ bank_account_underwriting_form.ba_person_address|attr:"class:large"|attr:"required" }}
+                            <label>City</label>
+                            {{ bank_account_underwriting_form.ba_person_city.errors }}
+                            {{ bank_account_underwriting_form.ba_person_city|attr:"class:large" }}
 
-                        <label>Your legal name</label>
-                        {{ bank_account_underwriting_form.ba_person_name|attr:"class:large"|attr:"required" }}
-                        <label>Contact phone number</label>
-                        {{ bank_account_underwriting_form.ba_person_phone|attr:"class:large"|attr:"required" }}
-                        <label>Street address</label>
-                        {{ bank_account_underwriting_form.ba_person_address|attr:"class:large"|attr:"required" }}
-                        <label>City</label>
-                        {{ bank_account_underwriting_form.ba_person_city|attr:"class:large" }}
+                            <ul class="inline">
+                                <li>
+                                    <label>State of province</label>
+                                    {{ bank_account_underwriting_form.ba_person_region.errors }}
+                                    {{ bank_account_underwriting_form.ba_person_region|attr:"class:large" }}
+                                </li>
+                                <li>
+                                    <label>ZIP or postal code</label>
+                                    {{ bank_account_underwriting_form.ba_person_zip.errors }}
+                                    {{ bank_account_underwriting_form.ba_person_zip|attr:"class:large"|attr:"required" }}
+                                </li>
+                            </ul>
+                            <label>Country</label>
+                            {{ bank_account_underwriting_form.ba_person_country.errors }}
+                            {{ bank_account_underwriting_form.ba_person_country|attr:"class:large"|attr:"disabled" }}
 
-                        <ul class="inline">
-                            <li>
-                                <label>State of province</label>
-                                {{ bank_account_underwriting_form.ba_person_region|attr:"class:large" }}
-                            </li>
-                            <li>
-                                <label>ZIP or postal code</label>
-                                {{ bank_account_underwriting_form.ba_person_zip|attr:"class:large"|attr:"required" }}
-                            </li>
-                        </ul>
-                        <label>Country</label>
-                        {{ bank_account_underwriting_form.ba_person_country|attr:"class:large"|attr:"disabled" }}
+                            {#                    <label>Date of birth</label>#}
+                            {#                    <ul class="inline">#}
+                            {#                        <li>#}
+                            {#                            <select class="month" id="ba_person_dob_year">#}
+                            {#                                <option>January</option>#}
+                            {#                                <option>February</option>#}
+                            {#                                <option>March</option>#}
+                            {#                                <option>April</option>#}
+                            {#                                <option>May</option>#}
+                            {#                            </select>#}
+                            {#                        </li>#}
+                            {#                        <li>#}
+                            {#                            <select class="date" id="ba_person_dob_day">#}
+                            {#                                <option>1</option>#}
+                            {#                                <option>2</option>#}
+                            {#                                <option>3</option>#}
+                            {#                                <option>4</option>#}
+                            {#                                <option>31</option>#}
+                            {#                            </select>#}
+                            {#                        </li>#}
+                            {#                        <li>#}
+                            {#                            <select class="year" id="ba_person_dob_month">#}
+                            {#                                <option>1990</option>#}
+                            {#                                <option>1991</option>#}
+                            {#                                <option>1992</option>#}
+                            {#                                <option>1993</option>#}
+                            {#                            </select>#}
+                            {#                        </li>#}
+                            {#                    </ul>#}
+                        </div>
+                    </form>
 
-    {#                    <label>Date of birth</label>#}
-    {#                    <ul class="inline">#}
-    {#                        <li>#}
-    {#                            <select class="month" id="ba_person_dob_year">#}
-    {#                                <option>January</option>#}
-    {#                                <option>February</option>#}
-    {#                                <option>March</option>#}
-    {#                                <option>April</option>#}
-    {#                                <option>May</option>#}
-    {#                            </select>#}
-    {#                        </li>#}
-    {#                        <li>#}
-    {#                            <select class="date" id="ba_person_dob_day">#}
-    {#                                <option>1</option>#}
-    {#                                <option>2</option>#}
-    {#                                <option>3</option>#}
-    {#                                <option>4</option>#}
-    {#                                <option>31</option>#}
-    {#                            </select>#}
-    {#                        </li>#}
-    {#                        <li>#}
-    {#                            <select class="year" id="ba_person_dob_month">#}
-    {#                                <option>1990</option>#}
-    {#                                <option>1991</option>#}
-    {#                                <option>1992</option>#}
-    {#                                <option>1993</option>#}
-    {#                            </select>#}
-    {#                        </li>#}
-    {#                    </ul>#}
-                    </div>
-                </form>
 
-                <form action="" method="post" id="account_routing_form">
-                    <div id="errors-list"></div>
-                    <legend><h4>Account routing information</h4></legend>
-                    <label>Name on bank account</label>
-                    <input type="text" class="large" id="ba_name_on_account" required="" />
-                    <label>Bank account number</label>
-                    <input type="text" class="large" id="ba_account_number" required="" />
-                    <label>Routing number</label>
-                    <input type="text" class="large" id="ba_routing_number" required="" />
+                </fieldset>
+            {% endif %}
+        {% else %}
+            <form action="" method="post" id="account_routing_form">
+                <div id="errors-list"></div>
+                <legend><h4>Account routing information</h4></legend>
+                <label>Name on bank account</label>
+                <input type="text" class="large" id="ba_name_on_account" required="" />
+                <label>Bank account number</label>
+                <input type="text" class="large" id="ba_account_number" required="" />
+                <label>Routing number</label>
+                <input type="text" class="large" id="ba_routing_number" required="" />
 
-                    <div class="text-center">
-                        <button type="submit" class="button gray">Save</button>
-                    </div>
-                </form>
-
-            </fieldset>
+                <div class="text-center">
+                    <button type="submit" class="button gray">Attach</button>
+                </div>
+            </form>
+        {% endif %}
         <div class="text-center">
             <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
                 Here are their <a href="https://www.balancedpayments.com/terms">Terms of Service</a>

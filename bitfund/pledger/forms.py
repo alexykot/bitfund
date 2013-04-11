@@ -4,7 +4,6 @@ from bitfund.pledger.models import BANK_ACCOUNT_ENTITY_TYPE_CHOICES
 
 
 class BankAccountUnderwritingForm(forms.Form):
-    ba_uri = forms.CharField(widget=forms.HiddenInput, required=True)
     ba_entity_type = forms.ChoiceField(choices=BANK_ACCOUNT_ENTITY_TYPE_CHOICES,
                                        required=True, widget=forms.RadioSelect)
 
