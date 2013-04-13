@@ -69,6 +69,7 @@ def save_user_profile(request, *args, **kwargs):
 class BalancedAccount(models.Model):
     user = models.OneToOneField(User, unique=True)
     uri = models.CharField(max_length=255, unique=True)
+    is_underwritten = models.BooleanField(default=False)
 
     #returns BalancedAccount for this user. If there is no account - creates it.
     @classmethod
@@ -112,7 +113,6 @@ class BankAccount(models.Model):
     last_four = models.CharField(max_length=4)
     bank_name = models.CharField(max_length=255)
     is_valid = models.BooleanField(default=True)
-    is_underwritten = models.BooleanField(default=False)
 
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely

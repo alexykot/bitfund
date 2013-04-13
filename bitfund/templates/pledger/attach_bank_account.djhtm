@@ -9,16 +9,23 @@
     </script>
     <script type="text/javascript">
         function selectEntityType(type){
-            $('#person_identity_fields').toggle(false);
-            $('#business_identity_fields').toggle(false);
+            $('#person_identity_form').toggle(false);
+            $('#business_identity_form').toggle(false);
 
-            $('#'+type+'_identity_fields').toggle(true);
+            $('#'+type+'_identity_form').toggle(true);
         }
 
         $(document).ready(function () {
             selectEntityType($('input[type=radio][name=ba_entity_type]:checked').val());
             $('input[type=radio][name=ba_entity_type]').click(function(){
                 selectEntityType($(this).val());
+            });
+
+            $('.datePicker').datepicker({
+                yearRange: "-99:-5",
+                defaultDate: "-25Y",
+                changeMonth: true,
+                changeYear: true
             });
 
             $('#account_routing_form').submit(function(event){
@@ -36,7 +43,7 @@
                     if (response.status == 201) {
                         $.post('{% url bitfund.pledger.views.attach_bank_account action='attach' %}', {'account_uri': response.data.uri,
                             'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(){
-                            $('#identity_form').submit();
+                            window.location.reload();
                         });
 
                     } else {
@@ -62,102 +69,122 @@
     <hr>
     <div class="attachment">
         {% if existing_bank_account %}
-            <form id="disconnect_account_form" action="{% url bitfund.pledger.views.attach_bank_card action='detach' %}" method="post">
+            <form id="disconnect_account_form" action="{% url bitfund.pledger.views.attach_bank_account action='detach' %}" method="post">
                 {% csrf_token %}
                 <legend><h4>Account: #******{{ existing_bank_account.last_four }} with {{ existing_bank_account.bank_name }}</h4></legend>
+                {% if not existing_balanced_account.is_underwritten %}
+                    <div class="text-center">
+                        account owner identity unconfirmed
+                    </div>
+                {% endif %}
                 <div class="text-center">
-                    <button type="submit" class="button gray">Disconnect my account</button>
+                    <button type="submit" class="button gray">Disconnect account</button>
                 </div>
                 <hr>
             </form>
-            <div class="text-center" id="attach-card-link-container">
-                <a href="{% url bitfund.pledger.views.attach_bank_card %}" id="attach-new-account">attach different account</a><br>
-            </div>
-            {% if not existing_bank_account.is_underwritten %}
+            {% if not existing_balanced_account.is_underwritten %}
                 <fieldset>
-                    <form action="{% url bitfund.pledger.views.attach_bank_account action='underwrite' %}" method="post" id="identity_form">
+                    <form action="{% url bitfund.pledger.views.attach_bank_account action='underwrite' %}"
+                          method="post" id="business_identity_form" style="display: none">
                         {% csrf_token %}
-                        {{ bank_account_underwriting_form.ba_uri }}
                         <legend><h4>Confirm account owner identity</h4></legend>
-                        {{ bank_account_underwriting_form.non_field_errors }}
+                        {{ bank_account_business_underwriting_form.errors }}
+                        {{ bank_account_business_underwriting_form.non_field_errors }}
                         <legend><h4>Entity</h4></legend>
-                        {{ bank_account_underwriting_form.ba_entity_type.errors }}
-                        {{ bank_account_underwriting_form.ba_entity_type }}
+                        {{ bank_account_business_underwriting_form.ba_entity_type.errors }}
+                        {{ bank_account_business_underwriting_form.ba_entity_type }}
 
-                        <div id="business_identity_fields" style="display: none">
+                        <div id="business_identity_fields">
                             <legend><h4>Organisation identity verification</h4></legend>
 
                             <label>Organisation name</label>
-                            {{ bank_account_underwriting_form.ba_business_name.errors }}
-                            {{ bank_account_underwriting_form.ba_business_name|attr:"class:large"|attr:"required" }}
+                            {{ bank_account_business_underwriting_form.ba_business_name.errors }}
+                            {{ bank_account_business_underwriting_form.ba_business_name|attr:"class:large"|attr:"required" }}
 
                             <label>Contact phone number</label>
-                            {{ bank_account_underwriting_form.ba_business_phone.errors }}
-                            {{ bank_account_underwriting_form.ba_business_phone|attr:"class:large"|attr:"required" }}
+                            {{ bank_account_business_underwriting_form.ba_business_phone.errors }}
+                            {{ bank_account_business_underwriting_form.ba_business_phone|attr:"class:large"|attr:"required" }}
 
                             <label>Contact email address</label>
-                            {{ bank_account_underwriting_form.ba_business_email.errors }}
-                            {{ bank_account_underwriting_form.ba_business_email|attr:"class:large"|attr:"required" }}
+                            {{ bank_account_business_underwriting_form.ba_business_email.errors }}
+                            {{ bank_account_business_underwriting_form.ba_business_email|attr:"class:large"|attr:"required" }}
 
                             <label>Tax ID</label>
-                            {{ bank_account_underwriting_form.ba_business_tax.errors }}
-                            {{ bank_account_underwriting_form.ba_business_tax|attr:"class:large" }}
+                            {{ bank_account_business_underwriting_form.ba_business_tax.errors }}
+                            {{ bank_account_business_underwriting_form.ba_business_tax|attr:"class:large" }}
 
                             <label>Street address</label>
-                            {{ bank_account_underwriting_form.ba_business_address.errors }}
-                            {{ bank_account_underwriting_form.ba_business_address|attr:"class:large"|attr:"required" }}
+                            {{ bank_account_business_underwriting_form.ba_business_address.errors }}
+                            {{ bank_account_business_underwriting_form.ba_business_address|attr:"class:large"|attr:"required" }}
                             <label>City</label>
-                            {{ bank_account_underwriting_form.ba_business_city.errors }}
-                            {{ bank_account_underwriting_form.ba_business_city|attr:"class:large" }}
+                            {{ bank_account_business_underwriting_form.ba_business_city.errors }}
+                            {{ bank_account_business_underwriting_form.ba_business_city|attr:"class:large" }}
 
                             <ul class="inline">
                                 <li>
                                     <label>State of province</label>
-                                    {{ bank_account_underwriting_form.ba_business_region.errors }}
-                                    {{ bank_account_underwriting_form.ba_business_region|attr:"class:medium" }}
+                                    {{ bank_account_business_underwriting_form.ba_business_region.errors }}
+                                    {{ bank_account_business_underwriting_form.ba_business_region|attr:"class:medium" }}
                                 </li>
                                 <li>
                                     <label>ZIP or postal code</label>
-                                    {{ bank_account_underwriting_form.ba_business_zip.errors }}
-                                    {{ bank_account_underwriting_form.ba_business_zip|attr:"class:medium"|attr:"required" }}
+                                    {{ bank_account_business_underwriting_form.ba_business_zip.errors }}
+                                    {{ bank_account_business_underwriting_form.ba_business_zip|attr:"class:medium"|attr:"required" }}
                                 </li>
                             </ul>
                             <label>Country</label>
-                            {{ bank_account_underwriting_form.ba_business_country.errors }}
-                            {{ bank_account_underwriting_form.ba_business_country|attr:"class:large"|attr:"disabled" }}
+                            {{ bank_account_business_underwriting_form.ba_business_country.errors }}
+                            {{ bank_account_business_underwriting_form.ba_business_country|attr:"class:large"|attr:"disabled" }}
                         </div>
+                        <div class="text-center">
+                            <button type="submit" class="button gray">Submit</button>
+                        </div>
+                    </form>
 
-                        <div id="person_identity_fields" style="display: none">
+                    <form action="{% url bitfund.pledger.views.attach_bank_account action='underwrite' %}"
+                          method="post" id="person_identity_form" style="display: none">
+                        {% csrf_token %}
+                        <legend><h4>Confirm account owner identity</h4></legend>
+                        {{ bank_account_person_underwriting_form.errors }}
+                        {{ bank_account_person_underwriting_form.non_field_errors }}
+                        <legend><h4>Entity</h4></legend>
+                        {{ bank_account_person_underwriting_form.ba_entity_type.errors }}
+                        {{ bank_account_person_underwriting_form.ba_entity_type }}
+
+                        <div id="person_identity_fields">
                             <legend><h4>Individual identity verification</h4></legend>
 
                             <label>Your legal name</label>
-                            {{ bank_account_underwriting_form.ba_person_name.errors }}
-                            {{ bank_account_underwriting_form.ba_person_name|attr:"class:large"|attr:"required" }}
+                            {{ bank_account_person_underwriting_form.ba_person_name.errors }}
+                            {{ bank_account_person_underwriting_form.ba_person_name|attr:"class:large"|attr:"required" }}
                             <label>Contact phone number</label>
-                            {{ bank_account_underwriting_form.ba_person_phone.errors }}
-                            {{ bank_account_underwriting_form.ba_person_phone|attr:"class:large"|attr:"required" }}
+                            {{ bank_account_person_underwriting_form.ba_person_phone.errors }}
+                            {{ bank_account_person_underwriting_form.ba_person_phone|attr:"class:large"|attr:"required" }}
+                            <label>Date of birth</label>
+                            {{ bank_account_person_underwriting_form.ba_person_dob.errors }}
+                            {{ bank_account_person_underwriting_form.ba_person_dob|attr:"class:large datePicker"|attr:"required" }}
                             <label>Street address</label>
-                            {{ bank_account_underwriting_form.ba_person_address.errors }}
-                            {{ bank_account_underwriting_form.ba_person_address|attr:"class:large"|attr:"required" }}
+                            {{ bank_account_person_underwriting_form.ba_person_address.errors }}
+                            {{ bank_account_person_underwriting_form.ba_person_address|attr:"class:large"|attr:"required" }}
                             <label>City</label>
-                            {{ bank_account_underwriting_form.ba_person_city.errors }}
-                            {{ bank_account_underwriting_form.ba_person_city|attr:"class:large" }}
+                            {{ bank_account_person_underwriting_form.ba_person_city.errors }}
+                            {{ bank_account_person_underwriting_form.ba_person_city|attr:"class:large" }}
 
                             <ul class="inline">
                                 <li>
                                     <label>State of province</label>
-                                    {{ bank_account_underwriting_form.ba_person_region.errors }}
-                                    {{ bank_account_underwriting_form.ba_person_region|attr:"class:large" }}
+                                    {{ bank_account_person_underwriting_form.ba_person_region.errors }}
+                                    {{ bank_account_person_underwriting_form.ba_person_region|attr:"class:large" }}
                                 </li>
                                 <li>
                                     <label>ZIP or postal code</label>
-                                    {{ bank_account_underwriting_form.ba_person_zip.errors }}
-                                    {{ bank_account_underwriting_form.ba_person_zip|attr:"class:large"|attr:"required" }}
+                                    {{ bank_account_person_underwriting_form.ba_person_zip.errors }}
+                                    {{ bank_account_person_underwriting_form.ba_person_zip|attr:"class:large"|attr:"required" }}
                                 </li>
                             </ul>
                             <label>Country</label>
-                            {{ bank_account_underwriting_form.ba_person_country.errors }}
-                            {{ bank_account_underwriting_form.ba_person_country|attr:"class:large"|attr:"disabled" }}
+                            {{ bank_account_person_underwriting_form.ba_person_country.errors }}
+                            {{ bank_account_person_underwriting_form.ba_person_country|attr:"class:large"|attr:"disabled" }}
 
                             {#                    <label>Date of birth</label>#}
                             {#                    <ul class="inline">#}
@@ -189,13 +216,16 @@
                             {#                        </li>#}
                             {#                    </ul>#}
                         </div>
+                        <div class="text-center">
+                            <button type="submit" class="button gray">Submit</button>
+                        </div>
                     </form>
 
 
                 </fieldset>
             {% endif %}
         {% else %}
-            <form action="" method="post" id="account_routing_form">
+            <form action="{% url bitfund.pledger.views.attach_bank_account action='attach' %}" method="post" id="account_routing_form">
                 <div id="errors-list"></div>
                 <legend><h4>Account routing information</h4></legend>
                 <label>Name on bank account</label>
@@ -221,3 +251,5 @@
             
 </div>
 {% endblock %}
+
+
