@@ -23,7 +23,7 @@ class Project(models.Model):
     title = models.CharField(max_length=255)
     brief = models.CharField(max_length=255, null=True, blank=True)
     categories = models.ManyToManyField(ProjectCategory) #not used at the moment
-    logo = models.ImageField(upload_to='project_logo/', null=True, blank=True)
+    logo = models.CharField(max_length=255, null=True, blank=True)
     date_added = models.DateTimeField('date added', default=now())
     is_public = models.BooleanField(default=True)
     status = models.CharField(max_length=80, choices=PROJECT_STATUS_CHOICES, default=PROJECT_STATUS_CHOICES.unclaimed)

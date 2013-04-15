@@ -100,6 +100,7 @@ urlpatterns += patterns('bitfund.project.views',
     ##projects
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/edit/{0,}$', 'budget_edit'),
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/toggle/{0,}$', 'project_toggle'),
+    (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/photo_uload/{0,}$', 'budget_ajax_logo_upload'),
 
     ##needs
     (r'^projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/add_need/{0,}$', 'add_need'),

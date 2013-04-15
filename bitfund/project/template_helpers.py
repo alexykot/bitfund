@@ -4,8 +4,8 @@ import math
 from django.db.models import Sum
 from django.utils.timezone import utc, now
 
-from bitfund.core.settings.project import CHART_IMAGE_TYPE
-from bitfund.core.settings.server import STATIC_ROOT
+from bitfund.core.settings.project import CHART_IMAGE_TYPE, PROJECTS_MEDIA_DIR
+from bitfund.core.settings.server import MEDIA_ROOT
 from bitfund.project.forms import PledgeProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal, ProjectMaintainerVote
@@ -251,19 +251,32 @@ def _prepare_empty_project_template_data(request, project, pledge_form=None) :
 # creates required dirs if absent
 def _get_chart_relative_filename(project_key, chart_size, need_id=None, goal_id=None) :
     path = ''
-    path = os.path.join(path, project_key)
+    path = os.path.join(path, PROJECTS_MEDIA_DIR, project_key)
 
-    if need_id is not None :
-        path = os.path.join(path, 'need_'+str(need_id))
+    if need_id is not None:
+        path = os.path.join(path, 'need_' + str(need_id))
 
-    if goal_id is not None :
-        path = os.path.join(path, 'need_'+str(goal_id))
+    if goal_id is not None:
+        path = os.path.join(path, 'need_' + str(goal_id))
 
-    filename = chart_size+'.'+CHART_IMAGE_TYPE
+    filename = chart_size + '.' + CHART_IMAGE_TYPE
     relfilepath = os.path.join(path, filename)
-    absfilepath = os.path.join(STATIC_ROOT, relfilepath)
+    absfilepath = os.path.join(MEDIA_ROOT, relfilepath)
 
-    if not os.path.exists(os.path.dirname(absfilepath)) :
+    if not os.path.exists(os.path.dirname(absfilepath)):
         os.makedirs(os.path.dirname(absfilepath))
 
     return relfilepath
+
+def _get_logo_relative_filename(project_key, logo_filename) :
+    relfilepath = os.path.join(PROJECTS_MEDIA_DIR, project_key, logo_filename)
+    absfilepath = os.path.join(MEDIA_ROOT, relfilepath)
+
+    if not os.path.exists(os.path.dirname(absfilepath)):
+        os.makedirs(os.path.dirname(absfilepath))
+
+    return relfilepath
+
+
+
+

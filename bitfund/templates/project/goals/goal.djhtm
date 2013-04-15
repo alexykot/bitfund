@@ -233,9 +233,11 @@
                                 <span class="orange-bg">{% include "core/login/login-with-links.djhtm" %}</span>
                             </div>
                         {% endif %}
-                        {% if not request.user.is_payment_card_attached %}
+                        {% if not request.user_has_bank_card_attached  %}
                             <div>
-                                <span class="orange-bg">you don't have <a href="#">payment card attached</a></span>
+                                <span class="orange-bg">
+                                    you don't have <a href="{% url bitfund.pledger.views.attach_bank_card %}">payment card attached</a>
+                                </span>
                             </div>
                         {% endif %}
                     </div>

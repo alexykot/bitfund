@@ -50,7 +50,14 @@
                 if (response.status == 201) {
                     $.post('{% url bitfund.pledger.views.attach_bank_card action='attach' %}', {'card_uri': response.data.uri,
                                                                                 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(){
-                        window.location.reload();
+
+                        var url = $.url();
+                        if (typeof url.param('next') != 'undefined') {
+                            window.location = url.param('next');
+                        } else {
+                            window.location.reload();
+                        }
+
                     });
                 } else {
                     for (var i in response.error) {

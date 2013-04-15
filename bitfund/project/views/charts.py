@@ -15,7 +15,7 @@ from bitfund.core.settings.project import (ARGB_DONUT_CHART_PLEDGES,
                                            MINIMAL_DEFAULT_PLEDGES_DEGREES,
                                            MINIMAL_DEFAULT_OTHER_SOURCES_DEGREES,
                                            MINIMAL_DEFAULT_REDONATIONS_DEGREES)
-from bitfund.core.settings.server import STATICFILES_DIRS, STATIC_ROOT
+from bitfund.core.settings.server import STATICFILES_DIRS, STATIC_ROOT, MEDIA_ROOT
 from bitfund.project.decorators import disallow_not_public_unless_maintainer
 from bitfund.project.lists import PROJECT_CHART_SIZES, PROJECT_STATUS_CHOICES
 from bitfund.project.models import Project, ProjectGoal, ProjectNeed
@@ -27,7 +27,7 @@ def chart_image_project(request, project_key, chart_size):
     project = get_object_or_404(Project, key=project_key)
 
     chart_relpathname = _get_chart_relative_filename(project_key, chart_size)
-    chart_abspathname = STATIC_ROOT+chart_relpathname
+    chart_abspathname = MEDIA_ROOT+chart_relpathname
 
     project_monthly_budget = project.getTotalMonthlyBudget()
 
@@ -96,7 +96,7 @@ def chart_image_need(request, project_key, need_id, chart_size):
     need = get_object_or_404(ProjectNeed, pk=need_id)
 
     chart_relpathname = _get_chart_relative_filename(project_key, chart_size, need_id=need_id)
-    chart_abspathname = STATIC_ROOT+chart_relpathname
+    chart_abspathname = MEDIA_ROOT+chart_relpathname
 
     pledges_degrees = min(TOTAL_DEGREES, round(TOTAL_DEGREES * ((need.getPledgesMonthlyTotal()) / need.amount)))
     redonations_degrees = min((TOTAL_DEGREES-pledges_degrees), round(TOTAL_DEGREES * ((need.getRedonationsMonthlyTotal()) / need.amount)))
@@ -143,7 +143,7 @@ def chart_image_goal(request, project_key, goal_key, chart_size):
     goal = get_object_or_404(ProjectGoal, project_id=project.id, key=goal_key)
 
     chart_relpathname = _get_chart_relative_filename(project_key, chart_size, goal_id=goal.id)
-    chart_abspathname = STATIC_ROOT+chart_relpathname
+    chart_abspathname = MEDIA_ROOT+chart_relpathname
 
     pledges_degrees = min(TOTAL_DEGREES, round(TOTAL_DEGREES * ((goal.getTotalPledges()) / goal.amount)))
     other_sources_degrees = min((TOTAL_DEGREES-pledges_degrees), round(TOTAL_DEGREES * ((goal.getTotalOtherSources()) / goal.amount)))

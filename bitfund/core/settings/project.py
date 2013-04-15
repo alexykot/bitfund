@@ -1,7 +1,7 @@
 # custom bitfund project settings
 from decimal import getcontext
 
-#misc project related
+#misc bitfund related
 PROJECT_VERSION = '0.8'
 
 SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE = 'hidden-entrance'
@@ -19,6 +19,9 @@ MAX_NEEDS_PER_PROJECT = 10
 MAX_PUBLIC_GOALS_PER_PROJECT = 3
 
 PROJECTS_IN_HOMEPAGE_COLUMN = 10
+
+#projects
+PROJECTS_MEDIA_DIR = 'projects/'
 
 #needs and goals
 TIME_TO_SHOW_HOURS = 48 #when it's time to show hours instead of days for "time to go" for budget and goals, in hours

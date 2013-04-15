@@ -265,6 +265,7 @@ def attach_bank_card(request, action=None):
             Balanced_existing_card.save()
             existing_card.delete()
 
+
         return redirect('bitfund.pledger.views.attach_bank_card')
 
     current_card = BankCard.objects.filter(user_id=request.user.id)

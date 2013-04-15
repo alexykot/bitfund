@@ -30,6 +30,25 @@
                     $('#id_need-'+need_id+'-sort_order').attr('value',sort_order);
                 }
             });
+
+
+            var uploader = new qq.FileUploaderBasic({
+                action: "{% url bitfund.project.views.budget_ajax_logo_upload project_key=project.key %}",
+                button: $('#logo-file-upload')[0],
+                multiple: false,
+                onComplete: function( id, fileName, responseJSON ) {
+                    if( responseJSON.success ) {
+                        $('#project-logo').attr('src','{{ MEDIA_URL }}'+responseJSON.path);
+                    }
+                },
+                params: {
+                    'csrf_token': '{{ csrf_token }}',
+                    'csrf_name': 'csrfmiddlewaretoken',
+                    'csrf_xname': 'X-CSRFToken'
+                }
+            }) ;
+
+
         });
     </script>
 {% endblock pagescripts %}
@@ -41,17 +60,16 @@
         <div class="header">
             <div class="row-fluid">
                 <div class="span4 project-attributes">
-                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+                    <span id="logo-file-upload">
                         {% if project.logo %}
-                            <img src="{{ project.logo.url }} " />
+                            <img src="{{ MEDIA_URL }}{{ project.logo }}" height="62" width="62" id="project-logo" />
                         {% else %}
-                            <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+                            <img src="{{ STATIC_URL }}img/project_no_logo.png" height="62" width="62" id="project-logo" />
                         {% endif %}
-                        {% comment %}
-                        {{ project_form.logo.errors }}
-                        {{ project_form.logo }}
-                        {% endcomment %}
-                    </a>
+{#                        <div style="display: none">#}
+{#                            <input type="file" id="logo-file-upload" />#}
+{#                        </div>#}
+                    </span>
                     <span>
                         {{ project_form.title|attr:"class:input-medium"|attr:"required"}}
                         {{ project_form.title.errors }}
