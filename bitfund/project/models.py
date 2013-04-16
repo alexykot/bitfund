@@ -48,9 +48,6 @@ class Project(models.Model):
     #total redonations received by the project (all successful redonation transcations sum where this is accepting_project)
     amount_redonation_received = models.DecimalField(decimal_places=2, max_digits=12, default=0)
 
-    # all fees paid to Balanced for things processing 4%+30p per successful pledge transaction.
-    amount_fees = models.DecimalField(decimal_places=2, max_digits=12, default=0)
-
     # total available balance ((amount_donated+amount_redonation_received) - (amount_withdrawn+amount_redonation_given+amount_fees))
     amount_balance = models.DecimalField(decimal_places=2, max_digits=12, default=0)
 

@@ -8,8 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
 
 from model_utils import Choices
-from bitfund.core.settings.project import API_KEY_LENGTH, TRANSACTION_OVERHEAD_FEE_PERCENT, TRANSACTION_OVERHEAD_FEE_AMOUNT
-
+from bitfund.core.settings.project import API_KEY_LENGTH
 from bitfund.project.models import *
 
 DONATION_TRANSACTION_TYPES_CHOICES = Choices(
@@ -23,6 +22,13 @@ DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
     ('paid', u'Paid'), # trasaction already processed through payment successfully
     ('rejected', u'Rejected'), # trasaction rejected by the payment processor
     ('cancelled', u'Cancelled'), # trasaction cancelled by the issuer
+)
+
+PAYMENT_TRANSACTION_STATUSES_CHOICES = Choices(
+    ('incomplete', u'Incomplete'), # payment transaction is not fully filled yet in and thus invalid
+    ('pending', u'Pending'), # payment transaction to be processed
+    ('paid', u'Paid'), # payment transaction successfully processed
+    ('rejected', u'Rejected'), # payment trasaction rejected by the payment processor
 )
 
 BANK_ACCOUNT_ENTITY_TYPE_CHOICES = Choices(
@@ -119,13 +125,19 @@ class BankAccount(models.Model):
 class PaymentTransaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     balanced_account = models.ForeignKey(BalancedAccount, on_delete=models.PROTECT)
-    uri = models.CharField(max_length=255, unique=True)
-    status = models.CharField(max_length=25)
-    statement_tex = models.CharField(max_length=22)
-    transaction_amount = models.CharField(max_length=255)
-    fees_amount = models.BooleanField(default=True)
-    datetime_debited = models.DateTimeField('date added', default=now())
-
+    uri = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    status = models.CharField(max_length=10, choices=PAYMENT_TRANSACTION_STATUSES_CHOICES,
+                              default=PAYMENT_TRANSACTION_STATUSES_CHOICES.pending)
+    balanced_status = models.CharField(max_length=25, null=True, blank=True)
+    balanced_transaction_number = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    source_uri = models.CharField(max_length=255, null=True, blank=True)
+    statement_text = models.CharField(max_length=22, null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    transaction_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) #aggregated amount of all DonationTransactions payed with this PaymentTransaction
+    fees_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) # fees amount applied to this PaymentTransaction
+    total_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) # total amount debited
+    datetime_added = models.DateTimeField('date added', default=now())
+    datetime_debited = models.DateTimeField('date debited', null=True, blank=True)
 
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely
 class DonationSubscription(models.Model):
@@ -225,11 +237,6 @@ class DonationTransaction(models.Model):
         )
 
         return hashlib.sha512(hash_source).hexdigest()
-
-    def calculateFees(self, pledge_amount):
-        fee_amount = TRANSACTION_OVERHEAD_FEE_AMOUNT
-        fee_percent = Decimal(pledge_amount*TRANSACTION_OVERHEAD_FEE_PERCENT/100).quantize(Decimal(0.01))
-        return fee_amount+fee_percent
 
         # cycles through all linked projects for given transaction and creates redonations transactions if needed
     def createRedonationTransactions(self):
@@ -340,7 +347,6 @@ class DonationTransaction(models.Model):
         self.accepting_project_key = project.key
         self.accepting_project_title = project.title
         self.transaction_amount = pledge_amount
-        self.transaction_fees = self.calculateFees(pledge_amount)
 
         if need is not None :
             self.accepting_need = need
