@@ -20,7 +20,6 @@
             <div class="row-fluid">
                 <div class="span12 project-attributes">
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-                        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                         {% if project.logo %}
                             <img src="{{ project.logo.url }} " />
                         {% else %}
@@ -45,7 +44,7 @@
                             {% csrf_token %}
                             I'm voting to support
                             <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>.
-                            The vote is not recallable
+                            This vote is public and cannot be recalled.
                             {{ vote_form.errors }}
                             {{ vote_form.maintainer }}
                             {{ vote_form.vote }}
@@ -72,7 +71,7 @@
                             {{ vote_form.errors }}
                             I'm voting against
                             <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>.
-                            I understand that this vote is public and cannot be .
+                            I understand that this vote is public and cannot be recalled.
                             {{ vote_form.maintainer }}
                             {{ vote_form.vote }}
                             <p>I'm voting so because:</p>

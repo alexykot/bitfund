@@ -40,11 +40,6 @@
         });
 
 
-
-
-
-        });
-
     </script>
 {% endblock pagescripts %}
 
@@ -334,7 +329,7 @@
                         {% if goal.image %}
                             <img src="{{ goal.image.url }}"/>
                         {% else %}
-                            <img src="{{ STATIC_URL }}img/goal_no_image.png" />
+                            <img src="{{ STATIC_URL }}img/goal_no_image_small.png" />
                         {% endif %}
                         <h4><a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                         {% if goal.brief  %}
@@ -389,7 +384,7 @@
                             {% if goal.image %}
                                 <img src="{{ goal.image.url }}"/>
                             {% else %}
-                                <img src="{{ STATIC_URL }}img/goal_no_image.png" />
+                                <img src="{{ STATIC_URL }}img/goal_no_image_small.png" />
                             {% endif %}
                             <h4><a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">{{ goal.title }}</a></h4>
                             <p>{{ goal.brief }}</p>

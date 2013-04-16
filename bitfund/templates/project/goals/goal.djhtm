@@ -85,7 +85,7 @@
                     {% if project.logo %}
                         <img src="{{ project.logo.url }} " />
                     {% else %}
-                        <img src="{{ STATIC_URL }}img/project_goal_no_logo.png" />
+                        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                     {% endif %}</a>
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
@@ -118,7 +118,6 @@
         <div class="row-fluid">
             <div class="span7">
                 {% if goal.youtube_video_id %}
-
                     <div id="ytplayer"></div>
 
                     <script>
@@ -143,6 +142,8 @@
                     <iframe src="http://player.vimeo.com/video/{{ goal.vimeo_video_id }}" width="620" height="390" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
                 {% elif goal.image %}
                     <img src="{{ goal.image.url }}" />
+                {% else %}
+                    <img src="{{ STATIC_URL }}img/goal_no_image_big.png" />
                 {% endif %}
             </div>
 

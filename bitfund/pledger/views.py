@@ -109,6 +109,21 @@ def projects(request, project_key=None):
                      'current_page': 'projects',
                      }
 
+    if request.method == 'POST' :
+        template_data['create_project_form'] = CreateProjectForm(request.POST)
+        if template_data['create_project_form'].is_valid() :
+            project = Project()
+            project.title = template_data['create_project_form'].cleaned_data['title']
+            project.key = Project.slugifyKey(project.title)
+            project.is_public = False
+            project.maintainer_id = request.user.id
+            project.status = PROJECT_STATUS_CHOICES.active
+            project.save()
+            return redirect('bitfund.project.views.budget_edit', project_key=project.key)
+
+    else :
+        template_data['create_project_form'] = CreateProjectForm()
+
     projects_list = Project.objects.filter(maintainer_id=request.user.id)
     template_data['projects_list'] = []
     for project in projects_list :

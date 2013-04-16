@@ -14,6 +14,9 @@ SESSION_PARAM_RETURN_TO_PROJECT = 'return-to-project'
 
 BITFUND_OWN_PROJECT_ID = 5  #BitFund own project DB ID
 
+TRANSACTION_OVERHEAD_FEE_PERCENT = 3.9 # % to be added to each transaction for payment processor coverage, added separately from the amount
+TRANSACTION_OVERHEAD_FEE_AMOUNT = 0.3 # amount to be added to each transaction for payment processor coverage, added separately from the percent
+
 #homepage
 MAX_NEEDS_PER_PROJECT = 10
 MAX_PUBLIC_GOALS_PER_PROJECT = 3

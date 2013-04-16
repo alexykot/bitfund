@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
 
 from model_utils import Choices
-from bitfund.core.settings.project import API_KEY_LENGTH
+from bitfund.core.settings.project import API_KEY_LENGTH, TRANSACTION_OVERHEAD_FEE_PERCENT, TRANSACTION_OVERHEAD_FEE_AMOUNT
 
 from bitfund.project.models import *
 
@@ -115,6 +115,18 @@ class BankAccount(models.Model):
     is_valid = models.BooleanField(default=True)
 
 
+#list of transations actually debited from pledgers bank cards. aggregates all donation transactions for one pledger one month
+class PaymentTransaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    balanced_account = models.ForeignKey(BalancedAccount, on_delete=models.PROTECT)
+    uri = models.CharField(max_length=255, unique=True)
+    status = models.CharField(max_length=25)
+    statement_tex = models.CharField(max_length=22)
+    transaction_amount = models.CharField(max_length=255)
+    fees_amount = models.BooleanField(default=True)
+    datetime_debited = models.DateTimeField('date added', default=now())
+
+
 #donation subscriptions, storing active monthly donation subscriptions data undefinitely
 class DonationSubscription(models.Model):
     user = models.ForeignKey(User)
@@ -155,6 +167,7 @@ class DonationTransaction(models.Model):
     transaction_hash = models.CharField(max_length=255, unique=True)
     transaction_status = models.CharField(max_length=64, choices=DONATION_TRANSACTION_STATUSES_CHOICES,
                                           default=DONATION_TRANSACTION_STATUSES_CHOICES.unpaid)
+    payment_transaction = models.ForeignKey(PaymentTransaction, on_delete=models.PROTECT, null=True, blank=True)
 
     pledger_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     pledger_username = models.CharField(max_length=30, null=True, blank=True)
@@ -213,7 +226,12 @@ class DonationTransaction(models.Model):
 
         return hashlib.sha512(hash_source).hexdigest()
 
-    # cycles through all linked projects for given transaction and creates redonations transactions if needed
+    def calculateFees(self, pledge_amount):
+        fee_amount = TRANSACTION_OVERHEAD_FEE_AMOUNT
+        fee_percent = Decimal(pledge_amount*TRANSACTION_OVERHEAD_FEE_PERCENT/100).quantize(Decimal(0.01))
+        return fee_amount+fee_percent
+
+        # cycles through all linked projects for given transaction and creates redonations transactions if needed
     def createRedonationTransactions(self):
         projects_i_depend_on_list = (Project_Dependencies.objects
                                 .filter(depender_project=self.accepting_project)
@@ -322,6 +340,7 @@ class DonationTransaction(models.Model):
         self.accepting_project_key = project.key
         self.accepting_project_title = project.title
         self.transaction_amount = pledge_amount
+        self.transaction_fees = self.calculateFees(pledge_amount)
 
         if need is not None :
             self.accepting_need = need
