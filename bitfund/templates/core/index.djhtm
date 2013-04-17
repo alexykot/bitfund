@@ -39,7 +39,7 @@
 <div class="masthead">
     <h1>Fostering open world</h1>
     <h2>Monthly pledges for open projects</h2>
-    <a type="button" class="about">About</a>
+    <a type="button" class="about" href="{% url bitfund.core.views.about %}">About</a>
 </div>
 
 <div class="available-projects">

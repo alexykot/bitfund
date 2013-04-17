@@ -139,8 +139,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_login_redirect',
 
     #custom processors
-    'bitfund.core.context_processors.frontend_header_template_data',
-    'bitfund.core.context_processors.user_is_stranger',
+    # 'bitfund.core.context_processors.frontend_header_template_data',
+    # 'bitfund.core.context_processors.user_is_stranger',
 )
 
 

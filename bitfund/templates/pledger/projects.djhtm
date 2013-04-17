@@ -148,8 +148,12 @@
                 </dl>
                 <dl class="dl-horizontal">
                     <dt><h4><strong>Balance:</strong></h4></dt>
-                    <dd><h4><strong>{{ site_currency_sign }}{{ current_project.budget.ending_balance|floatformat:2 }}</strong></h4></dd>
-                    <dt><a href="{% url bitfund.pledger.views.attach_bank_account %}">attach bank account</a></dt>
+                    <dd><h4><strong>{{ site_currency_sign }}{{ current_project.amount_balance|floatformat:2 }}</strong></h4></dd>
+                    {% if request.user_has_bank_account_attached %}
+                        <dt><a href="#">withdraw</a></dt>
+                    {% else %}
+                        <dt><a href="{% url bitfund.pledger.views.attach_bank_account %}">attach bank account</a></dt>
+                    {% endif %}
                 </dl>
 
 

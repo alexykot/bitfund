@@ -200,6 +200,7 @@ def projects(request, project_key=None):
 
 @login_required
 def attach_bank_card(request, action=None):
+    balanced.configure(BALANCED['API_KEY'])
     template_data = {'request':request,
                      'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
                      'site_currency_sign': SITE_CURRENCY_SIGN,
@@ -210,7 +211,6 @@ def attach_bank_card(request, action=None):
 
     if request.method == 'POST' and request.is_ajax() and action == 'attach':
         card_uri = request.POST['card_uri']
-        balanced.configure(BALANCED['API_KEY'])
 
         user_balanced_account = BalancedAccount.getAccount(request.user.id)
         try :
@@ -293,6 +293,8 @@ def attach_bank_card(request, action=None):
 
 @login_required
 def attach_bank_account(request, action=None):
+    balanced.configure(BALANCED['API_KEY'])
+
     template_data = {'request':request,
                      'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
                      'site_currency_sign': SITE_CURRENCY_SIGN,
@@ -315,7 +317,6 @@ def attach_bank_account(request, action=None):
     request.user.public = _prepare_user_public_template_data(request, request.user)
 
     if request.method == 'POST' and request.is_ajax() and action == 'attach':
-        balanced.configure(BALANCED['API_KEY'])
 
         try :
             Balanced_account = balanced.Account.find(user_balanced_account.uri)
