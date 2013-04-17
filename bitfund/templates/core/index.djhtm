@@ -49,6 +49,20 @@
           <input class="span3" id="appendedInputButton" type="text">
           <button class="go" type="button" id="go-button">Search</button>
         </div>
+        <div id="create-project-link-container" class="create-project-active pull-right dotted-border">
+            <a id="create-project-link" href="">create project</a>
+        </div>
+        <div id="create-project-popup">
+            <form action="" method="post">
+            <div class="text-center">
+                <input type="text" placeholder="Enter project's name">
+            </div>
+            <div class="text-center">
+                <button type="submit" class="button gray">create project</button>
+            </div>
+            </form>
+            <p class="orange-bg">Please, login via <a href="">twitter</a> or <a href="">github</a></p>
+        </div>
     </div>
     
     <div class="search-result row-fluid" id="search-result" style="display: none"></div>
@@ -57,13 +71,15 @@
         <form action="" method="post">
             {% csrf_token %}
             {{ create_project_form.non_field_errors }}
-            <div class="row-fluid" id="create_project_form_container" style="display: none;">
-                <div class="span6 text-right">
-                    {{ create_project_form.title.errors }}
-                    {{ create_project_form.title|attr:"required"  }}
-                </div>
-                <div class="span6 text-left">
-                    <button class="button orange">Support unclaimed project</button>
+            <div id="create_project_form_container" style="display: none;">
+                <div class="row-fluid">
+                    <div class="span6 text-right">
+                        {{ create_project_form.title.errors }}
+                        {{ create_project_form.title|attr:"required"  }}
+                    </div>
+                    <div class="span6 text-left">
+                        <button class="button orange">Support unclaimed project</button>
+                    </div>
                 </div>
                 <h5>Your support will be offered to the project, but will not actually leave your account until it will be claimed.</h5>
             </div>

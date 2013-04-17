@@ -79,14 +79,14 @@ a:focus {
 }
 
 a:focus, button:focus, input[type="text"]:focus, input[type="checkbox"]:focus, textarea:focus, select:focus, option:focus {
-    outline: 0 none;
+    outline: 0;
 }
 
 ul {
     list-style-type: none;
 }
 
-button, .button, input[type="text"], input[type="checkbox"], textarea {
+button, .button, input[type="text"], input[type="checkbox"], textarea, .claim-project select {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -262,7 +262,7 @@ button.go {
     padding: 5px 9px;
 }
 
-.available-projects, .dependent-projects, .project-goals,  .profile-page {
+.available-projects, .dependent-projects, .project-goals,  .profile-page, .claim-project {
     background-color:   #FFFFFF;
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
@@ -273,6 +273,46 @@ button.go {
 
 .available-projects {
     padding: 30px;
+}
+
+.available-projects > div.text-center {
+    position: relative;
+}
+
+.available-projects .input-append {
+    margin-right: -87px;
+}
+
+.available-projects div.create-project-active, .profile-info ul.inline li.create-project-active {
+    background-color: #fff;
+    border-left: 1px solid #577000;
+    border-right: 1px solid #577000;
+    border-top: 1px solid #577000;
+    padding: 0 4px;
+    position: relative;
+    z-index: 100;
+}
+
+.available-projects #create-project-link-container {
+    padding: 0 4px;
+}
+
+#create-project-popup {
+    background-color: #fff;
+    border: 1px solid #577000;
+    padding: 15px;
+    position: absolute;
+    right: 0;
+    top: 33px;
+    z-index: 10;
+}
+
+.available-projects #create-project-popup {
+    top: 50px;
+}
+
+.available-projects #create-project-popup form {
+    margin-bottom: 0;
 }
 
 .available-projects .span3 h3 {
@@ -447,7 +487,7 @@ noindex:-o-prefocus, .project-meta {
     border-left: 1px solid #fff;
 }
 
-.dependent-projects h5, .budget-column > h5, .goals-column > h5:first-child {
+.dependent-projects h5, .budget-column > h5, .goals-column > h5:first-child, .claim-project h5 {
     background-color: #3d3d3d;
     color: #fff;
     height: 45px;
@@ -917,28 +957,8 @@ ul.chart-div-legend {
 
 /* Profile-page own-overview ===============*/
 
-.profile-info ul.inline li.create-project-active {
-    background-color: #fff;
-    border-left: 1px solid #577000;
-    border-right: 1px solid #577000;
-    border-top: 1px solid #577000;
-    padding: 0 4px;
-    position: relative;
-    z-index: 100;
-}
-
 .profile-info ul.inline li.create-project-active #create-project-link {
     line-height: 33px;    
-}
-
-#create-project-popup {
-    background-color: #fff;
-    border: 1px solid #577000;
-    padding: 15px;
-    position: absolute;
-    right: 0;
-    top: 33px;
-    z-index: 10;
 }
 
 #create-project-popup button {
@@ -1108,6 +1128,7 @@ table.public div dl dd {
 .dl-inline dd {
     float: left;
 }
+
 /* Profile-page projects ======*/
 
 .profile-page .projects-band {
@@ -1240,6 +1261,39 @@ select.date {
 
 select.year {
     width: 70px;
+}
+
+/* claim project */
+
+.claim-project-form{
+    padding: 30px 25px;
+}
+
+.claim-project-form form {
+    margin-bottom: 40px;
+}
+
+.claim-project-form .control-group {
+    margin-bottom: 10px;
+}
+
+.claim-project-form .control-label {
+    text-align: left;
+    width: 220px;
+}
+
+.claim-project-form button, .claim-project-form .control-group:last-of-type .control-label {
+    margin-right: 10px;
+    width: auto;
+}
+
+.claim-project-form h4 {
+    margin-bottom: 30px;
+}
+
+.claim-project .maintain {
+    padding: 20px 20px 10px;
+    margin-top: 20px;
 }
 /* Footer =====================*/
 
