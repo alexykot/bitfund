@@ -11,7 +11,7 @@ from django.utils.timezone import now
 
 from bitfund.core.settings.extensions import BALANCED
 from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES, BalancedAccount, PaymentTransaction, PAYMENT_TRANSACTION_STATUSES_CHOICES
-from bitfund.project.management.helpers import _calculate_balanced_transaction_fee
+from bitfund.project.management.helpers import _calculate_balanced_transaction_fee, _calculate_project_balances
 from bitfund.project.models import Project
 
 
@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id] = {
                 'pledger_user_id': unpaid_donation_transaction.pledger_user_id,
                 'donation_transactions_list': {},
-                'amount': Decimal(0.0),
+                'amount': Decimal('0.00'),
                 }
 
             (aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id]
@@ -134,7 +134,6 @@ class Command(BaseCommand):
                                                            amount=total_amount_cents,
                                                            description=payment_transaction.description,
                 )
-                print 'debit done, status: '+str(balanced_debit.status)
 
                 if balanced_debit.status == 'succeeded':
                     payment_transaction.status = PAYMENT_TRANSACTION_STATUSES_CHOICES.paid
@@ -149,12 +148,9 @@ class Command(BaseCommand):
                 except AttributeError:
                     pass
                 payment_transaction.save()
-                print 'payment transaction saved'
 
-                print 'updating donations'
                 self.update_donation_transaction(payment_transaction)
                 if payment_transaction.status == PAYMENT_TRANSACTION_STATUSES_CHOICES.paid:
-                    print 'updating project balances'
                     self.update_project_balances(payment_transaction)
 
     # updates donation transaction status. also updates redonation transaction statuses.
@@ -184,47 +180,60 @@ class Command(BaseCommand):
                 redonation_transaction.payment_transaction_id = payment_transaction.id
                 redonation_transaction.save()
                 queries_count = queries_count+1
-        print "donations updated, "+str(queries_count)+' queries'
 
     #updates project balances, adds supplied payment_transaction.
     #also check all redonations and updates all redonation accepting projects accordingly
     def update_project_balances(self, payment_transaction):
-        queries_count = 0
         donation_transactions_list = (DonationTransaction.objects
                                       .filter(payment_transaction_id=payment_transaction.id)
                                       .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.paid))
+
         for donation_transaction in donation_transactions_list:
             project = Project.objects.get(pk=donation_transaction.accepting_project_id)
             project.amount_pledged = project.amount_pledged + donation_transaction.transaction_amount
 
             redonation_transactions_list = (DonationTransaction.objects
                                             .filter(payment_transaction_id=payment_transaction.id)
+                                            .filter(redonation_transaction_id=donation_transaction.id)
                                             .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.paid))
+
             total_redonations = Decimal('0.00')
+            redonation_accepting_projects_list = {}
             for redonation_transaction in redonation_transactions_list:
-                redonation_accepting_project = Project.objects.get(pk=redonation_transaction.accepting_project_id)
+                if redonation_transaction.accepting_project_id not in redonation_accepting_projects_list:
+                    redonation_accepting_projects_list[redonation_transaction.accepting_project_id] = {'redonation_accepting_project_id': redonation_transaction.accepting_project_id,
+                                                                                                       'additional_amount_redonation_received': Decimal('0.00')}
 
-                redonation_accepting_project.amount_redonation_received = (redonation_accepting_project.amount_redonation_received
-                                                                            + redonation_transaction.transaction_amount)
-                redonation_accepting_project.amount_balance = (
-                (redonation_accepting_project.amount_pledged + redonation_accepting_project.amount_redonation_received)
-                - (redonation_accepting_project.amount_redonation_given + redonation_accepting_project.amount_withdrawn))
-
-                redonation_accepting_project.save()
-                queries_count = queries_count+1
+                redonation_accepting_projects_list[redonation_transaction.accepting_project_id]['additional_amount_redonation_received'] = \
+                    redonation_accepting_projects_list[redonation_transaction.accepting_project_id]['additional_amount_redonation_received'] \
+                    + redonation_transaction.transaction_amount
 
                 total_redonations = total_redonations + redonation_transaction.transaction_amount
+
+            for redonation_accepting_project_id in redonation_accepting_projects_list:
+                redonation_accepting_project = Project.objects.get(pk=redonation_accepting_project_id)
+                new_balances = _calculate_project_balances(redonation_accepting_project,
+                                    additional_amount_redonation_received=redonation_accepting_projects_list[redonation_accepting_project_id]['additional_amount_redonation_received'])
+
+                redonation_accepting_project.amount_pledged = new_balances['amount_pledged']
+                redonation_accepting_project.amount_redonation_given = new_balances['amount_redonation_given']
+                redonation_accepting_project.amount_redonation_received = new_balances['amount_redonation_received']
+                redonation_accepting_project.amount_withdrawn = new_balances['amount_withdrawn']
+                redonation_accepting_project.amount_balance = new_balances['amount_balance']
+
+                redonation_accepting_project.save()
 
             project.amount_redonation_given = project.amount_redonation_given + total_redonations
 
             project.amount_balance = ((project.amount_pledged + project.amount_redonation_received)
                                       - (project.amount_redonation_given + project.amount_withdrawn))
             project.save()
-            queries_count = queries_count+1
-
-        print "balances updated, "+str(queries_count)+' queries'
 
 
+
+# UPDATE `pledger_donationtransaction`
+# SET
+# `payment_transaction_id` = NULL;
 # UPDATE `pledger_donationtransaction`
 # SET
 # `payment_transaction_id` = NULL,
