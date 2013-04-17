@@ -62,7 +62,7 @@
                             <td class="pull-right">
                                 {% if project.monthly_total_donations_percent == -1 %}
                                     <span class="chart-div-medium">
-                                        <span>&infin;</span>
+                                        <span class="text-center">&infin;</span>
                                         <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" id="budget_chart_image" />
                                     </span>
                                 {% else %}

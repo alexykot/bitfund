@@ -262,7 +262,7 @@ button.go {
     padding: 5px 9px;
 }
 
-.available-projects, .dependent-projects, .project-goals,  .profile-page, .claim-project {
+.available-projects, .dependent-projects, .project-goals,  .profile-page, .claim-project, .claim-project .maintain {
     background-color:   #FFFFFF;
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
@@ -575,6 +575,18 @@ noindex:-o-prefocus, .project-meta {
 .project-goals input {
     height: auto;
     margin-bottom: 0;
+}
+
+#logo-file-upload:hover {
+    background: #fff;
+}
+
+#logo-file-upload input {
+    font-size: 40px;
+    top: -20px;
+    right: 5px;
+    height: 58px;
+    width: 58px;
 }
 
 .edit-goal > .row-fluid:first-of-type .span3 span {

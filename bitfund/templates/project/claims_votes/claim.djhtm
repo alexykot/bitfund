@@ -101,7 +101,7 @@
                 </form>
                 <p>On the project page information you're providing will look like this:</p>
 
-                <div class="maintain text-right gray">
+                <div class="maintain text-right">
                     <p>
                         This budget is maintained by <span id="maintainer-project-role"></span>
                             <a href="{% url bitfund.pledger.views.profile username=request.user.username %}">{{ request.user.username }}</a>,
@@ -109,8 +109,10 @@
                             <a href="" id="maintainer-reason-link">community decided so</a>.
                         <br> 
                         His right to maintain is <span><a href="#">unverified</a></span>
-                            <span><a href="">vote to support</a></span>
-                            <span><a href="">vote against</a></span>
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="">vote to support</a></span>
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="">vote against</a></span>
                     </p>
                 </div>
             </div>
