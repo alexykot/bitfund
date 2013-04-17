@@ -35,8 +35,8 @@ class Project(models.Model):
     maintainer_reason_url = models.TextField(null=True, blank=True)
     is_maintainer_confirmed = models.BooleanField(default=False)
 
-    #total donations to this project (all successful pledge transcations sum)
-    amount_donated = models.DecimalField(decimal_places=2, max_digits=12, default=0)
+    #total donations to this project (all successful pledge transactions sum)
+    amount_pledged = models.DecimalField(decimal_places=2, max_digits=12, default=0)
 
     #total withdrawals of this project, all money withdrawn to projects bank account
     ## @TODO - add separate withdrawal transactions tracking
@@ -48,7 +48,7 @@ class Project(models.Model):
     #total redonations received by the project (all successful redonation transcations sum where this is accepting_project)
     amount_redonation_received = models.DecimalField(decimal_places=2, max_digits=12, default=0)
 
-    # total available balance ((amount_donated+amount_redonation_received) - (amount_withdrawn+amount_redonation_given+amount_fees))
+    # total available balance ((amount_donated+amount_redonation_received) - (amount_withdrawn+amount_redonation_given))
     amount_balance = models.DecimalField(decimal_places=2, max_digits=12, default=0)
 
 

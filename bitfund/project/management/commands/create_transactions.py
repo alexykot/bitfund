@@ -1,14 +1,17 @@
+from decimal import Decimal
 from optparse import make_option
 import balanced
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
 from bitfund.core.settings.extensions import BALANCED
 from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES, BalancedAccount, PaymentTransaction, PAYMENT_TRANSACTION_STATUSES_CHOICES
 from bitfund.project.management.helpers import _calculate_balanced_transaction_fee
+from bitfund.project.models import Project
 
 
 class Command(BaseCommand):
@@ -23,84 +26,87 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         aggregated_donations_transactions_list = self.get_aggregated_donations_transactions_list()
         self.create_payment_transactions(aggregated_donations_transactions_list)
-        self.debit_payments() #self.update_donation_transaction() & self.update_project_balances()
+        self.debit_payments()
 
 
-    # fetches and formes a list of all DonationTransactions to process, aggregated by pledger_user
+    # fetches and forms a list of all DonationTransactions to process, aggregated by pledger_user
     def get_aggregated_donations_transactions_list(self):
         unpaid_donation_transactions_list = (DonationTransaction.objects
                                              .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
                                              .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.unpaid)
+                                             .filter(payment_transaction__isnull=True)
         )
 
         aggregated_donations_transactions_list = {}
 
         for unpaid_donation_transaction in unpaid_donation_transactions_list:
             if unpaid_donation_transaction.pledger_user_id not in aggregated_donations_transactions_list:
-                aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id] = {'pledger_user_id': unpaid_donation_transaction.pledger_user_id,
-                                                                                          'donation_transactions_list': {},
-                                                                                          'amount': 0.0,
-                                                                                          }
+                aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id] = {
+                'pledger_user_id': unpaid_donation_transaction.pledger_user_id,
+                'donation_transactions_list': {},
+                'amount': Decimal(0.0),
+                }
 
             (aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id]
              ['donation_transactions_list']
-             [unpaid_donation_transaction.id]) = {'transaction_id': unpaid_donation_transaction.id, #? ????? ?????? ???? ???-??????
+             [unpaid_donation_transaction.id]) = {'transaction_id': unpaid_donation_transaction.id,
                                                   'transaction_amount': unpaid_donation_transaction.transaction_amount,
                                                   'accepting_project': unpaid_donation_transaction.id,
-                                                  }
+            }
 
-            aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id]['amount'] = (unpaid_donation_transaction.transaction_amount
-                 + aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id]['amount'])
-
+            aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id]['amount'] = (
+            unpaid_donation_transaction.transaction_amount
+            + aggregated_donations_transactions_list[unpaid_donation_transaction.pledger_user_id]['amount'])
 
         return aggregated_donations_transactions_list
+
 
     # cycles through aggregated_donations_transactions_list and creates PaymentTransaction entries based on it, with "pending" status.
     # Also updates DonationTransaction entries with relevant newly created payment_transaction_ids
     def create_payment_transactions(self, aggregated_donations_transactions_list):
-        for payment_transaction_data in aggregated_donations_transactions_list:
-            pledger_balanced_account = BalancedAccount.objects.filter(user_id=payment_transaction_data.pledger_user_id)
+        for pledger_user_id in aggregated_donations_transactions_list:
+            payment_transaction_data = aggregated_donations_transactions_list[pledger_user_id]
+            pledger_balanced_account = BalancedAccount.objects.filter(user_id=pledger_user_id)
 
             if (pledger_balanced_account.count() > 0):
                 pledger_balanced_account = pledger_balanced_account[0]
             else:
                 pledger_balanced_account = False
 
-
             if not pledger_balanced_account:
-                for donation_transaction in pledger_balanced_account['donation_transactions_list']:
+                for donation_transaction in payment_transaction_data['donation_transactions_list']:
                     bad_transaction = DonationTransaction.objects.get(pk=donation_transaction['transaction_id'])
                     bad_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.rejected
                     bad_transaction.save()
             else:
                 payment_transaction = PaymentTransaction()
-                payment_transaction.user_id = payment_transaction_data.pledger_user_id
+                payment_transaction.user_id = pledger_user_id
                 payment_transaction.balanced_account_id = pledger_balanced_account.id
                 payment_transaction.status = PAYMENT_TRANSACTION_STATUSES_CHOICES.incomplete
-                payment_transaction.amount = payment_transaction_data.amount
-                payment_transaction.fees_amount = _calculate_balanced_transaction_fee(payment_transaction_data.amount)
-                payment_transaction.total_amount = payment_transaction.amount+payment_transaction.fees_amount
+                payment_transaction.amount = payment_transaction_data['amount']
+                payment_transaction.fees_amount = _calculate_balanced_transaction_fee(payment_transaction_data['amount'])
+                payment_transaction.total_amount = payment_transaction.amount + payment_transaction.fees_amount
                 payment_transaction.save()
 
-                pledger_user = User.objects.get(pk=payment_transaction_data.pledger_user_id)
+                pledger_user = User.objects.get(pk=payment_transaction_data['pledger_user_id'])
+                pledger_user = User.objects.get(pk=payment_transaction_data['pledger_user_id'])
 
-                payment_transaction_description = now().strftime('%b %Y')+' payment from '+pledger_user.username+' to '
-                for donation_transaction in pledger_balanced_account['donation_transactions_list']:
+                payment_transaction_description = now().strftime(
+                    '%b %Y') + ' payment from ' + pledger_user.username + ' to '
+                for index in payment_transaction_data['donation_transactions_list']:
+                    donation_transaction = payment_transaction_data['donation_transactions_list'][index]
                     not_bad_transaction = DonationTransaction.objects.get(pk=donation_transaction['transaction_id'])
                     not_bad_transaction.payment_transaction_id = payment_transaction.id
                     not_bad_transaction.save()
 
                     payment_transaction_description = (payment_transaction_description
-                                                       +' '+not_bad_transaction.accepting_project_key
-                                                       +': $'+str(not_bad_transaction.transaction_amount)+';')
-
-
+                                                       + ' ' + not_bad_transaction.accepting_project_key
+                                                       + ': $' + str(not_bad_transaction.transaction_amount) + ';')
 
                 payment_transaction.status = PAYMENT_TRANSACTION_STATUSES_CHOICES.pending
-                payment_transaction.statement_text = 'BitFind.org #'+str(payment_transaction.id),
+                payment_transaction.statement_text = 'BitFind.org #' + unicode(payment_transaction.id)
                 payment_transaction.description = payment_transaction_description
                 payment_transaction.save()
-
 
 
     # debits all payments for PaymentTransactions in "pending" status. updates PaymentTransactions on success or failure.
@@ -110,19 +116,23 @@ class Command(BaseCommand):
     def debit_payments(self):
         balanced.configure(BALANCED['API_KEY'])
 
-        payment_transactions_to_debit_list = PaymentTransaction.objects.filter(status=PAYMENT_TRANSACTION_STATUSES_CHOICES.pending)
+        payment_transactions_to_debit_list = PaymentTransaction.objects.filter(
+            status=PAYMENT_TRANSACTION_STATUSES_CHOICES.pending)
         for payment_transaction in payment_transactions_to_debit_list:
-            pledger_balanced_account = BalancedAccount.objects.get(pk=payment_transaction.balanced_account)
+            pledger_balanced_account = BalancedAccount.objects.get(pk=payment_transaction.balanced_account_id)
             balanced_account = balanced.Account.find(pledger_balanced_account.uri)
 
-            with transaction.atomic():
-                balanced_response = balanced_account.debit( appears_on_statement_as=payment_transaction.statement_text,
-                                                            amount=payment_transaction.total_amount,
-                                                            description=payment_transaction.description,
-                                                            )
+            with transaction.commit_on_success():
+                print
+                total_amount_cents = int(Decimal(payment_transaction.total_amount*Decimal(100)).quantize((Decimal('1'))))
+                balanced_response = balanced_account.debit(appears_on_statement_as=payment_transaction.statement_text,
+                                                           amount=total_amount_cents,
+                                                           description=payment_transaction.description,
+                )
 
                 if balanced_response['status'] == 'success':
                     payment_transaction.status = PAYMENT_TRANSACTION_STATUSES_CHOICES.paid
+                    payment_transaction.datetime_debited = now()
                 else:
                     payment_transaction.status = PAYMENT_TRANSACTION_STATUSES_CHOICES.rejected
                 payment_transaction.balanced_status = balanced_response['status']
@@ -135,14 +145,63 @@ class Command(BaseCommand):
                 payment_transaction.save()
 
                 self.update_donation_transaction(payment_transaction)
-                self.update_project_balances(payment_transaction)
+                if payment_transaction.status == PAYMENT_TRANSACTION_STATUSES_CHOICES.paid:
+                    self.update_project_balances(payment_transaction)
 
-
-
-                # updates donation transaction status. also updates redonation transaction statuses.
+    # updates donation transaction status. also updates redonation transaction statuses.
     def update_donation_transaction(self, payment_transaction):
-        pass
+        donation_transactions_list = (DonationTransaction.objects
+                                      .filter(payment_transaction_id=payment_transaction.id)
+                                      .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge))
+        for donation_transaction in donation_transactions_list:
+            if payment_transaction.status == PAYMENT_TRANSACTION_STATUSES_CHOICES.paid:
+                donation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.paid
+            else:
+                donation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.rejected
+
+            donation_transaction.save()
+
+            redonation_transactions_list = (DonationTransaction.objects
+                                            .filter(redonation_transaction_id=donation_transaction.id)
+                                            .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.redonation))
+            for redonation_transaction in redonation_transactions_list:
+                if payment_transaction.status == PAYMENT_TRANSACTION_STATUSES_CHOICES.paid:
+                    redonation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.paid
+                else:
+                    redonation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.rejected
+
+                redonation_transaction.payment_transaction_id = payment_transaction.id
+                redonation_transaction.save()
 
     #updates project balances, adds supplied payment_transaction.
+    #also check all redonations and updates all redonation accepting projects accordingly
     def update_project_balances(self, payment_transaction):
-        pass
+        donation_transactions_list = (DonationTransaction.objects
+                                      .filter(payment_transaction_id=payment_transaction.id)
+                                      .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.paid))
+        for donation_transaction in donation_transactions_list:
+            project = Project.objects.get(pk=donation_transaction.accepting_project_id)
+            project.amount_pledged = project.amount_pledged + donation_transaction.transaction_amount
+
+            redonation_transactions_list = (DonationTransaction.objects
+                                            .filter(payment_transaction_id=payment_transaction.id)
+                                            .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.paid))
+            total_redonations = Decimal('0.00')
+            for redonation_transaction in redonation_transactions_list:
+                redonation_accepting_project = Project.objects.get(pk=redonation_transaction.accepting_project_id)
+
+                redonation_accepting_project.amount_redonation_received = (redonation_accepting_project.amount_redonation_received
+                                                                            + redonation_transaction.transaction_amount)
+                redonation_accepting_project.amount_balance = (
+                (redonation_accepting_project.amount_pledged + redonation_accepting_project.amount_redonation_received)
+                - (redonation_accepting_project.amount_redonation_given + redonation_accepting_project.amount_withdrawn))
+
+                redonation_accepting_project.save()
+
+                total_redonations = total_redonations + redonation_transaction.transaction_amount
+
+            project.amount_redonation_given = project.amount_redonation_given + total_redonations
+
+            project.amount_balance = ((project.amount_pledged + project.amount_redonation_received)
+                                      - (project.amount_redonation_given + project.amount_withdrawn))
+            project.save()

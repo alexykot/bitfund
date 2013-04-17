@@ -132,7 +132,7 @@ class PaymentTransaction(models.Model):
     balanced_transaction_number = models.CharField(max_length=255, unique=True, null=True, blank=True)
     source_uri = models.CharField(max_length=255, null=True, blank=True)
     statement_text = models.CharField(max_length=22, null=True, blank=True)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     transaction_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) #aggregated amount of all DonationTransactions payed with this PaymentTransaction
     fees_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) # fees amount applied to this PaymentTransaction
     total_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) # total amount debited
