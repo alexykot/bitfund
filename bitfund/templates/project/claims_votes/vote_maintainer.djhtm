@@ -14,7 +14,7 @@
 {% endblock pagescripts %}
 
 {% block content %}
-    <div class="project-goals">
+    <div class="vote-form">
         
         <div class="header">
             <div class="row-fluid">
@@ -33,57 +33,60 @@
 
         {% if action == 'support' %}
 
-            <div class="row-fluid budget-n-goals">
-                <div class="span12 budget-column">
-                    <h5>
-                        Support {{ project.title }} maintainer
-                        <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>
-                    </h5>
-                    <div>
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            I'm voting to support
+            <h5>
+                Support {{ project.title }} maintainer
+                <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>
+            </h5>
+            <div class="row-fluid">
+                <div class="span6">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <p>I'm voting to support
                             <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>.
                             This vote is public and cannot be recalled.
                             {{ vote_form.errors }}
                             {{ vote_form.maintainer }}
-                            {{ vote_form.vote }}
+                                {{ vote_form.vote }}
                             <a href="{% url bitfund.project.views.vote_maintainer project_key=project.key %}"
                                id="comment-add-link">I have a comment to add</a>
-                            <div id="vote-comment-container" style="display: none;">
-                                {{ vote_form.comment }}
-                            </div>
+                        </p>
+                        <div id="vote-comment-container" style="display: none;">
+                            {{ vote_form.comment }}
+                        </div>
+                        <div class="text-center">
                             <button type="submit" class="button button-small gray">Support</button>
                             <a href="{% url bitfund.project.views.budget project_key=project.key %}">cancel</a>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 
         {% elif action == 'dethrone'  %}
 
-            <div class="row-fluid budget-n-goals">
-                <div class="span12 budget-column">
-                    <h5>&nbsp;</h5>
-                    <div>
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            {{ vote_form.errors }}
-                            I'm voting against
+            <h5>Report KDE maintainer <a href="">alexeykot</a>&nbsp;<sup>#789878</sup></h5>
+            <div class="row-fluid">
+                <div class="span6">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ vote_form.errors }}
+                        <p>I'm voting against
                             <a href="{% url bitfund.pledger.views.profile username=project.maintainer.username %}">{{ project.maintainer.username }}</a>.
                             I understand that this vote is public and cannot be recalled.
                             {{ vote_form.maintainer }}
                             {{ vote_form.vote }}
-                            <p>I'm voting so because:</p>
-                            {{ vote_form.comment.errors }}
-                            {{ vote_form.comment|attr:"required" }}
+                        </p>
+                        <p>I'm voting so because:</p>
+                        {{ vote_form.comment.errors }}
+                        {{ vote_form.comment|attr:"required" }}
+                        <p>You wan't be able to amend or withdraw this report, so write wisely.</p>
+                        <div class="text-center">
                             <button type="submit" class="button button-small gray">Dethrone</button>
                             <a href="{% url bitfund.project.views.budget project_key=project.key %}">cancel</a>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
-
             </div>
+           
 
         {% endif %}
     </div>
