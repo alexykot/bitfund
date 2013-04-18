@@ -262,7 +262,7 @@ button.go {
     padding: 5px 9px;
 }
 
-.available-projects, .dependent-projects, .project-goals,  .profile-page, .claim-project, .claim-project .maintain {
+.available-projects, .dependent-projects, .project-goals,  .profile-page, .claim-project, .claim-project .maintain, .faq, .stats {
     background-color:   #FFFFFF;
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
@@ -1307,6 +1307,40 @@ select.year {
     padding: 20px 20px 10px;
     margin-top: 20px;
 }
+
+/* FAQ */
+
+.faq, .stats {
+    padding: 0 20px 20px;
+}
+
+.faq h1, .stats h1 {
+    margin: 30px 0;
+}
+
+.faq h2 {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+}
+
+.faq article {
+    margin-bottom: 20px;
+}
+
+.faq li, .stats li {
+    padding: 15px 25px 0 20px;
+}
+
+.faq li, .stats li,  .footer li {
+    border-right: 1px solid #ccc;
+    display: inline-block;
+    line-height: 8px;
+}
+
+.faq li:last-child, .stats li:last-child, .footer li:last-child {
+    border-right: none;
+}
 /* Footer =====================*/
 
 .footer {
@@ -1320,14 +1354,7 @@ select.year {
 }
 
 .footer li {
-    border-right: 1px solid #ccc;
-    display: inline-block;
-    line-height: 8px;
     padding: 0 25px 15px 20px;
-}
-
-.footer li:last-child {
-    border-right: none;
 }
 
 /* general */
