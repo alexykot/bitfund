@@ -79,14 +79,14 @@ a:focus {
 }
 
 a:focus, button:focus, input[type="text"]:focus, input[type="checkbox"]:focus, textarea:focus, select:focus, option:focus {
-    outline: 0 none;
+    outline: 0;
 }
 
 ul {
     list-style-type: none;
 }
 
-button, .button, input[type="text"], input[type="checkbox"], textarea {
+button, .button, input[type="text"], input[type="checkbox"], textarea, .claim-project select {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -262,7 +262,7 @@ button.go {
     padding: 5px 9px;
 }
 
-.available-projects, .dependent-projects, .project-goals,  .profile-page {
+.available-projects, .dependent-projects, .project-goals,  .profile-page, .claim-project, .claim-project .maintain, .faq, .stats, .vote-form {
     background-color:   #FFFFFF;
     -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    0px 0px 5px rgba(50, 50, 50, 0.5);
@@ -273,6 +273,46 @@ button.go {
 
 .available-projects {
     padding: 30px;
+}
+
+.available-projects > div.text-center {
+    position: relative;
+}
+
+.available-projects .input-append {
+    margin-right: -87px;
+}
+
+.available-projects div.create-project-active, .profile-info ul.inline li.create-project-active {
+    background-color: #fff;
+    border-left: 1px solid #577000;
+    border-right: 1px solid #577000;
+    border-top: 1px solid #577000;
+    padding: 0 4px;
+    position: relative;
+    z-index: 100;
+}
+
+.available-projects #create-project-link-container {
+    padding: 0 4px;
+}
+
+#create-project-popup {
+    background-color: #fff;
+    border: 1px solid #577000;
+    padding: 15px;
+    position: absolute;
+    right: 0;
+    top: 33px;
+    z-index: 10;
+}
+
+.available-projects #create-project-popup {
+    top: 50px;
+}
+
+.available-projects #create-project-popup form {
+    margin-bottom: 0;
 }
 
 .available-projects .span3 h3 {
@@ -447,7 +487,7 @@ noindex:-o-prefocus, .project-meta {
     border-left: 1px solid #fff;
 }
 
-.dependent-projects h5, .budget-column > h5, .goals-column > h5:first-child {
+.dependent-projects h5, .budget-column > h5, .goals-column > h5:first-child, .claim-project h5, .vote-form h5 {
     background-color: #3d3d3d;
     color: #fff;
     height: 45px;
@@ -535,6 +575,18 @@ noindex:-o-prefocus, .project-meta {
 .project-goals input {
     height: auto;
     margin-bottom: 0;
+}
+
+#logo-file-upload:hover {
+    background: #fff;
+}
+
+#logo-file-upload input {
+    font-size: 40px;
+    top: -20px;
+    right: 5px;
+    height: 58px;
+    width: 58px;
 }
 
 .edit-goal > .row-fluid:first-of-type .span3 span {
@@ -852,6 +904,20 @@ ul.chart-div-legend {
     position: relative;
 }
 
+.goal-info .project-meta button {
+    margin-left: 10px;
+}
+
+.goal-description input, .goal-description textarea {
+    display: block;
+    margin-bottom: 10px;
+    width: 516px;
+}
+
+.goal-description #id_brief {
+    height: 40px;
+}
+
 .goal-info > .row-fluid {
     position: relative;
 }
@@ -860,7 +926,7 @@ ul.chart-div-legend {
     font-size: 12px;
     position: absolute;
     top: 10px;
-    right: 30px;
+    right: 25px;
 }
 
 .goal-info > .row-fluid > .span7 {
@@ -874,6 +940,12 @@ ul.chart-div-legend {
 .goal-info .span7 iframe {
     height: 330px;
     width: 530px;
+}
+
+.goal-info .span5 .span7 > span {
+    font-size: 30px;
+    line-height: 30px;
+    padding-left: 5px;
 }
 
 .goal-info .chart-div-large {
@@ -915,30 +987,29 @@ ul.chart-div-legend {
     font-weight: normal;
 }
 
-/* Profile-page own-overview ===============*/
-
-.profile-info ul.inline li.create-project-active {
-    background-color: #fff;
-    border-left: 1px solid #577000;
-    border-right: 1px solid #577000;
-    border-top: 1px solid #577000;
-    padding: 0 4px;
-    position: relative;
-    z-index: 100;
+.goal-info .form-horizontal, .goal-info .editing {
+    margin-top: 20px;
 }
+.goal-info .control-group {
+    margin-bottom: 10px;
+}
+
+.goal-info .control-label {
+    text-align: left;
+    width: 70px;
+}
+
+.goal-info .controls {
+    margin-left: 80px;
+}
+
+.goal-info .editing iframe {
+    width: 875px !important;
+}
+/* Profile-page own-overview ===============*/
 
 .profile-info ul.inline li.create-project-active #create-project-link {
     line-height: 33px;    
-}
-
-#create-project-popup {
-    background-color: #fff;
-    border: 1px solid #577000;
-    padding: 15px;
-    position: absolute;
-    right: 0;
-    top: 33px;
-    z-index: 10;
 }
 
 #create-project-popup button {
@@ -1108,6 +1179,7 @@ table.public div dl dd {
 .dl-inline dd {
     float: left;
 }
+
 /* Profile-page projects ======*/
 
 .profile-page .projects-band {
@@ -1241,6 +1313,99 @@ select.date {
 select.year {
     width: 70px;
 }
+
+/* claim project */
+
+.claim-project-form{
+    padding: 30px 25px;
+}
+
+.claim-project-form form {
+    margin-bottom: 40px;
+}
+
+.claim-project-form .control-group {
+    margin-bottom: 10px;
+}
+
+.claim-project-form .control-label {
+    text-align: left;
+    width: 220px;
+}
+
+.claim-project-form button, .claim-project-form .control-group:last-of-type .control-label {
+    margin-right: 10px;
+    width: auto;
+}
+
+.claim-project-form h4 {
+    margin-bottom: 30px;
+}
+
+.claim-project .maintain {
+    padding: 20px 20px 10px;
+    margin-top: 20px;
+}
+
+/* FAQ */
+
+.faq, .stats {
+    padding: 0 20px 20px;
+}
+
+.faq h1, .stats h1 {
+    margin: 30px 0;
+}
+
+.faq h2 {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+}
+
+.faq article {
+    margin-bottom: 20px;
+}
+
+.faq li, .stats li {
+    padding: 15px 25px 0 20px;
+}
+
+.faq li, .stats li,  .footer li {
+    border-right: 1px solid #ccc;
+    display: inline-block;
+    line-height: 8px;
+}
+
+.faq li:last-child, .stats li:last-child, .footer li:last-child {
+    border-right: none;
+}
+
+/* Vote maintainer */
+.vote-form .project-attributes {
+    padding-left: 20px;
+}
+
+ .vote-form sup {
+    background-color: #fff;
+    color: #3d3d3d;
+    text-decoration: underline;
+ }
+
+ .vote-form .row-fluid {
+    padding: 30px 20px;
+ }
+
+ .vote-form textarea {
+    width: 100%;
+ }
+.vote-form .text-center {
+    margin-top: 30px;
+}
+
+ .vote-form button {
+    margin-right: 10px;
+ }
 /* Footer =====================*/
 
 .footer {
@@ -1254,14 +1419,7 @@ select.year {
 }
 
 .footer li {
-    border-right: 1px solid #ccc;
-    display: inline-block;
-    line-height: 8px;
     padding: 0 25px 15px 20px;
-}
-
-.footer li:last-child {
-    border-right: none;
 }
 
 /* general */

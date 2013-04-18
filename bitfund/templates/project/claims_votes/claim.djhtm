@@ -42,7 +42,7 @@
 {% endblock pagescripts %}
 
 {% block content %}
-    <div class="project-goals">
+    <div class="claim-project">
         
         <div class="header">
             <div class="row-fluid">
@@ -64,42 +64,59 @@
             </div>
         </div>
 
-        <div class="row-fluid budget-n-goals">
-            <div class="span12 budget-column">
-                <h5>&nbsp;</h5>
-                <div>
-                    <div class="row-fluid">
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            {{ claim_form.errors }}
-                            You're claiming a right to maintain budget for {{ project.title }}. Please provide a few bits about yourself.
-                            <br />
-                            Information you will provide here will be public.
-                            <br /><br />
-                            You are {{ claim_form.maintainer_role }}<br />
-                            You're known as {{ claim_form.maintainer_username|attr:"disabled"  }}<br />
-                            You claim the project because {{ claim_form.maintainer_reason_text }}<br />
-                            Optional link to detailed public explanation, community discussion, foundation press release etc {{ claim_form.maintainer_reason_url }}<br />
-                            <button type="submit" class="button gray">Claim</button> <a href="{% url bitfund.project.views.unclaimed project_key=project.key %}">cancel</a>
-                        </form>
-                        <br /><br /><br />
-                        On the project page information you're providing will look like this:
-
-                        <div class="maintain text-right">
-                            <p>
-                                This budget is maintained by <span id="maintainer-project-role"></span>
-                                <a href="{% url bitfund.pledger.views.profile username=request.user.username %}">{{ request.user.username }}</a>,
-                                this is because
-                                <a href="" id="maintainer-reason-link"></a>
-
-                            </p>
+        <h5>&nbsp;Claim KDE</h5>
+            <div class="claim-project-form">
+                <form action="" method="post" class="form-horizontal">
+                    {% csrf_token %}
+                    {{ claim_form.errors }}
+                    <h4>You're claiming a right to maintain budget for {{ project.title }}. Please provide a few bits about yourself.
+                    <br />
+                    Information you will provide here will be public.
+                    </h4>
+                        <div class="control-group">
+                            <label class="control-label">You role</label>
+                            <div class="controls">
+                                {{ claim_form.maintainer_role }}
+                            </div>
                         </div>
+                        <div class="control-group">
+                            <label class="control-label">You're known as</label>
+                            <div class="controls">
+                                {{ claim_form.maintainer_username|attr:"disabled"  }}
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">You claim the project because</label>
+                            <div class="controls">
+                                {{ claim_form.maintainer_reason_text }}
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Optional link to detailed public explanation, community discussion, foundation press release etc</label>
+                            <div class="controls">
+                                {{ claim_form.maintainer_reason_url }}
+                            </div>
+                        </div>
+                    <button type="submit" class="button gray">Claim</button> <a href="{% url bitfund.project.views.unclaimed project_key=project.key %}">cancel</a>
+                </form>
+                <p>On the project page information you're providing will look like this:</p>
 
-                    </div>
+                <div class="maintain text-right">
+                    <p>
+                        This budget is maintained by <span id="maintainer-project-role"></span>
+                            <a href="{% url bitfund.pledger.views.profile username=request.user.username %}">{{ request.user.username }}</a>,
+                        this is because
+                            <a href="" id="maintainer-reason-link">community decided so</a>.
+                        <br> 
+                        His right to maintain is <span><a href="#">unverified</a></span>
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="">vote to support</a></span>
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="">vote against</a></span>
+                    </p>
                 </div>
             </div>
-
-        </div><!-- goals-column -->
+        </div>
     </div>
 </div>
     <script type="text/javascript">

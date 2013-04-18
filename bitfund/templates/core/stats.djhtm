@@ -3,7 +3,43 @@
 {% block title %} Stats - {% endblock %}
 
 {% block content %}
-
+<div class="stats">
+	<div class="nav">
+		<ul class="text-center">
+			<li>
+				<a href="">about</a>
+			</li>
+			<li>
+				<a href="">FAQ</a>
+			</li>
+			<li>
+				<a href="">stats</a>
+			</li>
+			<li>
+				<a href="">charts</a>
+			</li>
+			<li>
+				<a href="">terms</a>
+			</li>
+			<li>
+				<a href="">privacy</a>
+			</li>
+			<li>
+				<a href="">fraud</a>
+			</li>
+		</ul>
+	</div>
+	<section>
+		<h1 class="text-center">Stats</h1>
+		<p>Bitfund is one month old.</p>
+		<p>555 projects are totally supported via Bitfund.</p>
+		<p>Last month 6000 user sent $60000 to 555 projects, $50400 of this via monthly subscription.</p>
+		<p>5665 links established between projects and $6000 transferred between projects via these links.</p>
+		<p>6000 users attached credit cards for pledges, you are not one of them. 
+			&nbsp;&nbsp;&nbsp;<a href="#">attach bank card</a></p>
+		<p>Average pledger is giving $10 per month to 5 projects.</p>
+	</section>
+</div>
 
 {% endblock %}
 

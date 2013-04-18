@@ -44,7 +44,7 @@
                                 type="submit" class="button orange">Update pledge</button>
                     </div>
                 </div>
-                <div class="centered">
+                <div class="text-center">
                     {% if empty_project.last_pledge_transaction %}
                         last pledged with
                         {{ site_currency_sign }}{{ empty_project.last_pledge_transaction.transaction_amount }}
@@ -103,7 +103,7 @@
                     </div>
                 </div>
                 {% if empty_project.last_pledge_transaction %}
-                    <div class="centered">
+                    <div class="text-center">
                         last pledged with
                         {{ site_currency_sign }}{{ empty_project.last_pledge_transaction.transaction_amount }}
                         on {{ empty_project.last_pledge_transaction.transaction_datetime|date:"DATE_FORMAT" }}
@@ -112,14 +112,14 @@
                     </div>
                 {% endif %}
                 {% if not user.is_card_attached %}
-                    <div class="centered">
+                    <div class="text-center">
                         <span class="orange-bg">you don't have <a href="{% url bitfund.pledger.views.attach_bank_card %}">payment card attached</a></span>
                     </div>
                 {% endif %}
             </div>
         {% endif %}
         {% if not request.user.is_authenticated %}
-            <div class="centered" id="login-links">
+            <div class="text-center" id="login-links">
                 <span class="orange-bg">to pledge &ndash; {% include "core/login/login-with-links.djhtm" %}</span>
             </div>
         {% endif %}
