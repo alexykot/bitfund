@@ -1388,6 +1388,7 @@ select.year {
 
  .vote-form sup {
     background-color: #fff;
+    border: 1px solid #fff;
     color: #3d3d3d;
     text-decoration: underline;
  }
