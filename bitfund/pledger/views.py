@@ -1,4 +1,6 @@
+from decimal import Decimal
 import balanced
+from django.db import transaction
 from django_countries.countries import COUNTRIES as COUNTRIES_LIST
 
 from django.http import HttpResponseNotFound, HttpResponse
@@ -8,16 +10,18 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.utils.datetime_safe import datetime
+from pip import req
 
 from bitfund.core.settings.extensions import BALANCED
 from bitfund.core.settings.project import SITE_CURRENCY_SIGN
-from bitfund.pledger.forms import BankAccountBusinessUnderwritingForm, BankAccountPersonUnderwritingForm, BANK_ACCOUNT_ENTITY_TYPE_CHOICES
+from bitfund.pledger.forms import BankAccountBusinessUnderwritingForm, BankAccountPersonUnderwritingForm, BANK_ACCOUNT_ENTITY_TYPE_CHOICES, ProjectWithdrawFundsForm
 from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, BankCard, BankAccount, BalancedAccount
 from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
 from bitfund.project.decorators import user_is_project_maintainer
 from bitfund.project.forms import CreateProjectForm
 from bitfund.project.lists import PROJECT_STATUS_CHOICES
-from bitfund.project.models import Project, ProjectGoal
+from bitfund.project.management.helpers import _calculate_balanced_withdrawal_fee, _calculate_project_balances
+from bitfund.project.models import Project, ProjectGoal, ProjectWithdrawal
 from bitfund.project.template_helpers import _prepare_project_template_data, _prepare_goal_item_template_data
 
 
@@ -468,5 +472,56 @@ def withdraw(request, project_key):
                      'current_page': 'projects',
                      'project': project,
                      }
+
+    bank_account = BankAccount.objects.filter(user_id=request.user.id)
+    if bank_account.count() > 0:
+        bank_account = bank_account[0]
+        template_data['bank_account'] = bank_account
+    else:
+        return redirect('binfund.pledger.views.projects', project_key=project.key)
+
+
+    template_data['withdrawals_list'] = ProjectWithdrawal.objects.filter(project_id=project.id).order_by('-datetime_withdrawn')
+
+    if request.method == 'POST':
+        template_data['withdrawal_form'] = ProjectWithdrawFundsForm(data=request.POST, project=project)
+        if template_data['withdrawal_form'].is_valid():
+            with transaction.commit_on_success():
+                balanced.configure(BALANCED['API_KEY'])
+                balanced_bank_account = balanced.BankAccount.find(bank_account.uri)
+                amount_cents = int(Decimal(template_data['withdrawal_form'].cleaned_data['amount'] * Decimal(100)).quantize((Decimal('1'))))
+
+                try:
+                    result = balanced_bank_account.credit(amount_cents)
+                except:
+                    return redirect('binfund.pledger.views.withdraw', project_key=project.key)
+
+                withdrawal = ProjectWithdrawal()
+                withdrawal.project_id = project.id
+                withdrawal.initiated_username = request.user.username
+                withdrawal.amount_withdrawn = template_data['withdrawal_form'].cleaned_data['amount']
+                withdrawal.amount_fees = _calculate_balanced_withdrawal_fee(template_data['withdrawal_form'].cleaned_data['amount'])
+                withdrawal.uri = result['uri']
+                withdrawal.save()
+
+                new_balances = _calculate_project_balances(project,
+                                                           additional_amount_withdrawn=template_data['withdrawal_form'].cleaned_data['amount'])
+                project.amount_pledged = new_balances['amount_pledged']
+                project.amount_redonation_given = new_balances['amount_redonation_given']
+                project.amount_redonation_received = new_balances['amount_redonation_received']
+                project.amount_withdrawn = new_balances['amount_withdrawn']
+                project.amount_balance = new_balances['amount_balance']
+                project.save()
+
+                return redirect('binfund.pledger.views.projects', project_key=project.key)
+        else :
+            return render_to_response('pledger/withdraw.djhtm', template_data, context_instance=RequestContext(request))
+
+
+
+
+
+    template_data['withdrawal_form'] = ProjectWithdrawFundsForm(project=project)
+
 
     return render_to_response('pledger/withdraw.djhtm', template_data, context_instance=RequestContext(request))

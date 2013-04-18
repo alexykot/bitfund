@@ -451,13 +451,13 @@ class ProjectOtherSource(models.Model):
     def __unicode__(self):
         return self.title
 
-
 class ProjectWithdrawal(models.Model):
     project = models.ForeignKey(Project)
     amount_withdrawn = models.DecimalField(decimal_places=2, max_digits=12)
     amount_fees = models.DecimalField(decimal_places=2, max_digits=12)
     initiated_username = models.CharField(max_length=255)
     datetime_withdrawn = models.DateTimeField('date withdrawn', default=now())
+    uri = models.CharField(max_length=255)
 
     def __unicode__(self):
         return self.title

@@ -84,7 +84,7 @@
                 <!-- -->
                 </div>
                 <span>{{ goal_edit_form.date_starting.errors }}
-                    Launching: {{ goal_edit_form.date_starting|attr:"class:datePicker, input-medium" }}</span>
+                    Launching: {{ goal_edit_form.date_starting|attr:"class:datePicker input-medium" }}</span>
                 <div class="row-fluid">
                     <div class="span7">
                         {% if goal.youtube_video_id %}
@@ -167,7 +167,7 @@
                                     {{ goal_edit_form.amount|attr:"class:input-medium" }}
                                     <span class="help-block"><small>asking</small></span>
                                     {{ goal_edit_form.date_ending.errors }}
-                                    {{ goal_edit_form.date_ending|attr:"class:datePicker, input-medium" }}
+                                    {{ goal_edit_form.date_ending|attr:"class:datePicker input-medium" }}
                                     <span class="help-block"><small>ends</small></span>
                                 </div>
                             </div>

@@ -63,7 +63,7 @@
 
         {% elif action == 'dethrone'  %}
 
-            <h5>Report KDE maintainer <a href="">alexeykot</a>&nbsp;<sup>#789878</sup></h5>
+            <h5>Report KDE maintainer <a href="">{{ project.maintainer.username }}</a></h5>
             <div class="row-fluid">
                 <div class="span6">
                     <form action="" method="post">

@@ -1,6 +1,6 @@
 {% extends "core/base.djhtm" %}
 
-{% block title %} projects - {{ user.username }} - {% endblock %}
+{% block title %} withdraw from {{ project.title }} - {{ user.username }} - {% endblock %}
 
 {% block pagescripts %}
     <script type="text/javascript">
@@ -19,20 +19,37 @@
         <hr>
         <div class="project-attributes">
             <a href="{% url bitfund.project.views.budget project_key=project.key %}">
-            {% if current_project.logo %}
-                <img class="media-object pull-left" src="{{ project.logo.url }} " />
+            {% if project.logo %}
+                <img class="media-object pull-left" src="{{ project.logo }} " />
             {% else %}
                 <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
             {% endif %}
             </a>
             <span><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a></span>
         </div>
-        <form action="">
+        <form action="" method="post">
             {% csrf_token %}
             {{ withdrawal_form.project }}
-            {{ withdrawal_form.amount }}
+            Project balance: {{ site_currency_sign }}{{ project.amount_balance|floatformat:2 }}<br>
+            withdraw to attached bank account #******{{ bank_account.last_four }} with {{ bank_account.bank_name }} <br>
 
+            {{ withdrawal_form.amount.errors }} <br>
+            amount to withdraw: {{ withdrawal_form.amount }}
+            <button type="submit" class="button gray">withdraw</button>
         </form>
+
+        <div>
+            previous withdrawals:
+            <ul>
+                {% for withdrawal in withdrawals_list %}
+                    <li>{{ site_currency_sign }}{{ withdrawal.amount_withdrawn|floatformat:2  }} on {{ withdrawal.datetime_withdrawn|date:"DATE_FORMAT" }} initiated by {{ withdrawal.initiated_username }}</li>
+                {% empty %}
+                    <li>no withdrawals by now</li>
+                {% endfor %}
+                <li></li>
+            </ul>
+
+        </div>
 
     </div>
 {% endblock content %}

@@ -1,12 +1,12 @@
 from django import forms
 from model_utils.choices import Choices
 from bitfund.pledger.models import BANK_ACCOUNT_ENTITY_TYPE_CHOICES
+from bitfund.project.models import Project
 
 
 class BankAccountBusinessUnderwritingForm(forms.Form):
     ba_entity_type = forms.ChoiceField(choices=BANK_ACCOUNT_ENTITY_TYPE_CHOICES,
                                        required=True, widget=forms.RadioSelect)
-
     ba_business_name = forms.CharField(max_length=255, required=True)
     ba_business_phone = forms.CharField(max_length=255, required=True)
     ba_business_email = forms.CharField(max_length=255, required=True)
@@ -20,7 +20,6 @@ class BankAccountBusinessUnderwritingForm(forms.Form):
 class BankAccountPersonUnderwritingForm(forms.Form):
     ba_entity_type = forms.ChoiceField(choices=BANK_ACCOUNT_ENTITY_TYPE_CHOICES,
                                        required=True, widget=forms.RadioSelect)
-
     ba_person_name = forms.CharField(max_length=255, required=True)
     ba_person_phone = forms.CharField(max_length=255, required=True)
     ba_person_address = forms.CharField(max_length=255, required=True)
@@ -29,3 +28,24 @@ class BankAccountPersonUnderwritingForm(forms.Form):
     ba_person_zip = forms.CharField(max_length=255, required=True)
     ba_person_country = forms.CharField(max_length=255, required=False)
     ba_person_dob = forms.DateField(input_formats=('%m/%d/%Y',), required=False, widget=forms.DateInput(format='%m/%d/%Y'))
+
+
+class ProjectWithdrawFundsForm(forms.Form):
+    #both fields reinitialised in __init__
+    project = forms.ModelChoiceField(queryset=Project.objects.all(), widget=forms.HiddenInput, required=True)
+    amount = forms.DecimalField(min_value=0.01, decimal_places=12, required=True)
+
+    def __init__(self, project, *args, **kw):
+        super(ProjectWithdrawFundsForm, self).__init__(*args, **kw)
+
+        maintainer_queryset = Project.objects.filter(id=project.id)
+        self.fields['project'] = forms.ModelChoiceField(queryset=maintainer_queryset,
+                                                        widget=forms.HiddenInput, initial=project.id)
+
+
+
+        self.fields['amount'] = forms.DecimalField(min_value=0.01, max_value=project.amount_balance,
+                                                   decimal_places=12, required=True, initial=project.amount_balance)
+
+
+
