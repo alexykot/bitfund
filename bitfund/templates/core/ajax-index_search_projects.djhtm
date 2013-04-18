@@ -7,9 +7,9 @@
                     <table>
                         <tr>
                             <td>
-                                {% if project.logo %}{% comment %}
-                                    <img src="{{ project.logo.url }} " />
-                                {% else %}{% endcomment %}
+                                {% if project.logo %}
+                                    <img src="{{ project.logo }} " />
+                                {% else %}
                                     <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                                 {% endif %}
                             </td>

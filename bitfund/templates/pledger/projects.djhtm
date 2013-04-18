@@ -29,193 +29,193 @@
 {% endblock %}
 
 {% block content %}
-{% load widget_tweaks %}
+    {% load widget_tweaks %}
 
-<div class="profile-page">
+    <div class="profile-page">
 
-    {% include "pledger/profile_header.djhtm" %}
+        {% include "pledger/profile_header.djhtm" %}
 
-    <hr>
-    <div class="projects-band">
-        <div class="row-fluid">
-            {% for project in projects_list %}
-                <div class="span3">
-                    <a href="{% url bitfund.pledger.views.projects project_key=project.key %}">
-                        <div class="media">
-                            {% if project.logo %}
-                                <img class="media-object pull-left" src="{{ project.logo.url }} " />
-                            {% else %}
-                                <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-                            {% endif %}
-                            <div class="media-body">
-                                <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>{{ site_currency_sign }}{{ project.monthly_budget|floatformat:2 }}</div>
-                                {% if project.budget_filled_percent > 0 %}
-                                    <div>{{ project.budget_filled_percent|floatformat:0 }}%</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <hr>
-    <div class="project-attributes">
-        {% if current_project.logo %}
-            <img class="media-object pull-left" src="{{ current_project.logo.url }} " />
-        {% else %}
-            <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
-        {% endif %}
-        <span><a href="{% url bitfund.project.views.budget project_key=current_project.key %}">{{ current_project.title }}</a></span>
-    </div>
-           
-
-    <table class="projects">
-        <tr>
-            <td class="left">
-                <h3>Budget</h3>
-                <div class="row-fluid">
-                	<div class="span5 chart-div-large">
-                        {% if current_project.budget_filled_percent > 0 %}
-                            <span class="text-center">{{ current_project.budget_filled_percent|floatformat:0 }}%</span>
-                        {% else %}
-                            <span class="text-center">&infin;</span>
-                        {% endif %}
-    	            	<img src="{% url bitfund.project.views.chart_image_project project_key=current_project.key chart_size='medium' %}" />
-    	            </div>
-                	<div class="span6">
-                		<p><strong>{{ site_currency_sign }}{{ current_project.monthly_budget|floatformat:2 }}</strong> / month<br>in {{ current_project.active_needs_count }} active need{{ current_project.active_needs_count|pluralize }}</p>
-                		<a href="{% url bitfund.project.views.budget_edit project_key=current_project.key %}" class="pull-right">edit budget</a>
-                	</div>
-                </div>
-                {% if current_project.active_goals_count > 0 %}
-                    <h3>Goals</h3>
-                    {% for goal in current_project.active_goals_list %}
-                        <div class="row-fluid">
-                            <div class="span5 chart-div-large">
-                                {% if goal.filled_percent > 0 %}
-                                    <span class="text-center">{{ goal.filled_percent|floatformat:0 }}%</span>
+        <hr>
+        <div class="projects-band">
+            <div class="row-fluid">
+                {% for project in projects_list %}
+                    <div class="span3">
+                        <a href="{% url bitfund.pledger.views.projects project_key=project.key %}">
+                            <div class="media">
+                                {% if project.logo %}
+                                    <img class="media-object pull-left" src="{{ project.logo.url }} " />
                                 {% else %}
-                                    <span class="text-center">&infin;</span>
+                                    <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
                                 {% endif %}
-                                <img src="{% url bitfund.project.views.chart_image_goal project_key=current_project.key goal_key=goal.key chart_size='medium' %}" />
+                                <div class="media-body">
+                                    <h4 class="media-heading">{{ project.title }}</h4>
+                                    <div>{{ site_currency_sign }}{{ project.monthly_budget|floatformat:2 }}</div>
+                                    {% if project.budget_filled_percent > 0 %}
+                                        <div>{{ project.budget_filled_percent|floatformat:0 }}%</div>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="span6">
-                                <p><a href="{% url bitfund.project.views.goal project_key=current_project.key goal_key=goal.key %}">{{ goal.title }}</a></p>
-                                <p><strong>{{ site_currency_sign }}{{ goal.amount|floatformat:2 }}</strong></p>
-                                <a href="{% url bitfund.project.views.goal_edit project_key=current_project.key goal_key=goal.key %}" class="pull-right">edit goal</a>
-                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <hr>
+        <div class="project-attributes">
+            {% if current_project.logo %}
+                <img class="media-object pull-left" src="{{ current_project.logo.url }} " />
+            {% else %}
+                <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+            {% endif %}
+            <span><a href="{% url bitfund.project.views.budget project_key=current_project.key %}">{{ current_project.title }}</a></span>
+        </div>
+
+
+        <table class="projects">
+            <tr>
+                <td class="left">
+                    <h3>Budget</h3>
+                    <div class="row-fluid">
+                        <div class="span5 chart-div-large">
+                            {% if current_project.budget_filled_percent > 0 %}
+                                <span class="text-center">{{ current_project.budget_filled_percent|floatformat:0 }}%</span>
+                            {% else %}
+                                <span class="text-center">&infin;</span>
+                            {% endif %}
+                            <img src="{% url bitfund.project.views.chart_image_project project_key=current_project.key chart_size='medium' %}" />
                         </div>
-                        <br />
-                        <br />
-                    {% endfor %}
-                {% endif %}
-            </td>
+                        <div class="span6">
+                            <p><strong>{{ site_currency_sign }}{{ current_project.monthly_budget|floatformat:2 }}</strong> / month<br>in {{ current_project.active_needs_count }} active need{{ current_project.active_needs_count|pluralize }}</p>
+                            <a href="{% url bitfund.project.views.budget_edit project_key=current_project.key %}" class="pull-right">edit budget</a>
+                        </div>
+                    </div>
+                    {% if current_project.active_goals_count > 0 %}
+                        <h3>Goals</h3>
+                        {% for goal in current_project.active_goals_list %}
+                            <div class="row-fluid">
+                                <div class="span5 chart-div-large">
+                                    {% if goal.filled_percent > 0 %}
+                                        <span class="text-center">{{ goal.filled_percent|floatformat:0 }}%</span>
+                                    {% else %}
+                                        <span class="text-center">&infin;</span>
+                                    {% endif %}
+                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=current_project.key goal_key=goal.key chart_size='medium' %}" />
+                                </div>
+                                <div class="span6">
+                                    <p><a href="{% url bitfund.project.views.goal project_key=current_project.key goal_key=goal.key %}">{{ goal.title }}</a></p>
+                                    <p><strong>{{ site_currency_sign }}{{ goal.amount|floatformat:2 }}</strong></p>
+                                    <a href="{% url bitfund.project.views.goal_edit project_key=current_project.key goal_key=goal.key %}" class="pull-right">edit goal</a>
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+                        {% endfor %}
+                    {% endif %}
+                </td>
 
-            <td class="right">
-                <h3>Current balance</h3>
-                <dl class="dl-horizontal">
-                    <dt>Onetime pledges:</dt>
-                    <dd>
-                        <strong>{{ site_currency_sign }}{{ current_project.budget.onetime_pledges_monthly_total|floatformat:2 }}</strong>
-                        in {{ current_project.budget.onetime_pledges_monthly_count }} pledge{{ current_project.budget.onetime_pledges_monthly_count|pluralize }}
-                        from {{ current_project.budget.onetime_pledges_monthly_users_count }} user{{ current_project.budget.onetime_pledges_monthly_users_count|pluralize }}
-                    </dd>
-                    <dt>Monthly pledges:</dt>
-                    <dd>
-                        <strong>{{ site_currency_sign }}{{ current_project.budget.monthly_pledges_monthly_total|floatformat:2 }}</strong>
-                        from {{ current_project.budget.subscription_count }} subscription{{ current_project.budget.subscription_count|pluralize }}
-                    </dd>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt>Relations paid in:</dt>
-                    {% if current_project.budget.redonations_paidin_monthly_projects_count > 0 %}
+                <td class="right">
+                    <h3>Current balance</h3>
+                    <dl class="dl-horizontal">
+                        <dt>Onetime pledges:</dt>
                         <dd>
-                            <strong>{{ site_currency_sign }}{{ current_project.budget.redonations_paidin_monthly_total|floatformat:2 }}</strong>
-                            from {{ current_project.budget.redonations_paidin_monthly_projects_count }} project{{ current_project.budget.redonations_paidin_monthly_projects_count|pluralize }}
+                            <strong>{{ site_currency_sign }}{{ current_project.budget.onetime_pledges_monthly_total|floatformat:2 }}</strong>
+                            in {{ current_project.budget.onetime_pledges_monthly_count }} pledge{{ current_project.budget.onetime_pledges_monthly_count|pluralize }}
+                            from {{ current_project.budget.onetime_pledges_monthly_users_count }} user{{ current_project.budget.onetime_pledges_monthly_users_count|pluralize }}
                         </dd>
-                    {% else %}
-                        <dd><strong>no relations</strong></dd>
-                    {% endif %}
-                    <dt>Relations paid out:</dt>
-                    {% if current_project.budget.redonations_paidout_monthly_projects_count > 0 %}
-                        <dd><strong>{{ site_currency_sign }}{{ current_project.budget.redonations_paidout_monthly_total|floatformat:2 }}</strong> to {{ current_project.budget.redonations_paidout_monthly_projects_count }} project{{ current_project.budget.redonations_paidout_monthly_projects_count|pluralize }}</dd>
-                    {% else %}
-                        <dd><strong>no relations</strong></dd>
-                    {% endif %}
-                    <dt><a href="{% url bitfund.project.views.linked_projects project_key=current_project.key %}">manage relations</a></dt>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt><h4><strong>Balance:</strong></h4></dt>
-                    <dd><h4><strong>{{ site_currency_sign }}{{ current_project.amount_balance|floatformat:2 }}</strong></h4></dd>
-                    {% if request.user_has_bank_account_attached %}
-                        <dt><a href="#">withdraw</a></dt>
-                    {% else %}
-                        <dt><a href="{% url bitfund.pledger.views.attach_bank_account %}">attach bank account</a></dt>
-                    {% endif %}
-                </dl>
-
-
-
-
-                <h3>Balance history</h3>
-                <ul>
-                    {% for budget_month in current_project.budget_history %}
-
-                	<li>
-                		<h4>{{ budget_month.month|date:"M Y" }}</h4>
-                		<dl class="dl-horizontal">
-                			<dt>Starting balance:</dt>
-                			<dd><strong>{{ site_currency_sign }}{{ budget_month.starting_balance|floatformat:2 }}</strong></dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                			<dt>Onetime pledges:</dt>
-    		                <dd>
-                                <strong>{{ site_currency_sign }}{{ budget_month.onetime_pledges_monthly_total|floatformat:2 }}</strong>
-                                in {{ budget_month.onetime_pledges_monthly_count }} pledge{{ budget_month.onetime_pledges_monthly_count|pluralize }}
-                                from {{ budget_month.onetime_pledges_monthly_users_count }} user{{ budget_month.onetime_pledges_monthly_users_count|pluralize }}
-                            </dd>
-    		                <dt>Monthly pledges:</dt>
+                        <dt>Monthly pledges:</dt>
+                        <dd>
+                            <strong>{{ site_currency_sign }}{{ current_project.budget.monthly_pledges_monthly_total|floatformat:2 }}</strong>
+                            from {{ current_project.budget.subscription_count }} subscription{{ current_project.budget.subscription_count|pluralize }}
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>Relations paid in:</dt>
+                        {% if current_project.budget.redonations_paidin_monthly_projects_count > 0 %}
                             <dd>
-                                <strong>{{ site_currency_sign }}{{ budget_month.monthly_pledges_monthly_total|floatformat:2 }}</strong>
-                                from {{ budget_month.subscription_count }} subscription{{ budget_month.subscription_count|pluralize }}
+                                <strong>{{ site_currency_sign }}{{ current_project.budget.redonations_paidin_monthly_total|floatformat:2 }}</strong>
+                                from {{ current_project.budget.redonations_paidin_monthly_projects_count }} project{{ current_project.budget.redonations_paidin_monthly_projects_count|pluralize }}
                             </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-    		                <dt>Relations paid in:</dt>
-                            {% if budget_month.redonations_paidout_monthly_projects_count > 0 %}
-                                <dd>
-                                    <strong>{{ site_currency_sign }}{{ budget_month.redonations_paidout_monthly_total|floatformat:2 }}</strong>
-                                    to {{ budget_month.redonations_paidout_monthly_projects_count }} project{{ budget_month.redonations_paidout_monthly_projects_count|pluralize }}
-                                </dd>
-                            {% else %}
-                                <dd><strong>no relations</strong></dd>
-                            {% endif %}
-    		                <dt>Relations paid owt:</dt>
-                            {% if budget_month.redonations_paidout_monthly_projects_count > 0 %}
-                                <dd>
-                                    <strong>{{ site_currency_sign }}{{ budget_month.redonations_paidout_monthly_total|floatformat:2 }}</strong>
-                                    to {{ budget_month.redonations_paidout_monthly_projects_count }} project{{ budget_month.redonations_paidout_monthly_projects_count|pluralize }}
-                                </dd>
-                            {% else %}
-                                <dd><strong>no relations</strong></dd>
-                            {% endif %}
-                        </dl>
-                        <dl class="dl-horizontal">
-    		                <dt>Withdrawn</dt>
-    		                <dd><strong>{{ site_currency_sign }}{{ budget_month.withdrawn|floatformat:2 }}</strong></dd>
-    		            </dl>
-                	</li>
-                    {% empty %}
-                    <li>
-                        <h4>no history yet</h4>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </td>
-        </tr>
-    </table>
-           
-</div>
-{% endblock %}
+                        {% else %}
+                            <dd><strong>no relations</strong></dd>
+                        {% endif %}
+                        <dt>Relations paid out:</dt>
+                        {% if current_project.budget.redonations_paidout_monthly_projects_count > 0 %}
+                            <dd><strong>{{ site_currency_sign }}{{ current_project.budget.redonations_paidout_monthly_total|floatformat:2 }}</strong> to {{ current_project.budget.redonations_paidout_monthly_projects_count }} project{{ current_project.budget.redonations_paidout_monthly_projects_count|pluralize }}</dd>
+                        {% else %}
+                            <dd><strong>no relations</strong></dd>
+                        {% endif %}
+                        <dt><a href="{% url bitfund.project.views.linked_projects project_key=current_project.key %}">manage relations</a></dt>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt><h4><strong>Balance:</strong></h4></dt>
+                        <dd><h4><strong>{{ site_currency_sign }}{{ current_project.amount_balance|floatformat:2 }}</strong></h4></dd>
+                        {% if request.user_has_bank_account_attached %}
+                            <dt><a href="{% url bitfund.pledger.views.withdraw project_key=current_project.key %}">withdraw</a></dt>
+                        {% else %}
+                            <dt><a href="{% url bitfund.pledger.views.attach_bank_account %}">attach bank account</a></dt>
+                        {% endif %}
+                    </dl>
+
+
+
+
+                    <h3>Balance history</h3>
+                    <ul>
+                        {% for budget_month in current_project.budget_history %}
+
+                            <li>
+                                <h4>{{ budget_month.month|date:"M Y" }}</h4>
+                                <dl class="dl-horizontal">
+                                    <dt>Starting balance:</dt>
+                                    <dd><strong>{{ site_currency_sign }}{{ budget_month.starting_balance|floatformat:2 }}</strong></dd>
+                                </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>Onetime pledges:</dt>
+                                    <dd>
+                                        <strong>{{ site_currency_sign }}{{ budget_month.onetime_pledges_monthly_total|floatformat:2 }}</strong>
+                                        in {{ budget_month.onetime_pledges_monthly_count }} pledge{{ budget_month.onetime_pledges_monthly_count|pluralize }}
+                                        from {{ budget_month.onetime_pledges_monthly_users_count }} user{{ budget_month.onetime_pledges_monthly_users_count|pluralize }}
+                                    </dd>
+                                    <dt>Monthly pledges:</dt>
+                                    <dd>
+                                        <strong>{{ site_currency_sign }}{{ budget_month.monthly_pledges_monthly_total|floatformat:2 }}</strong>
+                                        from {{ budget_month.subscription_count }} subscription{{ budget_month.subscription_count|pluralize }}
+                                    </dd>
+                                </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>Relations paid in:</dt>
+                                    {% if budget_month.redonations_paidout_monthly_projects_count > 0 %}
+                                        <dd>
+                                            <strong>{{ site_currency_sign }}{{ budget_month.redonations_paidout_monthly_total|floatformat:2 }}</strong>
+                                            to {{ budget_month.redonations_paidout_monthly_projects_count }} project{{ budget_month.redonations_paidout_monthly_projects_count|pluralize }}
+                                        </dd>
+                                    {% else %}
+                                        <dd><strong>no relations</strong></dd>
+                                    {% endif %}
+                                    <dt>Relations paid owt:</dt>
+                                    {% if budget_month.redonations_paidout_monthly_projects_count > 0 %}
+                                        <dd>
+                                            <strong>{{ site_currency_sign }}{{ budget_month.redonations_paidout_monthly_total|floatformat:2 }}</strong>
+                                            to {{ budget_month.redonations_paidout_monthly_projects_count }} project{{ budget_month.redonations_paidout_monthly_projects_count|pluralize }}
+                                        </dd>
+                                    {% else %}
+                                        <dd><strong>no relations</strong></dd>
+                                    {% endif %}
+                                </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>Withdrawn</dt>
+                                    <dd><strong>{{ site_currency_sign }}{{ budget_month.withdrawn|floatformat:2 }}</strong></dd>
+                                </dl>
+                            </li>
+                        {% empty %}
+                            <li>
+                                <h4>no history yet</h4>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+{% endblock content %}

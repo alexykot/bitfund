@@ -6,7 +6,6 @@ from django.utils.encoding import smart_unicode
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.forms.widgets import HiddenInput
 
 from bitfund.core.models import *
 from bitfund.core.settings.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH, MIN_GOAL_TIMELENGTH_DAYS
@@ -316,7 +315,7 @@ class VoteMaintainerForm(forms.Form):
         super(VoteMaintainerForm, self).__init__(*args, **kw)
 
         maintainer_queryset = User.objects.filter(id=project.maintainer_id)
-        self.fields['maintainer'] = forms.ModelChoiceField(queryset=maintainer_queryset, widget=HiddenInput)
+        self.fields['maintainer'] = forms.ModelChoiceField(queryset=maintainer_queryset, widget=forms.HiddenInput)
 
     def clean(self):
         cleaned_data = super(VoteMaintainerForm, self).clean()
