@@ -460,10 +460,13 @@ def attach_bank_account(request, action=None):
 @login_required
 @user_is_project_maintainer
 def withdraw(request, project_key):
+    project = get_object_or_404(Project, key=project_key)
+
     template_data = {'request':request,
                      'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
                      'site_currency_sign': SITE_CURRENCY_SIGN,
-                     'current_page': 'profile',
+                     'current_page': 'projects',
+                     'project': project,
                      }
 
     return render_to_response('pledger/withdraw.djhtm', template_data, context_instance=RequestContext(request))
