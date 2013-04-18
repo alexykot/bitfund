@@ -1,0 +1,38 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %} projects - {{ user.username }} - {% endblock %}
+
+{% block pagescripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% load widget_tweaks %}
+
+    <div class="profile-page">
+
+        {% include "pledger/profile_header.djhtm" %}
+
+        <hr>
+        <div class="project-attributes">
+            <a href="{% url bitfund.project.views.budget project_key=project.key %}">
+            {% if current_project.logo %}
+                <img class="media-object pull-left" src="{{ current_project.logo.url }} " />
+            {% else %}
+                <img class="media-object pull-left" src="{{ STATIC_URL }}img/project_no_logo.png" />
+            {% endif %}
+            </a>
+            <span><a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ current_project.title }}</a></span>
+        </div>
+        <form action="">
+            {% csrf_token %}
+            {{ withdrawal_form.project }}
+            {{ withdrawal_form.amount }}
+
+        </form>
+
+    </div>
+{% endblock content %}

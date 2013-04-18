@@ -57,6 +57,7 @@ urlpatterns += patterns('bitfund.pledger.views',
                         (r'^account/{0,}$', 'profile'),
                         (r'^account/projects/{0,}$', 'projects'),
                         (r'^account/projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/{0,}$', 'projects'),
+                        (r'^account/projects/(?P<project_key>[a-z]{1}[a-z0-9-_.]{1,})/withdraw/{0,}$', 'withdraw'),
 
                         (r'^account/existing_similar_projects/{0,}$', 'existing_similar_projects'),
 

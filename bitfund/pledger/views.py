@@ -14,6 +14,7 @@ from bitfund.core.settings.project import SITE_CURRENCY_SIGN
 from bitfund.pledger.forms import BankAccountBusinessUnderwritingForm, BankAccountPersonUnderwritingForm, BANK_ACCOUNT_ENTITY_TYPE_CHOICES
 from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, BankCard, BankAccount, BalancedAccount
 from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
+from bitfund.project.decorators import user_is_project_maintainer
 from bitfund.project.forms import CreateProjectForm
 from bitfund.project.lists import PROJECT_STATUS_CHOICES
 from bitfund.project.models import Project, ProjectGoal
@@ -455,3 +456,14 @@ def attach_bank_account(request, action=None):
 
 
     return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
+
+@login_required
+@user_is_project_maintainer
+def withdraw(request, project_key):
+    template_data = {'request':request,
+                     'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
+                     'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'current_page': 'profile',
+                     }
+
+    return render_to_response('pledger/withdraw.djhtm', template_data, context_instance=RequestContext(request))

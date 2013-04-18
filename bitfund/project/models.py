@@ -451,20 +451,17 @@ class ProjectOtherSource(models.Model):
     def __unicode__(self):
         return self.title
 
-"""
-# I doubt this will ever be used, but let it stay here for now
-class ProjectOutlink(models.Model):
-    project         = models.ForeignKey(Project)
-    type            = models.CharField(max_length=50, choices=PROJECT_OUTLINK_TYPES)
-    title           = models.CharField(max_length=50)
-    address         = models.TextField()
-    date_added      = models.DateTimeField('date added', default=now())
-    is_public       = models.BooleanField(default=True)
-    sort_order      = models.IntegerField(default=0)
+
+class ProjectWithdrawal(models.Model):
+    project = models.ForeignKey(Project)
+    amount_withdrawn = models.DecimalField(decimal_places=2, max_digits=12)
+    amount_fees = models.DecimalField(decimal_places=2, max_digits=12)
+    initiated_username = models.CharField(max_length=255)
+    datetime_withdrawn = models.DateTimeField('date withdrawn', default=now())
 
     def __unicode__(self):
-        return self.project.title
-"""
+        return self.title
+
 
 
 """

@@ -17,8 +17,8 @@ DONATION_TRANSACTION_TYPES_CHOICES = Choices(
     ('redonation', u'Redonation'), # redonation from a pledge on a depended project
 )
 DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
-    ('pending', u'Pending, Unpaid'), # transaction for the monthly pledge for current month, month end not reached yet, not processed through payment yet
-    ('unpaid', u'Confirmed, Unpaid'), # trasaction for the monthly pledge when month end reached, or from onetime pledge at any time, not processed through payment yet
+    ('pending', u'Pending, Unpaid'), # transaction for the monthly pledge for current month, month end not reached yet, not processed through payment yet. "pending" is for subscription transactions.
+    ('unpaid', u'Confirmed, Unpaid'), # trasaction for the monthly pledge when month end reached, or from onetime pledge at any time, not processed through payment yet. "unpaid" is for onetime transactions.
     ('paid', u'Paid'), # trasaction already processed through payment successfully
     ('rejected', u'Rejected'), # trasaction rejected by the payment processor
     ('cancelled', u'Cancelled'), # trasaction cancelled by the issuer
@@ -139,7 +139,7 @@ class PaymentTransaction(models.Model):
     datetime_added = models.DateTimeField('date added', default=now())
     datetime_debited = models.DateTimeField('date debited', null=True, blank=True)
 
-#donation subscriptions, storing active monthly donation subscriptions data undefinitely
+#donation subscriptions, storing active monthly donation subscriptions data until cancelled
 class DonationSubscription(models.Model):
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
