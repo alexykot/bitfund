@@ -904,6 +904,20 @@ ul.chart-div-legend {
     position: relative;
 }
 
+.goal-info .project-meta button {
+    margin-left: 10px;
+}
+
+.goal-description input, .goal-description textarea {
+    display: block;
+    margin-bottom: 10px;
+    width: 516px;
+}
+
+.goal-description #id_brief {
+    height: 40px;
+}
+
 .goal-info > .row-fluid {
     position: relative;
 }
@@ -912,7 +926,7 @@ ul.chart-div-legend {
     font-size: 12px;
     position: absolute;
     top: 10px;
-    right: 30px;
+    right: 25px;
 }
 
 .goal-info > .row-fluid > .span7 {
@@ -926,6 +940,12 @@ ul.chart-div-legend {
 .goal-info .span7 iframe {
     height: 330px;
     width: 530px;
+}
+
+.goal-info .span5 .span7 > span {
+    font-size: 30px;
+    line-height: 30px;
+    padding-left: 5px;
 }
 
 .goal-info .chart-div-large {
@@ -967,6 +987,25 @@ ul.chart-div-legend {
     font-weight: normal;
 }
 
+.goal-info .form-horizontal, .goal-info .editing {
+    margin-top: 20px;
+}
+.goal-info .control-group {
+    margin-bottom: 10px;
+}
+
+.goal-info .control-label {
+    text-align: left;
+    width: 70px;
+}
+
+.goal-info .controls {
+    margin-left: 80px;
+}
+
+.goal-info .editing iframe {
+    width: 875px !important;
+}
 /* Profile-page own-overview ===============*/
 
 .profile-info ul.inline li.create-project-active #create-project-link {
