@@ -66,7 +66,7 @@ a:active, a:visited {
     color: #89b001;
 } 
 
-a, a:hover {
+a, a:hover, a:focus {
     color: #577000;
 }
 
@@ -918,6 +918,10 @@ ul.chart-div-legend {
     height: 40px;
 }
 
+.goal-description #id_title {
+    font-size: 24.5px;
+}
+
 .goal-info > .row-fluid {
     position: relative;
 }
@@ -1375,6 +1379,10 @@ select.year {
     border-right: 1px solid #ccc;
     display: inline-block;
     line-height: 8px;
+}
+
+.faq li:nth-child(2), .faq li:nth-child(4), .stats li:nth-child(2), .stats li:nth-child(4) {
+    border-right: 1px solid #777;
 }
 
 .faq li:last-child, .stats li:last-child, .footer li:last-child {

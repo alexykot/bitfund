@@ -45,16 +45,24 @@
     <div class="project-goals">
         <div class="header">
             <div class="row-fluid">
-                <div class="span8 project-attributes">
+                <div class="span5 project-attributes">
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                         {% if project.logo %}
                             <img src="{{ project.logo.url }} " />
                         {% else %}
                             <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                         {% endif %}
-                        <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
+                    </a>
+                    <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
                 </div>
-                <div class="span4 text-right">
+                <div class="span4">
+                    <div class="uri">
+                        <span>bitfund.org/ </span>
+                        {{ goal_edit_form.key.errors }}
+                        {{ goal_edit_form.key|attr:"class:input-medium" }}
+                    </div>
+                </div>
+                <div class="span3 text-right">
                     <div class="project-meta">
                         <a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">cancel</a>
                         <button type="submit" form="goal-{{ goal.id }}-edit" class="button button-small gray">save</button>
@@ -76,8 +84,7 @@
                     {{ goal_edit_form.title.errors }}
                     {{ goal_edit_form.title }}
                 <!-- -->
-                    {{ goal_edit_form.key.errors }}
-                    {{ goal_edit_form.key }}
+                    
                 <!-- input "goal description" -->
                     {{ goal_edit_form.brief.errors }}
                     {{ goal_edit_form.brief }}

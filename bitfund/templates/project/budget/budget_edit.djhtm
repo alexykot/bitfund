@@ -67,7 +67,7 @@
                             <img src="{{ STATIC_URL }}img/project_no_logo.png" height="58" width="58" id="project-logo" />
                         {% endif %}
 {#                        <div style="display: none">#}
-{#                            <input type="file" id="logo-file-upload" />#}
+{#                            <input type="file" id="logo-file-upload" style="font-size: 30px;"/>#}
 {#                        </div>#}
                     </span>
                     <span>
