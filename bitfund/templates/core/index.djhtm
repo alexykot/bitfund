@@ -4,7 +4,7 @@
 {% block pagescripts %}
     <script type="text/javascript">
         function searchProjects(event){
-            var search_string = $('#appendedInputButton').val()
+            var search_string = $('#appendedInputButton').val();
             if (search_string.length > 1) {
                 $('#search-result').load('{% url bitfund.core.views.search_project %}?search_string='+search_string,
                         null,
@@ -29,6 +29,18 @@
                 $('#create_project_form_container').toggle(true);
             });
 
+            $('#create-project-link').click(function(event){
+                event.preventDefault();
+                $('#create-project-link-container').toggleClass('create-project-active');
+                $('#create-project-popup').toggle();
+            });
+
+            $(document).keydown(function(event){
+                if (event.which == 27) {
+                    $('#create-project-link-container').toggleClass('create-project-active', false);
+                    $('#create-project-popup').toggle(false);
+                }
+            });
         });
     </script>
 {% endblock pagescripts %}
@@ -52,20 +64,20 @@
         <div id="create-project-link-container" class="create-project pull-right dotted-border">
             <a id="create-project-link" href="">create project</a>
         </div>
-{#        <div id="create-project-link-container" class="create-project-active pull-right dotted-border">#}
-{#            <a id="create-project-link" href="">create project</a>#}
-{#        </div>#}
-{#        <div id="create-project-popup">#}
-{#            <form action="" method="post">#}
-{#            <div class="text-center">#}
-{#                <input type="text" placeholder="Enter project's name">#}
-{#            </div>#}
-{#            <div class="text-center">#}
-{#                <button type="submit" class="button gray">create project</button>#}
-{#            </div>#}
-{#            </form>#}
-{#            <p class="orange-bg">Please, login via <a href="">twitter</a> or <a href="">github</a></p>#}
-{#        </div>#}
+        <div id="create-project-popup" style="display: none">
+            {% if request.user.is_authenticated %}
+                <form action="" method="post">
+                    <div class="text-center">
+                        <input type="text" placeholder="Enter project's name">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="button gray">create project</button>
+                    </div>
+                </form>
+            {% else %}
+                <p class="orange-bg">Please, login via <a href="">twitter</a> or <a href="">github</a></p>
+            {% endif %}
+        </div>
     </div>
     
     <div class="search-result row-fluid" id="search-result" style="display: none"></div>

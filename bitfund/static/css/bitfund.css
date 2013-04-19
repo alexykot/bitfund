@@ -1382,7 +1382,7 @@ select.year {
 }
 
 .faq li:nth-child(2), .faq li:nth-child(4), .stats li:nth-child(2), .stats li:nth-child(4) {
-    border-right: 1px solid #777;
+    border-right: 1px solid #333;
 }
 
 .faq li:last-child, .stats li:last-child, .footer li:last-child {

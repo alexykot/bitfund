@@ -17,8 +17,10 @@ DONATION_TRANSACTION_TYPES_CHOICES = Choices(
     ('redonation', u'Redonation'), # redonation from a pledge on a depended project
 )
 DONATION_TRANSACTION_STATUSES_CHOICES = Choices(
-    ('pending', u'Pending, Unpaid'), # transaction for the monthly pledge for current month, month end not reached yet, not processed through payment yet. "pending" is for subscription transactions.
-    ('unpaid', u'Confirmed, Unpaid'), # trasaction for the monthly pledge when month end reached, or from onetime pledge at any time, not processed through payment yet. "unpaid" is for onetime transactions.
+    ('pending', u'Pending, Unpaid'),
+    # transaction for the monthly pledge for current month, month end not reached yet, not processed through payment yet. "pending" is for subscription transactions.
+    ('unpaid', u'Confirmed, Unpaid'),
+    # trasaction for the monthly pledge when month end reached, or from onetime pledge at any time, not processed through payment yet. "unpaid" is for onetime transactions.
     ('paid', u'Paid'), # trasaction already processed through payment successfully
     ('rejected', u'Rejected'), # trasaction rejected by the payment processor
     ('cancelled', u'Cancelled'), # trasaction cancelled by the issuer
@@ -34,7 +36,8 @@ PAYMENT_TRANSACTION_STATUSES_CHOICES = Choices(
 BANK_ACCOUNT_ENTITY_TYPE_CHOICES = Choices(
     ('person', u'Individual'),
     ('business', u'Organisation'),
-    )
+)
+
 
 class Profile(User):
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='profile')
@@ -43,6 +46,10 @@ class Profile(User):
     twitter_pic_url = models.CharField(max_length=1000, null=True, blank=True)
     donation_amount_is_public = models.BooleanField(default=True)
     projects_list_is_public = models.BooleanField(default=False)
+    twitter_username = models.CharField(max_length=1000, null=True, blank=True)
+    twitter_account_url = models.TextField(null=True, blank=True)
+    github_username = models.CharField(max_length=1000, null=True, blank=True)
+    github_account_url = models.TextField(null=True, blank=True)
 
     # calculates total donations from this user to certain project
     def getTotalDonationsByProject(self, project):
@@ -59,18 +66,28 @@ class Profile(User):
 #part of the social auth pipeline, creates new user profile
 #def save_user_profile(sender, user_id, user, is_new, **kwargs):
 def save_user_profile(request, *args, **kwargs):
-    if kwargs['is_new'] :
+    if kwargs['is_new']:
         profile = Profile()
         profile.user_id = kwargs['user'].id
         profile.api_token = Profile.generateAPIToken()
-        if 'gravatar_id' in kwargs['response'] and kwargs['response']['gravatar_id'] != '' :
+        if 'gravatar_id' in kwargs['response'] and kwargs['response']['gravatar_id'] != '':
             profile.gravatar_id = kwargs['response']['gravatar_id']
-        if 'screen_name' in kwargs['response'] :
-            profile.twitter_pic_url = 'http://api.twitter.com/1/users/profile_image/'+kwargs['response']['screen_name']+'.png?size=original'
+        if 'screen_name' in kwargs['response']:
+            profile.twitter_pic_url = 'http://api.twitter.com/1/users/profile_image/' + kwargs['response'][
+                'screen_name'] + '.png?size=original'
+
+        if 'twitter' in kwargs and kwargs['twitter']:
+            profile.twitter_username = kwargs['username']
+            profile.twitter_account_url = 'http://twitter.com/'+kwargs['username'] #this is wrong, need to figure out right way later
+
+        if 'github' in kwargs and kwargs['github']:
+            profile.github_username = kwargs['username']
+            profile.github_account_url = kwargs['response']['html_url']
 
         profile.save()
 
     return None
+
 
 class BalancedAccount(models.Model):
     user = models.OneToOneField(User, unique=True)
@@ -81,9 +98,9 @@ class BalancedAccount(models.Model):
     @classmethod
     def getAccount(cls, user_id):
         existing_account = cls.objects.filter(user_id=user_id)
-        if existing_account.count() > 0 :
+        if existing_account.count() > 0:
             return existing_account[0]
-        else :
+        else:
             balanced_account = balanced.Account().save()
 
             new_account = cls()
@@ -92,7 +109,6 @@ class BalancedAccount(models.Model):
             new_account.save()
 
             return new_account
-
 
 
 #bank card data. contains only pieces that are safe and allowed to be stored on our side
@@ -133,8 +149,10 @@ class PaymentTransaction(models.Model):
     source_uri = models.CharField(max_length=255, null=True, blank=True)
     statement_text = models.CharField(max_length=22, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    transaction_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) #aggregated amount of all DonationTransactions payed with this PaymentTransaction
-    fees_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) # fees amount applied to this PaymentTransaction
+    transaction_amount = models.DecimalField(decimal_places=2, max_digits=12,
+                                             default=0) #aggregated amount of all DonationTransactions payed with this PaymentTransaction
+    fees_amount = models.DecimalField(decimal_places=2, max_digits=12,
+                                      default=0) # fees amount applied to this PaymentTransaction
     total_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) # total amount debited
     datetime_added = models.DateTimeField('date added', default=now())
     datetime_debited = models.DateTimeField('date debited', null=True, blank=True)
@@ -149,21 +167,23 @@ class DonationSubscription(models.Model):
     needs = models.ManyToManyField(ProjectNeed, through='DonationSubscriptionNeeds')
 
     def cancelPendingTransactions(self, donation_subscription_need=None):
-        if donation_subscription_need is not None :
+        if donation_subscription_need is not None:
             subscription_pending_transactions_list = (DonationTransaction.objects
                                                       .filter(pledger_donation_subscription__id=self.id)
                                                       .filter(accepting_need__id=donation_subscription_need.need__id)
-                                                      .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
+                                                      .filter(
+                transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
             )
-        else :
+        else:
             subscription_pending_transactions_list = (DonationTransaction.objects
                                                       .filter(pledger_donation_subscription__id=self.id)
-                                                      .filter(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
+                                                      .filter(
+                transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
                                                       .exclude(accepting_need__isnull=True)
                                                       .exclude(accepting_need=0)
             )
 
-        for subscription_pending_transaction in subscription_pending_transactions_list :
+        for subscription_pending_transaction in subscription_pending_transactions_list:
             subscription_pending_transaction.cancel()
 
 
@@ -239,10 +259,11 @@ class DonationTransaction(models.Model):
         return hashlib.sha512(hash_source).hexdigest()
 
         # cycles through all linked projects for given transaction and creates redonations transactions if needed
+
     def createRedonationTransactions(self):
         projects_i_depend_on_list = (Project_Dependencies.objects
-                                .filter(depender_project=self.accepting_project)
-                                .order_by('sort_order'))
+                                     .filter(depender_project=self.accepting_project)
+                                     .order_by('sort_order'))
 
         # only genuine user pledges are to be redonated, other sources and redonations do not trigger subsequent redonations
         if self.transaction_type != DONATION_TRANSACTION_TYPES_CHOICES.pledge:
@@ -254,7 +275,7 @@ class DonationTransaction(models.Model):
 
         project_current_budget = self.accepting_project.getTotalMonthlyBudget()
 
-        for project_i_depend_on in projects_i_depend_on_list :
+        for project_i_depend_on in projects_i_depend_on_list:
             # if the redonations transaction for this depender project and this initial transaction
             # exists already - omiting the transaction
             if (DonationTransaction.objects.filter(redonation_project=self.accepting_project)
@@ -264,14 +285,16 @@ class DonationTransaction(models.Model):
 
 
             # first we check if there is a fixed redonation amount set
-            if project_i_depend_on.redonation_amount > 0 :
+            if project_i_depend_on.redonation_amount > 0:
                 # fixed redonation_amount is a part of this project's budget. Here we're getting
                 # the % representation of that part.
-                current_redonation_percent = Decimal((project_i_depend_on.redonation_amount) / project_current_budget).quantize(Decimal('0.01'))
+                current_redonation_percent = Decimal(
+                    (project_i_depend_on.redonation_amount) / project_current_budget).quantize(Decimal('0.01'))
 
                 # multiply % representation on parent transaction's amount - getting the amount we're going
                 # to redonate in this transaction
-                current_redonation_amount = Decimal(self.transaction_amount*current_redonation_percent).quantize(Decimal('0.01'))
+                current_redonation_amount = Decimal(self.transaction_amount * current_redonation_percent).quantize(
+                    Decimal('0.01'))
 
                 # getting total of already sent redonations from this project to that one.
                 total_current_redonations = (DonationTransaction.objects
@@ -279,29 +302,31 @@ class DonationTransaction(models.Model):
                                              .filter(redonation_project_id=self.accepting_project.id)
                                              .filter(accepting_project_id=project_i_depend_on.dependee_project.id)
                                              .aggregate(Sum('transaction_amount'))['transaction_amount__sum']
-                                            )
+                )
 
                 total_current_redonations = Decimal(total_current_redonations or 0)
 
                 # if (existing_redonations + current_redonation) makes up bigger amount than total
                 # fixed redonation - redonation is capped
-                if (total_current_redonations+current_redonation_amount) > project_i_depend_on.redonation_amount :
+                if (total_current_redonations + current_redonation_amount) > project_i_depend_on.redonation_amount:
                     # in case of the cap current redonation should cover only difference between already given and the cap
-                    current_redonation_amount = (Decimal(Decimal(project_i_depend_on.redonation_amount) - total_current_redonations)
-                                                 .quantize(Decimal('0.01')))
+                    current_redonation_amount = (
+                    Decimal(Decimal(project_i_depend_on.redonation_amount) - total_current_redonations)
+                    .quantize(Decimal('0.01')))
 
                     # if in fact total already given redonations have covered all designated fixed
                     # redonation amount - nothing else to be redonated here then, omiting this cycle.
-                    if current_redonation_amount <= 0 :
+                    if current_redonation_amount <= 0:
                         continue
 
             # if there is no fixed redonation, maybe there is a percentage
-            elif project_i_depend_on.redonation_percent > 0 :
+            elif project_i_depend_on.redonation_percent > 0:
                 # figuring out redonation amount from a percentage is easy - there is no cap,
                 # just a share of the initial pledge
-                current_redonation_amount = (Decimal((self.transaction_amount/100) * project_i_depend_on.redonation_percent)
-                                             .quantize(Decimal('0.01')))
-            else :  # this project dependency doesn't imply any redonations, so we omit this cycle
+                current_redonation_amount = (
+                Decimal((self.transaction_amount / 100) * project_i_depend_on.redonation_percent)
+                .quantize(Decimal('0.01')))
+            else:  # this project dependency doesn't imply any redonations, so we omit this cycle
                 continue
 
             # now we have to take into account all active needs of the accepting project, if there are any
@@ -309,17 +334,17 @@ class DonationTransaction(models.Model):
             project_i_depend_on_needs_count = project_i_depend_on_needs_list.count()
 
             # if redonation accepting project has no needs - redonation is not bound to any particular need
-            if project_i_depend_on_needs_count == 0 :
+            if project_i_depend_on_needs_count == 0:
                 redonation_transaction = DonationTransaction()
                 redonation_transaction.populateRedonationTransaction(project=project_i_depend_on.dependee_project,
                                                                      redonation_project=self.accepting_project,
                                                                      redonation_transaction=self,
                                                                      pledge_amount=current_redonation_amount)
                 redonation_transaction.save()
-            else :
+            else:
                 # if there are needs in the redonation accepting project - we split redonation amount between all needs equally
                 current_redonation_amount_per_need = current_redonation_amount / project_i_depend_on_needs_count
-                for project_i_depend_on_need in project_i_depend_on_needs_list :
+                for project_i_depend_on_need in project_i_depend_on_needs_list:
                     redonation_transaction = DonationTransaction()
                     redonation_transaction.populateRedonationTransaction(project=project_i_depend_on.dependee_project,
                                                                          redonation_project=self.accepting_project,
@@ -348,11 +373,11 @@ class DonationTransaction(models.Model):
         self.accepting_project_title = project.title
         self.transaction_amount = pledge_amount
 
-        if need is not None :
+        if need is not None:
             self.accepting_need = need
             self.accepting_need_title = need.title
             self.accepting_need_key = need.key
-        elif goal is not None :
+        elif goal is not None:
             self.accepting_goal = goal
             self.accepting_goal_title = goal.title
             self.accepting_goal_key = goal.key
@@ -390,11 +415,11 @@ class DonationTransaction(models.Model):
         self.save()
 
         redonation_transactions_list = (DonationTransaction.objects
-                            .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.redonation)
-                            .filter(redonation_transaction_id=self.id)
-                            )
+                                        .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.redonation)
+                                        .filter(redonation_transaction_id=self.id)
+        )
 
-        for redonation_transaction in redonation_transactions_list :
+        for redonation_transaction in redonation_transactions_list:
             redonation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.cancelled
             redonation_transaction.save()
 

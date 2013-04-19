@@ -48,6 +48,18 @@ def profile(request, username=None, external_service=None, external_username=Non
         template_data['user'] = user
         template_data['profile'] = profile
 
+        template_data['user_has_bank_card_attached'] = False
+        template_data['user_has_bank_account_attached'] = False
+        current_card = BankCard.objects.filter(user_id=user.id)
+        if current_card.count() > 0 :
+            template_data['user_has_bank_card_attached'] = True
+
+        current_account = BankAccount.objects.filter(user_id=user.id)
+        if current_account.count() > 0 :
+            template_data['user_has_bank_account_attached'] = True
+
+
+
         return render_to_response('pledger/public.djhtm', template_data, context_instance=RequestContext(request))
     else :
         request.user.public = _prepare_user_public_template_data(request, request.user)

@@ -65,6 +65,7 @@
             <div class="span2 text-right">
                 <div class="project-meta">
                 {% if project_edit_access %}
+                    <a href="/api/project/{{ project.key }}?format=json">api</a>
                     <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
                     <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
                         {% csrf_token %}

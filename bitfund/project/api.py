@@ -89,14 +89,19 @@ class ProjectResource(ModelResource):
         user_token, user = checkUserToken(request.GET.get(API_USER_TOKEN_PARAM_NAME, None))
         
         bundle.data['target_month']        = target_month.strftime('%b %Y')
-        bundle.data['project_profile_URL'] = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.budget', kwargs={'project_key':project.key})+'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token
+        bundle.data['project_profile_URL'] = ('http://'+request.META['HTTP_HOST']
+                                              +reverse('bitfund.project.views.budget',
+                                                       kwargs={'project_key':project.key})
+                                              +'?'+API_USER_TOKEN_PARAM_NAME+'='+user_token)
         
         project_budget_total                                    = project.getTotalMonthlyBudget(target_month)
         project_budget['budget_monthly']                        = {}
         project_budget['budget_monthly']['amount']              = project_budget_total 
         project_budget['budget_monthly']['currency']            = SITE_CURRENCY_CODE
         project_budget['budget_monthly']['formatted']           = SITE_CURRENCY_SIGN+filters.floatformat(project_budget_total, 2)
-        project_budget['budget_monthly']['chart_image_URL']     = 'http://'+request.META['HTTP_HOST']+reverse('bitfund.project.views.chart_image', kwargs={'project_key':project.key})
+        project_budget['budget_monthly']['chart_image_URL']     = ('http://'+request.META['HTTP_HOST']
+                                                                   +reverse('bitfund.project.views.chart_image_project',
+                                                                            kwargs={'project_key':project.key, 'chart_size':'medium'}))
         
         
         project_budget['end_utctimestamp']        = time.mktime(datetime(target_month.year, target_month.month+1, 1, tzinfo=target_month.tzinfo).utctimetuple())-1 #-1 because it's the last second of previous month, not first second of the next one
@@ -133,9 +138,8 @@ class ProjectResource(ModelResource):
             project_budget['other_sources_monthly']['contributed_percent']          = round((project_other_sources_total*100)/project_budget_total,2) 
         else :
             project_budget['other_sources_monthly']['contributed_percent']          = -1
-        
-        project_redonations_needs_total, project_redonations_goals_total            = project.getTotalMonthlyRedonations(target_month)
-        project_redonations_total                                                   = project_redonations_needs_total + project_redonations_goals_total
+
+        project_redonations_total                                                   = project.getTotalMonthlyRedonations(target_month)
         project_budget['redonations_monthly']                                       = {}
         project_budget['redonations_monthly']['amount']                             = project_redonations_total
         project_budget['redonations_monthly']['currency']                           = SITE_CURRENCY_CODE
@@ -186,7 +190,6 @@ class ProjectResource(ModelResource):
         #PROJECT DEPENDENCIES LIST URI
         project_dependencies = {}
         project_dependencies['count'] = (Project_Dependencies.objects
-                                         .filter(is_public=True)
                                          .filter(depender_project=project)
                                          .count()
         )
@@ -288,7 +291,7 @@ class ProjectNeedResource(ModelResource):
         need_budget_monthly['currency'] = SITE_CURRENCY_CODE
         need_budget_monthly['formatted'] = SITE_CURRENCY_SIGN + filters.floatformat(need.amount, 2)
         need_budget_monthly['chart_image_URL'] = ('http://' + request.META['HTTP_HOST'] +
-                                                  reverse('bitfund.project.views.chart_image',
+                                                  reverse('bitfund.project.views.chart_image_need',
                                                           kwargs={'project_key': need.project.key, 'need_key': need.key, }))
 
         need_pledges_sum = need.getPledgesMonthlyTotal(target_month)
@@ -410,7 +413,7 @@ class ProjectGoalResource(ModelResource):
         goal_budget_total['currency'] = SITE_CURRENCY_CODE
         goal_budget_total['formatted'] = SITE_CURRENCY_SIGN + filters.floatformat(goal.amount, 2)
         goal_budget_total['chart_image_URL'] = 'http://' + request.META['HTTP_HOST'] + reverse(
-            'bitfund.project.views.chart_image', kwargs={'project_key': goal.project.key, 'goal_key': goal.key, })
+            'bitfund.project.views.chart_image_goal', kwargs={'project_key': goal.project.key, 'goal_key': goal.key, })
 
         goal_pledges_sum = goal.getTotalPledges()
         goal_pledges = {}
@@ -418,7 +421,10 @@ class ProjectGoalResource(ModelResource):
         goal_pledges['currency'] = SITE_CURRENCY_CODE
         goal_pledges['formatted'] = SITE_CURRENCY_SIGN + filters.floatformat(goal_pledges_sum, 2)
         goal_pledges['percent'] = round((goal_pledges_sum * 100) / goal.amount, 2)
-        goal_pledges['count'] = DonationTransactionGoals.objects.filter(goal=goal).count()
+        goal_pledges['count'] = (DonationTransaction.objects
+                                 .filter(accepting_goal_id=goal.id)
+                                 .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                                 .count())
 
         goal_other_sources_sum = goal.getTotalOtherSources()
         goal_other_sources = {}

@@ -45,7 +45,7 @@
     <div class="project-goals">
         <div class="header">
             <div class="row-fluid">
-                <div class="span5 project-attributes">
+                <div class="span9 project-attributes">
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                         {% if project.logo %}
                             <img src="{{ project.logo.url }} " />
@@ -54,13 +54,6 @@
                         {% endif %}
                     </a>
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
-                </div>
-                <div class="span4">
-                    <div class="uri">
-                        <span>bitfund.org/ </span>
-                        {{ goal_edit_form.key.errors }}
-                        {{ goal_edit_form.key|attr:"class:input-medium" }}
-                    </div>
                 </div>
                 <div class="span3 text-right">
                     <div class="project-meta">
@@ -74,9 +67,9 @@
                 </div>
             </div>
         </div>
-
         <form method="post" action="" enctype="multipart/form-data" id="goal-{{ goal.id }}-edit">
-        {% csrf_token %}
+            {% csrf_token %}
+
             <div class="goal-info">
                 {{ goal_edit_form.non_field_errors }}
                 <div class="goal-description">
@@ -84,7 +77,11 @@
                     {{ goal_edit_form.title.errors }}
                     {{ goal_edit_form.title }}
                 <!-- -->
-                    
+                    <div class="uri">
+                        <span>bitfund.org/{{ project.key }}/ </span>
+                        {{ goal_edit_form.key.errors }}
+                        {{ goal_edit_form.key|attr:"class:input-medium" }}
+                    </div>
                 <!-- input "goal description" -->
                     {{ goal_edit_form.brief.errors }}
                     {{ goal_edit_form.brief }}
@@ -156,7 +153,11 @@
                         <div class="row-fluid">
                             <div class="span5">
                                 <div class="chart-div-large" id="goal-{{goal.id}}-chart">
-                                    <span class="text-center">{{goal.total_percent}}%</span>
+                                    {% if goal.total_percent == -1 %}
+                                        <span class="text-center">&infin;</span>
+                                    {% else %}
+                                        <span class="text-center">{{goal.total_percent}}%</span>
+                                    {% endif %}
                                     <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='medium' %}" id="goal-chart"/>
                                 </div>
                                 <ul class="chart-div-legend">

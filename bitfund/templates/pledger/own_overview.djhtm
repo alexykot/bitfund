@@ -126,30 +126,45 @@
                     </ul>
                 <h3>Connected accounts</h3>
                 <table class="connected-accounts">
+                    {% if profile.github_username %}
+                        <tr>
+                            <td><img src="{{ STATIC_URL }}img/github_icon.png" /></td>
+                            <td>
+                                <div class="media">
+
+                                    {% if profile.gravatar_id %}
+                                        <img class="media-object pull-left" src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=128" />
+                                    {% elif profile.twitter_pic_url %}
+                                        <img class="media-object pull-left" src="{{ profile.twitter_pic_url }}" width="128" height="128" />
+                                    {% else %}
+                                        {% load gravatar %}
+                                        <img class="media-object pull-left" src="{% gravatar_for_user request.user 128 %}" />
+                                    {% endif %}
+
+                                    <div class="media-body">
+                                        <p class="media-heading"><a href="{{ profile.github_account_url }}" >{{ profile.github_username }}</a></p>
+                                        <small>on GitHub</small>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+
+
+                    {% if profile.twitter_username %}
                     <tr>
-                        <td><img src="{{ STATIC_URL }}img/github_icon.png" /></td>
+                        <td><img src="{{ STATIC_URL }}img/twitter_icon.png" /></td>
                         <td>
                             <div class="media">
-                                <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
+                                <img class="media-object pull-left" src="{{ profile.twitter_pic_url }}">
                                 <div class="media-body">
-                                    <p class="media-heading"><a href="#" >alexykot (Alex Kot)</a></p>
+                                    <p class="media-heading"><a href="{{ profile.twitter_account_url }}" >{{ profile.twitter_username }}</a></p>
                                     <small>on Twitter</small>
                                 </div>
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td><img src="{{ STATIC_URL }}img/twitter_icon.png" /></td>
-                        <td>
-                            <div class="media">
-                                <img class="media-object pull-left" src="https://www.gravatar.com/avatar/f8a9f23477f96efa722377a5d3808f36.jpg?s=128">
-                                <div class="media-body">
-                                    <p class="media-heading"><a href="#" >alexykot</a></p>
-                                    <small>on Github</small>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
+                    {% endif %}
                     <tr>
                         <td><img src="{{ STATIC_URL }}img/credit_card_icon.png" /></td>
                         <td>
