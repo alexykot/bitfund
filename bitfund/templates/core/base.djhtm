@@ -19,6 +19,7 @@
     <!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-responsive.min.css"/>-->
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-wysihtml5.css"/>
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}ajaxuploader/css/fileuploader.css" media="screen" />
+
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bitfund.css"/>
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png"/>

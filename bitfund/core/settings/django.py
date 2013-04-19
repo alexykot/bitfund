@@ -70,9 +70,9 @@ INSTALLED_APPS = (
 
 
     # proejct apps
-    'bitfund.core',          # bitfund core
-    'bitfund.pledger',          # pledger account
-    'bitfund.project',          # project
+    'core',          # bitfund core
+    'pledger',          # pledger account
+    'project',          # project
 
     # installed thirdparty apps
     # utilities 

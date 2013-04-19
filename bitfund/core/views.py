@@ -9,8 +9,10 @@ from django.contrib.auth.models import Group
 from django.template import RequestContext
 from django.core.validators import validate_email
 from django.core.mail import send_mail
-from bitfund.core.decorators import ajax_required
+from django.template.loader import add_to_builtins
 
+
+from bitfund.core.decorators import ajax_required
 from bitfund.core.models import *
 from bitfund.core.forms import *
 from bitfund.project.forms import *
@@ -20,17 +22,39 @@ from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMET
 def index(request):
     template_data = {'request': request,
                      'site_currency_sign': SITE_CURRENCY_SIGN,
+                     'PROJECTS_IN_DATES_BACK_TO_LOOK':PROJECTS_IN_DATES_BACK_TO_LOOK,
                      }
 
     if request.method == 'POST' :
         template_data['create_project_form'] = CreateProjectForm(request.POST)
         if template_data['create_project_form'].is_valid() :
-            project = Project()
-            project.title = template_data['create_project_form'].cleaned_data['title']
-            project.key = Project.slugifyKey(project.title)
-            project.save()
-            return redirect('bitfund.project.views.unclaimed', project_key=project.key)
+            existing_projects = Project.objects.filter(title=template_data['create_project_form'].cleaned_data['title'])
 
+            if request.GET['action'] == 'support':
+                if existing_projects.count() > 0:
+                    return redirect('bitfund.project.views.budget', project_key=existing_projects[0].key)
+                else :
+                    project = Project()
+                    project.title = template_data['create_project_form'].cleaned_data['title']
+                    project.key = Project.slugifyKey(project.title)
+                    project.save()
+                    return redirect('bitfund.project.views.unclaimed', project_key=project.key)
+
+            elif request.GET['action'] == 'create':
+                if existing_projects.count() > 0:
+                    return redirect('bitfund.project.views.budget', project_key=existing_projects[0].key)
+                else :
+                    project = Project()
+                    project.title = template_data['create_project_form'].cleaned_data['title']
+                    project.key = Project.slugifyKey(project.title)
+                    project.status = PROJECT_STATUS_CHOICES.active
+                    project.is_public = False
+                    project.maintainer_id = request.user.id
+                    project.save()
+                    return redirect('bitfund.project.views.budget', project_key=project.key)
+
+            else:
+                return redirect('bitfund.core.views.index')
     else :
         template_data['create_project_form'] = CreateProjectForm()
 
@@ -40,20 +64,9 @@ def index(request):
                                           .order_by('-date_added')
                                           [:PROJECTS_IN_HOMEPAGE_COLUMN]
                                             )
-    template_data['top_funded_projects_list'] = (Project.objects
-                                                 .filter(is_public=True)
-                                                 .filter(status=PROJECT_STATUS_CHOICES.active)
-                                                 .order_by('-date_added')
-                                                 [:PROJECTS_IN_HOMEPAGE_COLUMN]
-                                                  )
-    template_data['top_linked_projects_list'] =  Project.getTopLinkedProjects()
-    template_data['unclaimed_projects_list'] = (Project.objects
-                                                .filter(is_public=True)
-                                                .filter(status=PROJECT_STATUS_CHOICES.unclaimed)
-                                                .order_by('-date_added')
-                                                [:PROJECTS_IN_HOMEPAGE_COLUMN]
-                                                )
-
+    template_data['top_funded_projects_list'] = Project.getTopFundedProjects()
+    template_data['top_linked_projects_list'] = Project.getTopLinkedProjects()
+    template_data['unclaimed_projects_list'] = Project.getTopUnclaimedProjects()
 
     return render_to_response('core/index.djhtm', template_data, context_instance=RequestContext(request))
 
@@ -87,7 +100,9 @@ def search_project(request):
         project.monthly_budget = project.getTotalMonthlyBudget()
 
         if project.monthly_budget > 0 :
-            project.monthly_total_donations_percent = project.monthly_total_donations/project.monthly_budget*100
+            project.monthly_total_donations_percent = Decimal( Decimal(project.monthly_total_donations)
+                                                               / Decimal(project.monthly_budget) * Decimal(100))\
+                                                            .quantize('0.00')
         else :
             project.monthly_total_donations_percent = -1
 

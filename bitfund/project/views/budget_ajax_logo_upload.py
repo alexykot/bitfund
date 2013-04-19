@@ -28,10 +28,11 @@ class BudgetAjaxLogoUploader(AjaxFileUploader, View):
             tmp_logo_relpath = response_json['path'].replace(MEDIA_URL, '')
             tmp_logo_abspath = os.path.join(MEDIA_ROOT, tmp_logo_relpath)
 
-            old_logo_relpath = project.logo
-            old_logo_abspath = os.path.join(MEDIA_ROOT, old_logo_relpath)
-            if os.path.exists(old_logo_abspath) :
-                os.remove(old_logo_abspath)
+            if project.logo:
+                old_logo_relpath = project.logo
+                old_logo_abspath = os.path.join(MEDIA_ROOT, old_logo_relpath)
+                if os.path.exists(old_logo_abspath) :
+                    os.remove(old_logo_abspath)
 
             logo_relpath = _get_logo_relative_filename(project_key, os.path.basename(tmp_logo_abspath))
             logo_abspath = os.path.join(MEDIA_ROOT, logo_relpath)
@@ -43,8 +44,5 @@ class BudgetAjaxLogoUploader(AjaxFileUploader, View):
             response_json['path'] = logo_relpath
 
         return HttpResponse(json.dumps(response_json, cls=DjangoJSONEncoder), content_type='application/json; charset=utf-8')
-
-        return response
-
 
 budget_ajax_logo_upload = BudgetAjaxLogoUploader()

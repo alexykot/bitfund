@@ -1,4 +1,5 @@
-from decimal import Decimal, getcontext
+from decimal import Decimal
+from datetime import timedelta
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -7,7 +8,7 @@ from django.utils.timezone import utc, now
 from django.db.models import Count, Sum
 
 from bitfund.project.lists import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID, PROJECTS_IN_HOMEPAGE_COLUMN, MAX_PUBLIC_GOALS_PER_PROJECT
+from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID, PROJECTS_IN_HOMEPAGE_COLUMN, MAX_PUBLIC_GOALS_PER_PROJECT, PROJECTS_IN_DATES_BACK_TO_LOOK
 
 
 class ProjectCategory(models.Model):
@@ -56,17 +57,98 @@ class Project(models.Model):
     def __unicode__(self):
         return self.title
 
+    #gets a list of top funded projects
+    @classmethod
+    def getTopFundedProjects(cls):
+        top_funded_list = (Project.objects
+         .raw("""SELECT *,
+              ( SELECT
+                    SUM(transaction_amount)
+                FROM
+                    pledger_donationtransaction
+                WHERE 1
+                  AND transaction_type="pledge"
+                  AND accepting_project_id=pp.id
+                  AND transaction_status IN ('pending', 'unpaid', 'paid')
+                  AND transaction_datetime BETWEEN STR_TO_DATE(%s, '%%Y-%%m-%%d 00:00:00') AND STR_TO_DATE(%s, '%%Y-%%m-%%d 00:00:00') )
+                      AS pledged_recently,
+              ( SELECT
+                    SUM(amount)
+                FROM
+                    project_projectneed
+                WHERE 1
+                  AND is_public
+                  AND project_id=pp.id
+                  AND (date_starting IS NULL OR date_starting < NOW())
+                  AND (date_ending IS NULL OR date_ending > NOW())
+                  )
+                      AS budget_this_month
+
+              FROM
+                    project_project AS pp
+              WHERE
+                    is_public
+              HAVING pledged_recently > 0
+              ORDER BY pledged_recently DESC
+              LIMIT %s """,
+              [(now() + timedelta(-PROJECTS_IN_DATES_BACK_TO_LOOK)).strftime('%Y-%m-%d 00:00:00'),
+               now().strftime('%Y-%m-%d 00:00:00'),
+               PROJECTS_IN_HOMEPAGE_COLUMN])
+        )
+
+        result_list = []
+
+        for project in top_funded_list:
+            if project.budget_this_month > 0:
+                project.pledged_percent = Decimal(Decimal(project.pledged_recently) / Decimal(project.budget_this_month) * Decimal(100)).quantize(Decimal('0'))
+            else:
+                project.pledged_percent = -1
+            result_list.append(project)
+
+
+        return result_list
+
     #gets a list of top linked projects
     @classmethod
     def getTopLinkedProjects(cls):
         top_linked_list = (Project.objects
-         .filter(is_public=True)
-         .filter(status=PROJECT_STATUS_CHOICES.active)
-         .order_by('-date_added')
-         [:PROJECTS_IN_HOMEPAGE_COLUMN]
+         .raw("""SELECT *,
+              ( SELECT COUNT(*) FROM project_project_dependencies WHERE depender_project_id=pp.id ) AS depender_count,
+              ( SELECT COUNT(*) FROM project_project_dependencies WHERE dependee_project_id=pp.id ) AS dependee_count
+              FROM
+                    project_project AS pp
+              WHERE
+                    is_public
+              HAVING (depender_count > 0 OR dependee_count > 0)
+              ORDER BY (depender_count+dependee_count) DESC
+              LIMIT %s """,
+              [PROJECTS_IN_HOMEPAGE_COLUMN])
         )
 
-        return top_linked_list
+        result_list = []
+
+        for project in top_linked_list:
+            project.links_total = project.depender_count+project.dependee_count
+            result_list.append(project)
+
+        return result_list
+
+    #gets a list of top linked projects
+    @classmethod
+    def getTopUnclaimedProjects(cls):
+        top_unclaimed_list = (Project.objects
+         .raw("""SELECT *,
+              ( SELECT SUM(amount) FROM pledger_donationsubscription WHERE project_id=pp.id ) AS unclaimed_pledging_count
+              FROM
+                    project_project AS pp
+              WHERE
+                    is_public
+              HAVING unclaimed_pledging_count > 0
+              ORDER BY unclaimed_pledging_count DESC
+              LIMIT %s """,
+              [PROJECTS_IN_HOMEPAGE_COLUMN])
+        )
+        return top_unclaimed_list
 
     #creates unique project key from the provided title
     @classmethod
@@ -556,6 +638,3 @@ class ProjectEvent(models.Model):
 }
 
 """
-
-
-
