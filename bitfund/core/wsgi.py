@@ -14,6 +14,9 @@ framework.
 
 """
 import os
+import sys
+
+sys.path.append('/var/www/python/bitfund.org')
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bitfund.core.settings")
 
