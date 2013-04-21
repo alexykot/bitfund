@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.utils.datetime_safe import datetime
 from django.contrib.auth.decorators import login_required
 
-from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
+from bitfund.core.settings_split.project import (SITE_CURRENCY_SIGN,
                                            RGBCOLOR_DONUT_CHART_BACKGROUND,
                                            RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
                                            RGBCOLOR_DONUT_CHART_PLEDGES,

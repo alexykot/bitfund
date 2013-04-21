@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
 
 from model_utils import Choices
-from bitfund.core.settings.project import API_KEY_LENGTH
+from bitfund.core.settings_split.project import API_KEY_LENGTH
 from bitfund.project.models import *
 
 DONATION_TRANSACTION_TYPES_CHOICES = Choices(

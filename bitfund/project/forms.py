@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from bitfund.core.models import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH, MIN_GOAL_TIMELENGTH_DAYS
+from bitfund.core.settings_split.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH, MIN_GOAL_TIMELENGTH_DAYS
 from bitfund.project.models import *
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 

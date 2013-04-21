@@ -9,7 +9,7 @@ from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
-from bitfund.core.settings.extensions import BALANCED
+from bitfund.core.settings_split.extensions import BALANCED
 from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES, BalancedAccount, PaymentTransaction, PAYMENT_TRANSACTION_STATUSES_CHOICES
 from bitfund.project.management.helpers import _calculate_balanced_transaction_fee, _calculate_project_balances
 from bitfund.project.models import Project

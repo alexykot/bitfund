@@ -4,8 +4,8 @@ import math
 from django.db.models import Sum
 from django.utils.timezone import utc, now
 
-from bitfund.core.settings.project import CHART_IMAGE_TYPE, PROJECTS_MEDIA_DIR
-from bitfund.core.settings.server import MEDIA_ROOT
+from bitfund.core.settings_split.project import CHART_IMAGE_TYPE, PROJECTS_MEDIA_DIR
+from bitfund.core.settings_split.server import MEDIA_ROOT
 from bitfund.project.forms import PledgeProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import ProjectNeed, ProjectGoal, ProjectMaintainerVote

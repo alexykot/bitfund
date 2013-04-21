@@ -6,7 +6,7 @@ from django.template import Template, Context
 from django.conf import settings
 from django.utils.timezone import now
 
-from bitfund.core.settings.project import PROTOTYPE_LANDING_PAGE_URL, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE, API_USER_TOKEN_PARAM_NAME
+from bitfund.core.settings_split.project import PROTOTYPE_LANDING_PAGE_URL, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE, API_USER_TOKEN_PARAM_NAME
 from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES, DonationSubscription, BankCard, BankAccount
 from bitfund.project.lists import PROJECT_STATUS_CHOICES, DONATION_TYPES_CHOICES
 from bitfund.project.models import Project

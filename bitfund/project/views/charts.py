@@ -4,7 +4,7 @@ import cairoplot
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from bitfund.core.settings.project import (ARGB_DONUT_CHART_PLEDGES,
+from bitfund.core.settings_split.project import (ARGB_DONUT_CHART_PLEDGES,
                                            ARGB_DONUT_CHART_REDONATIONS,
                                            ARGB_DONUT_CHART_OTHER_SOURCES,
                                            ARGB_DONUT_CHART_BACKGROUND,
@@ -15,7 +15,7 @@ from bitfund.core.settings.project import (ARGB_DONUT_CHART_PLEDGES,
                                            MINIMAL_DEFAULT_PLEDGES_DEGREES,
                                            MINIMAL_DEFAULT_OTHER_SOURCES_DEGREES,
                                            MINIMAL_DEFAULT_REDONATIONS_DEGREES)
-from bitfund.core.settings.server import STATICFILES_DIRS, STATIC_ROOT, MEDIA_ROOT
+from bitfund.core.settings_split.server import STATICFILES_DIRS, STATIC_ROOT, MEDIA_ROOT
 from bitfund.project.decorators import disallow_not_public_unless_maintainer
 from bitfund.project.lists import PROJECT_CHART_SIZES, PROJECT_STATUS_CHOICES
 from bitfund.project.models import Project, ProjectGoal, ProjectNeed

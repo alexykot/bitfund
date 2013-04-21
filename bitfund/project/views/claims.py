@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.utils.timezone import now
 
-from bitfund.core.settings.project import (SITE_CURRENCY_SIGN,
+from bitfund.core.settings_split.project import (SITE_CURRENCY_SIGN,
                                            RGBCOLOR_DONUT_CHART_BACKGROUND,
                                            RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
                                            RGBCOLOR_DONUT_CHART_PLEDGES,

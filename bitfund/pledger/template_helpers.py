@@ -4,7 +4,7 @@ from django.utils.datetime_safe import datetime
 from django.utils.timezone import now
 
 from bitfund.core.helpers import add_months
-from bitfund.core.settings.project import MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC
+from bitfund.core.settings_split.project import MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC
 from bitfund.core.helpers import add_months
 from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, Profile, DONATION_TRANSACTION_TYPES_CHOICES, DonationSubscription
 from bitfund.project.lists import DONATION_TYPES_CHOICES

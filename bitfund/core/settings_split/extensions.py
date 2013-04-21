@@ -29,7 +29,7 @@ TASTYPIE_FULL_DEBUG = True
 
 #social auth
 #social auth secrets and other stuff that should not be in the repository
-from bitfund.core.settings.secrets import *
+from bitfund.core.project_settings.secrets import *
 LOGIN_URL          = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL    = '/login/'

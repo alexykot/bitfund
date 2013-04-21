@@ -16,7 +16,7 @@ from bitfund.core.decorators import ajax_required
 from bitfund.core.models import *
 from bitfund.core.forms import *
 from bitfund.project.forms import *
-from bitfund.core.settings.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN
+from bitfund.core.settings_split.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN
 
 
 def index(request):

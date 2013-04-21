@@ -9,7 +9,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 
 from ajaxuploader.views import AjaxFileUploader
-from bitfund.core.settings.server import MEDIA_ROOT, MEDIA_URL
+from bitfund.core.settings_split.server import MEDIA_ROOT, MEDIA_URL
 
 from bitfund.project.models import Project
 from bitfund.project.template_helpers import _get_logo_relative_filename

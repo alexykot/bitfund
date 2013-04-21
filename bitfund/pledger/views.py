@@ -12,8 +12,8 @@ from django.utils.timezone import now
 from django.utils.datetime_safe import datetime
 from pip import req
 
-from bitfund.core.settings.extensions import BALANCED
-from bitfund.core.settings.project import SITE_CURRENCY_SIGN
+from bitfund.core.settings_split.extensions import BALANCED
+from bitfund.core.settings_split.project import SITE_CURRENCY_SIGN
 from bitfund.pledger.forms import BankAccountBusinessUnderwritingForm, BankAccountPersonUnderwritingForm, BANK_ACCOUNT_ENTITY_TYPE_CHOICES, ProjectWithdrawFundsForm
 from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, BankCard, BankAccount, BalancedAccount
 from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data

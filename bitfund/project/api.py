@@ -15,7 +15,7 @@ from tastypie import fields
 from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
 from tastypie.bundle import Bundle
 
-from bitfund.core.settings.project import TIME_TO_SHOW_HOURS, API_USER_TOKEN_PARAM_NAME, API_TARGET_MONTH_PARAM_NAME, SITE_CURRENCY_CODE, SITE_CURRENCY_SIGN
+from bitfund.core.settings_split.project import TIME_TO_SHOW_HOURS, API_USER_TOKEN_PARAM_NAME, API_TARGET_MONTH_PARAM_NAME, SITE_CURRENCY_CODE, SITE_CURRENCY_SIGN
 from bitfund.project.models import *
 from bitfund.pledger.models import *
 

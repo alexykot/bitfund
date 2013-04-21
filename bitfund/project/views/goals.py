@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc, now
-from bitfund.core.settings.project import SITE_CURRENCY_SIGN, GOAL_DEFAULT_TITLE
+from bitfund.core.settings_split.project import SITE_CURRENCY_SIGN, GOAL_DEFAULT_TITLE
 from bitfund.project.decorators import redirect_not_active, disallow_not_public_unless_maintainer, user_is_project_maintainer
 
 from bitfund.project.models import *

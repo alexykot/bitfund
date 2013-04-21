@@ -1,15 +1,5 @@
 # Django settings for bitfund project.
 
-#this is server related settings like DB access and local paths
-from bitfund.core.settings.server import *
-
-#this is custom project settings not related to django, but used in this project 
-from bitfund.core.settings.project import *
-
-#this is django extensions settings
-from bitfund.core.settings.extensions import *
-
-
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (

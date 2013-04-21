@@ -5,8 +5,8 @@ bitfund/web/static/*
 bitfund/static/img/charts/*
 logs/*
 .idea/*
-bitfund/core/settings/server.py
-bitfund/core/settings/secrets.py
+bitfund/core/settings_split/server.py
+bitfund/core/settings_split/secrets.py
 
 syntax: regexp
 

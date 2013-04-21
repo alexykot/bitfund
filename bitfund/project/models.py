@@ -8,7 +8,7 @@ from django.utils.timezone import utc, now
 from django.db.models import Count, Sum
 
 from bitfund.project.lists import *
-from bitfund.core.settings.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID, PROJECTS_IN_HOMEPAGE_COLUMN, MAX_PUBLIC_GOALS_PER_PROJECT, PROJECTS_IN_DATES_BACK_TO_LOOK
+from bitfund.core.settings_split.project import CALCULATIONS_PRECISION, BITFUND_OWN_PROJECT_ID, PROJECTS_IN_HOMEPAGE_COLUMN, MAX_PUBLIC_GOALS_PER_PROJECT, PROJECTS_IN_DATES_BACK_TO_LOOK
 
 
 class ProjectCategory(models.Model):

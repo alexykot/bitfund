@@ -1,5 +1,5 @@
 from decimal import Decimal, getcontext
-from bitfund.core.settings.project import TRANSACTION_OVERHEAD_FEE_PERCENT, TRANSACTION_OVERHEAD_FEE_FIXED_AMOUNT, WITHDRAWAL_OVERHEAD_FEE_FIXED_AMOUNT, WITHDRAWAL_OVERHEAD_FEE_PERCENT
+from bitfund.core.settings_split.project import TRANSACTION_OVERHEAD_FEE_PERCENT, TRANSACTION_OVERHEAD_FEE_FIXED_AMOUNT, WITHDRAWAL_OVERHEAD_FEE_FIXED_AMOUNT, WITHDRAWAL_OVERHEAD_FEE_PERCENT
 
 
 def _calculate_balanced_transaction_fee(transaction_amount):
