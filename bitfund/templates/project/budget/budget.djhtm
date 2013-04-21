@@ -338,7 +338,11 @@
                         {% endif %}
                         <div class="span3">
                             <div class="chart-div-small">
-                                <span class="text-center">{{ goal.total_percent }}%</span>
+                                {% if goal.total_percent == -1 %}
+                                    <span class="text-center">&infin;</span>
+                                {% else %}
+                                    <span class="text-center">{{ goal.total_percent }}%</span>
+                                {% endif %}
                                 <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='small'%}" />
                             </div>
                         </div>

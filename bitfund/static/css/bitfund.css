@@ -288,13 +288,13 @@ button.go {
     border-left: 1px solid #577000;
     border-right: 1px solid #577000;
     border-top: 1px solid #577000;
-    padding: 0 4px;
+    padding: 0 3px;
     position: relative;
     z-index: 100;
 }
 
-.available-projects #create-project-link-container {
-    padding: 0 4px;
+.available-projects .create-project {
+    padding: 1px 4px 0;
 }
 
 #create-project-popup {
@@ -582,11 +582,11 @@ noindex:-o-prefocus, .project-meta {
 }
 
 #logo-file-upload input {
-    font-size: 40px;
-    top: -20px;
-    right: 5px;
-    height: 58px;
-    width: 58px;
+    font-size: 1px !important;
+    top: -20px !important;
+    right: 5px !important;
+    height: 58px !important;
+    width: 58px !important;
 }
 
 .edit-goal > .row-fluid:first-of-type .span3 span {

@@ -1,5 +1,7 @@
 {% extends "core/base.djhtm" %}
 {% load widget_tweaks %}
+{% load humanize %}
+{% load bitfund_filters %}
 
 {% block pagescripts %}
     <script type="text/javascript">
@@ -41,6 +43,22 @@
                     $('#create-project-popup').toggle(false);
                 }
             });
+
+            $('#id_title').bindWithDelay('keyup', function(event){
+                var search_string = $(this).val()
+                if (search_string.length > 1) {
+                    $('#similar-projects-list').load('{% url bitfund.pledger.views.existing_similar_projects %}?search_string='+search_string,
+                            null,
+                            function(responseText, textStatus, XMLHttpRequest){
+                                if (textStatus == 'success'){
+                                    $('#similar-projects-block').toggle(true);
+                                } else {
+                                    $('#similar-projects-block').toggle(false);
+                                }
+                            });
+                }
+            }, 500);
+
         });
     </script>
 {% endblock pagescripts %}
@@ -66,16 +84,24 @@
         </div>
         <div id="create-project-popup" style="display: none">
             {% if request.user.is_authenticated %}
-                <form action="" method="post">
+                <form action="{% url bitfund.core.views.index %}?action=create" method="post">
+                {% csrf_token %}
                     <div class="text-center">
-                        <input type="text" placeholder="Enter project's name">
+                        {{ create_project_form.title.errors }}
+                        {{ create_project_form.title|attr:"required"|attr:"placeholder:project name" }}
                     </div>
                     <div class="text-center">
                         <button type="submit" class="button gray">create project</button>
                     </div>
                 </form>
+                <div id="similar-projects-block" style="display:none;">
+                    <div class="text-center">Existing similar projects</div>
+                    <ul id="similar-projects-list">
+                    </ul>
+                </div>
             {% else %}
-                <p class="orange-bg">Please, login via <a href="">twitter</a> or <a href="">github</a></p>
+                <p class="orange-bg">login via <a href="{% url socialauth_begin 'twitter' %}">twitter</a>
+                    or <a href="{% url socialauth_begin 'github' %}">github</a></p>
             {% endif %}
         </div>
     </div>
@@ -83,108 +109,105 @@
     <div class="search-result row-fluid" id="search-result" style="display: none"></div>
     <div class="support-form text-center" id="create_project_offer" style="display: none">
         <h4>Didn't find the project you want to support? <a href="{% url bitfund.core.views.index %}" id="support-new-project">Support it anyway!</a></h4>
-        <form action="" method="post">
+        <form action="{% url bitfund.core.views.index %}?action=support" method="post">
             {% csrf_token %}
             {{ create_project_form.non_field_errors }}
             <div id="create_project_form_container" style="display: none;">
                 <div class="row-fluid">
                     <div class="span6 text-right">
                         {{ create_project_form.title.errors }}
-                        {{ create_project_form.title|attr:"required"  }}
+                        {{ create_project_form.title|attr:"required" }}
                     </div>
                     <div class="span6 text-left">
                         <button class="button orange">Support unclaimed project</button>
                     </div>
                 </div>
-                <h5>Your support will be offered to the project, but will not actually leave your account until it will be claimed.</h5>
+                <h5>Your support will be offered to the project, but will not actually leave your account until it will be claimed and confirmed.</h5>
             </div>
         </form>
     </div>
     <hr>
     <div class="row-fluid">
         <div class="span3 text-center">
-            {% if new_projects_list %}
-                <h3>New projects</h3>
-                {% for project in new_projects_list %}
-                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                        <div class="media">
-                            {% if project.logo %}
-                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                            {% else %}
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
-                            {% endif %}
-                            <div class="media-body">
-                                <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>5 min</div>
-                            </div>
+            <h3>New projects</h3>
+            {% for project in new_projects_list %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                    <div class="media">
+                        {% if project.logo %}
+                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                        {% else %}
+                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+                        {% endif %}
+                        <div class="media-body">
+                            <h4 class="media-heading">{{ project.title }}</h4>
+                            <div title="joined">{{ project.date_added|timesince|upto:',' }} ago</div>
                         </div>
-                    </a>
-                {% endfor %}
-            {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
         </div>
         <div class="span3 text-center">
-            {% if top_funded_projects_list %}
-                <h3>Top Funded</h3>
-                {% for project in top_funded_projects_list %}
-                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                        <div class="media">
-                            {% if project.logo %}
-                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                            {% else %}
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+            <h3>Top Funded</h3>
+            {% for project in top_funded_projects_list %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                    <div class="media">
+                        {% if project.logo %}
+                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                        {% else %}
+                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+                        {% endif %}
+                        <div class="media-body">
+                            <h4 class="media-heading">{{ project.title }}</h4>
+                            <div title="received in last {{ PROJECTS_IN_DATES_BACK_TO_LOOK }} days">{{ site_currency_sign }}{{ project.pledged_recently|floatformat:2 }}</div>
+                            {% if project.pledged_percent != -1 %}
+                                <div title="percent of monthly budget fulfilment">{{ project.pledged_percent }}%</div>
                             {% endif %}
-                            <div class="media-body">
-                                <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>{{ site_currency_sign }}158158.15</div>
-                                <div>15%</div>
-                            </div>
                         </div>
-                    </a>
-                {% endfor %}
-            {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
         </div>
         <div class="span3 text-center">
-            {% if top_linked_projects_list %}
-                <h3>Top Linked</h3>
-                {% for project in top_linked_projects_list %}
-                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                        <div class="media">
-                            {% if project.logo %}
-                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                            {% else %}
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
-                            {% endif %}
-                            <div class="media-body">
-                                <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>157 links</div>
-                            </div>
+            <h3>Top Linked</h3>
+            {% for project in top_linked_projects_list %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                    <div class="media">
+                        {% if project.logo %}
+                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                        {% else %}
+                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+                        {% endif %}
+                        <div class="media-body">
+                            <h4 class="media-heading">{{ project.title }}</h4>
+                            <div title="{{ project.depender_count }} links to and {{ project.dependee_count }} links from {{ project.title }}">{{ project.links_total }} link{{ project.links_total|pluralize }}</div>
                         </div>
-                    </a>
-                {% endfor %}
-            {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
         </div>
         <div class="span3 text-center">
-            {% if unclaimed_projects_list %}
-                <h3>Unclaimed</h3>
-                {% for project in unclaimed_projects_list %}
-                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                        <div class="media">
-                            {% if project.logo %}
-                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                            {% else %}
-                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+            <h3>Unclaimed</h3>
+            {% for project in unclaimed_projects_list %}
+                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                    <div class="media">
+                        {% if project.logo %}
+                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                        {% else %}
+                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+                        {% endif %}
+                        <div class="media-body">
+                            <h4 class="media-heading">{{ project.title }}</h4>
+                            {% if project.unclaimed_pledging_count > 0 %}
+                                <div title="offered support">{{ site_currency_sign }}{{ project.unclaimed_pledging_count|floatformat:2 }}</div>
                             {% endif %}
-                            <div class="media-body">
-                                <h4 class="media-heading">{{ project.title }}</h4>
-                                <div>{{ site_currency_sign }}158.25</div>
-                            </div>
                         </div>
-                    </a>
-                {% endfor %}
-            {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
         </div>
     </div>
 </div>
 
 {% endblock content %}
+
 
