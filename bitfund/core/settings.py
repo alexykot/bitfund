@@ -6,5 +6,6 @@ from bitfund.core.settings_split.server import *
 
 # import sys
 # sys.path.append('/home/alexykot/Work/Projects/BitFund/Sources')
+# sys.path.append('/var/www/python/bitfund.org')
 # import bitfund.core.settings as settings
 # print settings.ROOT_URLCONF
