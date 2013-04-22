@@ -1,0 +1,15 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %} Privacy - {% endblock %}
+
+{% block content %}
+
+    <div class="faq">
+        {% include "core/static/subheader-static_pages.djhtm" %}
+        <section>
+            <h1 class="text-center">Privacy</h1>
+        </section>
+     </div>
+
+{% endblock %}
+

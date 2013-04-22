@@ -34,18 +34,22 @@ urlpatterns += patterns('',
 
 #MISC PAGES
 urlpatterns += patterns('bitfund.core.views',
-    (r'^index.htm', 'index'),
+    (r'^index.htm', 'landing'),
     (r'^/{0,}$', 'index'),
     (r'^projects{0,}/{0,}$', redirect_to, {'url': '/'}),
     (r'^pledger{0,}/{0,}$', redirect_to, {'url': '/'}),
     (r'^search_project/{0,}$', 'search_project'),
     (r'^login/{0,}$', 'login'),
+    (r'^logout/{0,}$', 'logout'),
+    (r'^register/{0,}$', 'register'),
+
     (r'^about/{0,}$', 'about'),
     (r'^stats/{0,}$', 'stats'),
     (r'^faq/{0,}$', 'faq'),
-    (r'^logout/{0,}$', 'logout'),
-    (r'^register/{0,}$', 'register'),
-    (r'^maintainer_verication/{0,}$', 'maintainer_verication'),
+    (r'^charts/{0,}$', 'charts'),
+    (r'^terms/{0,}$', 'terms'),
+    (r'^privacy/{0,}$', 'privacy'),
+    (r'^fraud/{0,}$', 'fraud'),
 
 )
 

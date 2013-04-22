@@ -16,7 +16,7 @@ from bitfund.core.decorators import ajax_required
 from bitfund.core.models import *
 from bitfund.core.forms import *
 from bitfund.project.forms import *
-from bitfund.core.settings_split.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN
+from bitfund.core.settings_split.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE
 
 
 def index(request):
@@ -255,28 +255,44 @@ def landing(request):
     else :
         form = ContactForm()
 
-    return render_to_response('core/landing.djhtm', {'form'      : form,
-                                                        'request'   : request,
-                                                        }, context_instance=RequestContext(request))
+    template_data = {'form'   : form,
+                     'request'   : request,
+                     'SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE': SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE,
+                     }
 
-
-
-def maintainer_verication(request):
-    template_data = {'request'   : request, }
-
-    return render_to_response('core/maintainer_verication.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('core/static/landing.djhtm', template_data, context_instance=RequestContext(request))
 
 def about(request):
     template_data = {'request'   : request, }
 
-    return render_to_response('core/about.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('core/static/about.djhtm', template_data, context_instance=RequestContext(request))
 
 def stats(request):
     template_data = {'request'   : request, }
 
-    return render_to_response('core/stats.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('core/static/stats.djhtm', template_data, context_instance=RequestContext(request))
 
 def faq(request):
     template_data = {'request'   : request, }
 
-    return render_to_response('core/faq.djhtm', template_data, context_instance=RequestContext(request))
+    return render_to_response('core/static/faq.djhtm', template_data, context_instance=RequestContext(request))
+
+def fraud(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/static/fraud.djhtm', template_data, context_instance=RequestContext(request))
+
+def terms(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/static/terms.djhtm', template_data, context_instance=RequestContext(request))
+
+def charts(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/static/charts.djhtm', template_data, context_instance=RequestContext(request))
+
+def privacy(request):
+    template_data = {'request'   : request, }
+
+    return render_to_response('core/static/privacy.djhtm', template_data, context_instance=RequestContext(request))

@@ -15,12 +15,12 @@ from bitfund.project.models import Project
 class HiddenEntranceMiddleware(object):
     def process_request(self, request):
         if request.path == PROTOTYPE_LANDING_PAGE_URL: 
-            return None;
+            return None
         elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.GET:
             request.session[SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE] = True
             return HttpResponseRedirect('/')
         elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.session:
-            return None;
+            return None
         else : 
             return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
 
@@ -79,7 +79,7 @@ class SaveUserTokenMiddleware(object):
         if API_USER_TOKEN_PARAM_NAME in request.GET :
             request.session[API_USER_TOKEN_PARAM_NAME] = request.GET[API_USER_TOKEN_PARAM_NAME] 
         
-        return None;
+        return None
 
 
 class SQLLogToConsoleMiddleware:

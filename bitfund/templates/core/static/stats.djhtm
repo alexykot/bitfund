@@ -4,31 +4,7 @@
 
 {% block content %}
 <div class="stats">
-	<div class="nav">
-		<ul class="text-center">
-			<li>
-				<a href="">about</a>
-			</li>
-			<li>
-				<a href="">FAQ</a>
-			</li>
-			<li>
-				<a href="">stats</a>
-			</li>
-			<li>
-				<a href="">charts</a>
-			</li>
-			<li>
-				<a href="">terms</a>
-			</li>
-			<li>
-				<a href="">privacy</a>
-			</li>
-			<li>
-				<a href="">fraud</a>
-			</li>
-		</ul>
-	</div>
+    {% include "core/static/subheader-static_pages.djhtm" %}
 	<section>
 		<h1 class="text-center">Stats</h1>
 		<p>Bitfund is one month old.</p>

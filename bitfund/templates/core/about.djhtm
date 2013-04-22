@@ -1,8 +1,0 @@
-{% extends "core/base.djhtm" %}
-
-{% block title %} About - {% endblock %}
-
-{% block content %}
-
-{% endblock %}
-

@@ -29,7 +29,7 @@ MIDDLEWARE_CLASSES = (
     'social_auth.middleware.SocialAuthExceptionMiddleware',
 
     #project custom middleware
-    #'bitfund.core.middleware.HiddenEntranceMiddleware',
+    'bitfund.core.middleware.HiddenEntranceMiddleware',
     'bitfund.core.middleware.UserCardAccountCheckMiddleware',
     'bitfund.core.middleware.UserProjectsCountMiddleware',
     'bitfund.core.middleware.SaveUserTokenMiddleware',
