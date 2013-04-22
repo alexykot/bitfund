@@ -92,7 +92,7 @@
                         {% if request.user.is_authenticated %}
                             <a href="{% url bitfund.project.views.claim project_key=project.key %}" class="button button-small gray">claim project</a>
                         {% else %}
-                            <span class="orange-bg">{% include "core/login/login-with-links.djhtm" %} to claim.</span>
+                            {% include "core/login/login-with-links.djhtm" %} to claim
                         {% endif %}
                     </div>
                 </div>
@@ -230,5 +230,7 @@
 
 
 {% endblock content %}
+
+
 
 

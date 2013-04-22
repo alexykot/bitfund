@@ -106,6 +106,7 @@ class BalancedAccount(models.Model):
             new_account = cls()
             new_account.user_id = user_id
             new_account.uri = balanced_account.uri
+            new_account.is_underwritten = False
             new_account.save()
 
             return new_account
