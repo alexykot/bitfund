@@ -892,12 +892,13 @@ ul.chart-div-legend {
 .current-goals form {
     margin-bottom: 0;
 }
+
 .current-goals .span4 > img {
     height: 196px;
     width: 100%;
 }
 
-.current-goals > .row-fluid > .span4 > p {
+.current-goals .span4 > p {
     min-height: 60px;
 }
 
@@ -905,8 +906,16 @@ ul.chart-div-legend {
     font-size: 20px;
 }
 
+.current-goals .span4 a {
+    line-height: 30px;
+}
+
 .current-goals .span4 .row-fluid {
-    margin-top: 15px;
+    margin-top: 20px;
+}
+
+.current-goals > div > .row-fluid {
+    margin-bottom: 40px;
 }
 
 .current-goals span.button-small {
