@@ -161,8 +161,7 @@ def crud_pledge_need(request, project_key, need_id, action=None):
                 template_data['need'] = _prepare_need_item_template_data(request, project, need, pledge_need_form)
 
             if not request.is_ajax() :
-                #@TODO card presence check (along with the payment integration itself)
-                if not request.user.is_card_attached :
+                if not request.user_has_bank_card_attached :
                     request.session[SESSION_PARAM_RETURN_TO_PROJECT] = project.key
                     return redirect('bitfund.pledger.attach_card')
                 else :

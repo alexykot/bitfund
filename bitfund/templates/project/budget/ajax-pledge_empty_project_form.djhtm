@@ -111,7 +111,7 @@
                                 type="submit" class="button button-small gray">switch to monthly pledge</button>
                     </div>
                 {% endif %}
-                {% if not user.is_card_attached %}
+                {% if not request.user_has_bank_card_attached %}
                     <div class="text-center">
                         <span class="orange-bg">you don't have <a href="{% url bitfund.pledger.views.attach_bank_card %}">payment card attached</a></span>
                     </div>
