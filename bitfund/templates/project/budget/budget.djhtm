@@ -226,7 +226,7 @@
                         <span style="border-bottom: 1px dashed #333333; cursor: help;" title="{{ maintainer_vote.comment }}">voted against on {{ maintainer_vote.date_voted|date:"SHORT_DATE_FORMAT" }}</span>
                     {% endif %}
                 {% endif %}
-            {% else %}
+            {% elif request.user.is_authenticated %}
                 {% if project.is_maintainer_confirmed %}
                     his right to maintain is <span><a href="#">verified</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">vote to dethrone</a>
@@ -238,11 +238,22 @@
                     &nbsp;&nbsp;&nbsp;
                     <a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">vote against</a>
                 {% endif %}
+            {% else %}
+                {% if project.is_maintainer_confirmed %}
+                    his right to maintain is <span><a href="#">verified</a></span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{% include "core/login/login-with-links.djhtm" %} to vote against him
+                {% else %}
+                    his right to maintain is <span><a href="#">unverified</a></span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    {% include "core/login/login-with-links.djhtm" %} to vote for or against him
+                {% endif %}
             {% endif %}
         </p>
         {% if project_report %}
             <br />
             <p>project reported on {{ project_report.date_reported|date:"SHORT_DATE_FORMAT" }}</p>
+        {% elif not request.user.is_authenticated %}
+            <br /><p>{% include "core/login/login-with-links.djhtm" %} to report project as fake, malicious or unapropriate</p>
         {% elif not project_edit_access %}
             <br /><p><a href="{% url bitfund.project.views.report project_key=project.key %}"
                onclick="return confirm('You\'re going to report this project as fake, malicious, unapropriate or similar unwanted content. Are you sure?')">report project</a>
