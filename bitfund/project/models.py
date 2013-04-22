@@ -143,6 +143,7 @@ class Project(models.Model):
                     project_project AS pp
               WHERE
                     is_public
+                    AND status = 'unclaimed'
               HAVING unclaimed_pledging_count > 0
               ORDER BY unclaimed_pledging_count DESC
               LIMIT %s """,
