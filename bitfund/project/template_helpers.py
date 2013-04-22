@@ -221,8 +221,8 @@ def _prepare_empty_project_template_data(request, project, pledge_form=None) :
 
     if request.user.is_authenticated() :
         previous_pledges = (DonationTransaction.objects
-                            .filter(pledger_user__id=request.user.id)
-                            .filter(accepting_project__id=project.id)
+                            .filter(pledger_user_id=request.user.id)
+                            .filter(accepting_project_id=project.id)
                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
                             .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
                             .order_by('-transaction_datetime')

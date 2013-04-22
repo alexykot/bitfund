@@ -41,27 +41,27 @@ class UserProjectsCountMiddleware(object):
     def process_request(self, request):
         if request.user.is_authenticated():
             project_recent_transactions = (DonationTransaction.objects
-                                           .filter(pledger_user__id=request.user.id)
+                                           .filter(pledger_user_id=request.user.id)
                                            .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
                                            .filter(pledger_donation_type=DONATION_TYPES_CHOICES.onetime)
                                            .filter(transaction_datetime__gte=(now() - datetime.timedelta(days=30)))
                                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
                                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
-                                           .values('accepting_project__id')
+                                           .values('accepting_project_id')
                                            .distinct())
 
             pledge_subscriptions = (DonationSubscription.objects
-                                                    .filter(user__id=request.user.id)
+                                                    .filter(user_id=request.user.id)
                                                     .filter(is_active=True)
                                                     .exclude(project__in=project_recent_transactions)
-                                                    .values('project__id')
+                                                    .values('project_id')
                                                     .distinct()
                                                    )
 
             request.user_projects_support_count = project_recent_transactions.count() + pledge_subscriptions.count()
 
             request.user_projects_own_count = (Project.objects
-                                               .filter(maintainer__id=request.user.id)
+                                               .filter(maintainer_id=request.user.id)
                                                .exclude(status=PROJECT_STATUS_CHOICES.unclaimed)
                                                .aggregate(Count('key'))['key__count']
                                               ) or 0

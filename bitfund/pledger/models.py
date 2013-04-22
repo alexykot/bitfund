@@ -170,14 +170,14 @@ class DonationSubscription(models.Model):
     def cancelPendingTransactions(self, donation_subscription_need=None):
         if donation_subscription_need is not None:
             subscription_pending_transactions_list = (DonationTransaction.objects
-                                                      .filter(pledger_donation_subscription__id=self.id)
-                                                      .filter(accepting_need__id=donation_subscription_need.need__id)
+                                                      .filter(pledger_donation_subscription_id=self.id)
+                                                      .filter(accepting_need_id=donation_subscription_need.need_id)
                                                       .filter(
                 transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
             )
         else:
             subscription_pending_transactions_list = (DonationTransaction.objects
-                                                      .filter(pledger_donation_subscription__id=self.id)
+                                                      .filter(pledger_donation_subscription_id=self.id)
                                                       .filter(
                 transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.pending)
                                                       .exclude(accepting_need__isnull=True)

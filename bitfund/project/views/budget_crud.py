@@ -420,8 +420,8 @@ def crud_linked_project(request, project_key, linked_project_key=None, action=No
             template_data['linked_project'] = linked_project
             linked_project_edit_form = EditLinkedProjectForm(project.id, linked_project.id, request.POST)
             if linked_project_edit_form.is_valid():
-                project_dependency = (Project_Dependencies.objects.get(dependee_project__id=linked_project.id,
-                                                                       depender_project__id=project.id))
+                project_dependency = (Project_Dependencies.objects.get(dependee_project_id=linked_project.id,
+                                                                       depender_project_id=project.id))
                 project_dependency.redonation_amount = Decimal(
                     (linked_project_edit_form.cleaned_data['redonation_amount'] or 0))
                 project_dependency.redonation_percent = Decimal(
@@ -439,11 +439,11 @@ def crud_linked_project(request, project_key, linked_project_key=None, action=No
         linked_project = get_object_or_404(Project, key=linked_project_key)
 
         if action == 'drop' :
-            (Project_Dependencies.objects.filter(dependee_project__id=linked_project.id)
+            (Project_Dependencies.objects.filter(dependee_project_id=linked_project.id)
              .filter(depender_project__id=project.id).delete())
         elif action == 'edit':
-            linked_project_dependency = (Project_Dependencies.objects.get(dependee_project__id=linked_project.id,
-                                                                          depender_project__id=project.id))
+            linked_project_dependency = (Project_Dependencies.objects.get(dependee_project_id=linked_project.id,
+                                                                          depender_project_id=project.id))
             template_data['linked_project'] = linked_project
             form_data = {'linked_project': linked_project,
                          'redonation_percent' : linked_project_dependency.redonation_percent,

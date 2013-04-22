@@ -179,7 +179,7 @@
         });
 
         if (user.is_authenticated && !{{ need.user_is_project_maintainer|lower }} ) {
-            $("form#form-pledge-need-{{ need.id }} input[type=submit]").click(function(event){
+            $("#form-pledge-need-{{ need.id }} button[type=submit]").click(function(event){
                 $('form#form-pledge-need-{{ need.id }}').attr('action', $(this).data('action'));
             });
 
@@ -213,6 +213,9 @@
     {% if request.is_ajax %}
 
         $('#need-total-donations-{{ need.id }}').text('{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}');
+        $('#budget-total-gained-percent').text('{{ budget.total_gained_percent|floatformat:0 }}%');
+        $('#budget-donations-total-sum').text('{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:2 }}');
+
 
         $('#budget_chart_image').attr('src', $('#budget_chart_image').attr('src')+'?'+Math.random());
         $('#need-chart-img-{{ need.id }}').attr('src', $('#need-chart-img-{{ need.id }}').attr('src')+'?'+Math.random());

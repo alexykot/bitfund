@@ -41,8 +41,8 @@ def unclaimed(request, project_key):
         if template_data['pledge_form'].is_valid() :
             if template_data['pledge_form'].cleaned_data['pledge_amount'] > 0 :
                 pledge_subscription = (DonationSubscription.objects
-                                       .filter(user__id=request.user.id)
-                                       .filter(project__id=project.id))
+                                       .filter(user_id=request.user.id)
+                                       .filter(project_id=project.id))
                 if pledge_subscription.count() == 1 :
                     pledge_subscription = pledge_subscription[0]
                 else :
@@ -54,8 +54,8 @@ def unclaimed(request, project_key):
                 pledge_subscription.save()
             else :
                 pledge_subscription = (DonationSubscription.objects
-                                       .filter(user__id=request.user.id)
-                                       .filter(project__id=project.id))
+                                       .filter(user_id=request.user.id)
+                                       .filter(project_id=project.id))
                 if pledge_subscription.count() == 1 :
                     pledge_subscription[0].delete()
 
@@ -66,8 +66,8 @@ def unclaimed(request, project_key):
     else :
         template_data['pledge_form'] = PledgeNoBudgetProjectForm(initial={'pledge_type':DONATION_TYPES_CHOICES.monthly})
         pledge_subscription = (DonationSubscription.objects
-                               .filter(user__id=request.user.id)
-                               .filter(project__id=project.id))
+                               .filter(user_id=request.user.id)
+                               .filter(project_id=project.id))
         if pledge_subscription.count() == 1 :
             template_data['pledge_subscription'] = pledge_subscription[0]
 

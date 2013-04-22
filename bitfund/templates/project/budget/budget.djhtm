@@ -94,12 +94,12 @@
                         {% if budget.total_gained_percent == -1 %}
                             <span class="text-center">&infin;</span>
                         {% else %}
-                            <span class="text-center">{{ budget.total_gained_percent }}%</span>
+                            <span class="text-center" id="budget-total-gained-percent">{{ budget.total_gained_percent }}%</span>
                         {% endif %}
                         <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" id="budget_chart_image" />
                     </div>
                     <div class="span4 text-center">
-                        <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}</div>
+                        <div class="pledged" id="budget-donations-total-sum">{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:2 }}</div>
                         <div>pledged</div>
                     </div>
                     <div class="span3 offset1 text-center">
@@ -159,7 +159,7 @@
                             </div>
                             <div class="span3">
                                 <div class="pull-right">
-                                    <span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}
+                                    <span><span id="need-total-donations-{{ need.id }}">{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}</span>
                                     <br>
                                     of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
                                     <span class="chart-div-medium">

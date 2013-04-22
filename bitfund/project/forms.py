@@ -270,7 +270,7 @@ class EditLinkedProjectForm(forms.Form):
 
         free_percent, free_amount = Project(main_project_id).getMaxAvailableRedonationPercentandAmount()
 
-        linked_project_dependency = Project_Dependencies.objects.get(dependee_project__id=linked_project_id, depender_project__id=main_project_id)
+        linked_project_dependency = Project_Dependencies.objects.get(dependee_project_id=linked_project_id, depender_project_id=main_project_id)
         free_percent = free_percent + (linked_project_dependency.redonation_percent or Decimal(0))
         free_amount = free_amount + (linked_project_dependency.redonation_amount or Decimal(0))
 

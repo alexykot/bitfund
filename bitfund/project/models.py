@@ -327,7 +327,7 @@ class Project(models.Model):
     # calculates maximum part of the budget still available for redonations, as percent and amount, returned separately in a tuple.
     def checkProjectLinkedToBitFund(self):
         if (Project_Dependencies.objects
-            .filter(dependee_project__id=BITFUND_OWN_PROJECT_ID, depender_project__id=self.id)
+            .filter(dependee_project_id=BITFUND_OWN_PROJECT_ID, depender_project_id=self.id)
             .count()) > 0 :
             return True
         else :

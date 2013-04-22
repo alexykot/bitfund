@@ -52,7 +52,7 @@ $(document).ready(function(){
                 <div class="text-center">
                     <h1>BitFund</h1>
                     <p>This is a public alpha version of the crowdfunding service for open projects.</p>
-                    <p><a href="{% url bitfund.core.views.index %}?{{ SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE }}">step inside through here</a></p>
+                    <p><a href="{% url bitfund.core.views.index %}?{{ SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE }}">step inside</a></p>
                 </div>
             </div>
         </div>
