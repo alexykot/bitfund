@@ -10,6 +10,6 @@ log in with
 {#    <a href="{% url socialauth_begin 'google' %}?next={{ request.get_full_path }}">google</a> or#}
 {#    <a href="{% url socialauth_begin 'facebook' %}?next={{ request.get_full_path }}">facebook</a>#}
 {% endif %}
+{% if debug %}
 <a href="{% url bitfund.core.views.login %}?next={{ request.get_full_path }}">deprecated internal login</a>
-{% comment %}
-{% endcomment %}
+{% endif %}

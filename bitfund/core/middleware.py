@@ -24,11 +24,21 @@ class HiddenEntranceMiddleware(object):
         else : 
             return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
 
+class HiddenEntranceMiddleware(object):
+    def process_request(self, request):
+        if request.path == PROTOTYPE_LANDING_PAGE_URL:
+            return None
+        elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.GET:
+            request.session[SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE] = True
+            return HttpResponseRedirect('/')
+        elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.session:
+            return None
+        else :
+            return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
+
 class UserProjectsCountMiddleware(object):
     def process_request(self, request):
         if request.user.is_authenticated():
-
-
             project_recent_transactions = (DonationTransaction.objects
                                            .filter(pledger_user__id=request.user.id)
                                            .filter(transaction_type=DONATION_TRANSACTION_TYPES_CHOICES.pledge)
@@ -39,9 +49,7 @@ class UserProjectsCountMiddleware(object):
                                            .values('accepting_project__id')
                                            .distinct())
 
-
-
-            pledge_subscriotions = (DonationSubscription.objects
+            pledge_subscriptions = (DonationSubscription.objects
                                                     .filter(user__id=request.user.id)
                                                     .filter(is_active=True)
                                                     .exclude(project__in=project_recent_transactions)
@@ -49,14 +57,13 @@ class UserProjectsCountMiddleware(object):
                                                     .distinct()
                                                    )
 
-            request.user_projects_support_count = project_recent_transactions.count() + pledge_subscriotions.count()
+            request.user_projects_support_count = project_recent_transactions.count() + pledge_subscriptions.count()
 
             request.user_projects_own_count = (Project.objects
                                                .filter(maintainer__id=request.user.id)
                                                .exclude(status=PROJECT_STATUS_CHOICES.unclaimed)
                                                .aggregate(Count('key'))['key__count']
                                               ) or 0
-
         return None
 
 class UserCardAccountCheckMiddleware(object):
@@ -89,3 +96,4 @@ class SQLLogToConsoleMiddleware:
             t = Template("{{count}} quer{{count|pluralize:\"y,ies\"}} in {{time}} seconds:\n\n{% for sql in sqllog %}[{{forloop.counter}}] {{sql.time}}s: {{sql.sql|safe}}{% if not forloop.last %}\n\n{% endif %}{% endfor %}")
             print t.render(Context({'sqllog':connection.queries,'count':len(connection.queries),'time':time}))
         return response
+
