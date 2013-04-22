@@ -871,7 +871,7 @@ ul.chart-div-legend {
 .add-goal {
     position: absolute;
     right: 30px;
-    top: 10px;
+    top: 35px;
 }
 
 #button-add-need {
@@ -881,22 +881,37 @@ ul.chart-div-legend {
 
 .current-goals {
     background-color: #f2f2f2;
-    padding: 0 30px 30px;
+    padding: 20px 30px;
     position: relative;
 }
 
-.current-goals .span4 > img:first-child {
-    height: 196px;
+.current-goals h3 {
+    margin-top: 0;
 }
 
-.current-goals .goals-list p {
+.current-goals form {
+    margin-bottom: 0;
+}
+.current-goals .span4 > img {
+    height: 196px;
+    width: 100%;
+}
+
+.current-goals > .row-fluid > .span4 > p {
     min-height: 60px;
 }
 
-.current-goals .text-center div:first-child {
+.current-goals .span4 .span4 div:first-child {
     font-size: 20px;
 }
 
+.current-goals .span4 .row-fluid {
+    margin-top: 15px;
+}
+
+.current-goals span.button-small {
+    padding: 5px 10px;
+}
 /* Goal =======================*/
 
 .goal-info {
