@@ -50,7 +50,7 @@
             <div class="span8 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                     {% if project.logo %}
-                        <img src="{{ project.logo.url }} " />
+                        <img src="{{ MEDIA_URL }}{{ project.logo }} " />
                     {% else %}
                         <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                     {% endif %}

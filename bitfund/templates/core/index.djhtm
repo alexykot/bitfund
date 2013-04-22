@@ -27,7 +27,8 @@
 
             $('#support-new-project').click(function(event){
                 event.preventDefault();
-                $('#id_title').val($('#appendedInputButton').val());
+                $('#create_project_form_container input[name=title]').val($('#appendedInputButton').val());
+                $('#create-project-popup input[name=title]').val($('#appendedInputButton').val());
                 $('#create_project_form_container').toggle(true);
             });
 

@@ -34,9 +34,6 @@
                 $("form#form-pledge").submit();
             });
 
-
-
-
         });
     </script>
 {% endblock pagescripts %}
