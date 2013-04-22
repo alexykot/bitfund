@@ -9,15 +9,12 @@ from django.contrib.auth.models import Group
 from django.template import RequestContext
 from django.core.validators import validate_email
 from django.core.mail import send_mail
-from django.template.loader import add_to_builtins
-
 
 from bitfund.core.decorators import ajax_required
 from bitfund.core.models import *
 from bitfund.core.forms import *
 from bitfund.project.forms import *
 from bitfund.core.settings_split.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE
-
 
 def index(request):
     template_data = {'request': request,
