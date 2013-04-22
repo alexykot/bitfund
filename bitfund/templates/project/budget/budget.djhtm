@@ -83,11 +83,9 @@
         <div class="span4 budget-column">
             <h5><b>Budget for</b>
                 <span class="month">
-                    <a href="#" class="arrow-left-white">&#9668<span class="arrow-left-black">&#9668</span>
-                    </a>
+{#                    <a href="#" class="arrow-left-white">&#9668<span class="arrow-left-black">&#9668</span></a>#}
                     {{ today|date:"F Y" }}
-                    <a href="#" class="arrow-right-white">&#9658<span class="arrow-right-black">&#9658</span>
-                    </a>
+{#                    <a href="#" class="arrow-right-white">&#9658<span class="arrow-right-black">&#9658</span></a>#}
                 </span>
             </h5>
             <div>

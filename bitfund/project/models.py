@@ -465,7 +465,7 @@ class ProjectGoal(models.Model):
         if self.text is None or self.text == '':
             is_valid = False
 
-        if not self.amount < 0 :
+        if not self.amount > 0 :
             is_valid = False
 
         if self.image is None :
