@@ -183,9 +183,9 @@
                     </div>
                 {% endfor %}
             </div>
-            <h5 class="text-center">
-                I'm not ready to pledge to {{ project.title }} right now, but <button class="button gray grateful">I'm grateful!</button>
-            </h5>
+{#            <h5 class="text-center">#}
+{#                I'm not ready to pledge to {{ project.title }} right now, but <button class="button gray grateful">I'm grateful!</button>#}
+{#            </h5>#}
         </div>
     </div>
     <div class="maintain text-right">

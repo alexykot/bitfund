@@ -472,7 +472,8 @@ class ProjectGoal(models.Model):
             is_valid = False
 
         if ((self.youtube_video_id is None or self.youtube_video_id == '')
-            and (self.vimeo_video_id is None or self.vimeo_video_id == ''))  :
+            and (self.vimeo_video_id is None or self.vimeo_video_id == '')
+            and (self.image is None or self.image == '')) :
             is_valid = False
 
         if self.date_ending is None :

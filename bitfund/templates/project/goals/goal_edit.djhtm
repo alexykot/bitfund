@@ -57,7 +57,7 @@
                 </div>
                 <div class="span3 text-right">
                     <div class="project-meta">
-                        <a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">cancel</a>
+                        <a href="{% url bitfund.project.views.goal project_key=project.key goal_key=goal.key %}">quit edit mode</a>
                         <button type="submit" form="goal-{{ goal.id }}-edit" class="button button-small gray">save</button>
                         <form method="post" action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}">
                             {% csrf_token %}
@@ -188,7 +188,7 @@
                 </div>
                 <div class="text-right">
                     <div class="project-meta">
-                        <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">cancel</a>
+                        <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">quit edit mode</a>
                         <button type="submit" form="goal-{{ goal.id }}-edit" class="button button-small gray">save</button>
                         <button type="submit" class="button button-small orange">publish</button>
                     </div>

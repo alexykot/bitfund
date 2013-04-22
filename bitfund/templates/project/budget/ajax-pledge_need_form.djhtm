@@ -69,7 +69,7 @@
                     </div>
 
                     <div class="span6">
-                        <div id="w{{ need.id }}">
+                        <div id="need-options-button-sets-{{ need.id }}">
                             <ul class="amount-buttons" id="need-onetime-options-{{ need.id }}">
                                 <li>{{ site_currency_sign }}</li>
                                 <li><button data-amount="2">2</button></li>
