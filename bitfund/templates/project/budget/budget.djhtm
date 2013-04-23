@@ -344,7 +344,7 @@
 
         <div class="unpublished-goals">
             <a id="create-goal-link" href="{% url bitfund.project.views.goal_create project_key=project.key %}" class="add-goal">add goal</a>
-            <div id="create-goal-popup" style="display:none; border: 1px solid #577000;">
+            <div id="create-goal-popup" style=" border: 1px solid #577000;">
                 <form action="{% url bitfund.project.views.goal_create project_key=project.key %}" method="post">
                     {% csrf_token %}
                     {{ create_goal_form.title.errors }}
