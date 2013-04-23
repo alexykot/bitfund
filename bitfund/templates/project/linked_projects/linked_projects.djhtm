@@ -66,6 +66,7 @@
                 </div>
             {% else %}
                 <h5>No projects depend on <strong>{{ project.title }}</strong></h5>
+                <div></div>
             {% endif %}
             </div>
 

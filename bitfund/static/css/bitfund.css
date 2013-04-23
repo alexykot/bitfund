@@ -434,35 +434,24 @@ button.go {
 /* Dependent projects */
 
 .header {
-    display: table;
-    margin-bottom: 20px;
-    width: 100%;
+    margin: 0 25px 20px;
 }
 
-.header .row-fluid {
-    display: table-row;
+.header .row-fluid > div {
+    line-height: 58px;
 }
 
-.header .row-fluid > * {
-    display: table-cell;
-    float: none;
+.header button, .header span, .header a {
+    line-height: 20px;
 }
 
-.header .row-fluid > * {
+.project-attributes a {
     vertical-align: middle;
 }
 
-noindex:-o-prefocus, .project-attributes {
-    padding-left: 20px;
-}
-
-noindex:-o-prefocus, .project-meta {
-    padding-right: 20px;
-}
-
-.project-attributes a:first-child img {
+.project-attributes img {
     height: 58px;
-    margin: 0 10px;
+    margin-right: 10px;
     width: 58px;
 }
 
@@ -472,14 +461,6 @@ noindex:-o-prefocus, .project-meta {
 
 .project-attributes a:last-child, .project-attributes input {
     font-size: 30px;
-}
-
-.header > .row-fluid span, .header > .row-fluid a, .dependent-projects .header a {
-    vertical-align: middle;
-}
-
-.dependent-projects .project-attributes {
-    margin-left: 20px;
 }
 
 .depends-on > div, .depending-on > div, .budget-column > div, .goals-column > div {

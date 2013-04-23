@@ -49,9 +49,10 @@
                 {% endif %}
             {% endfor %}
         </ul>
-    </div>
+    
 {% else %}
     <h5>{{ project.title }} doesn't depend on any projects</h5>
+    
 {% endif %}
 
 {% if project_edit_access %}
@@ -83,7 +84,7 @@
         {% endif %} 
     {% endif %}
 {% endif %}
-
+</div>
 <script type="text/javascript">
     $(document).ready(function () {
         $('a.project-crud, a.project_link_bitfund, ul.actions a, div.dependency a').click(function(event){
