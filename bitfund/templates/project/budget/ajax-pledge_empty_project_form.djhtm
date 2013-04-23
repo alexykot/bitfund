@@ -90,7 +90,7 @@
                                    id="link-monthly-more">more</a></li>
                         </ul>
                     </div>
-                    <div class="span6" id="pledge-amount-field"><ul>
+                    <div class="span6 less-input" id="pledge-amount-field"><ul>
                         <li>{{ site_currency_sign }}</li>
                         <li>
                             {{ empty_project.pledge_form.pledge_amount.errors }}

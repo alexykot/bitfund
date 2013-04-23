@@ -78,7 +78,7 @@
                 </div>
                 <div class="span4 text-right">
                     <div class="project-meta">
-                        <a href="{% url bitfund.project.views.budget project_key=project.key %}">quit edit mode</a>
+                        <a href="{% url bitfund.project.views.budget project_key=project.key %}" class="margin-right">quit edit mode</a>
                         <button type="submit" value="Save" id="save-budget" class="button gray">Save</button>
                     </div>
                 </div>

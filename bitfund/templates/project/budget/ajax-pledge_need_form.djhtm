@@ -94,7 +94,7 @@
                                 id="link-need-more-{{ need.id }}">more</a></li>
                         </ul>
                     </div>
-                    <div class="span6" id="need-pledge-amount-field-{{ need.id }}" style="display: none;">
+                    <div class="span6 less-input" id="need-pledge-amount-field-{{ need.id }}" style="display: none;">
                         <ul>
                             <li>{{ site_currency_sign }}</li>
                             <li>

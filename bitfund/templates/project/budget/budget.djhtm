@@ -48,7 +48,7 @@
 <div class="project-goals">
     <div class="header">
         <div class="row-fluid">
-            <div class="span8 project-attributes">
+            <div class="span7 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                     {% if project.logo %}
                         <img src="{{ MEDIA_URL }}{{ project.logo }} " />
@@ -63,11 +63,11 @@
                         <span class="unpublished">unpublished</span>
                     {% endif %}
                 </div>
-            <div class="span2 text-right">
+            <div class="span3 text-right">
                 <div class="project-meta">
                 {% if project_edit_access %}
-                    <a href="/api/project/{{ project.key }}?format=json">api</a>
-                    <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}">edit</a>
+                    <a href="/api/project/{{ project.key }}?format=json" class="margin-right">api</a>
+                    <a href="{% url bitfund.project.views.budget_edit project_key=project.key %}" class="margin-right">edit</a>
                     <form method="post" action="{% url bitfund.project.views.project_toggle project_key=project.key %}">
                         {% csrf_token %}
                         <button type="submit" class="button button-small gray">
