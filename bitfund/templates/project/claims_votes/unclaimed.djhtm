@@ -165,9 +165,9 @@
                                         <ul class="amount-buttons" id="options-button-sets">
                                             <li>{{ site_currency_sign }}</li>
                                             <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-0.25"
-                                                        data-amount="0.25">0,25</button></li>
+                                                        data-amount="0.25">0.25</button></li>
                                             <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-0.5"
-                                                        data-amount="0.5">0,5</button></li>
+                                                        data-amount="0.5">0.5</button></li>
                                             <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-1"
                                                         data-amount="1">1</button></li>
                                             <li><button href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-2"

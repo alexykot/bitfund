@@ -1,4 +1,6 @@
 {% load widget_tweaks %}
+{% load bitfund_filters %}
+
 <form action="{% url bitfund.project.views.crud_pledge_need project_key=project.key need_id=need.id action='pledge' %}"
       id="form-pledge-need-{{ need.id }}" data-need_id="{{ need.id }}" method="post">
     {{ need.pledge_form.pledge_type }}
@@ -17,8 +19,8 @@
                         <div id="need-options-button-sets-{{ need.id }}">
                             <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
                                 <li>{{ site_currency_sign }}</li>
-                                <li><button data-amount="0.25">0,25</button></li>
-                                <li><button data-amount="0.5">0,5</button></li>
+                                <li><button data-amount="0.25">0.25</button></li>
+                                <li><button data-amount="0.5">0.5</button></li>
                                 <li><button data-amount="1">1</button></li>
                                 <li><button data-amount="2">2</button></li>
                                 <li><button data-amount="5">5</button></li>
@@ -211,15 +213,12 @@
 
 
     {% if request.is_ajax %}
-
         $('#need-total-donations-{{ need.id }}').text('{{ site_currency_sign }}{{ need.full_total|floatformat:2 }}');
         $('#budget-total-gained-percent').text('{{ budget.total_gained_percent|floatformat:0 }}%');
-        $('#budget-donations-total-sum').text('{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:2 }}');
-
+        $('#budget-donations-total-sum').html('{{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}<span style="font-size: 14px;">.{{ budget.donations_total_sum|fract2int}}</span>');
 
         $('#budget_chart_image').attr('src', $('#budget_chart_image').attr('src')+'?'+Math.random());
         $('#need-chart-img-{{ need.id }}').attr('src', $('#need-chart-img-{{ need.id }}').attr('src')+'?'+Math.random());
-
     {% endif %}
 
     });
