@@ -1,4 +1,5 @@
 {% extends "core/base.djhtm" %}
+{% load bitfund_filters %}
 
 {% block title %}{{ project.title }} (unclaimed)  - {% endblock title %}
 
@@ -111,7 +112,10 @@
                             </div>
                         </div>
                         <div class="span4 text-center">
-                            <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
+                            <div class="pledged" id="budget-donations-total-sum">
+                                {{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}<span style="font-size: 14px;">.{{ budget.donations_total_sum|fract2int}}</span>
+                            </div>
+
                             <div>pledged</div>
                         </div>
                         <div class="span3 offset1 text-center">
@@ -196,7 +200,7 @@
                                 </div>
                                 {% if pledge_subscription %}
                                     <div class="text-center">
-                                        <button class="button button-small gray" type="submit" value="withdraw pledge" id="button-drop-pledge">withdraw  pledge</button>
+                                        <button class="button button-small gray" type="submit" value="stop pledging" id="button-drop-pledge">stop pledging</button>
                                     </div>
                                 {% endif %}
                                 {% if not request.user.is_authenticated %}

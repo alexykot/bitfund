@@ -30,11 +30,11 @@
         <div class="header">
             <div class=" project-attributes">
                 <a class="project-logo" href="{% url bitfund.project.views.budget project_key=project.key %}">
-                    {% comment %} {% if logo %} 
-                        <img src="{{ logo.url }}" />
-                    {% elif project.logo %} {% endcomment %}
-                        <img src="{% comment %} {{ project.logo.url }} {% endcomment %} {{ STATIC_URL }}img/project_no_logo.png" />
-                    {% comment %} {% endif %} {% endcomment %}
+                    {% if project.logo %}
+                        <img src="{{ MEDIA_URL }}{{ project.logo }}" />
+                    {% else %}
+                        <img src="{{ STATIC_URL }}img/project_no_logo.png" />
+                    {% endif %}
                 </a>
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>

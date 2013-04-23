@@ -62,7 +62,7 @@
             {{ crud_linked_project_add_form.as_p }}
             <input type="submit" value="Submit"/>
         </form>
-        <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key %}" class=" pull-right project-crud">cancel</a>
+        <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key %}" class="pull-right project-crud">cancel</a>
     {% else %}
         <a href="{% url bitfund.project.views.crud_linked_project project_key=project.key action='add' %}"
            class="project-crud pull-right">add</a>
@@ -86,9 +86,10 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('a.project_crud, a.project_link_bitfund').click(function(event){
+        $('a.project-crud, a.project_link_bitfund, ul.actions a, div.dependency a').click(function(event){
             event.preventDefault();
             $('#i_depend_on_projects_list').load($(this).attr('href'));
+
         });
 
         $('#crud_linked_project_form').submit(function(event){

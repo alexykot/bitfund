@@ -1,5 +1,6 @@
 {% extends "core/base.djhtm" %}
 {% load widget_tweaks %}
+{% load bitfund_filters %}
 
 {% block title %}edit {{ project.title }} - {% endblock title %}
 
@@ -66,9 +67,6 @@
                             <img src="{{ STATIC_URL }}img/project_no_logo.png" height="58" width="58" id="project-logo" />
                         {% endif %}
                     </span>
-{#                    <div style="display: none">#}
-{#                        <input type="file" id="logo-file-upload-input" style="font-size: 30px;"/>#}
-{#                    </div>#}
                     <span>
                         {{ project_form.title|attr:"class:input-medium"|attr:"required"}}
                         {{ project_form.title.errors }}
@@ -109,7 +107,9 @@
                             <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" />
                         </div>
                         <div class="span4 text-center">
-                            <div class="pledged">{{ site_currency_sign }}{{ budget.donations_total_sum }}</div>
+                            <div class="pledged" id="budget-donations-total-sum">
+                                {{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}<span style="font-size: 14px;">.{{ budget.donations_total_sum|fract2int}}</span>
+                            </div>
                             <div>pledged</div>
                         </div>
                         <div class="span3 offset1 text-center">

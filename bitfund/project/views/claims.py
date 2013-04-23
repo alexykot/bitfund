@@ -61,7 +61,6 @@ def unclaimed(request, project_key):
 
             return redirect('bitfund.project.views.unclaimed', project_key=project.key)
         else :
-
             return render_to_response('project/claims_votes/unclaimed.djhtm', template_data, context_instance=RequestContext(request))
     else :
         template_data['pledge_form'] = PledgeNoBudgetProjectForm(initial={'pledge_type':DONATION_TYPES_CHOICES.monthly})
