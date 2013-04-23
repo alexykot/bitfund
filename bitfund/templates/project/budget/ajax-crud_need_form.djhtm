@@ -21,8 +21,9 @@
             <div class="span3">
                 <span>
                 {{ site_currency_sign }}
-                {{ need.crud_form.amount.errors }}
                 {{ need.crud_form.amount|attr:"class:input-small" }}
+                <p>{{ need.crud_form.amount.errors.as_text }}</p>
+                
                 </span>
             </div>
     </div>

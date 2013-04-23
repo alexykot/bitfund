@@ -101,13 +101,15 @@
                              id="budget_chart_image" />
                     </div>
                     <div class="span4 text-center">
-                        <div class="pledged" id="budget-donations-total-sum">
-                            {{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}<span style="font-size: 14px;">.{{ budget.donations_total_sum|fract2int}}</span>
+                        <div id="budget-donations-total-sum">
+                            <span class="pledged">
+                                {{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}.</span>
+                            {{ budget.donations_total_sum|fract2int}}
                         </div>
                         <div>pledged</div>
                     </div>
                     <div class="span3 offset1 text-center">
-                        <div class="backers">{{ budget.donations_total_pledgers }}</div>
+                        <div><span class="backers">{{ budget.donations_total_pledgers }}</span></div>
                         <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
                     </div>
                 </div>
@@ -343,13 +345,19 @@
         </div>
 
         <div class="unpublished-goals">
-            <a id="create-goal-link" href="{% url bitfund.project.views.goal_create project_key=project.key %}" class="add-goal">add goal</a>
+            <div class="add-goal create-goal-active dotted-border">
+                <a id="create-goal-link" href="{% url bitfund.project.views.goal_create project_key=project.key %}">add goal</a>
+            </div>
             <div id="create-goal-popup" style=" border: 1px solid #577000;">
                 <form action="{% url bitfund.project.views.goal_create project_key=project.key %}" method="post">
                     {% csrf_token %}
-                    {{ create_goal_form.title.errors }}
-                    {{ create_goal_form.title|attr:"required" }}
-                    <button type="submit">create goal</button>
+                    <div class="center">
+                        {{ create_goal_form.title.errors }}
+                        {{ create_goal_form.title|attr:"required" }}
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="button gray">create goal</button>
+                    </div>
                 </form>
             </div>
             <h3>Unpublished goals</h3>

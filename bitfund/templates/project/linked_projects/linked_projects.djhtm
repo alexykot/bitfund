@@ -43,7 +43,7 @@
         <div class="row-fluid">
             <div class="span6 depending-on">
             {% if projects_depending_on_me_count %}
-                <h5>Projects depending on <b>{{ project.title }}</b></h5>
+                <h5>Projects depending on <strong>{{ project.title }}</strong></h5>
                 <div>
                     <ul>
                         {% for project_depending_on_me in projects_depending_on_me %}
@@ -65,7 +65,7 @@
                     </ul>
                 </div>
             {% else %}
-                <h3>No projects depend on <b>{{ project.title }}</b></h3>
+                <h5>No projects depend on <strong>{{ project.title }}</strong></h5>
             {% endif %}
             </div>
 

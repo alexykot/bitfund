@@ -70,33 +70,32 @@
                        </ul>
                     </div>
 
-                    <div class="span6">
-                        <div id="need-options-button-sets-{{ need.id }}">
-                            <ul class="amount-buttons" id="need-onetime-options-{{ need.id }}">
-                                <li>{{ site_currency_sign }}</li>
-                                <li><button data-amount="2">2</button></li>
-                                <li><button data-amount="5">5</button></li>
-                                <li><button data-amount="10">10</button></li>
-                                <li><button data-amount="15">15</button></li>
-                                <li><button data-amount="25">25</button></li>
-                                <li class="dotted-border">
-                                    <a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
-                                    id="link-need-more-{{ need.id }}">more</a></li>
-                            </ul>
-                            <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
-                                <li>{{ site_currency_sign }}</li>
-                                <li><button data-amount="0.25">0,25</button></li>
-                                <li><button data-amount="0.5">0,5</button></li>
-                                <li><button data-amount="1">1</button></li>
-                                <li><button data-amount="2">2</button></li>
-                                <li><button data-amount="5">5</button></li>
-                                <li class="dotted-border">
-                                    <a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
-                                    id="link-need-more-{{ need.id }}">more</a></li>
-                            </ul>
-                        </div>
-                    
-                        <ul id="need-pledge-amount-field-{{ need.id }}" style="display: none;" class="less-input">
+                    <div class="span6" id="need-options-button-sets-{{ need.id }}">
+                        <ul class="amount-buttons" id="need-onetime-options-{{ need.id }}">
+                            <li>{{ site_currency_sign }}</li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
+                            <li><button data-amount="10">10</button></li>
+                            <li><button data-amount="15">15</button></li>
+                            <li><button data-amount="25">25</button></li>
+                            <li class="dotted-border">
+                                <a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
+                                id="link-need-more-{{ need.id }}">more</a></li>
+                        </ul>
+                        <ul class="amount-buttons" id="need-monthly-options-{{ need.id }}">
+                            <li>{{ site_currency_sign }}</li>
+                            <li><button data-amount="0.25">0,25</button></li>
+                            <li><button data-amount="0.5">0,5</button></li>
+                            <li><button data-amount="1">1</button></li>
+                            <li><button data-amount="2">2</button></li>
+                            <li><button data-amount="5">5</button></li>
+                            <li class="dotted-border">
+                                <a href="{% url bitfund.project.views.budget project_key=project.key %}#select-need-{{ need.id }}-monthly-more"
+                                id="link-need-more-{{ need.id }}">more</a></li>
+                        </ul>
+                    </div>
+                    <div class="span6" id="need-pledge-amount-field-{{ need.id }}" style="display: none;">
+                        <ul>
                             <li>{{ site_currency_sign }}</li>
                             <li>
                                 {{ need.pledge_form.pledge_amount.errors }}

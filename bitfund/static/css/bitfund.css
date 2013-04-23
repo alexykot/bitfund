@@ -283,7 +283,7 @@ button.go {
     margin-right: -87px;
 }
 
-.available-projects div.create-project-active, .profile-info ul.inline li.create-project-active {
+.available-projects div.create-project-active, .create-goal-active, .profile-info ul.inline li.create-project-active {
     background-color: #fff;
     border-left: 1px solid #577000;
     border-right: 1px solid #577000;
@@ -293,11 +293,11 @@ button.go {
     z-index: 100;
 }
 
-.available-projects .create-project {
+.available-projects .create-project, .add-goal {
     padding: 1px 4px 0;
 }
 
-#create-project-popup {
+#create-project-popup, #create-goal-popup {
     background-color: #fff;
     border: 1px solid #577000;
     padding: 15px;
@@ -751,6 +751,10 @@ ul.chart-div-legend {
     margin: 0 20px 15px 13px;
 }
 
+.edit-goal .span3 p {
+    margin-top: 5px;
+}
+
 .edit-goal > .row-fluid:first-of-type .span3 {
     height: 100px;
 }
@@ -870,8 +874,8 @@ ul.chart-div-legend {
 
 .add-goal {
     position: absolute;
-    right: 30px;
-    top: 35px;
+    right: 0;
+    top: 15px;
 }
 
 #button-add-need {
@@ -882,6 +886,18 @@ ul.chart-div-legend {
 .current-goals {
     background-color: #f2f2f2;
     padding: 20px 30px;
+    position: relative;
+}
+
+#create-goal-popup {
+    top: 36px;
+}
+
+#create-goal-popup button {
+    margin-top: 20px;
+}
+
+.current-goals > div {
     position: relative;
 }
 

@@ -61,9 +61,9 @@
                 <div class="row-fluid">
                     <div class="span4">
                         <ul>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-onetime"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-onetime"
                            id="onetime-switch" class="kf_need_onetime">onetime</a></li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly"
                            id="monthly-switch"  class="kf_need_monthly active">monthly</a></li>
                        </ul>
                     </div>
