@@ -25,19 +25,29 @@
                             get the money until somebody will register or claim it and get confirmed to be a rightful maintainer.</p>
                     </article>
                 </div>
+            </div>
+            <div class="row-fluid" >
                 <div class="span12">
                     <article>
                         <h2>If you're a developer:</h2>
-                        <p>You register or claim your project here. <br>
-                        You define the month-to-month budget for it, consisting of one to ten budget needs. <br>
-                        You integrate with our API, to show live funding updates and options within your software. <br>
+                        <p>You register or claim your project here.<br>
+                        You define the month-to-month budget for it, consisting of one to ten budget needs.<br>
+                        You integrate with our API, to show live funding updates and status within your software. <br>
                         Your users come and donate, you withdraw funds to <a href="{% url bitfund.pledger.views.attach_bank_account %}">bank account</a>.</p>
                         <p>You receive full value of donations transferred, BitFund doesn't take a share of your donation. All operations are completely free for you.</p>
                         <br>
                         <p>You also can add links to other projects and transfer part of your donations to them if you feel it's right.
                             You can even transfer share of your donations to <a href="{% url bitfund.project.views.budget project_key='bitfund' %}">BitFund</a> itself,
-                            but you're neither advised nor oblidged to do so, decision here is up to you, you're more than welcome in any case.</p>
-                        <p>You also can run a one-time funding campaigns in all-or-nothing style.</p>
+                            but you're neither oblidged nor advised to do so, decision here is up to you, you're more than welcome in any case.</p>
+                        <p>You also can run a one-time funding campaigns in all-or-nothing style, also for free.</p>
+                    </article>
+                </div>
+            </div>
+            <div class="row-fluid" >
+                <div class="span12">
+                    <article>
+                        <h2>BitFund.org is an open source project, released under GPLv3, sources and collaboration
+                            available through <a href="https://bitbucket.org/alexykot/bitfund">bitbucket.org</a>.</h2>
                     </article>
                 </div>
             </div>
