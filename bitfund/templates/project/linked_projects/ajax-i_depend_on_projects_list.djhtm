@@ -52,7 +52,7 @@
     
 {% else %}
     <h5>{{ project.title }} doesn't depend on any projects</h5>
-    
+    <div></div>
 {% endif %}
 
 {% if project_edit_access %}
@@ -78,7 +78,7 @@
         {% else %} 
             <div class="dependency text-center">
                 <h4>You're not dependent on BitFund.</h4>
-                <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='donate' %}" class="button gray">Yes, set dependency</a>
+                <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='donate' %}" class="button orange margin-right">Yes, set dependency</a>
                 <a href="{% url bitfund.project.views.crud_bitfund_link project_key=project.key action='refuse' %}" class="button gray">No, thanks</a>
             </div>
         {% endif %} 
