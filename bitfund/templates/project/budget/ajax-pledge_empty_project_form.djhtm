@@ -28,7 +28,7 @@
                             <li><button data-amount="1">1</button></li>
                             <li><button data-amount="2">2</button></li>
                             <li><button data-amount="5">5</button></li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
                                    id="link-monthly-more">more</a></li>
                         </ul>
                     </div>
@@ -38,7 +38,7 @@
                             {{ empty_project.pledge_form.pledge_amount.errors }}
                             {{ empty_project.pledge_form.pledge_amount|attr:"required" }}
                         </li>
-                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
+                        <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
                                id="link-less">less</a></li>
                     </ul></div>
                     <div class="span3">
@@ -86,7 +86,7 @@
                             <li><button data-amount="1">1</button></li>
                             <li><button data-amount="2">2</button></li>
                             <li><button data-amount="5">5</button></li>
-                            <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
+                            <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-more"
                                    id="link-monthly-more">more</a></li>
                         </ul>
                     </div>
@@ -96,7 +96,7 @@
                             {{ empty_project.pledge_form.pledge_amount.errors }}
                             {{ empty_project.pledge_form.pledge_amount|attr:"required" }}
                         </li>
-                        <li><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
+                        <li class="dotted-border"><a href="{% url bitfund.project.views.budget project_key=project.key %}#select-monthly-less"
                                id="link-less">less</a></li>
                     </ul></div>
                     <div class="span2">
