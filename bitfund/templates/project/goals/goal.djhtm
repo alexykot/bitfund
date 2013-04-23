@@ -97,7 +97,7 @@
             <div class="span2 text-right">
                 <div class="project-meta">
                 {% if project_edit_access and goal.is_editable %}
-                    <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}">edit goal</a>
+                    <a href="{% url bitfund.project.views.goal_edit project_key=project.key goal_key=goal.key %}" class="margin-right">edit goal</a>
                     <form method="post"
                           action="{% url bitfund.project.views.goal_toggle project_key=project.key goal_key=goal.key %}?next={{ request.get_full_path }}">
                         {% csrf_token %}

@@ -474,7 +474,7 @@ noindex:-o-prefocus, .project-meta {
     font-size: 30px;
 }
 
-.header > .row-fluid span, .header > .row-fluid a {
+.header > .row-fluid span, .header > .row-fluid a, .dependent-projects .header a {
     vertical-align: middle;
 }
 
