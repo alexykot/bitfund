@@ -135,7 +135,7 @@
                         <div class="span6">
                         {% if budget.redonations_total_sum %}
                             <div class="sum-from-projects">{{ site_currency_sign }}{{ budget.redonations_total_sum }} received from </div>
-                            <a href="#">{{ budget.depending_on_me_projects_count }} dependant project</a>
+                            <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">{{ budget.depending_on_me_projects_count }} dependant project</a>
                         {% endif %}
                         </div>
                     </div>
