@@ -1,3 +1,4 @@
+
 {% extends "core/base.djhtm" %}
 
 {% block title %}{{goal.title}} - {{ project.title }} - {% endblock title %}
@@ -91,7 +92,9 @@
             </div>
             <div class="span2">
                 {% if not goal.is_public %}
-                    <span class="unpublished">unpublished</span>
+                    <div>
+                        <span class="unpublished">unpublished</span>
+                    </div>
                 {% endif %}
             </div>
             <div class="span2 text-right">

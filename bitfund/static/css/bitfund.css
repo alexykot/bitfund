@@ -151,7 +151,11 @@ a.button:hover, a.button:active, a.button:visited {
     box-shadow:         0px 0px 8px rgba(240, 103, 5, 1);
 }
 
-.orange:active {
+a.orange:hover {
+    color: rgb(240, 103, 5);
+}
+
+.orange:active, a.orange:active {
     background-color: rgb(240, 103, 5);
     border: none;
     color: #fff;
@@ -434,35 +438,24 @@ button.go {
 /* Dependent projects */
 
 .header {
-    display: table;
-    margin-bottom: 20px;
-    width: 100%;
+    margin: 0 25px 20px;
 }
 
-.header .row-fluid {
-    display: table-row;
+.header .row-fluid > div {
+    line-height: 58px;
 }
 
-.header .row-fluid > * {
-    display: table-cell;
-    float: none;
+.header button, .header span, .header a {
+    line-height: 20px;
 }
 
-.header .row-fluid > * {
+.project-attributes a {
     vertical-align: middle;
 }
 
-noindex:-o-prefocus, .project-attributes {
-    padding-left: 20px;
-}
-
-noindex:-o-prefocus, .project-meta {
-    padding-right: 20px;
-}
-
-.project-attributes a:first-child img {
+.project-attributes img {
     height: 58px;
-    margin: 0 10px;
+    margin-right: 10px;
     width: 58px;
 }
 
@@ -474,12 +467,18 @@ noindex:-o-prefocus, .project-meta {
     font-size: 30px;
 }
 
-.header > .row-fluid span, .header > .row-fluid a, .dependent-projects .header a {
-    vertical-align: middle;
+.dependent-projects-info {
+    display: table;
+    min-height: 300px;
 }
 
-.dependent-projects .project-attributes {
-    margin-left: 20px;
+.dependent-projects-info > div {
+    display: table-row;
+}
+
+.depending-on, .depends-on {
+    display: table-cell;
+    width: 470px;
 }
 
 .depends-on > div, .depending-on > div, .budget-column > div, .goals-column > div {
@@ -499,11 +498,15 @@ noindex:-o-prefocus, .project-meta {
     padding-left: 30px;
 }
 
-.depends-on > h5, .depends-on > div, .goals-column > h5:first-child, .goals-column > div {
+.goals-column > h5:first-child, .goals-column > div {
     margin-left: -20px;
 }
 
-.depends-on > div, .goals-column > div:first-of-type {
+.depends-on > h5 {
+    margin-left: -1px;
+}
+
+.depends-on, .goals-column > div:first-of-type {
     border-left: 1px solid #ccc;
 }
 
@@ -515,7 +518,7 @@ noindex:-o-prefocus, .project-meta {
     border-bottom: 1px solid #ccc;
 }
 
-.project , .goal {
+.project, .goal {
     margin: 0 20px 15px;
 }
 
@@ -557,12 +560,7 @@ noindex:-o-prefocus, .project-meta {
 }
 
 .dependency {
-    margin: 50px 0 200px;
-}
-
-.dependency .button {
-    color: rgb(240, 103, 5);
-    margin-right: 10px;
+    margin: 50px 0;
 }
 
 /* Budget 3 =====================*/
