@@ -37,6 +37,7 @@
             $('#create-goal-link').click(function(event){
                 event.preventDefault();
                 $('#create-goal-popup').toggle();
+                $('#create-goal-link-container').toggleClass('create-goal-active');
             });
         });
 
@@ -341,10 +342,10 @@
         </div>
 
         <div class="unpublished-goals">
-            <div class="add-goal create-goal-active dotted-border">
+            <div class="add-goal dotted-border" id="create-goal-link-container">
                 <a id="create-goal-link" href="{% url bitfund.project.views.goal_create project_key=project.key %}">add goal</a>
             </div>
-            <div id="create-goal-popup" style=" border: 1px solid #577000;">
+            <div id="create-goal-popup" style=" border: 1px solid #577000;display: none;">
                 <form action="{% url bitfund.project.views.goal_create project_key=project.key %}" method="post">
                     {% csrf_token %}
                     <div class="center">

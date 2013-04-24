@@ -53,6 +53,8 @@ $(document).ready(function(){
                     <h1>BitFund</h1>
                     <p>This is a public alpha version of the crowdfunding service for open projects.</p>
                     <p><a href="{% url bitfund.core.views.index %}?{{ SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE }}">step inside</a></p>
+                    <br><br>
+                    <p>All intended things are working (at least should work). Payments are in test mode and no real money will be transferred.</p>
                 </div>
             </div>
         </div>

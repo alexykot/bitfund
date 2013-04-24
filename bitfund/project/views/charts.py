@@ -145,8 +145,12 @@ def chart_image_goal(request, project_key, goal_key, chart_size):
     chart_relpathname = _get_chart_relative_filename(project_key, chart_size, goal_id=goal.id)
     chart_abspathname = MEDIA_ROOT+chart_relpathname
 
-    pledges_degrees = min(TOTAL_DEGREES, round(TOTAL_DEGREES * ((goal.getTotalPledges()) / goal.amount)))
-    other_sources_degrees = min((TOTAL_DEGREES-pledges_degrees), round(TOTAL_DEGREES * ((goal.getTotalOtherSources()) / goal.amount)))
+    if goal.amount > 0:
+        pledges_degrees = min(TOTAL_DEGREES, round(TOTAL_DEGREES * ((goal.getTotalPledges()) / goal.amount)))
+        other_sources_degrees = min((TOTAL_DEGREES-pledges_degrees), round(TOTAL_DEGREES * ((goal.getTotalOtherSources()) / goal.amount)))
+    else:
+        pledges_degrees = 0
+        other_sources_degrees = 0
 
     if pledges_degrees == 0 and other_sources_degrees == 0 :
         pledges_degrees = MINIMAL_DEFAULT_PLEDGES_DEGREES
