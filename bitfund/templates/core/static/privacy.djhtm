@@ -9,6 +9,10 @@
         <section>
             <h1 class="text-center">Privacy</h1>
         </section>
+        <div class="row-fluid">
+            <p>This page is empty now. I'll add all needed info here before the launch.</p>
+            <p><a href="{% url bitfund.core.views.about %}">About</a> is the only completed one among these static pages.</p>
+        </div>
      </div>
 
 {% endblock %}

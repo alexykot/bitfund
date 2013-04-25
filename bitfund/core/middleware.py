@@ -19,22 +19,10 @@ class HiddenEntranceMiddleware(object):
             return None
         elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.GET:
             request.session[SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE] = True
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(request.path)
         elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.session:
             return None
         else : 
-            return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
-
-class HiddenEntranceMiddleware(object):
-    def process_request(self, request):
-        if request.path == PROTOTYPE_LANDING_PAGE_URL:
-            return None
-        elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.GET:
-            request.session[SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE] = True
-            return HttpResponseRedirect('/')
-        elif SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE in request.session:
-            return None
-        else :
             return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
 
 class UserProjectsCountMiddleware(object):

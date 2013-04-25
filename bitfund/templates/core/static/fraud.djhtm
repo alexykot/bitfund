@@ -8,6 +8,10 @@
         {% include "core/static/subheader-static_pages.djhtm" %}
         <section>
             <h1 class="text-center">Fraud</h1>
+            <div class="row-fluid">
+                <p>This page is empty now. I'll add all needed info here before the launch.</p>
+                <p><a href="{% url bitfund.core.views.about %}">About</a> is the only completed one among these static pages.</p>
+            </div>
         </section>
      </div>
 
