@@ -52,7 +52,7 @@ $(document).ready(function(){
                     <br>
                     <p style="font-size: 30px;"><a href="{% url bitfund.core.views.index %}?{{ SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE }}">step inside</a></p>
                     <br><br>
-                    <p>All things you will see are expected to work expect payments. Payments are in test mode, so it will act as expected, <br> but no real money will be transferred.</p>
+                    <p>All things you will see are expected to work except payments. Payments are in test mode, so it will act as if would be live, <br> but no real money will be transferred.</p>
                 </div>
             </div>
         </div>
