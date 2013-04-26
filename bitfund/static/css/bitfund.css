@@ -10,6 +10,7 @@ body {
     background: url("../img/kf_background.png") repeat-x;
     background-color: #fff;
     position: relative;
+    font-family: 'Open Sans', sans-serif;
 }
 
 html, body {
@@ -642,7 +643,7 @@ button.go {
 
 .arrow-left-black, .arrow-right-black {
     color: #3d3d3d;
-    font-family: arial;
+    /*font-family: 'Open Sans', sans-serif;*/
     font-size: 14px;
     left: 1px;
     line-height: 16px;
@@ -652,8 +653,8 @@ button.go {
 
 a.arrow-left-white, a.arrow-right-white {
     color: #fff;
-    font-family: arial;
-   line-height: 16px;
+    /*font-family: 'Open Sans', sans-serif;*/
+    line-height: 16px;
     font-size: 16px;
     position: relative;
 }

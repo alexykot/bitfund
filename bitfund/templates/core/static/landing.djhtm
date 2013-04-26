@@ -15,14 +15,11 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap.min.css"/>
 <!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap/bootstrap-responsive.min.css"/>-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic&subset=latin,cyrillic-ext' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bitfund.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/prototype-landing-page.css"/>
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png"/>
-
-
-
 
 <script type="text/javascript">
 $(document).ready(function(){
@@ -52,9 +49,10 @@ $(document).ready(function(){
                 <div class="text-center">
                     <h1>BitFund</h1>
                     <p>This is a public alpha version of the crowdfunding service for open projects.</p>
-                    <p><a href="{% url bitfund.core.views.index %}?{{ SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE }}">step inside</a></p>
+                    <br>
+                    <p style="font-size: 30px;"><a href="{% url bitfund.core.views.index %}?{{ SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE }}">step inside</a></p>
                     <br><br>
-                    <p>All intended things are working (at least should work). Payments are in test mode and no real money will be transferred.</p>
+                    <p>All things you will see are expected to work expect payments. Payments are in test mode, so it will act as expected, <br> but no real money will be transferred.</p>
                 </div>
             </div>
         </div>
