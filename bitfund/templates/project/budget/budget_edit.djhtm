@@ -104,7 +104,7 @@
                             {% else %}
                                 <span class="text-center">{{ budget.total_gained_percent }}%</span>
                             {% endif %}
-                            <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}" class="chart-div-large" />
+                            <img src="{% url bitfund.project.views.chart_image_project project_key=project.key %}?size=medium" class="chart-div-large" />
                         </div>
                         <div class="span4 text-center">
                             <div class="pledged" id="budget-donations-total-sum">

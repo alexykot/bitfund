@@ -189,8 +189,8 @@ class DonationSubscription(models.Model):
 
 
 class DonationSubscriptionNeeds(models.Model):
-    donation_subscription = models.ForeignKey(DonationSubscription)
-    need = models.ForeignKey(ProjectNeed)
+    donation_subscription = models.ForeignKey(DonationSubscription, on_delete=models.CASCADE)
+    need = models.ForeignKey(ProjectNeed, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
 #donation history, storing all past donation transactions, for both onetime and monthly donations

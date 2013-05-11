@@ -70,8 +70,12 @@
                 <br />
                 Information you will provide here will be public.
                 </h4>
+                    {% if project_pledged %}
+                        <p>Earlier you've selected to pledge this project. Your pledge subscription will be cancelled if you'll submit this claim.</p>
+                        <br />
+                    {% endif %}
                     <div class="control-group">
-                        <label class="control-label">You role</label>
+                        <label class="control-label">Your role</label>
                         <div class="controls">
                             {{ claim_form.maintainer_role }}
                         </div>
@@ -105,7 +109,9 @@
                     this is because
                         <a href="" id="maintainer-reason-link">community decided so</a>.
                     <br> 
-                    His right to maintain is <span><a href="#">unverified</a></span>
+                    His right to maintain is
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
                         <span>&nbsp;&nbsp;&nbsp;&nbsp;
                             <a href="">vote to support</a></span>
                         <span>&nbsp;&nbsp;&nbsp;&nbsp;

@@ -7,13 +7,9 @@ from django.utils.datetime_safe import datetime
 from django.contrib.auth.decorators import login_required
 
 from bitfund.core.settings_split.project import (SITE_CURRENCY_SIGN,
-                                           RGBCOLOR_DONUT_CHART_BACKGROUND,
-                                           RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
-                                           RGBCOLOR_DONUT_CHART_PLEDGES,
-                                           RGBCOLOR_DONUT_CHART_REDONATIONS,
-                                           BITFUND_OWN_PROJECT_ID,
-                                           SESSION_PARAM_RETURN_TO_PROJECT,
-                                           )
+                                               BITFUND_OWN_PROJECT_ID,
+                                               SESSION_PARAM_RETURN_TO_PROJECT,
+                                                   )
 from bitfund.core.decorators import ajax_required
 from bitfund.project.models import *
 from bitfund.project.lists import DONATION_TYPES_CHOICES
@@ -31,10 +27,6 @@ def budget_edit(request, project_key):
                      'request': request,
                      'today': datetime.utcnow().replace(tzinfo=utc).today(),
                      'site_currency_sign': SITE_CURRENCY_SIGN,
-                     'chartPledgesColor': RGBCOLOR_DONUT_CHART_PLEDGES,
-                     'chartRedonationsColor': RGBCOLOR_DONUT_CHART_REDONATIONS,
-                     'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
-                     'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
                      }
 
     #BUDGET, pledges, redonations, other sources, donut charts radiants

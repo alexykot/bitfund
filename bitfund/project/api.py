@@ -16,6 +16,7 @@ from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
 from tastypie.bundle import Bundle
 
 from bitfund.core.settings_split.project import TIME_TO_SHOW_HOURS, API_USER_TOKEN_PARAM_NAME, API_TARGET_MONTH_PARAM_NAME, SITE_CURRENCY_CODE, SITE_CURRENCY_SIGN
+from bitfund.core.settings_split.server import MEDIA_URL
 from bitfund.project.models import *
 from bitfund.pledger.models import *
 
@@ -100,8 +101,10 @@ class ProjectResource(ModelResource):
         project_budget['budget_monthly']['currency']            = SITE_CURRENCY_CODE
         project_budget['budget_monthly']['formatted']           = SITE_CURRENCY_SIGN+filters.floatformat(project_budget_total, 2)
         project_budget['budget_monthly']['chart_image_URL']     = ('http://'+request.META['HTTP_HOST']
-                                                                   +reverse('bitfund.project.views.chart_image_project',
-                                                                            kwargs={'project_key':project.key, 'chart_size':'medium'}))
+                                                                    + reverse('bitfund.project.views.chart_image_project',
+                                                                            kwargs={'project_key':project.key,})
+                                                                    + '?size=85&pledges_rgb=586F05&redonations_rgb=8DB308&other_sources_rgb=EFBC09&background_rgb=EDEBEA'
+                                                                    )
         
         
         project_budget['end_utctimestamp']        = time.mktime(datetime(target_month.year, target_month.month+1, 1, tzinfo=target_month.tzinfo).utctimetuple())-1 #-1 because it's the last second of previous month, not first second of the next one
@@ -223,6 +226,7 @@ class ProjectResource(ModelResource):
         bundle.data['project_goals'] = project_goals
         bundle.data['project_user_data'] = project_user_data
         bundle.data['project_dependencies'] = project_dependencies
+        bundle.data['logo'] = 'http://' + request.META['HTTP_HOST'] + MEDIA_URL + bundle.data['logo']
 
         return bundle
     
@@ -290,9 +294,11 @@ class ProjectNeedResource(ModelResource):
         need_budget_monthly['amount'] = need.amount
         need_budget_monthly['currency'] = SITE_CURRENCY_CODE
         need_budget_monthly['formatted'] = SITE_CURRENCY_SIGN + filters.floatformat(need.amount, 2)
-        need_budget_monthly['chart_image_URL'] = ('http://' + request.META['HTTP_HOST'] +
-                                                  reverse('bitfund.project.views.chart_image_need',
-                                                          kwargs={'project_key': need.project.key, 'need_key': need.key, }))
+        need_budget_monthly['chart_image_URL'] = ('http://' + request.META['HTTP_HOST']
+                                                  + reverse('bitfund.project.views.chart_image_need',
+                                                          kwargs={'project_key': need.project.key, 'need_key': need.key, })
+                                                  + '?size=85&pledges_rgb=586F05&redonations_rgb=8DB308&other_sources_rgb=EFBC09&background_rgb=EDEBEA'
+                                                )
 
         need_pledges_sum = need.getPledgesMonthlyTotal(target_month)
         need_pledges = {}
@@ -412,8 +418,12 @@ class ProjectGoalResource(ModelResource):
         goal_budget_total['amount'] = goal.amount
         goal_budget_total['currency'] = SITE_CURRENCY_CODE
         goal_budget_total['formatted'] = SITE_CURRENCY_SIGN + filters.floatformat(goal.amount, 2)
-        goal_budget_total['chart_image_URL'] = 'http://' + request.META['HTTP_HOST'] + reverse(
-            'bitfund.project.views.chart_image_goal', kwargs={'project_key': goal.project.key, 'goal_key': goal.key, })
+        goal_budget_total['chart_image_URL'] = ('http://' + request.META['HTTP_HOST']
+                                                + reverse('bitfund.project.views.chart_image_goal',
+                                                         kwargs={'project_key': goal.project.key, 'goal_key': goal.key, })
+                                                + '?size=85&pledges_rgb=586F05&redonations_rgb=8DB308&other_sources_rgb=EFBC09&background_rgb=EDEBEA'
+                                                )
+
 
         goal_pledges_sum = goal.getTotalPledges()
         goal_pledges = {}

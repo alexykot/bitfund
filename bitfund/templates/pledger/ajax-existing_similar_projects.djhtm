@@ -22,7 +22,7 @@
                             {% else %}
                                 <span class="text-center">{{ project.total_budget_fulfillment_percent|floatformat:0 }}%</span>
                             {% endif %}
-                            <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='small'%}" id="budget_chart_image" />
+                            <img src="{% url bitfund.project.views.chart_image_project project_key=project.key %}?size=small" id="budget_chart_image" />
                         </span>
                     </td>
                 </tr>

@@ -98,7 +98,7 @@
                         {% else %}
                             <span class="text-center" id="budget-total-gained-percent">{{ budget.total_gained_percent }}%</span>
                         {% endif %}
-                        <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}"
+                        <img src="{% url bitfund.project.views.chart_image_project project_key=project.key %}?size=medium"
                              id="budget_chart_image" />
                     </div>
                     <div class="span4 text-center">
@@ -171,7 +171,7 @@
                                     of {{ site_currency_sign }}{{ need.amount|floatformat:2  }}</span>
                                     <span class="chart-div-medium">
                                         <span class="text-center">{{ need.pledged_percent|floatformat:0  }}%</span>
-                                        <img src="{% url bitfund.project.views.chart_image_need project_key=project.key need_id=need.id chart_size='small'%}" id="need-chart-img-{{ need.id }}" />
+                                        <img src="{% url bitfund.project.views.chart_image_need project_key=project.key need_id=need.id %}?size=small" id="need-chart-img-{{ need.id }}" />
                                     </span>
                                 </div>
                             </div>
@@ -208,16 +208,20 @@
             {% if project_edit_access %}
                 your right to maintain is
                 {% if project.is_maintainer_confirmed %}
-                    <span><a href="#">verified</a></span>
+                    <span class="dotted-border question"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
                 {% else %}
-                    <span><a href="#">unverified</a></span>
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
                 {% endif %}
             {% elif maintainer_vote %}
                 his right to maintain is
                 {% if project.is_maintainer_confirmed %}
-                    <span><a href="#">verified</a></span>
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
                 {% else %}
-                    <span><a href="#">unverified</a></span>
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
                 {% endif %}
                 &nbsp;&nbsp;&nbsp;&nbsp;you have
                 {% if maintainer_vote.vote %}
@@ -235,10 +239,14 @@
                 {% endif %}
             {% elif request.user.is_authenticated %}
                 {% if project.is_maintainer_confirmed %}
-                    his right to maintain is <span><a href="#">verified</a></span>
+                    his right to maintain is
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">vote to dethrone</a>
                 {% else %}
-                    his right to maintain is <span><a href="#">unverified</a></span>
+                    his right to maintain is
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     <span><a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='support' %}">
                         vote to support</a></span>
@@ -247,10 +255,14 @@
                 {% endif %}
             {% else %}
                 {% if project.is_maintainer_confirmed %}
-                    his right to maintain is <span><a href="#">verified</a></span>
+                    his right to maintain is
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;{% include "core/login/login-with-links.djhtm" %} to vote against him
                 {% else %}
-                    his right to maintain is <span><a href="#">unverified</a></span>
+                    his right to maintain is
+                    <span class="dotted-border"
+                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     {% include "core/login/login-with-links.djhtm" %} to vote for or against him
                 {% endif %}
@@ -292,7 +304,7 @@
                             <div class="span4">
                                 <div class="chart-div-small">
                                     <span class="text-center">{{ goal.total_percent }}%</span>
-                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='small'%}" />
+                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key %}?size=small&background_rgb=FFFFFF" />
                                     
                                 </div>
                             </div>
@@ -378,7 +390,7 @@
                                 {% else %}
                                     <span class="text-center">{{ goal.total_percent }}%</span>
                                 {% endif %}
-                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='small'%}" />
+                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key %}?size=small&background_rgb=FFFFFF" />
                                 </div>
                             </div>
                             <div class="span4 text-center">
@@ -446,7 +458,7 @@
                                         {% else %}
                                             <span class="text-center">{{ goal.total_percent }}%</span>
                                         {% endif %}
-                                        <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='small'%}" />
+                                        <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key %}?size=small&background_rgb=FFFFFF" />
                                     </div>
                                 </div>
                                 <div class="span4 text-center">

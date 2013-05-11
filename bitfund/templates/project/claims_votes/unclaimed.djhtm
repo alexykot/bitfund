@@ -108,7 +108,7 @@
                         <div class="span4">
                             <div class="chart-div-large">
                                 <span class="text-center">&infin;</span>
-                                <img src="{% url bitfund.project.views.chart_image_project project_key=project.key chart_size='medium'%}"/>
+                                <img src="{% url bitfund.project.views.chart_image_project project_key=project.key %}?size=medium"/>
                             </div>
                         </div>
                         <div class="span4 text-center">

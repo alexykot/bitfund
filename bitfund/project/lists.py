@@ -7,7 +7,8 @@ DONATION_TYPES_CHOICES = Choices(
 
 PROJECT_STATUS_CHOICES = Choices('unclaimed', 'active', 'inactive', 'archived')
 
-PROJECT_CHART_SIZES = Choices('small', 'medium', 'large')
+#CHART_IMAGE_TYPES = ('png','gif','jpg')
+
 
 PROJECT_USER_STATUS_CHOICES = Choices(
     ('sole_developer', u'sole developer'),

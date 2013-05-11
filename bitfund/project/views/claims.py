@@ -3,12 +3,8 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.utils.timezone import now
 
-from bitfund.core.settings_split.project import (SITE_CURRENCY_SIGN,
-                                           RGBCOLOR_DONUT_CHART_BACKGROUND,
-                                           RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
-                                           RGBCOLOR_DONUT_CHART_PLEDGES,
-                                           RGBCOLOR_DONUT_CHART_REDONATIONS,
-                                           )
+from bitfund.core.settings_split.project import SITE_CURRENCY_SIGN
+
 from bitfund.pledger.models import DonationSubscription
 from bitfund.project.decorators import disallow_not_public_unless_maintainer, redirect_active, user_is_not_project_maintainer, user_not_voted_maintainer_yet, user_not_reported_project_yet
 from bitfund.project.forms import PledgeNoBudgetProjectForm, VoteMaintainerForm, ClaimProjectForm
@@ -24,10 +20,6 @@ def unclaimed(request, project_key):
                      'request': request,
                      'today': now().today(),
                      'site_currency_sign': SITE_CURRENCY_SIGN,
-                     'chartPledgesColor': RGBCOLOR_DONUT_CHART_PLEDGES,
-                     'chartRedonationsColor': RGBCOLOR_DONUT_CHART_REDONATIONS,
-                     'chartOtherColor': RGBCOLOR_DONUT_CHART_OTHER_SOURCES,
-                     'chartBackgroundColor': RGBCOLOR_DONUT_CHART_BACKGROUND,
                      }
 
     #BUDGET, pledges, redonations, other sources, donut charts radiants
@@ -84,6 +76,11 @@ def claim(request, project_key):
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      }
 
+    project_pledges_count = DonationSubscription.objects.filter(project_id=project.id).filter(user_id=request.user.id).count()
+    template_data['project_pledged'] = False
+    if project_pledges_count > 0:
+        template_data['project_pledged'] = True
+
     if request.method == 'POST' :
         template_data['claim_form'] = ClaimProjectForm(data=request.POST, initial={'maintainer_username':request.user.username})
         if template_data['claim_form'].is_valid() :
@@ -94,6 +91,8 @@ def claim(request, project_key):
             project.status = PROJECT_STATUS_CHOICES.active
             project.is_maintainer_confirmed = False
             project.save()
+
+            DonationSubscription.objects.filter(project_id=project.id).filter(user_id=request.user.id).delete()
 
             return redirect('bitfund.project.views.budget', project_key=project.key)
         else :

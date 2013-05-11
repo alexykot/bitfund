@@ -82,7 +82,7 @@
                             {% else %}
                                 <span class="text-center">&infin;</span>
                             {% endif %}
-                            <img src="{% url bitfund.project.views.chart_image_project project_key=current_project.key chart_size='medium' %}" />
+                            <img src="{% url bitfund.project.views.chart_image_project project_key=current_project.key %}?size=medium" />
                         </div>
                         <div class="span6">
                             <p><strong>{{ site_currency_sign }}{{ current_project.monthly_budget|floatformat:2 }}</strong> / month<br>in {{ current_project.active_needs_count }} active need{{ current_project.active_needs_count|pluralize }}</p>
@@ -99,7 +99,7 @@
                                     {% else %}
                                         <span class="text-center">&infin;</span>
                                     {% endif %}
-                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=current_project.key goal_key=goal.key chart_size='medium' %}" />
+                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=current_project.key goal_key=goal.key %}?size=medium" />
                                 </div>
                                 <div class="span6">
                                     <p><a href="{% url bitfund.project.views.goal project_key=current_project.key goal_key=goal.key %}">{{ goal.title }}</a></p>

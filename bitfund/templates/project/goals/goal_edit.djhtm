@@ -158,7 +158,7 @@
                                     {% else %}
                                         <span class="text-center">{{goal.total_percent}}%</span>
                                     {% endif %}
-                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key chart_size='medium' %}" id="goal-chart"/>
+                                    <img src="{% url bitfund.project.views.chart_image_goal project_key=project.key goal_key=goal.key %}?size=medium" id="goal-chart"/>
                                 </div>
                                 <ul class="chart-div-legend">
                                     <li><span class="green-marker"></span>Backers support</li>

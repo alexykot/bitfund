@@ -1,10 +1,11 @@
 import os
+import re
 import math
 
 from django.db.models import Sum
 from django.utils.timezone import utc, now
 
-from bitfund.core.settings_split.project import CHART_IMAGE_TYPE, PROJECTS_MEDIA_DIR
+from bitfund.core.settings_split.project import CHART_IMAGE_TYPE, PROJECTS_MEDIA_DIR, CHART_PLEDGES_RGB, CHART_PLEDGES_ALPHA, CHART_PLEDGES_STYLE, CHART_REDONATIONS_RGB, CHART_OTHER_SOURCES_RGB, CHART_BACKGROUND_RGB
 from bitfund.core.settings_split.server import MEDIA_ROOT
 from bitfund.project.forms import PledgeProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
@@ -278,5 +279,88 @@ def _get_logo_relative_filename(project_key, logo_filename) :
     return relfilepath
 
 
+# gets request and returns a tuple of ('int chart_size in px',
+#                                       'pledges_color in cairo rgbas',
+#                                       'redonations_color in cairo rgbas',
+#                                       'other_sources_color in cairo rgbas',
+#                                       'background_color in cairo rgbas'
+#                                         )
+def _parse_request_chart_params(request):
+    if 'size' in request.GET:
+        if request.GET['size'] == 'large' or request.GET['size'] == 'medium' or request.GET['size'] == 'small':
+            chart_size = str(request.GET['size'])
+        elif is_number(request.GET['size']):
+            chart_size = str(int(request.GET['size']))
+        else:
+            chart_size = 'default'
+    else:
+        chart_size = 'default'
 
 
+    if 'pledges_rgb' in request.GET and re.search('^[a-fA-F0-9]{6}$', request.GET['pledges_rgb']):
+        pledges_rgb = str(request.GET['pledges_rgb'])
+    else:
+        pledges_rgb = CHART_PLEDGES_RGB
+    pledges_rgb = hex_to_rgb(pledges_rgb)
+    pledges_rgbas = (round(pledges_rgb[0] / 255.0, 3),
+                     round(pledges_rgb[1] / 255.0, 3),
+                     round(pledges_rgb[2] / 255.0, 3),
+                     CHART_PLEDGES_ALPHA,
+                     CHART_PLEDGES_STYLE)
+
+    if 'redonations_rgb' in request.GET and re.search('^[a-fA-F0-9]{6}$', request.GET['redonations_rgb']):
+        redonations_rgb = str(request.GET['redonations_rgb'])
+    else:
+        redonations_rgb = CHART_REDONATIONS_RGB
+    redonations_rgb = hex_to_rgb(redonations_rgb)
+    redonations_rgbas = (round(redonations_rgb[0] / 255.0, 3),
+                         round(redonations_rgb[1] / 255.0, 3),
+                         round(redonations_rgb[2] / 255.0, 3),
+                         CHART_PLEDGES_ALPHA,
+                         CHART_PLEDGES_STYLE)
+
+    if 'other_sources_rgb' in request.GET and re.search('^[a-fA-F0-9]{6}$', request.GET['other_sources_rgb']):
+        other_sources_rgb = str(request.GET['other_sources_rgb'])
+    else:
+        other_sources_rgb = CHART_OTHER_SOURCES_RGB
+    other_sources_rgb = hex_to_rgb(other_sources_rgb)
+    other_sources_rgbas = (round(other_sources_rgb[0] / 255.0, 3),
+                           round(other_sources_rgb[1] / 255.0, 3),
+                           round(other_sources_rgb[2] / 255.0, 3),
+                           CHART_PLEDGES_ALPHA,
+                           CHART_PLEDGES_STYLE)
+
+    if 'background_rgb' in request.GET and re.search('^[a-fA-F0-9]{6}$', request.GET['background_rgb']):
+        background_rgb = str(request.GET['background_rgb'])
+    else:
+        background_rgb = CHART_BACKGROUND_RGB
+    background_rgb = hex_to_rgb(background_rgb)
+    background_rgbas = (round(background_rgb[0] / 255.0, 3),
+                        round(background_rgb[1] / 255.0, 3),
+                        round(background_rgb[2] / 255.0, 3),
+                        CHART_PLEDGES_ALPHA,
+                        CHART_PLEDGES_STYLE)
+
+
+    return chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas
+
+#converts CSS RGB hex string '#FFFFFF' into a tuple (255,255,255). leading # is optional
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i+lv/3], 16) for i in range(0, lv, lv/3))
+
+#converts tuple of (255,255,255) into CSS RGB string '#FFFFFF' with leading #
+def rgb_to_hex(rgb):
+    r = rgb[0]
+    g = rgb[1]
+    b = rgb[2]
+    return '#%02X%02X%02X' % (r,g,b)
+
+#tests if the value is a parsable number
+def is_number(val):
+    try:
+        float(val)
+        return True
+    except ValueError:
+        return False

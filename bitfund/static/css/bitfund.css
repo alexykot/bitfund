@@ -182,7 +182,7 @@ a.orange:hover {
 }
 
 .logo img {
-    vertical-align: top;
+    vertical-align: inherit;
 /*    background: url("../img/logo.png") no-repeat;*/
 }
 
@@ -806,6 +806,10 @@ ul.chart-div-legend {
 
 .need-pledge-controls .text-center {
     margin-bottom: 10px;
+}
+
+.question{
+    cursor: help;
 }
 
 .dotted-border a:visited, .support-form h4 a:visited {

@@ -55,47 +55,24 @@ getcontext().prec = CALCULATIONS_PRECISION
 
 
 #donut charts images
-CHART_RADIUS_LIST = (6, 6, 4, 2)
-CHART_IMAGE_TYPE = 'png' #gif, png, jpg
+CHART_RADIUS_LIST = (6, 6, 4, 2) #relative sizes
+CHART_IMAGE_TYPE = 'png' #only png supported at the moment
+CHART_INNER_RADIUS = 1.6 #units unknown, meaning uncertain, it just works
 
-CHART_PARAMS = {'project': {'large': {'w': 85, #px
-                                      'h': 85, #px
-                                      'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                        },
-                            'medium': {'w': 85, #px
-                                       'h': 85, #px
-                                       'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                        },
-                            'small': {'w': 53, #px
-                                      'h': 53, #px
-                                      'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                        },
+CHART_PARAMS = {'project': {'default': {'w': 85, 'h': 85,},
+                            'large': {'w': 85, 'h': 85,},
+                            'medium': {'w': 85, 'h': 85,},
+                            'small': {'w': 53, 'h': 53,},
                             },
-                'need': {'large': {'w': 85, #px
-                                   'h': 85, #px
-                                   'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                    },
-                         'medium': {'w': 85, #px
-                                    'h': 85, #px
-                                    'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                    },
-                         'small': {'w': 85, #px
-                                   'h': 85, #px
-                                   'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                    },
+                'need': {'default': {'w': 85, 'h': 85,},
+                         'large': {'w': 85, 'h': 85,},
+                         'medium': {'w': 85, 'h': 85,},
+                         'small': {'w': 85, 'h': 85,},
                         },
-                'goal': {'large': {'w': 85, #px
-                                   'h': 85, #px
-                                   'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                    },
-                         'medium': {'w': 85, #px
-                                    'h': 85, #px
-                                    'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                    },
-                         'small': {'w': 53, #px
-                                   'h': 53, #px
-                                   'ir': 1.6, #units unknown, meaning uncertain, it just works
-                                    },
+                'goal': {'default': {'w': 85, 'h': 85,},
+                         'large': {'w': 85, 'h': 85,},
+                         'medium': {'w': 85, 'h': 85,},
+                         'small': {'w': 53, 'h': 53,},
                         },
 }
 
@@ -104,12 +81,15 @@ ARGB_DONUT_CHART_REDONATIONS = (0.553, 0.702, 0.0314, 1, 'solid') # '#8DB308'
 ARGB_DONUT_CHART_OTHER_SOURCES = (0.937, 0.737, 0.035, 1, 'solid') # '#EFBC09'
 ARGB_DONUT_CHART_BACKGROUND = (0.929, 0.922, 0.922, 1, 'solid') # '#EDEBEA'
 
-TOTAL_DEGREES = 360 #captain obvious
+CHART_PLEDGES_RGB = '586F05'
+CHART_REDONATIONS_RGB = '8DB308'
+CHART_OTHER_SOURCES_RGB = 'EFBC09'
+CHART_BACKGROUND_RGB = 'EDEBEA' #this means thinnest background ring in the chart, not the image background
 
-RGBCOLOR_DONUT_CHART_PLEDGES = '586F05'
-RGBCOLOR_DONUT_CHART_REDONATIONS = '8DB308'
-RGBCOLOR_DONUT_CHART_OTHER_SOURCES = 'EFBC09'
-RGBCOLOR_DONUT_CHART_BACKGROUND = 'EDEBEA'
+CHART_PLEDGES_ALPHA = 1.0 #0 to 1 float, alpha channel
+CHART_PLEDGES_STYLE = 'solid' #just use this,
+
+TOTAL_DEGREES = 360 #captain obvious
 
 MINIMAL_DEFAULT_PLEDGES_DEGREES = 5  #empty chart looks better if a tiny colored bit is shown
 MINIMAL_DEFAULT_REDONATIONS_DEGREES = 3
