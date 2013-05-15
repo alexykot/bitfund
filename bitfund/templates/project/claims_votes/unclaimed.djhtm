@@ -113,14 +113,14 @@
                         </div>
                         <div class="span4 text-center">
                             <div class="pledged" id="budget-donations-total-sum">
-                                {{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}<span style="font-size: 14px;">.{{ budget.donations_total_sum|fract2int}}</span>
+                                {{ site_currency_sign }}{{ budget.project_subscriptions_total|floor }}<span style="font-size: 14px;">.{{ budget.project_subscriptions_total|floatformat:2|fract2int}}</span>
                             </div>
 
                             <div>pledged</div>
                         </div>
                         <div class="span3 offset1 text-center">
-                            <div class="backers">{{ budget.donations_total_pledgers }}</div>
-                            <div>backer{{ budget.donations_total_pledgers|pluralize }}</div>
+                            <div class="backers">{{ budget.project_subscriptions_count}}</div>
+                            <div>backer{{ budget.project_subscriptions_count|pluralize }}</div>
                         </div>
                     </div>
 
@@ -150,8 +150,10 @@
                             <div class="span12">
                                 <p>{{ project.title }} is unclaimed. This means that somebody has shown his gratitude and
                                     offered support, but the project owner, community, foundation or whoever else is running it
-                                    has not shown up yet to collect.</p>
-                                <p>Obvioulsy also nobody has specified monthly budget yet, still you can support it</p>
+                                    has not shown up yet to collect it.</p>
+                                {% if not pledge_subscription %}
+                                <p>Obvioulsy there is  no budget specified, but still you can support it.</p>
+                                {% endif %}
                             </div>
                         </div>
                         <form action="{% url bitfund.project.views.unclaimed project_key=project.key%}" id="form-pledge" method="post">
@@ -211,7 +213,7 @@
                             </div>
                         </form>
 
-                    <p>No funds will be actually transferred until the project will be claimed.</p>
+                    <p>No funds will be actually transferred until the project will be claimed and confirmed.</p>
                     <p>
                         Is this your project?
                         {% if request.user.is_authenticated %}

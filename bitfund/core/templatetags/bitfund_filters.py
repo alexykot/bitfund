@@ -17,5 +17,11 @@ def fract2int(value):
     fractional_part = str(fractional_part)[2:]
     return fractional_part
 
+@register.filter
+@stringfilter
+def floor(value):
+    value = Decimal(value)
+    return str(value.quantize(Decimal('0'), rounding=ROUND_DOWN))
+
 upto.is_safe = True
 

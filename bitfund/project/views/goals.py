@@ -15,7 +15,7 @@ from bitfund.project.decorators import redirect_not_active, disallow_not_public_
 from bitfund.project.models import *
 from bitfund.project.forms import *
 from bitfund.pledger.models import *
-from bitfund.project.template_helpers import _prepare_goal_item_template_data
+from bitfund.project.template_helpers import _prepare_goal_item_template_data, _prepare_project_budget_template_data
 
 
 @redirect_not_active
@@ -24,11 +24,12 @@ def goal(request, project_key, goal_key, action=None):
     project = get_object_or_404(Project, key=project_key)
     goal = get_object_or_404(ProjectGoal, key=goal_key)
 
-    template_data = {'project' : project,
-                     'request' : request,
+    template_data = {'project': project,
+                     'request': request,
+                     'budget': _prepare_project_budget_template_data(request, project),
                      'site_currency_sign': SITE_CURRENCY_SIGN,
-                     'today'   : datetime.utcnow().replace(tzinfo=utc).today(),
-                     }
+                     'today': datetime.utcnow().replace(tzinfo=utc).today(),
+    }
 
     if project.maintainer_id == request.user.id :
         template_data['project_edit_access'] = True
@@ -39,35 +40,39 @@ def goal(request, project_key, goal_key, action=None):
         pledge_form = PledgeProjectGoalForm(request.POST)
         if pledge_form.is_valid() :
             if action=='pledge':
-                pledge_amount = pledge_form.cleaned_data['pledge_amount']
+                with transaction.commit_on_success():
+                    pledge_amount = pledge_form.cleaned_data['pledge_amount']
 
-                existing_transactions_list = (DonationTransaction.objects
-                                        .filter(accepting_project_id=project.id)
-                                        .filter(accepting_goal_id=goal.id)
-                                        .filter(pledger_user_id=request.user.id)
-                                        .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
-                                        .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
-                )
+                    existing_transactions_list = (DonationTransaction.objects
+                                            .filter(accepting_project_id=project.id)
+                                            .filter(accepting_goal_id=goal.id)
+                                            .filter(pledger_user_id=request.user.id)
+                                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                            .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                    )
 
-                if existing_transactions_list.count() > 0 :
-                    for existing_transaction in existing_transactions_list :
-                        existing_transaction.cancel()
+                    if existing_transactions_list.count() > 0 :
+                        for existing_transaction in existing_transactions_list :
+                            existing_transaction.cancel()
 
-                pledge_transaction = DonationTransaction()
-                pledge_transaction.populatePledgeTransaction(project=project, user=request.user, pledge_amount=pledge_amount, goal=goal)
-                pledge_transaction.save()
+                    pledge_transaction = DonationTransaction()
+                    pledge_transaction.populatePledgeTransaction(project=project, user=request.user, pledge_amount=pledge_amount, goal=goal)
+                    pledge_transaction.save()
+                    if goal.do_redonations:
+                        pledge_transaction.createRedonationTransactions()
             elif action=='drop':
-                existing_transactions_list = (DonationTransaction.objects
-                                              .filter(accepting_project_id=project.id)
-                                              .filter(accepting_goal_id=goal.id)
-                                              .filter(pledger_user_id=request.user.id)
-                                              .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
-                                              .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
-                )
+                with transaction.commit_on_success():
+                    existing_transactions_list = (DonationTransaction.objects
+                                                  .filter(accepting_project_id=project.id)
+                                                  .filter(accepting_goal_id=goal.id)
+                                                  .filter(pledger_user_id=request.user.id)
+                                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.cancelled)
+                                                  .exclude(transaction_status=DONATION_TRANSACTION_STATUSES_CHOICES.rejected)
+                    )
 
-                if existing_transactions_list.count() > 0 :
-                    for existing_transaction in existing_transactions_list :
-                        existing_transaction.cancel()
+                    if existing_transactions_list.count() > 0 :
+                        for existing_transaction in existing_transactions_list :
+                            existing_transaction.cancel()
 
             return redirect('bitfund.project.views.goal', project_key=project.key, goal_key=goal.key)
         else :
@@ -118,16 +123,9 @@ def goal_edit(request, project_key, goal_key):
     if request.method == 'POST' :
         template_data['goal_edit_form'] = EditProjectGoalForm(data=request.POST, files=request.FILES, instance=goal)
         if template_data['goal_edit_form'].is_valid() :
-
             template_data['goal_edit_form'].save()
-            # {'date_ending': None, 'vimeo_video_id': u'', 'title': u'adasdasda', 'text': u'', 'image': None, 'youtube_video_id': u'',
-            #  'brief': u'', 'amount': Decimal('0'), 'key': u'adasdasda', 'date_starting': None}
 
             return redirect('bitfund.project.views.goal_edit', project_key=project.key, goal_key=goal.key)
-
-
-
-
     else :
         template_data['goal_edit_form'] = EditProjectGoalForm(instance=goal)
 

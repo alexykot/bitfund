@@ -429,6 +429,7 @@ class ProjectGoal(models.Model):
     date_ending = models.DateTimeField('date ending', null=True, blank=True)
     date_added = models.DateTimeField('date added', default=now())
     is_public = models.BooleanField(default=True)
+    do_redonations = models.BooleanField(default=True)
     sort_order = models.IntegerField(default=0)
 
     def __unicode__(self):

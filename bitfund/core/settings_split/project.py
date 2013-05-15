@@ -2,7 +2,7 @@
 from decimal import getcontext
 
 #misc bitfund related
-PROJECT_VERSION = '0.8'
+PROJECT_VERSION = '0.9'
 
 SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE = 'hidden-entrance'
 PROTOTYPE_LANDING_PAGE_URL = '/index.htm'
@@ -98,3 +98,5 @@ MINIMAL_DEFAULT_OTHER_SOURCES_DEGREES = 2
 #user accounts
 MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC = 10
 
+
+CACHE_TIMEOUT = 60 #index page cache timeout in seconds

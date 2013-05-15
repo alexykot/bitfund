@@ -84,10 +84,11 @@
             <div class="span8 project-attributes">
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                     {% if project.logo %}
-                        <img src="{{ project.logo.url }} " />
+                        <img src="{{ MEDIA_URL }}{{ project.logo }} " />
                     {% else %}
                         <img src="{{ STATIC_URL }}img/project_no_logo.png" />
-                    {% endif %}</a>
+                    {% endif %}
+                </a>
                 <a href="{% url bitfund.project.views.budget project_key=project.key %}">{{ project.title }}</a>
             </div>
             <div class="span2">
@@ -117,7 +118,16 @@
     <div class="goal-info">
         <h3>{{ goal.title }}</h3>
         <p>{{ goal.brief }}</p>
-        <span>Launching: {{goal.date_starting|date:"DATE_FORMAT"}}</span>
+        {% if not goal.is_time_uncertain %}
+            {% if goal.is_public %}
+                <span>Launched: {{ goal.date_starting|date:"DATE_FORMAT" }}</span>
+                {% if goal.is_expired %}
+                    <span>Ended: {{ goal.date_ending|date:"DATE_FORMAT" }}</span>
+                {% endif %}
+            {% else %}
+                <span>Launching: {{ goal.date_starting|date:"DATE_FORMAT" }}</span>
+            {% endif %}
+        {% endif %}
         <div class="row-fluid">
             <div class="span7">
                 {% if goal.youtube_video_id %}
@@ -246,6 +256,23 @@
                         {% endif %}
                     </div>
                 </form>
+                {% if goal.do_redonations %}
+                    <div class="need-pledge-controls text-center">
+                    {% if budget.i_depend_on_projects_count %}
+                        <h5 class="text-center">
+                            {% if budget.i_depend_on_transfer_percent > 0 %}
+                                {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of pledges for this goal to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
+                                {{ budget.i_depend_on_projects_count }} other project{{ budget.i_depend_on_projects_count|pluralize }}</a> it depends on.
+                            {% else %}
+                                {{ project.title }} depends on <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}"> {{ budget.i_depend_on_projects_count }} other projects</a>, but doesn't transfer any funds to them.
+                            {% endif %}
+                        </h5>
+                    {% else %}
+                        <h5 class="text-center">
+                            {{ project.title }} <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">doesn't depend</a> on any other projects.
+                        </h5>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
         <p>{{goal.text|safe }}</p>

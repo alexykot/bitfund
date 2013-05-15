@@ -104,8 +104,7 @@
                     <div class="span4 text-center">
                         <div id="budget-donations-total-sum">
                             <span class="pledged">
-                                {{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}.</span>
-                            {{ budget.donations_total_sum|fract2int}}
+                                {{ site_currency_sign }}{{ budget.donations_total_sum|floatformat:0 }}.</span>{{ budget.donations_total_sum|fract2int}}
                         </div>
                         <div>pledged</div>
                     </div>
@@ -137,8 +136,8 @@
                 {% if budget.i_depend_on_projects_count %}
                     <h5 class="text-center">
                         {% if budget.i_depend_on_transfer_percent > 0 %}
-                            {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of it's pledges to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
-                            {{ budget.i_depend_on_projects_count }} other projects</a> it depends on.
+                            {{ project.title }} transfers {{ budget.i_depend_on_transfer_percent|floatformat:2 }}% of received pledges to <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}">
+                            {{ budget.i_depend_on_projects_count }} other project{{ budget.i_depend_on_projects_count|pluralize }}</a> it depends on.
                         {% else %}
                             {{ project.title }} depends on <a href="{% url bitfund.project.views.linked_projects project_key=project.key %}"> {{ budget.i_depend_on_projects_count }} other projects</a>, but doesn't transfer any funds to them.
                         {% endif %}
@@ -209,19 +208,19 @@
                 your right to maintain is
                 {% if project.is_maintainer_confirmed %}
                     <span class="dotted-border question"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>confirmed</a></span>
                 {% else %}
                     <span class="dotted-border"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>unconfirmed</a></span>
                 {% endif %}
             {% elif maintainer_vote %}
                 his right to maintain is
                 {% if project.is_maintainer_confirmed %}
                     <span class="dotted-border"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>confirmed</a></span>
                 {% else %}
                     <span class="dotted-border"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>unconfirmed</a></span>
                 {% endif %}
                 &nbsp;&nbsp;&nbsp;&nbsp;you have
                 {% if maintainer_vote.vote %}
@@ -241,12 +240,12 @@
                 {% if project.is_maintainer_confirmed %}
                     his right to maintain is
                     <span class="dotted-border"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>confirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='dethrone' %}">vote to dethrone</a>
                 {% else %}
                     his right to maintain is
                     <span class="dotted-border"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>unconfirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     <span><a href="{% url bitfund.project.views.vote_maintainer project_key=project.key action='support' %}">
                         vote to support</a></span>
@@ -257,12 +256,12 @@
                 {% if project.is_maintainer_confirmed %}
                     his right to maintain is
                     <span class="dotted-border"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>confirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>confirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;{% include "core/login/login-with-links.djhtm" %} to vote against him
                 {% else %}
                     his right to maintain is
                     <span class="dotted-border"
-                          title="BitFund reviews and confirms every maintainer candidate before project starts receiving funds"><a>unconfirmed</a></span>
+                          title="BitFund reviews and confirms every maintainer candidate before project will be allowed to receive funds"><a>unconfirmed</a></span>
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     {% include "core/login/login-with-links.djhtm" %} to vote for or against him
                 {% endif %}

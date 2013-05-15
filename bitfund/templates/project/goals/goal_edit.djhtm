@@ -33,7 +33,7 @@
                 selectVideo('youtube');
             {% endif %}
 
-            $('.datePicker').datepicker();
+            $('.datePicker').datepicker({minDate:'0'});
             $('#id_text').wysihtml5();
         });
     </script>
@@ -48,7 +48,7 @@
                 <div class="span8 project-attributes">
                     <a href="{% url bitfund.project.views.budget project_key=project.key %}">
                         {% if project.logo %}
-                            <img src="{{ project.logo.url }} " />
+                            <img src="{{ MEDIA_URL }}{{ project.logo }} " />
                         {% else %}
                             <img src="{{ STATIC_URL }}img/project_no_logo.png" />
                         {% endif %}
@@ -181,6 +181,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="span5">
+                        <div class="row-fluid">
+                            Do redonations to linked projects from this goal's pledges?
+                            {{ goal_edit_form.do_redonations }}
+                        </div>
+                    </div>
+
+
+
+
                 </div>
                 <div class="editing">
                     {{ goal_edit_form.text.error }}

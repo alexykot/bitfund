@@ -143,32 +143,19 @@ def _prepare_goal_item_template_data(request, project, goal, pledge_goal_form=No
     else :
         is_time_uncertain = True
 
+    goal.is_editable = is_editable
+    goal.is_publisheable = goal.isValidForPublic()
+    goal.is_expired = is_expired
+    goal.is_time_uncertain = is_time_uncertain
+    goal.days_to_end = days_to_end
+    goal.hours_to_end = hours_to_end
+    goal.pledges_amount = pledges_amount
+    goal.pledging_users_count = pledging_users_count
+    goal.total_percent = total_percent
+    goal.pledge_form = pledge_goal_form
+    goal.last_transaction = last_transaction
 
-    result = {'id': goal.id,
-              'key': goal.key,
-              'title': goal.title,
-              'brief': goal.brief,
-              'text': goal.text,
-              'youtube_video_id': goal.youtube_video_id,
-              'vimeo_video_id': goal.vimeo_video_id,
-              'image': goal.image,
-              'amount': goal.amount,
-              'is_public': goal.is_public,
-              'is_editable': is_editable,
-              'is_publisheable': goal.isValidForPublic(),
-              'is_expired': is_expired,
-              'is_time_uncertain': is_time_uncertain,
-              'date_ending': goal.date_ending,
-              'days_to_end': days_to_end,
-              'hours_to_end': hours_to_end,
-              'pledges_amount': pledges_amount,
-              'pledging_users_count': pledging_users_count,
-              'total_percent': total_percent,
-              'pledge_form': pledge_goal_form,
-              'last_transaction': last_transaction,
-    }
-
-    return result
+    return goal
 
 # used on the project.views.budget page mainly
 def _prepare_project_budget_template_data(request, project) :
@@ -209,6 +196,22 @@ def _prepare_project_budget_template_data(request, project) :
             ((pledges_needs_total_sum+redonations_total_sum+other_sources_total_sum) * 100) / budget_data['project_monthly_budget']))
     else :
         budget_data['total_gained_percent'] = -1
+
+    project_subscriptions_list = DonationSubscription.objects.filter(project=project.id).filter(is_active=True)
+    budget_data['project_subscriptions_count'] = 0
+    budget_data['project_subscriptions_total'] = 0
+    for project_subscription in project_subscriptions_list:
+        budget_data['project_subscriptions_count'] = budget_data['project_subscriptions_count'] + 1
+        if project_subscription.amount > 0:
+            budget_data['project_subscriptions_total'] = budget_data['project_subscriptions_total'] + project_subscription.amount
+        else:
+            project_subscription_needs_total = (DonationSubscriptionNeeds.objects
+                                                .filter(donation_subscription_id=project_subscription.id)
+                                                .aggregate(Sum('amount'))['amount__sum'])
+            budget_data['project_subscriptions_total'] = budget_data['project_subscriptions_total'] + project_subscription_needs_total
+
+
+
 
     return budget_data
 

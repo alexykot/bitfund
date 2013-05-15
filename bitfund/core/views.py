@@ -14,46 +14,52 @@ from bitfund.core.decorators import ajax_required
 from bitfund.core.models import *
 from bitfund.core.forms import *
 from bitfund.project.forms import *
-from bitfund.core.settings_split.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE
+from bitfund.core.settings_split.project import ABANDONED_ACCOUNT_REGISTRATION_PARAMETER_NAME, PROJECTS_IN_HOMEPAGE_COLUMN, SITE_CURRENCY_SIGN, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE, CACHE_TIMEOUT
+
 
 def index(request):
     template_data = {'request': request,
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      'PROJECTS_IN_DATES_BACK_TO_LOOK':PROJECTS_IN_DATES_BACK_TO_LOOK,
+                     'cache_timeout': CACHE_TIMEOUT,
                      }
 
-    if request.method == 'POST' :
-        template_data['create_project_form'] = CreateProjectForm(request.POST)
-        if template_data['create_project_form'].is_valid() :
+    if request.method == 'POST':
+        template_data['create_project_form'] = CreateProjectForm(prefix='create', data=request.POST)
+        template_data['support_unclaimed_project_form'] = CreateProjectForm(prefix='support_unclaimed',
+                                                                            data=request.POST)
+
+        if request.GET['action'] == 'support' and template_data['support_unclaimed_project_form'].is_valid():
+            existing_projects = Project.objects.filter(title=template_data['support_unclaimed_project_form'].cleaned_data['title'])
+
+            if existing_projects.count() > 0:
+                return redirect('bitfund.project.views.budget', project_key=existing_projects[0].key)
+            else :
+                project = Project()
+                project.title = template_data['support_unclaimed_project_form'].cleaned_data['title']
+                project.key = Project.slugifyKey(project.title)
+                project.save()
+                return redirect('bitfund.project.views.unclaimed', project_key=project.key)
+
+        elif request.GET['action'] == 'create' and template_data['create_project_form'].is_valid():
             existing_projects = Project.objects.filter(title=template_data['create_project_form'].cleaned_data['title'])
-
-            if request.GET['action'] == 'support':
-                if existing_projects.count() > 0:
-                    return redirect('bitfund.project.views.budget', project_key=existing_projects[0].key)
-                else :
-                    project = Project()
-                    project.title = template_data['create_project_form'].cleaned_data['title']
-                    project.key = Project.slugifyKey(project.title)
-                    project.save()
-                    return redirect('bitfund.project.views.unclaimed', project_key=project.key)
-
-            elif request.GET['action'] == 'create':
-                if existing_projects.count() > 0:
-                    return redirect('bitfund.project.views.budget', project_key=existing_projects[0].key)
-                else :
-                    project = Project()
-                    project.title = template_data['create_project_form'].cleaned_data['title']
-                    project.key = Project.slugifyKey(project.title)
-                    project.status = PROJECT_STATUS_CHOICES.active
-                    project.is_public = False
-                    project.maintainer_id = request.user.id
-                    project.save()
-                    return redirect('bitfund.project.views.budget', project_key=project.key)
-
-            else:
-                return redirect('bitfund.core.views.index')
+            if existing_projects.count() > 0:
+                return redirect('bitfund.project.views.budget', project_key=existing_projects[0].key)
+            else :
+                project = Project()
+                project.title = template_data['create_project_form'].cleaned_data['title']
+                project.key = Project.slugifyKey(project.title)
+                project.status = PROJECT_STATUS_CHOICES.active
+                project.is_public = False
+                project.maintainer_id = request.user.id
+                project.save()
+                return redirect('bitfund.project.views.budget', project_key=project.key)
+        else:
+            return redirect('bitfund.core.views.index')
     else :
-        template_data['create_project_form'] = CreateProjectForm()
+        template_data['create_project_form'] = CreateProjectForm(prefix='create')
+        template_data['support_unclaimed_project_form'] = CreateProjectForm(prefix='support_unclaimed')
+
 
     template_data['new_projects_list'] = (Project.objects
                                           .filter(is_public=True)

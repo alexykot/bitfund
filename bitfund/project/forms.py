@@ -1,3 +1,4 @@
+from orca.scripts import default
 import re
 import urlparse
 from decimal import Decimal, getcontext
@@ -6,6 +7,7 @@ from django.utils.encoding import smart_unicode
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+from model_utils import choices
 
 from bitfund.core.models import *
 from bitfund.core.settings_split.project import CALCULATIONS_PRECISION, YOUTUBE_VIDEO_ID_LENGTH, MIN_GOAL_TIMELENGTH_DAYS
@@ -89,8 +91,9 @@ class CreateProjectGoalForm(forms.Form):
 
 class EditProjectGoalForm(forms.ModelForm):
     amount = forms.DecimalField(max_value=9999999999, min_value=0, decimal_places=2, max_digits=12)
-    date_starting = forms.DateField(input_formats=('%m/%d/%Y',), required=False, widget=forms.DateInput(format='%m/%d/%Y'))
-    date_ending = forms.DateField(input_formats=('%m/%d/%Y',), required=False, widget=forms.DateInput(format='%m/%d/%Y'))
+    date_starting = forms.DateTimeField(input_formats=('%m/%d/%Y',), required=False, widget=forms.DateInput(format='%m/%d/%Y'))
+    date_ending = forms.DateTimeField(input_formats=('%m/%d/%Y',), required=False, widget=forms.DateInput(format='%m/%d/%Y'))
+    do_redonations = forms.ChoiceField(widget=forms.RadioSelect(), choices=YES_NO_CHOICES)
 
     class Meta:
         model = ProjectGoal
@@ -98,6 +101,7 @@ class EditProjectGoalForm(forms.ModelForm):
                   'image', 'youtube_video_id', 'vimeo_video_id',
                   'amount',
                   'date_starting', 'date_ending',
+                  'do_redonations',
                   }
         widgets = { 'brief': forms.Textarea(),
                    }
@@ -123,6 +127,34 @@ class EditProjectGoalForm(forms.ModelForm):
 
         return key
 
+    def clean_date_starting(self):
+        cleaned_data = super(EditProjectGoalForm, self).clean()
+        date_starting = cleaned_data.get("date_starting")
+
+        if date_starting is None and self.instance.date_starting is not None:
+            date_starting = self.instance.date_starting
+
+        if date_starting is not None:
+            date_starting_future_timedelta = date_starting-now()
+            if date_starting_future_timedelta.days < 0 :
+                raise ValidationError(_(u'Goal must start in future.'), code='invalid')
+
+        return date_starting
+
+
+    def clean_date_ending(self):
+        cleaned_data = super(EditProjectGoalForm, self).clean()
+        date_ending = cleaned_data.get("date_ending")
+
+        if date_ending is None and self.instance.date_ending is not None:
+            date_ending = self.instance.date_ending
+
+        if date_ending is not None:
+            date_ending_future_timedelta = date_ending-now()
+            if date_ending_future_timedelta.days < 0 :
+                raise ValidationError(_(u'Goal must end in future.'), code='invalid')
+
+        return date_ending
 
     # parses provided youtube link and cuts video_id out of it. parses these link patterns:
     # http://[www.]youtube.com/[<anything>]?[<anything>&]v=iYWzMvlj2RQ[&<anything>]

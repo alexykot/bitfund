@@ -2,6 +2,7 @@
 {% load widget_tweaks %}
 {% load humanize %}
 {% load bitfund_filters %}
+{% load cache %}
 
 {% block pagescripts %}
     <script type="text/javascript">
@@ -27,13 +28,13 @@
 
             $('#support-new-project').click(function(event){
                 event.preventDefault();
-                $('#create_project_form_container input[name=title]').val($('#appendedInputButton').val());
-                $('#create-project-popup input[name=title]').val($('#appendedInputButton').val());
+                $('#create_project_form_container input[type=text]').val($('#appendedInputButton').val());
                 $('#create_project_form_container').toggle(true);
             });
 
             $('#create-project-link').click(function(event){
                 event.preventDefault();
+                $('#create-project-popup input[type=text]').val($('#appendedInputButton').val());
                 $('#create-project-link-container').toggleClass('create-project-active');
                 $('#create-project-popup').toggle();
             });
@@ -45,7 +46,7 @@
                 }
             });
 
-            $('#id_title').bindWithDelay('keyup', function(event){
+            $('#create-project-popup input[type=text]').bindWithDelay('keyup', function(event){
                 var search_string = $(this).val()
                 if (search_string.length > 1) {
                     $('#similar-projects-list').load('{% url bitfund.pledger.views.existing_similar_projects %}?search_string='+search_string,
@@ -116,8 +117,8 @@
             <div id="create_project_form_container" style="display: none;">
                 <div class="row-fluid">
                     <div class="span6 text-right">
-                        {{ create_project_form.title.errors }}
-                        {{ create_project_form.title|attr:"required" }}
+                        {{ support_unclaimed_project_form.title.errors }}
+                        {{ support_unclaimed_project_form.title|attr:"required" }}
                     </div>
                     <div class="span6 text-left">
                         <button class="button orange">Support unclaimed project</button>
@@ -129,83 +130,91 @@
     </div>
     <hr>
     <div class="row-fluid">
-        <div class="span3 text-center">
-            <h3>New projects</h3>
-            {% for project in new_projects_list %}
-                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                    <div class="media">
-                        {% if project.logo %}
-                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                        {% else %}
-                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
-                        {% endif %}
-                        <div class="media-body">
-                            <h4 class="media-heading">{{ project.title }}</h4>
-                            <div title="joined">{{ project.date_added|timesince|upto:',' }} ago</div>
-                        </div>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-        <div class="span3 text-center">
-            <h3>Top Funded</h3>
-            {% for project in top_funded_projects_list %}
-                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                    <div class="media">
-                        {% if project.logo %}
-                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                        {% else %}
-                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
-                        {% endif %}
-                        <div class="media-body">
-                            <h4 class="media-heading">{{ project.title }}</h4>
-                            <div title="received in last {{ PROJECTS_IN_DATES_BACK_TO_LOOK }} days">{{ site_currency_sign }}{{ project.pledged_recently|floatformat:2 }}</div>
-                            {% if project.pledged_percent != -1 %}
-                                <div title="percent of monthly budget fulfilment">{{ project.pledged_percent }}%</div>
+        {% cache cache_timeout new_projects %}
+            <div class="span3 text-center">
+                <h3>New projects</h3>
+                {% for project in new_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            {% if project.logo %}
+                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                            {% else %}
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
                             {% endif %}
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div title="joined">{{ project.date_added|timesince|upto:',' }} ago</div>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-        <div class="span3 text-center">
-            <h3>Top Linked</h3>
-            {% for project in top_linked_projects_list %}
-                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                    <div class="media">
-                        {% if project.logo %}
-                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                        {% else %}
-                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
-                        {% endif %}
-                        <div class="media-body">
-                            <h4 class="media-heading">{{ project.title }}</h4>
-                            <div title="{{ project.depender_count }} links to and {{ project.dependee_count }} links from {{ project.title }}">{{ project.links_total }} link{{ project.links_total|pluralize }}</div>
-                        </div>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-        <div class="span3 text-center">
-            <h3>Unclaimed</h3>
-            {% for project in unclaimed_projects_list %}
-                <a href="{% url bitfund.project.views.budget project_key=project.key%}">
-                    <div class="media">
-                        {% if project.logo %}
-                            <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
-                        {% else %}
-                            <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
-                        {% endif %}
-                        <div class="media-body">
-                            <h4 class="media-heading">{{ project.title }}</h4>
-                            {% if project.unclaimed_pledging_count > 0 %}
-                                <div title="offered support">{{ site_currency_sign }}{{ project.unclaimed_pledging_count|floatformat:2 }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endcache %}
+        {% cache cache_timeout top_funded %}
+            <div class="span3 text-center">
+                <h3>Top Funded</h3>
+                {% for project in top_funded_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            {% if project.logo %}
+                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                            {% else %}
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
                             {% endif %}
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div title="received in last {{ PROJECTS_IN_DATES_BACK_TO_LOOK }} days">{{ site_currency_sign }}{{ project.pledged_recently|floatformat:2 }}</div>
+                                {% if project.pledged_percent != -1 %}
+                                    <div title="percent of monthly budget fulfilment">{{ project.pledged_percent }}%</div>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endcache %}
+        {% cache cache_timeout top_linked %}
+            <div class="span3 text-center">
+                <h3>Top Linked</h3>
+                {% for project in top_linked_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            {% if project.logo %}
+                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                            {% else %}
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+                            {% endif %}
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                <div title="{{ project.depender_count }} links to and {{ project.dependee_count }} links from {{ project.title }}">{{ project.links_total }} link{{ project.links_total|pluralize }}</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endcache %}
+        {% cache cache_timeout unclaimed %}
+            <div class="span3 text-center">
+                <h3>Unclaimed</h3>
+                {% for project in unclaimed_projects_list %}
+                    <a href="{% url bitfund.project.views.budget project_key=project.key%}">
+                        <div class="media">
+                            {% if project.logo %}
+                                <img class="media-object pull-left" src ="{{ MEDIA_URL }}{{ project.logo }}" />
+                            {% else %}
+                                <img class="media-object pull-left" src ="{{ STATIC_URL }}img/project_no_logo.png" />
+                            {% endif %}
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ project.title }}</h4>
+                                {% if project.unclaimed_pledging_count > 0 %}
+                                    <div title="offered support">{{ site_currency_sign }}{{ project.unclaimed_pledging_count|floatformat:2 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endcache %}
     </div>
 </div>
 

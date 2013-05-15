@@ -1,6 +1,6 @@
 import math
 from django.http import HttpResponseBadRequest
-
+from django.db import transaction
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.utils.datetime_safe import datetime
@@ -42,7 +42,7 @@ def budget_edit(request, project_key):
         template_data['project_needs'] = []
 
         project_needs = ProjectNeed.objects.filter(project=project.id).order_by('sort_order')
-        for need in project_needs :
+        for need in project_needs:
             need_template_data = _prepare_need_item_template_data(request, project, need)
             need_template_data['crud_form'] = ProjectNeedForm(request.POST, instance=need, prefix='need-'+str(need.id))
             if not need_template_data['crud_form'].is_valid() :
@@ -94,61 +94,62 @@ def crud_pledge_need(request, project_key, need_id, action=None):
         if action == 'pledge' :
             pledge_need_form = PledgeProjectNeedForm(request.POST, prefix='need-'+str(need.id))
             if pledge_need_form.is_valid() :
-                cleaned_pledge_type = pledge_need_form.cleaned_data['pledge_type']
-                cleaned_pledge_amount = pledge_need_form.cleaned_data['pledge_amount']
+                with transaction.commit_on_success():
+                    cleaned_pledge_type = pledge_need_form.cleaned_data['pledge_type']
+                    cleaned_pledge_amount = pledge_need_form.cleaned_data['pledge_amount']
 
-                if cleaned_pledge_type == DONATION_TYPES_CHOICES.onetime :
-                    transaction = DonationTransaction()
-                    transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
-                                                          pledge_amount=cleaned_pledge_amount)
-                    transaction.save()
-                    transaction.createRedonationTransactions()
-                else :
-                    pledge_subscription = (DonationSubscription.objects
-                                           .filter(user=request.user)
-                                           .filter(project=project)
-                                           .select_related())
+                    if cleaned_pledge_type == DONATION_TYPES_CHOICES.onetime :
+                        transaction = DonationTransaction()
+                        transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
+                                                              pledge_amount=cleaned_pledge_amount)
+                        transaction.save()
+                        transaction.createRedonationTransactions()
+                    else :
+                        pledge_subscription = (DonationSubscription.objects
+                                               .filter(user=request.user)
+                                               .filter(project=project)
+                                               .select_related())
 
-                    if pledge_subscription.count() == 1 :
-                        pledge_subscription = pledge_subscription[0]
-                        pledge_subscription_need = (DonationSubscriptionNeeds.objects
-                                                    .filter(donation_subscription=pledge_subscription)
-                                                    .filter(need=need))
-                        if pledge_subscription_need.count() == 1 :
-                            pledge_subscription_need = pledge_subscription_need[0]
+                        if pledge_subscription.count() == 1 :
+                            pledge_subscription = pledge_subscription[0]
+                            pledge_subscription_need = (DonationSubscriptionNeeds.objects
+                                                        .filter(donation_subscription=pledge_subscription)
+                                                        .filter(need=need))
+                            if pledge_subscription_need.count() == 1 :
+                                pledge_subscription_need = pledge_subscription_need[0]
 
-                            pledge_subscription.cancelPendingTransactions(pledge_subscription_need)
+                                pledge_subscription.cancelPendingTransactions(pledge_subscription_need)
 
-                            pledge_subscription_need.amount = cleaned_pledge_amount
-                            pledge_subscription_need.save()
+                                pledge_subscription_need.amount = cleaned_pledge_amount
+                                pledge_subscription_need.save()
+                            else :
+                                pledge_subscription_need = DonationSubscriptionNeeds()
+                                pledge_subscription_need.donation_subscription = pledge_subscription
+                                pledge_subscription_need.need = need
+                                pledge_subscription_need.amount = cleaned_pledge_amount
+                                pledge_subscription_need.save()
+
                         else :
+                            pledge_subscription = DonationSubscription()
+                            pledge_subscription.user = request.user
+                            pledge_subscription.project = project
+                            pledge_subscription.save()
+
                             pledge_subscription_need = DonationSubscriptionNeeds()
                             pledge_subscription_need.donation_subscription = pledge_subscription
                             pledge_subscription_need.need = need
                             pledge_subscription_need.amount = cleaned_pledge_amount
                             pledge_subscription_need.save()
 
-                    else :
-                        pledge_subscription = DonationSubscription()
-                        pledge_subscription.user = request.user
-                        pledge_subscription.project = project
-                        pledge_subscription.save()
+                        transaction = DonationTransaction()
+                        transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
+                                                              pledge_amount=cleaned_pledge_amount,
+                                                              donation_subscription=pledge_subscription)
+                        transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.pending
+                        transaction.save()
+                        transaction.createRedonationTransactions()
 
-                        pledge_subscription_need = DonationSubscriptionNeeds()
-                        pledge_subscription_need.donation_subscription = pledge_subscription
-                        pledge_subscription_need.need = need
-                        pledge_subscription_need.amount = cleaned_pledge_amount
-                        pledge_subscription_need.save()
-
-                    transaction = DonationTransaction()
-                    transaction.populatePledgeTransaction(project=project, user=request.user, need=need,
-                                                          pledge_amount=cleaned_pledge_amount,
-                                                          donation_subscription=pledge_subscription)
-                    transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.pending
-                    transaction.save()
-                    transaction.createRedonationTransactions()
-
-                    return redirect('bitfund.project.views.crud_pledge_need', project_key=project.key, need_id=need.id)
+                        return redirect('bitfund.project.views.crud_pledge_need', project_key=project.key, need_id=need.id)
             else :
                 template_data['need'] = _prepare_need_item_template_data(request, project, need, pledge_need_form)
 
@@ -162,29 +163,30 @@ def crud_pledge_need(request, project_key, need_id, action=None):
         elif action == 'switch_monthly' :
             pledge_need_form = PledgeProjectNeedForm(request.POST, prefix='need-'+str(need.id))
             if pledge_need_form.is_valid() :
-                pledge_subscription = (DonationSubscription.objects
-                                       .filter(user=request.user)
-                                       .filter(project=project)
-                                       .select_related())
-                if pledge_subscription.count() == 1 :
-                    pledge_subscription = pledge_subscription[0]
-                else :
-                    pledge_subscription = DonationSubscription()
-                    pledge_subscription.user = request.user
-                    pledge_subscription.project = project
-                    pledge_subscription.save()
+                with transaction.commit_on_success():
+                    pledge_subscription = (DonationSubscription.objects
+                                           .filter(user=request.user)
+                                           .filter(project=project)
+                                           .select_related())
+                    if pledge_subscription.count() == 1 :
+                        pledge_subscription = pledge_subscription[0]
+                    else :
+                        pledge_subscription = DonationSubscription()
+                        pledge_subscription.user = request.user
+                        pledge_subscription.project = project
+                        pledge_subscription.save()
 
 
-                pledge_subscription_need = (DonationSubscriptionNeeds.objects
-                                            .filter(donation_subscription=pledge_subscription)
-                                            .filter(need=need))
-                if pledge_subscription_need.count() == 0 :
-                    cleaned_pledge_amount = pledge_need_form.cleaned_data['pledge_amount']
-                    pledge_subscription_need = DonationSubscriptionNeeds()
-                    pledge_subscription_need.donation_subscription = pledge_subscription
-                    pledge_subscription_need.need = need
-                    pledge_subscription_need.amount = cleaned_pledge_amount
-                    pledge_subscription_need.save()
+                    pledge_subscription_need = (DonationSubscriptionNeeds.objects
+                                                .filter(donation_subscription=pledge_subscription)
+                                                .filter(need=need))
+                    if pledge_subscription_need.count() == 0 :
+                        cleaned_pledge_amount = pledge_need_form.cleaned_data['pledge_amount']
+                        pledge_subscription_need = DonationSubscriptionNeeds()
+                        pledge_subscription_need.donation_subscription = pledge_subscription
+                        pledge_subscription_need.need = need
+                        pledge_subscription_need.amount = cleaned_pledge_amount
+                        pledge_subscription_need.save()
 
                 return redirect('bitfund.project.views.crud_pledge_need', project_key=project.key, need_id=need.id)
 
@@ -197,21 +199,22 @@ def crud_pledge_need(request, project_key, need_id, action=None):
                                      .select_related())
 
             if existing_subscription.count() == 1 :
-                existing_subscription = existing_subscription[0]
-                existing_subscription_need = (DonationSubscriptionNeeds.objects
-                                              .filter(donation_subscription=existing_subscription,
-                                                      need=need))
-                if existing_subscription_need.count() == 1 :
-                    existing_subscription_need = existing_subscription_need[0]
-                    existing_subscription.cancelPendingTransactions(existing_subscription_need)
+                with transaction.commit_on_success():
+                    existing_subscription = existing_subscription[0]
+                    existing_subscription_need = (DonationSubscriptionNeeds.objects
+                                                  .filter(donation_subscription=existing_subscription,
+                                                          need=need))
+                    if existing_subscription_need.count() == 1 :
+                        existing_subscription_need = existing_subscription_need[0]
+                        existing_subscription.cancelPendingTransactions(existing_subscription_need)
 
-                    existing_subscription_need.delete()
+                        existing_subscription_need.delete()
 
-                other_subscriptions_count = (DonationSubscriptionNeeds.objects
-                                             .filter(donation_subscription_id=existing_subscription.id)
-                                             .count())
-                if other_subscriptions_count == 0 :
-                    existing_subscription.delete()
+                    other_subscriptions_count = (DonationSubscriptionNeeds.objects
+                                                 .filter(donation_subscription_id=existing_subscription.id)
+                                                 .count())
+                    if other_subscriptions_count == 0 :
+                        existing_subscription.delete()
 
             return redirect('bitfund.project.views.crud_pledge_need', project_key=project.key, need_id=need.id)
 
@@ -249,42 +252,43 @@ def crud_pledge_empty_project(request, project_key, action=None):
         if action == 'pledge' :
             pledge_empty_project_form = PledgeNoBudgetProjectForm(request.POST)
             if pledge_empty_project_form.is_valid() :
-                cleaned_pledge_type = pledge_empty_project_form.cleaned_data['pledge_type']
-                cleaned_pledge_amount = pledge_empty_project_form.cleaned_data['pledge_amount']
+                with transaction.commit_on_success():
+                    cleaned_pledge_type = pledge_empty_project_form.cleaned_data['pledge_type']
+                    cleaned_pledge_amount = pledge_empty_project_form.cleaned_data['pledge_amount']
 
-                if cleaned_pledge_type == DONATION_TYPES_CHOICES.onetime :
-                    transaction = DonationTransaction()
-                    transaction.populatePledgeTransaction(project=project, user=request.user,
-                                                          pledge_amount=cleaned_pledge_amount)
-                    transaction.save()
-                    transaction.createRedonationTransactions()
-                else :
-                    pledge_subscription = (DonationSubscription.objects
-                                           .filter(user=request.user)
-                                           .filter(project=project)
-                                           .select_related())
+                    if cleaned_pledge_type == DONATION_TYPES_CHOICES.onetime:
+                        transaction = DonationTransaction()
+                        transaction.populatePledgeTransaction(project=project, user=request.user,
+                                                              pledge_amount=cleaned_pledge_amount)
+                        transaction.save()
+                        transaction.createRedonationTransactions()
+                    else:
+                        pledge_subscription = (DonationSubscription.objects
+                                               .filter(user=request.user)
+                                               .filter(project=project)
+                                               .select_related())
 
-                    if pledge_subscription.count() == 1 :
-                        pledge_subscription = pledge_subscription[0]
-                        pledge_subscription.cancelPendingTransactions()
-                        pledge_subscription.amount = cleaned_pledge_amount
-                        pledge_subscription.save()
-                    else :
-                        pledge_subscription = DonationSubscription()
-                        pledge_subscription.user = request.user
-                        pledge_subscription.project = project
-                        pledge_subscription.amount = cleaned_pledge_amount
-                        pledge_subscription.save()
+                        if pledge_subscription.count() == 1:
+                            pledge_subscription = pledge_subscription[0]
+                            pledge_subscription.cancelPendingTransactions()
+                            pledge_subscription.amount = cleaned_pledge_amount
+                            pledge_subscription.save()
+                        else:
+                            pledge_subscription = DonationSubscription()
+                            pledge_subscription.user = request.user
+                            pledge_subscription.project = project
+                            pledge_subscription.amount = cleaned_pledge_amount
+                            pledge_subscription.save()
 
-                    transaction = DonationTransaction()
-                    transaction.populatePledgeTransaction(project=project, user=request.user,
-                                                          pledge_amount=cleaned_pledge_amount,
-                                                          donation_subscription=pledge_subscription)
-                    transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.pending
-                    transaction.save()
-                    transaction.createRedonationTransactions()
+                        transaction = DonationTransaction()
+                        transaction.populatePledgeTransaction(project=project, user=request.user,
+                                                              pledge_amount=cleaned_pledge_amount,
+                                                              donation_subscription=pledge_subscription)
+                        transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.pending
+                        transaction.save()
+                        transaction.createRedonationTransactions()
 
-                    return redirect('bitfund.project.views.crud_pledge_empty_project', project_key=project.key)
+                        return redirect('bitfund.project.views.crud_pledge_empty_project', project_key=project.key)
             else :
                 template_data['empty_project'] = _prepare_empty_project_template_data(request, project, pledge_empty_project_form)
 
@@ -299,24 +303,25 @@ def crud_pledge_empty_project(request, project_key, action=None):
         elif action == 'switch_monthly' :
             pledge_empty_project_form = PledgeNoBudgetProjectForm(request.POST)
             if pledge_empty_project_form.is_valid() :
-                cleaned_pledge_amount = pledge_empty_project_form.cleaned_data['pledge_amount']
+                with transaction.commit_on_success():
+                    cleaned_pledge_amount = pledge_empty_project_form.cleaned_data['pledge_amount']
 
-                pledge_subscription = (DonationSubscription.objects
-                                       .filter(user=request.user)
-                                       .filter(project=project)
-                                       .select_related())
-                if pledge_subscription.count() == 1 :
-                    pledge_subscription = pledge_subscription[0]
-                else :
-                    pledge_subscription = DonationSubscription()
-                    pledge_subscription.user = request.user
-                    pledge_subscription.project = project
+                    pledge_subscription = (DonationSubscription.objects
+                                           .filter(user=request.user)
+                                           .filter(project=project)
+                                           .select_related())
+                    if pledge_subscription.count() == 1 :
+                        pledge_subscription = pledge_subscription[0]
+                    else :
+                        pledge_subscription = DonationSubscription()
+                        pledge_subscription.user = request.user
+                        pledge_subscription.project = project
 
 
-                pledge_subscription.amount = cleaned_pledge_amount
-                pledge_subscription.save()
+                    pledge_subscription.amount = cleaned_pledge_amount
+                    pledge_subscription.save()
 
-                return redirect('bitfund.project.views.crud_pledge_empty_project', project_key=project.key)
+                    return redirect('bitfund.project.views.crud_pledge_empty_project', project_key=project.key)
             else :
                 template_data['empty_project'] = _prepare_empty_project_template_data(request, project, pledge_empty_project_form)
 
@@ -326,17 +331,18 @@ def crud_pledge_empty_project(request, project_key, action=None):
                                      .select_related())
 
             if existing_subscription.count() == 1 :
-                existing_subscription = existing_subscription[0]
-                existing_subscription.cancelPendingTransactions()
+                with transaction.commit_on_success():
+                    existing_subscription = existing_subscription[0]
+                    existing_subscription.cancelPendingTransactions()
 
-                subscription_needs_count = (DonationSubscriptionNeeds.objects
-                                            .filter(donation_subscription_id=existing_subscription.id)
-                                            .count())
-                if subscription_needs_count == 0 :
-                    existing_subscription.delete()
-                else :
-                    existing_subscription.amount = 0
-                    existing_subscription.save()
+                    subscription_needs_count = (DonationSubscriptionNeeds.objects
+                                                .filter(donation_subscription_id=existing_subscription.id)
+                                                .count())
+                    if subscription_needs_count == 0 :
+                        existing_subscription.delete()
+                    else :
+                        existing_subscription.amount = 0
+                        existing_subscription.save()
 
             return redirect('bitfund.project.views.crud_pledge_empty_project', project_key=project.key)
 

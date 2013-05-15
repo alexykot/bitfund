@@ -1,8 +1,8 @@
 from decimal import Decimal
 import balanced
+
 from django.db import transaction
 from django_countries.countries import COUNTRIES as COUNTRIES_LIST
-
 from django.http import HttpResponseNotFound, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -10,7 +10,6 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.utils.datetime_safe import datetime
-from pip import req
 
 from bitfund.core.settings_split.extensions import BALANCED
 from bitfund.core.settings_split.project import SITE_CURRENCY_SIGN
@@ -227,75 +226,77 @@ def attach_bank_card(request, action=None):
 
 
     if request.method == 'POST' and request.is_ajax() and action == 'attach':
-        card_uri = request.POST['card_uri']
+        with transaction.commit_on_success():
+            card_uri = request.POST['card_uri']
 
-        user_balanced_account = BalancedAccount.getAccount(request.user.id)
-        try :
-            Balanced_account = balanced.Account.find(user_balanced_account.uri)
-        except balanced.exc.HTTPError:
-            return HttpResponseNotFound()
+            user_balanced_account = BalancedAccount.getAccount(request.user.id)
+            try :
+                Balanced_account = balanced.Account.find(user_balanced_account.uri)
+            except balanced.exc.HTTPError:
+                return HttpResponseNotFound()
 
-        try :
-            Balanced_card = balanced.Card.find(card_uri)
-        except balanced.exc.HTTPError:
-            return HttpResponseNotFound()
-        Balanced_account.add_card(card_uri)
+            try :
+                Balanced_card = balanced.Card.find(card_uri)
+            except balanced.exc.HTTPError:
+                return HttpResponseNotFound()
+            Balanced_account.add_card(card_uri)
 
-        old_bank_card = BankCard.objects.filter(user_id=request.user.id)
-        if old_bank_card.count() > 0 :
-            old_bank_card = old_bank_card[0]
-            Balanced_old_card = balanced.Card.find(old_bank_card.uri)
-            Balanced_old_card.is_valid = False
-            Balanced_old_card.save()
-            old_bank_card.delete()
+            old_bank_card = BankCard.objects.filter(user_id=request.user.id)
+            if old_bank_card.count() > 0 :
+                old_bank_card = old_bank_card[0]
+                Balanced_old_card = balanced.Card.find(old_bank_card.uri)
+                Balanced_old_card.is_valid = False
+                Balanced_old_card.save()
+                old_bank_card.delete()
 
-        bank_card = BankCard()
-        bank_card.user_id = request.user.id
-        bank_card.balanced_account_id = user_balanced_account.id
+            bank_card = BankCard()
+            bank_card.user_id = request.user.id
+            bank_card.balanced_account_id = user_balanced_account.id
 
-        bank_card.uri = card_uri
-        bank_card.brand = Balanced_card.brand
-        bank_card.last_four_digits = Balanced_card.last_four
-        bank_card.is_valid = Balanced_card.is_valid
-        try:
-            bank_card.name_on_card = Balanced_card.name
-        except AttributeError:
-            pass
-        try:
-            bank_card.address_1 = Balanced_card.street_address
-        except AttributeError:
-            pass
-        try:
-            bank_card.address_2 = Balanced_card.street_address
-        except AttributeError:
-            pass
-        try:
-            bank_card.city = Balanced_card.city
-        except AttributeError:
-            pass
-        try:
-            bank_card.state = Balanced_card.region
-        except AttributeError:
-            pass
-        try:
-            bank_card.country_code = Balanced_card.country_code
-        except AttributeError:
-            pass
+            bank_card.uri = card_uri
+            bank_card.brand = Balanced_card.brand
+            bank_card.last_four_digits = Balanced_card.last_four
+            bank_card.is_valid = Balanced_card.is_valid
+            try:
+                bank_card.name_on_card = Balanced_card.name
+            except AttributeError:
+                pass
+            try:
+                bank_card.address_1 = Balanced_card.street_address
+            except AttributeError:
+                pass
+            try:
+                bank_card.address_2 = Balanced_card.street_address
+            except AttributeError:
+                pass
+            try:
+                bank_card.city = Balanced_card.city
+            except AttributeError:
+                pass
+            try:
+                bank_card.state = Balanced_card.region
+            except AttributeError:
+                pass
+            try:
+                bank_card.country_code = Balanced_card.country_code
+            except AttributeError:
+                pass
 
-        bank_card.save()
+            bank_card.save()
 
 
         return HttpResponse()
     elif request.method == 'POST' and action == 'detach':
         existing_card = BankCard.objects.filter(user_id=request.user.id)
         if existing_card.count() > 0 :
-            existing_card = existing_card[0]
-            balanced.configure(BALANCED['API_KEY'])
-            Balanced_existing_card = balanced.Card.find(existing_card.uri)
-            #@TODO exception handling and proper error output
-            Balanced_existing_card.is_valid = False
-            Balanced_existing_card.save()
-            existing_card.delete()
+            with transaction.commit_on_success():
+                existing_card = existing_card[0]
+                balanced.configure(BALANCED['API_KEY'])
+                Balanced_existing_card = balanced.Card.find(existing_card.uri)
+                #@TODO exception handling and proper error output
+                Balanced_existing_card.is_valid = False
+                Balanced_existing_card.save()
+                existing_card.delete()
 
 
         return redirect('bitfund.pledger.views.attach_bank_card')
@@ -334,36 +335,36 @@ def attach_bank_account(request, action=None):
     request.user.public = _prepare_user_public_template_data(request, request.user)
 
     if request.method == 'POST' and request.is_ajax() and action == 'attach':
+        with transaction.commit_on_success():
+            try :
+                Balanced_account = balanced.Account.find(user_balanced_account.uri)
+            except balanced.exc.HTTPError:
+                return HttpResponseNotFound()
 
-        try :
-            Balanced_account = balanced.Account.find(user_balanced_account.uri)
-        except balanced.exc.HTTPError:
-            return HttpResponseNotFound()
+            bank_account_uri = request.POST['account_uri']
+            try :
+                Balanced_bank_account = balanced.Account.find(bank_account_uri)
+            except balanced.exc.HTTPError:
+                return HttpResponseNotFound()
+            Balanced_account.add_bank_account(bank_account_uri)
 
-        bank_account_uri = request.POST['account_uri']
-        try :
-            Balanced_bank_account = balanced.Account.find(bank_account_uri)
-        except balanced.exc.HTTPError:
-            return HttpResponseNotFound()
-        Balanced_account.add_bank_account(bank_account_uri)
+            old_bank_account = BankAccount.objects.filter(user_id=request.user.id)
+            if old_bank_account.count() > 0 :
+                old_bank_account = old_bank_account[0]
+                Balanced_old_bank_account = balanced.BankAccount.find(old_bank_account.uri)
+                Balanced_old_bank_account.delete()
+                old_bank_account.delete()
 
-        old_bank_account = BankAccount.objects.filter(user_id=request.user.id)
-        if old_bank_account.count() > 0 :
-            old_bank_account = old_bank_account[0]
-            Balanced_old_bank_account = balanced.BankAccount.find(old_bank_account.uri)
-            Balanced_old_bank_account.delete()
-            old_bank_account.delete()
+            bank_account = BankAccount()
+            bank_account.user_id = request.user.id
+            bank_account.balanced_account_id = user_balanced_account.id
 
-        bank_account = BankAccount()
-        bank_account.user_id = request.user.id
-        bank_account.balanced_account_id = user_balanced_account.id
+            bank_account.uri = Balanced_bank_account.uri
+            bank_account.bank_name = Balanced_bank_account.bank_name
+            bank_account.last_four = Balanced_bank_account.last_four
+            bank_account.is_valid = Balanced_bank_account.is_valid
 
-        bank_account.uri = Balanced_bank_account.uri
-        bank_account.bank_name = Balanced_bank_account.bank_name
-        bank_account.last_four = Balanced_bank_account.last_four
-        bank_account.is_valid = Balanced_bank_account.is_valid
-
-        bank_account.save()
+            bank_account.save()
 
         return HttpResponse()
 
@@ -375,77 +376,78 @@ def attach_bank_account(request, action=None):
 
         if (template_data['bank_account_business_underwriting_form'].is_valid()
         and template_data['bank_account_business_underwriting_form'].cleaned_data['ba_entity_type'] == BANK_ACCOUNT_ENTITY_TYPE_CHOICES.business) :
-            balanced.configure(BALANCED['API_KEY'])
+            with transaction.commit_on_success():
+                balanced.configure(BALANCED['API_KEY'])
 
-            try :
-                Balanced_account = balanced.Account.find(user_balanced_account.uri)
-            except balanced.exc.HTTPError:
-                return HttpResponseNotFound()
+                try :
+                    Balanced_account = balanced.Account.find(user_balanced_account.uri)
+                except balanced.exc.HTTPError:
+                    return HttpResponseNotFound()
 
-            merchant_data = {   'type' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_entity_type'],
-                                'name' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_name'],
-                                'phone_number' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_phone'],
-                                'email_address' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_email'],
-                                'tax_id' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_tax'],
-                                'street_address' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_address'],
-                                'city' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_city'],
-                                'region' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_region'],
-                                'postal_code' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_zip'],
-                                'country_code' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_country'],
-                                }
+                merchant_data = {   'type' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_entity_type'],
+                                    'name' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_name'],
+                                    'phone_number' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_phone'],
+                                    'email_address' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_email'],
+                                    'tax_id' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_tax'],
+                                    'street_address' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_address'],
+                                    'city' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_city'],
+                                    'region' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_region'],
+                                    'postal_code' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_zip'],
+                                    'country_code' : template_data['bank_account_business_underwriting_form'].cleaned_data['ba_business_country'],
+                                    }
 
-            try:
-                Balanced_account.add_merchant(merchant_data)
-            except balanced.exc.MoreInformationRequiredError as ex:
-                # TODO: handle exceptions as required
+                try:
+                    Balanced_account.add_merchant(merchant_data)
+                except balanced.exc.MoreInformationRequiredError as ex:
+                    # TODO: handle exceptions as required
 
-                return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
-            except balanced.exc.HTTPError as error:
-                # TODO: handle 400 and 409 exceptions as required
+                    return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
+                except balanced.exc.HTTPError as error:
+                    # TODO: handle 400 and 409 exceptions as required
 
-                return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
+                    return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
 
-            user_balanced_account.is_underwritten = True
-            user_balanced_account.save()
+                user_balanced_account.is_underwritten = True
+                user_balanced_account.save()
 
             return redirect('bitfund.pledger.views.attach_bank_account')
 
         elif (template_data['bank_account_person_underwriting_form'].is_valid()
             and template_data['bank_account_person_underwriting_form'].cleaned_data['ba_entity_type'] == BANK_ACCOUNT_ENTITY_TYPE_CHOICES.person) :
+            with transaction.commit_on_success():
 
-            balanced.configure(BALANCED['API_KEY'])
+                balanced.configure(BALANCED['API_KEY'])
 
-            try :
-                Balanced_account = balanced.Account.find(user_balanced_account.uri)
-            except balanced.exc.HTTPError:
-                return HttpResponseNotFound()
+                try :
+                    Balanced_account = balanced.Account.find(user_balanced_account.uri)
+                except balanced.exc.HTTPError:
+                    return HttpResponseNotFound()
 
-            merchant_data = {   'type' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_entity_type'],
-                                'name' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_name'],
-                                'phone_number' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_phone'],
-                                'dob' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_dob'].strftime('%Y-%m-%d'),
-                                'street_address' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_address'],
-                                'city' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_city'],
-                                'region' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_region'],
-                                'postal_code' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_zip'],
-                                'country_code' : 'US',
-                                }
+                merchant_data = {   'type' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_entity_type'],
+                                    'name' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_name'],
+                                    'phone_number' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_phone'],
+                                    'dob' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_dob'].strftime('%Y-%m-%d'),
+                                    'street_address' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_address'],
+                                    'city' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_city'],
+                                    'region' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_region'],
+                                    'postal_code' : template_data['bank_account_person_underwriting_form'].cleaned_data['ba_person_zip'],
+                                    'country_code' : 'US',
+                                    }
 
 
-            try:
-                Balanced_account.add_merchant(merchant_data)
-            except balanced.exc.MoreInformationRequiredError as ex:
-                # TODO: handle exceptions as required
+                try:
+                    Balanced_account.add_merchant(merchant_data)
+                except balanced.exc.MoreInformationRequiredError as ex:
+                    # TODO: handle exceptions as required
 
-                return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
-            except balanced.exc.HTTPError as error:
-                # TODO: handle 400 and 409 exceptions as required
+                    return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
+                except balanced.exc.HTTPError as error:
+                    # TODO: handle 400 and 409 exceptions as required
 
-                return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
+                    return render_to_response('pledger/attach_bank_account.djhtm', template_data, context_instance=RequestContext(request))
 
-            user_balanced_account.is_underwritten = True
-            user_balanced_account.save()
-
+                user_balanced_account.is_underwritten = True
+                user_balanced_account.save()
 
             return redirect('bitfund.pledger.views.attach_bank_account')
 
@@ -455,15 +457,16 @@ def attach_bank_account(request, action=None):
     elif request.method == 'POST' and action == 'detach':
         existing_account = BankAccount.objects.filter(user_id=request.user.id)
         if existing_account.count() > 0 :
-            existing_account = existing_account[0]
-            balanced.configure(BALANCED['API_KEY'])
-            Balanced_existing_account = balanced.BankAccount.find(existing_account.uri)
-            #@TODO exception handling and proper error output
-            Balanced_existing_account.delete()
-            existing_account.delete()
+            with transaction.commit_on_success():
+                existing_account = existing_account[0]
+                balanced.configure(BALANCED['API_KEY'])
+                Balanced_existing_account = balanced.BankAccount.find(existing_account.uri)
+                #@TODO exception handling and proper error output
+                Balanced_existing_account.delete()
+                existing_account.delete()
 
-            user_balanced_account.is_underwritten = False
-            user_balanced_account.save()
+                user_balanced_account.is_underwritten = False
+                user_balanced_account.save()
 
         return redirect('bitfund.pledger.views.attach_bank_account')
 
@@ -529,11 +532,6 @@ def withdraw(request, project_key):
         else :
             return render_to_response('pledger/withdraw.djhtm', template_data, context_instance=RequestContext(request))
 
-
-
-
-
     template_data['withdrawal_form'] = ProjectWithdrawFundsForm(project=project)
-
 
     return render_to_response('pledger/withdraw.djhtm', template_data, context_instance=RequestContext(request))
