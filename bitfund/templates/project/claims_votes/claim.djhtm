@@ -7,31 +7,12 @@
         $(document).ready(function () {
 
             $('#id_maintainer_reason_text, #id_maintainer_reason_url').keyup(function(event){
-                $('#maintainer-reason-link').attr('href', $('#id_maintainer_reason_url').val());
-                $('#maintainer-reason-link').text($('#id_maintainer_reason_text').val());
+                var reason_link = $('#maintainer-reason-link');
+                reason_link.attr('href', $('#id_maintainer_reason_url').val());
+                reason_link.text($('#id_maintainer_reason_text').val());
             });
             $('#id_maintainer_role').change(function(event){
                 $('#maintainer-project-role').text($(this).find('option:selected').text());
-            });
-
-
-            {% if pledge_subscription %}
-                selectAmount({{ pledge_subscription.amount }});
-            {% endif %}
-
-            $('#options-button-sets button').click(function(event){
-                event.preventDefault();
-                selectAmount($(this).data('amount'));
-            });
-
-            $('li#pledge-amount-field input').keyup(function(){
-                selectAmount($(this).attr('value'));
-            });
-
-            $('#button-drop-pledge').click(function(event){
-                event.preventDefault()
-                selectAmount(0);
-                $("form#form-pledge").submit();
             });
 
         });

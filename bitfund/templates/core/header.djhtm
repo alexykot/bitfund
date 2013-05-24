@@ -26,10 +26,11 @@
         {% endif %}
     </ul>
 
-    <div class="logo">
-        <a href="{% url bitfund.core.views.index %}">
+    <div itemscope itemtype="http://schema.org/Organization" class="logo">
+        <a itemprop="url" href="{% url bitfund.core.views.index %}">
             <span id="kf_bitfund">bitfund</span>
-            <img src="{{ STATIC_URL }}img/logo.png" alt="bitfund.org" title="bitfund.org" />
+            <img itemprop="logo" src="{{ STATIC_URL }}img/logo.png" alt="bitfund.org" title="bitfund.org" />
         </a>
     </div>
 </div>
+

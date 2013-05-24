@@ -37,7 +37,7 @@
             });
 
             $('#button-drop-pledge').click(function(event){
-                event.preventDefault()
+                event.preventDefault();
                 selectAmount(0);
                 $("form#form-pledge").submit();
             });

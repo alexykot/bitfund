@@ -190,7 +190,7 @@
         });
         $("#link-onetime-more, #link-monthly-more, #link-less").click(function(event){
             event.preventDefault();
-            monthly = ($(this).attr('id') == 'link-onetime-more' || $(this).attr('id') == 'link-monthly-more');
+            var monthly = ($(this).attr('id') == 'link-onetime-more' || $(this).attr('id') == 'link-monthly-more');
             toggleMore_empty(monthly);
         });
 

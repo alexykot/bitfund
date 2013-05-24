@@ -13,7 +13,7 @@
                 $('#create-project-link-container').toggleClass('create-project-active');
             });
             $('#id_title').bindWithDelay('keyup', function(event){
-                var search_string = $(this).val()
+                var search_string = $(this).val();
                 if (search_string.length > 1) {
                     $('#similar-projects-list').load('{% url bitfund.pledger.views.existing_similar_projects %}?search_string='+search_string,
                             null,

@@ -89,3 +89,4 @@ EMAIL_HOST_USER     = 'root'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS       = False
 
+MANGOPAY_PRIVATE_KEY_FILEPATH = '/home/alexykot/.ssh/mangopay'

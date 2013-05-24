@@ -8,7 +8,7 @@
     {{ need.crud_form.sort_order }}
 
     <span class="deleted" id="need-deleted-marker-{{ need.id }}" style="display: none;">deleted</span>
-    <span class="unpublished" id="need-unpublished-marker-{{ need.id }}" {% if need.is_public %}style="display: none;"{% endif %}>unpublished</span>
+    <span class="unpublished" id="need-unpublished-marker-{{ need.id }}" {% if need.is_public %}style="display: none;"{% endif %} >unpublished</span>
     <div class="row-fluid">
         {{ need.crud_form.non_field_errors }}
             <div class="span9">

@@ -1,5 +1,7 @@
 # django-debug-toolbar
 # installed apps settings
+from bitfund.core.settings_split.server import MANGOPAY_PRIVATE_KEY_FILEPATH
+
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
     'debug_toolbar.panels.timer.TimerDebugPanel',
@@ -56,3 +58,11 @@ BALANCED = {
     'API_KEY': BALANCED_API_KEY,
     'MARKETPLACE_URI' : '/v1/marketplaces/TEST-MP7aWutSXeCp94yZ8E39fYZU',
     }
+
+MANGOPAY_= 'bitfund'
+
+MANGOPAY = {
+    'PARTNER_ID ': 'bitfund',
+    'KEY_PATH': MANGOPAY_PRIVATE_KEY_FILEPATH,
+    'KEY_PASS': MANGOPAY_PRIVATE_KEY_PASSWORD,
+}

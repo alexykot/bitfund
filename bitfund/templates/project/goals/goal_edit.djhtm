@@ -7,8 +7,9 @@
 {% block pagescripts %}
     <script type="text/javascript">
         function selectVideo(videotype){
-            $('input[type=text][id*=_video_id]').val('')
-            $('input[type=text][id*=_video_id]').prop('disabled', 'disabled');
+            var video_input = $('input[type=text][id*=_video_id]');
+            video_input.val('');
+            video_input.prop('disabled', 'disabled');
 
             $('#id_'+videotype+'_video_id').removeProp('disabled');
 

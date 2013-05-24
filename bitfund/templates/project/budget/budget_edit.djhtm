@@ -25,9 +25,9 @@
             });
 
             $('#form-crud-project').submit(function(event){
-                sortedNeeds = $("#container-needs-list" ).sortable( "toArray", {attribute:'data-need'});
-                for (sort_order in sortedNeeds) {
-                    need_id = sortedNeeds[sort_order];
+                var sortedNeeds = $("#container-needs-list" ).sortable( "toArray", {attribute:'data-need'});
+                for (var sort_order in sortedNeeds) {
+                    var need_id = sortedNeeds[sort_order];
                     $('#id_need-'+need_id+'-sort_order').attr('value',sort_order);
                 }
             });
