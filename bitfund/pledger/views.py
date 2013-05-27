@@ -1,8 +1,9 @@
 from decimal import Decimal
-import balanced
+from leetchi.resources import User as leetchi_User
+from leetchi.exceptions import APIError as leetchi_APIError
+from leetchi.base import DoesNotExist as leetchi_DoesNotExist
 
 from django.db import transaction
-from django_countries.countries import COUNTRIES as COUNTRIES_LIST
 from django.http import HttpResponseNotFound, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -10,12 +11,25 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.utils.datetime_safe import datetime
+from django.contrib.gis.geoip import GeoIP
 
-from bitfund.core.settings_split.extensions import BALANCED
+from bitfund.core.helpers import get_client_ip
 from bitfund.core.settings_split.project import SITE_CURRENCY_SIGN
-from bitfund.pledger.forms import BankAccountBusinessUnderwritingForm, BankAccountPersonUnderwritingForm, BANK_ACCOUNT_ENTITY_TYPE_CHOICES, ProjectWithdrawFundsForm
-from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, BankCard, BankAccount, BalancedAccount
-from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
+from bitfund.pledger.forms import (BankAccountBusinessUnderwritingForm,
+                                   BankAccountPersonUnderwritingForm,
+                                   BANK_ACCOUNT_ENTITY_TYPE_CHOICES,
+                                   ProjectWithdrawFundsForm, MangoAccountForm)
+from bitfund.pledger.models import (Profile,
+                                    DonationTransaction,
+                                    DONATION_TRANSACTION_STATUSES_CHOICES,
+                                    MangoAccount,
+                                    MangoBankCard,
+                                    MangoBankAccount,
+                                    MangoWithdrawal
+                                    )
+from bitfund.pledger.template_helpers import (_prepare_user_public_template_data,
+                                              _prepare_user_pledges_monthly_history_data,
+                                              _prepare_project_budget_history_template_data)
 from bitfund.project.decorators import user_is_project_maintainer
 from bitfund.project.forms import CreateProjectForm
 from bitfund.project.lists import PROJECT_STATUS_CHOICES
@@ -49,11 +63,11 @@ def profile(request, username=None, external_service=None, external_username=Non
 
         template_data['user_has_bank_card_attached'] = False
         template_data['user_has_bank_account_attached'] = False
-        current_card = BankCard.objects.filter(user_id=user.id)
+        current_card = MangoBankCard.objects.filter(user_id=user.id)
         if current_card.count() > 0 :
             template_data['user_has_bank_card_attached'] = True
 
-        current_account = BankAccount.objects.filter(user_id=user.id)
+        current_account = MangoBankAccount.objects.filter(user_id=user.id)
         if current_account.count() > 0 :
             template_data['user_has_bank_account_attached'] = True
 
@@ -216,94 +230,86 @@ def projects(request, project_key=None):
 
 @login_required
 def attach_bank_card(request, action=None):
-    balanced.configure(BALANCED['API_KEY'])
     template_data = {'request':request,
-                     'balanced_marketplace_uri': BALANCED['MARKETPLACE_URI'],
                      'site_currency_sign': SITE_CURRENCY_SIGN,
                      'current_page': 'profile',
-                     'COUNTRIES_LIST' : COUNTRIES_LIST,
                      }
 
+    existing_mango_account = False
+    existing_mango_accounts_list = MangoAccount.objects.filter(user_id=request.user.id)
+    if existing_mango_accounts_list.count() > 0:
+        existing_mango_account = existing_mango_accounts_list[0]
 
-    if request.method == 'POST' and request.is_ajax() and action == 'attach':
-        with transaction.commit_on_success():
-            card_uri = request.POST['card_uri']
+    existing_mango_card = False
+    existing_mango_cards_list = MangoBankCard.objects.filter(user_id=request.user.id)
+    if existing_mango_cards_list.count() > 0:
+        existing_mango_card = existing_mango_cards_list[0]
 
-            user_balanced_account = BalancedAccount.getAccount(request.user.id)
-            try :
-                Balanced_account = balanced.Account.find(user_balanced_account.uri)
-            except balanced.exc.HTTPError:
-                return HttpResponseNotFound()
+    template_data['mango_account'] = existing_mango_account
+    template_data['mango_card'] = existing_mango_card
 
-            try :
-                Balanced_card = balanced.Card.find(card_uri)
-            except balanced.exc.HTTPError:
-                return HttpResponseNotFound()
-            Balanced_account.add_card(card_uri)
+    if template_data['mango_account']:
+        template_data['mango_account_form'] = MangoAccountForm(instance=template_data['mango_account'])
+    else :
+        account_form_initial_data = {'first_name': request.user.first_name,
+                                     'last_name': request.user.last_name,
+                                     'email': request.user.email,
+                                     'account_type': leetchi_User.TYPE_CHOICES.natural,
+                                     'nationality': GeoIP().country_code(get_client_ip(request)),
+                                     }
+        template_data['mango_account_form'] = MangoAccountForm(initial=account_form_initial_data)
 
-            old_bank_card = BankCard.objects.filter(user_id=request.user.id)
-            if old_bank_card.count() > 0 :
-                old_bank_card = old_bank_card[0]
-                Balanced_old_card = balanced.Card.find(old_bank_card.uri)
-                Balanced_old_card.is_valid = False
-                Balanced_old_card.save()
-                old_bank_card.delete()
+    if request.method == 'POST' and request.is_ajax() and (action == 'attach' or action == 'update'):
+        if not template_data['mango_account']:
+            template_data['mango_account'] = MangoAccount()
 
-            bank_card = BankCard()
-            bank_card.user_id = request.user.id
-            bank_card.balanced_account_id = user_balanced_account.id
+        template_data['mango_account_form'] = MangoAccountForm(instance=template_data['mango_account'],
+                                                               data=request.POST)
 
-            bank_card.uri = card_uri
-            bank_card.brand = Balanced_card.brand
-            bank_card.last_four_digits = Balanced_card.last_four
-            bank_card.is_valid = Balanced_card.is_valid
+        if template_data['mango_account_form'].is_valid():
+            mango_account = template_data['mango_account_form'].save(commit=False)
+            mango_account.can_register_mean_of_payment = True
+            mango_account.ip_address = get_client_ip(request)
+            mango_account.tag = request.user.username
+
             try:
-                bank_card.name_on_card = Balanced_card.name
-            except AttributeError:
-                pass
-            try:
-                bank_card.address_1 = Balanced_card.street_address
-            except AttributeError:
-                pass
-            try:
-                bank_card.address_2 = Balanced_card.street_address
-            except AttributeError:
-                pass
-            try:
-                bank_card.city = Balanced_card.city
-            except AttributeError:
-                pass
-            try:
-                bank_card.state = Balanced_card.region
-            except AttributeError:
-                pass
-            try:
-                bank_card.country_code = Balanced_card.country_code
-            except AttributeError:
-                pass
+                MangoPay_account = leetchi_User.get(mango_account.mango_id, request.handler)
+            except leetchi_DoesNotExist:
+                MangoPay_account = leetchi_User()
 
-            bank_card.save()
+            MangoPay_account.first_name = mango_account.first_name
+            MangoPay_account.last_name = mango_account.last_name
+            MangoPay_account.email = mango_account.email
+            MangoPay_account.ip_address = mango_account.ip_address
+            MangoPay_account.tag = mango_account.tag
+            MangoPay_account.birthday = mango_account.dob
+            MangoPay_account.can_register_mean_of_payment = mango_account.can_register_mean_of_payment
+            MangoPay_account.nationality = mango_account.nationality
+            MangoPay_account.type = mango_account.account_type
+            MangoPay_account.save(request.mango_handler)
+
+            mango_account.mango_id = MangoPay_account.get_pk()
+            mango_account.save()
 
 
-        return HttpResponse()
+            if action == 'update':
+                return redirect('bitfund.pledger.views.attach_bank_card')
+            else:
+                pass
+                #TODO continue here with POST redirect to MangoPay for CC data entry
+
     elif request.method == 'POST' and action == 'detach':
-        existing_card = BankCard.objects.filter(user_id=request.user.id)
+        existing_card = MangoBankCard.objects.filter(user_id=request.user.id)
         if existing_card.count() > 0 :
             with transaction.commit_on_success():
                 existing_card = existing_card[0]
-                balanced.configure(BALANCED['API_KEY'])
-                Balanced_existing_card = balanced.Card.find(existing_card.uri)
-                #@TODO exception handling and proper error output
-                Balanced_existing_card.is_valid = False
-                Balanced_existing_card.save()
+                try:
+                    request.mango_handler.request('DELETE', '/cards/'+str(existing_card.mango_card_id))
+                except leetchi_APIError:
+                    pass
                 existing_card.delete()
 
-
         return redirect('bitfund.pledger.views.attach_bank_card')
-
-    current_card = BankCard.objects.filter(user_id=request.user.id)
-    if current_card.count() > 0 :
-        template_data['current_card'] = current_card[0]
 
     request.user.public = _prepare_user_public_template_data(request, request.user)
 
@@ -335,36 +341,36 @@ def attach_bank_account(request, action=None):
     request.user.public = _prepare_user_public_template_data(request, request.user)
 
     if request.method == 'POST' and request.is_ajax() and action == 'attach':
-        with transaction.commit_on_success():
-            try :
-                Balanced_account = balanced.Account.find(user_balanced_account.uri)
-            except balanced.exc.HTTPError:
-                return HttpResponseNotFound()
-
-            bank_account_uri = request.POST['account_uri']
-            try :
-                Balanced_bank_account = balanced.Account.find(bank_account_uri)
-            except balanced.exc.HTTPError:
-                return HttpResponseNotFound()
-            Balanced_account.add_bank_account(bank_account_uri)
-
-            old_bank_account = BankAccount.objects.filter(user_id=request.user.id)
-            if old_bank_account.count() > 0 :
-                old_bank_account = old_bank_account[0]
-                Balanced_old_bank_account = balanced.BankAccount.find(old_bank_account.uri)
-                Balanced_old_bank_account.delete()
-                old_bank_account.delete()
-
-            bank_account = BankAccount()
-            bank_account.user_id = request.user.id
-            bank_account.balanced_account_id = user_balanced_account.id
-
-            bank_account.uri = Balanced_bank_account.uri
-            bank_account.bank_name = Balanced_bank_account.bank_name
-            bank_account.last_four = Balanced_bank_account.last_four
-            bank_account.is_valid = Balanced_bank_account.is_valid
-
-            bank_account.save()
+        # with transaction.commit_on_success():
+        #     try :
+        #         Balanced_account = balanced.Account.find(user_balanced_account.uri)
+        #     except balanced.exc.HTTPError:
+        #         return HttpResponseNotFound()
+        #
+        #     bank_account_uri = request.POST['account_uri']
+        #     try :
+        #         Balanced_bank_account = balanced.Account.find(bank_account_uri)
+        #     except balanced.exc.HTTPError:
+        #         return HttpResponseNotFound()
+        #     Balanced_account.add_bank_account(bank_account_uri)
+        #
+        #     old_bank_account = BankAccount.objects.filter(user_id=request.user.id)
+        #     if old_bank_account.count() > 0 :
+        #         old_bank_account = old_bank_account[0]
+        #         Balanced_old_bank_account = balanced.BankAccount.find(old_bank_account.uri)
+        #         Balanced_old_bank_account.delete()
+        #         old_bank_account.delete()
+        #
+        #     bank_account = BankAccount()
+        #     bank_account.user_id = request.user.id
+        #     bank_account.balanced_account_id = user_balanced_account.id
+        #
+        #     bank_account.uri = Balanced_bank_account.uri
+        #     bank_account.bank_name = Balanced_bank_account.bank_name
+        #     bank_account.last_four = Balanced_bank_account.last_four
+        #     bank_account.is_valid = Balanced_bank_account.is_valid
+        #
+        #     bank_account.save()
 
         return HttpResponse()
 

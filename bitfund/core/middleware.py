@@ -1,4 +1,5 @@
 import datetime
+import leetchi
 
 from django.db.models.aggregates import Count
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
@@ -7,12 +8,21 @@ from django.template import Template, Context
 from django.conf import settings
 from django.utils.timezone import now
 
-from bitfund.core.settings_split.project import PROTOTYPE_LANDING_PAGE_URL, SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE, API_USER_TOKEN_PARAM_NAME
-from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_TYPES_CHOICES, DONATION_TRANSACTION_STATUSES_CHOICES, DonationSubscription, BankCard, BankAccount
+from bitfund.core.settings_split.project import (PROTOTYPE_LANDING_PAGE_URL,
+                                                 SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE,
+                                                 API_USER_TOKEN_PARAM_NAME)
+from bitfund.core.settings_split.extensions import MANGOPAY
+from bitfund.pledger.models import (DonationTransaction,
+                                    DONATION_TRANSACTION_TYPES_CHOICES,
+                                    DONATION_TRANSACTION_STATUSES_CHOICES,
+                                    DonationSubscription,
+                                    MangoBankCard,
+                                    MangoBankAccount)
 from bitfund.project.lists import PROJECT_STATUS_CHOICES, DONATION_TYPES_CHOICES
 from bitfund.project.models import Project
 
 
+#checks if entrance param provided in GET or in session. If any - saves access and lets in, if neither - sends back to landing page
 class HiddenEntranceMiddleware(object):
     def process_request(self, request):
         if request.path == PROTOTYPE_LANDING_PAGE_URL: 
@@ -25,6 +35,18 @@ class HiddenEntranceMiddleware(object):
         else : 
             return HttpResponseRedirect(PROTOTYPE_LANDING_PAGE_URL)
 
+#inits MangoPay payment gateway API handler
+class MangoInitMiddleware(object):
+    def process_request(self, request):
+        from leetchi.api import LeetchiAPI
+        request.mango_handler = LeetchiAPI(MANGOPAY['PARTNER_ID'],
+                                           MANGOPAY['KEY_PATH'],
+                                           MANGOPAY['KEY_PASS'],
+                                           sandbox=MANGOPAY['USE_SANDBOX'])
+
+        return None
+
+#counts projects user maintains or supports
 class UserProjectsCountMiddleware(object):
     def process_request(self, request):
         if request.user.is_authenticated():
@@ -55,21 +77,23 @@ class UserProjectsCountMiddleware(object):
                                               ) or 0
         return None
 
+#checks if user has payment card or bank account attached
 class UserCardAccountCheckMiddleware(object):
     def process_request(self, request):
         request.user_has_bank_card_attached = False
         request.user_has_bank_account_attached = False
         if request.user.is_authenticated():
-            current_card = BankCard.objects.filter(user_id=request.user.id)
+            current_card = MangoBankCard.objects.filter(user_id=request.user.id)
             if current_card.count() > 0 :
                 request.user_has_bank_card_attached = True
 
-            current_account = BankAccount.objects.filter(user_id=request.user.id)
+            current_account = MangoBankAccount.objects.filter(user_id=request.user.id)
             if current_account.count() > 0 :
                 request.user_has_bank_account_attached = True
 
         return None
 
+#checks if user API token is provided in request and saves in session if provided
 class SaveUserTokenMiddleware(object):
     def process_request(self, request):
         if API_USER_TOKEN_PARAM_NAME in request.GET :
@@ -77,7 +101,7 @@ class SaveUserTokenMiddleware(object):
         
         return None
 
-
+#outputs SQL queries to console
 class SQLLogToConsoleMiddleware:
     def process_response(self, request, response):
         if settings.DEBUG and connection.queries:

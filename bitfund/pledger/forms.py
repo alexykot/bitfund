@@ -1,8 +1,22 @@
 from django import forms
-from model_utils.choices import Choices
-from bitfund.pledger.models import BANK_ACCOUNT_ENTITY_TYPE_CHOICES
+from leetchi.resources import User as leetchi_user
+
+from django_countries.countries import COUNTRIES as COUNTRIES_LIST
+from bitfund.pledger.models import BANK_ACCOUNT_ENTITY_TYPE_CHOICES, MangoAccount
 from bitfund.project.models import Project
 
+
+class MangoAccountForm(forms.ModelForm):
+    # first_name = forms.CharField(max_length=255, required=True)
+    # last_name = forms.CharField(max_length=255, required=True)
+    # email = forms.EmailField(required=True)
+    # dob = forms.DateField(required=True)
+    account_type = forms.ChoiceField(choices=leetchi_user.TYPE_CHOICES, required=True)
+    nationality = forms.ChoiceField(choices=COUNTRIES_LIST, required=True)
+
+    class Meta:
+        model   = MangoAccount
+        fields  = {'first_name', 'last_name', 'email', 'dob', 'account_type', 'nationality'}
 
 class BankAccountBusinessUnderwritingForm(forms.Form):
     ba_entity_type = forms.ChoiceField(choices=BANK_ACCOUNT_ENTITY_TYPE_CHOICES,

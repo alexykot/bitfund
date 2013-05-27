@@ -9,76 +9,76 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#attach_card_form').submit(function(event){
-            event.preventDefault();
-            $('#errors-list').text('');
-
-            var cardData = {"card_number": $('#cc_num').val(),
-                            "security_code": $('#cc_cvv').val(),
-                            "name": $('#cc_name').val(),
-                            "street_address": $('#cc_address1').val(),
-                            "region": $('#cc_state').val(),
-                            "meta": {"address_2": $('#cc_address2').val(),
-                                     "region": $('#cc_state').val(),
-                                     "city_town": $('#cc_town').val(),
-                                     "country": $('#cc_country').val()},
-                            "postal_code": $('#cc_zip').val(),
-                            "expiration_month": $('#cc_mm').val(),
-                            "expiration_year": $('#cc_yyyy').val(),
-                            "system_timezone": 1,
-                            "user_agent": navigator.userAgent,
-                            "language": navigator.language
-                            };
-
-            var errors = false;
-            if (!balanced.card.isSecurityCodeValid(cardData.card_number, cardData.security_code)) {
-                $('<li>CVV invalid</li>').appendTo($('#errors-list'));
-                errors = true;
-            }
-
-            if (!balanced.card.isCardNumberValid(cardData.card_number)) {
-                $('<li>credit card number invalid</li>').appendTo($('#errors-list'));
-                errors = true;
-            }
-
-            if (!balanced.card.isExpiryValid(cardData.expiration_month, cardData.expiration_year)) {
-                $('<li>Expiration date invalid</li>').appendTo($('#errors-list'));
-                errors = true;
-            }
-
-            balanced.card.create(cardData, function(response) {
-                if (response.status == 201) {
-                    $.post('{% url bitfund.pledger.views.attach_bank_card action='attach' %}', {'card_uri': response.data.uri,
-                                                                                'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(){
-
-                        var url = $.url();
-                        if (typeof url.param('next') != 'undefined') {
-                            window.location = url.param('next');
-                        } else {
-                            window.location.reload();
-                        }
-
-                    });
-                } else {
-                    for (var i in response.error) {
-                        $('<li>'+response.error[i]+'</li>').appendTo($('#errors-list'));
-                    }
-                }
-            });
-
-        });
-
-        $('#attach-new-card').click(function(event){
-            event.preventDefault();
-            $('#attach_card_form').toggle(true);
-            $('#attach-card-link-container').toggle(false);
-        });
-
-        $('#attach-card-cancel').click(function(event){
-            event.preventDefault();
-            $('#attach_card_form').toggle(false);
-            $('#attach-card-link-container').toggle(true);
-        });
+//        $('#attach_card_form').submit(function(event){
+//            event.preventDefault();
+//            $('#errors-list').text('');
+//
+//            var cardData = {"card_number": $('#cc_num').val(),
+//                            "security_code": $('#cc_cvv').val(),
+//                            "name": $('#cc_name').val(),
+//                            "street_address": $('#cc_address1').val(),
+//                            "region": $('#cc_state').val(),
+//                            "meta": {"address_2": $('#cc_address2').val(),
+//                                     "region": $('#cc_state').val(),
+//                                     "city_town": $('#cc_town').val(),
+//                                     "country": $('#cc_country').val()},
+//                            "postal_code": $('#cc_zip').val(),
+//                            "expiration_month": $('#cc_mm').val(),
+//                            "expiration_year": $('#cc_yyyy').val(),
+//                            "system_timezone": 1,
+//                            "user_agent": navigator.userAgent,
+//                            "language": navigator.language
+//                            };
+//
+//            var errors = false;
+//            if (!balanced.card.isSecurityCodeValid(cardData.card_number, cardData.security_code)) {
+//                $('<li>CVV invalid</li>').appendTo($('#errors-list'));
+//                errors = true;
+//            }
+//
+//            if (!balanced.card.isCardNumberValid(cardData.card_number)) {
+//                $('<li>credit card number invalid</li>').appendTo($('#errors-list'));
+//                errors = true;
+//            }
+//
+//            if (!balanced.card.isExpiryValid(cardData.expiration_month, cardData.expiration_year)) {
+//                $('<li>Expiration date invalid</li>').appendTo($('#errors-list'));
+//                errors = true;
+//            }
+//
+//            balanced.card.create(cardData, function(response) {
+//                if (response.status == 201) {
+//                    $.post('{% url bitfund.pledger.views.attach_bank_card action='attach' %}', {'card_uri': response.data.uri,
+//                                                                                'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(){
+//
+//                        var url = $.url();
+//                        if (typeof url.param('next') != 'undefined') {
+//                            window.location = url.param('next');
+//                        } else {
+//                            window.location.reload();
+//                        }
+//
+//                    });
+//                } else {
+//                    for (var i in response.error) {
+//                        $('<li>'+response.error[i]+'</li>').appendTo($('#errors-list'));
+//                    }
+//                }
+//            });
+//
+//        });
+//
+//        $('#attach-new-card').click(function(event){
+//            event.preventDefault();
+//            $('#attach_card_form').toggle(true);
+//            $('#attach-card-link-container').toggle(false);
+//        });
+//
+//        $('#attach-card-cancel').click(function(event){
+//            event.preventDefault();
+//            $('#attach_card_form').toggle(false);
+//            $('#attach-card-link-container').toggle(true);
+//        });
 
     });
 </script>
@@ -93,80 +93,54 @@
     <div class="attachment">
         <fieldset>
             {% if current_card %}
-            <form id="disconnect_account_form" action="{% url bitfund.pledger.views.attach_bank_card action='detach' %}" method="post">
-                {% csrf_token %}
-                <legend><h4>Current: {{ current_card.brand }} ****-****-****-{{ current_card.last_four_digits }}</h4></legend>
-                <div class="text-center">
-                    <button type="submit" class="button gray">Disconnect my credit card</button>
+                <form id="disconnect_account_form" action="{% url bitfund.pledger.views.attach_bank_card action='detach' %}" method="post">
+                    {% csrf_token %}
+                    <legend><h4>Current: {{ current_card.masked_number }}</h4></legend>
+                    <div class="text-center">
+                        <button type="submit" class="button gray">Disconnect my card</button>
+                    </div>
+                    <hr>
+                </form>
+                <div class="text-center" id="attach-card-link-container">
+                    <a href="{% url bitfund.pledger.views.attach_bank_card %}" id="attach-new-card">attach different card</a><br>
                 </div>
-                <hr>
-            </form>
-            <div class="text-center" id="attach-card-link-container">
-                <a href="{% url bitfund.pledger.views.attach_bank_card %}" id="attach-new-card">attach different card</a><br>
-            </div>
+            {% else %}
+                <form id="attach_card_form" action="{% url bitfund.pledger.views.attach_bank_card action='account' %}" method="post">
+                    <h4>Attach payment card</h4>
+                    <p>Personal information</p>
+
+                    <label>Entity type</label>
+                    {{ mango_account_form.account_type.errors }}
+                    {{ mango_account_form.account_type }}
+                    <label>First name</label>
+                    {{ mango_account_form.first_name.errors }}
+                    {{ mango_account_form.first_name|attr:"class:large" }}
+                    <label>Last name</label>
+                    {{ mango_account_form.last_name.errors }}
+                    {{ mango_account_form.last_name|attr:"class:large" }}
+                    <label>Email</label>
+                    {{ mango_account_form.email.errors }}
+                    {{ mango_account_form.email|attr:"class:large" }}
+                    <label>Date of birth</label>
+                    {{ mango_account_form.dob.errors }}
+                    {{ mango_account_form.dob|attr:"class:large dobPicker" }}
+                    <label>Nationality</label>
+                    {{ mango_account_form.nationality.errors }}
+                    {{ mango_account_form.nationality }}
+
+                    <div class="text-center">
+                        <button type="submit" class="button gray">Submit</button>
+                    </div>
+
+                </form>
             {% endif %}
-            <form id="attach_card_form" action="#" method="post" {% if current_card %}style="display: none;"{% endif %}>
-                <div id="errors-list"></div>
-                <h4>Required</h4>
-                <ul id="errors-list"></ul>
-                <ul class="inline">
-                    <li>
-                        <label>Credit card number</label>
-                        <input type="text" class="card-number" id="cc_num" required="required">
-                    </li>
-
-                    <li>
-                        <label>Expiration</label>
-                        <input type="text" placeholder="MM" class="month" id="cc_mm" required="required">
-                        <input type="text" placeholder="YYYY" class="year" id="cc_yyyy" required="required">
-                    </li>
-                    <li>
-                        <label>CVV</label>
-                        <input type="text" class="span1" id="cc_cvv" required="required">
-                    </li>
-                </ul>
-
-                <h4>Optional</h4>
-                <label>Full name on card</label>
-                <input type="text" class="large" id="cc_name">
-                <label>Address 1</label>
-                <input type="text" class="large" id="cc_address1">
-                <label>Address 2</label>
-                <input type="text" class="large" id="cc_address2">
-                <label>City or town</label>
-                <input type="text" class="large" id="cc_town">
-                <ul class="inline">
-                    <li>
-                        <label>State of province</label>
-                        <input type="text" class="medium" id="cc_state">
-                    </li>
-                    <li>
-                        <label>ZIP or postal code</label>
-                        <input type="text" class="medium" id="cc_zip">
-                    </li>
-                </ul>
-                <label>Country</label>
-                <select name="cc_country" id="cc_country">
-                    {% for country in COUNTRIES_LIST %}
-                        <option value="{{ country.0 }}">{{ country.1 }}</option>
-                    {% endfor %}
-                </select>
-                <div class="text-center">
-                    {% if current_card %}
-                        <small>this will erase your current card data</small><br>
-                        <button type="submit" class="button gray">Replace card</button> <a href="" id="attach-card-cancel">cancel</a>
-                    {% else %}
-                        <button type="submit" class="button gray">Attach card</button>
-                    {% endif %}
-                </div>
-            </form>
         </fieldset>
         <br><br><br>
         <div class="text-center">
-            <p><small>Bank account information is stored and processed by <a href="#">Balanced Payments</a>.<br>
-            Here are their <a href="https://www.balancedpayments.com/terms">Terms of Service</a>
-                and <a href="https://www.balancedpayments.com/privacy">Privacy Policy</a>.</small></p>
-
+            <p><small>
+                Payments are stored and processed by <a href="http://mangopay.com">MangoPay</a>.<br>
+{#                Here are their <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.#}
+            </small></p>
             <div>
                 <img src="{{ STATIC_URL }}img/american_express.png" />
                 <img src="{{ STATIC_URL }}img/mastercard.png" />
@@ -174,7 +148,8 @@
                 <img src="{{ STATIC_URL }}img/discover.png" />
             </div>
 
-            <p><span>PAYMENTS BY </span><img src="{{ STATIC_URL }}img/credit_card_icon.png" /><strong>BALANCED</strong></p>
+            <p><span>PAYMENTS BY </span><img src="{{ STATIC_URL }}img/credit_card_icon.png" />
+                <strong><a href="http://mangopay.com">MangoPay</a></strong></p>
         </div>
 
     </div>

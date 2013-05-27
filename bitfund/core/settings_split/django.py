@@ -30,6 +30,7 @@ MIDDLEWARE_CLASSES = (
 
     #project custom middleware
     'bitfund.core.middleware.HiddenEntranceMiddleware',
+    'bitfund.core.middleware.MangoInitMiddleware',
     'bitfund.core.middleware.UserCardAccountCheckMiddleware',
     'bitfund.core.middleware.UserProjectsCountMiddleware',
     'bitfund.core.middleware.SaveUserTokenMiddleware',
@@ -79,7 +80,7 @@ INSTALLED_APPS = (
     'social_auth',      # authentication via various big name sites
     'model_utils',      # models utilities
     'gravatar',         # gravatar avatars
-    "ajaxuploader",     # ajax files upload
+    'ajaxuploader',     # ajax files upload
 
     #'selectable',       # select fields ajax autocomplete lookups
 )

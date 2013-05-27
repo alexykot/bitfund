@@ -52,17 +52,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.user.update_user_details'
 )
 
-
-#balanced payments
-BALANCED = {
-    'API_KEY': BALANCED_API_KEY,
-    'MARKETPLACE_URI' : '/v1/marketplaces/TEST-MP7aWutSXeCp94yZ8E39fYZU',
-    }
-
-MANGOPAY_= 'bitfund'
-
+#MangoPay payments
 MANGOPAY = {
-    'PARTNER_ID ': 'bitfund',
+    'PARTNER_ID': 'bitfund',
     'KEY_PATH': MANGOPAY_PRIVATE_KEY_FILEPATH,
     'KEY_PASS': MANGOPAY_PRIVATE_KEY_PASSWORD,
+    'USE_SANDBOX': True,
 }

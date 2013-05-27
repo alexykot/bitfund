@@ -1,13 +1,16 @@
 import base64
 import os
-import balanced
+from leetchi.resources import User as leetchi_user
+
 from django.db import models, transaction
 from django.contrib.auth.models import User, UserManager
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
+from django_countries.countries import COUNTRIES as COUNTRIES_LIST
 
 from model_utils import Choices
+from bitfund.core.helpers import get_client_ip
 from bitfund.core.settings_split.project import API_KEY_LENGTH
 from bitfund.project.models import *
 
@@ -89,66 +92,86 @@ def save_user_profile(request, *args, **kwargs):
     return None
 
 
-class BalancedAccount(models.Model):
+class MangoAccount(models.Model):
     user = models.OneToOneField(User, unique=True)
-    uri = models.CharField(max_length=255, unique=True)
-    is_underwritten = models.BooleanField(default=False)
+    mango_id = models.IntegerField(unique=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    ip_address = models.CharField(max_length=15)
+    tag = models.CharField(max_length=255)
+    dob = models.DateField()
+    can_register_mean_of_payment = models.BooleanField()
+    nationality = models.CharField(max_length=2, choices=COUNTRIES_LIST)
+    account_type = models.CharField(max_length=255, choices=leetchi_user.TYPE_CHOICES)
 
-    #returns BalancedAccount for this user. If there is no account - creates it.
+    #returns MangoAccount for given user. If there is no account - creates it on the fly.
     @classmethod
-    def getAccount(cls, user_id):
+    def getAccount(cls, request, user_id):
         existing_account = cls.objects.filter(user_id=user_id)
         if existing_account.count() > 0:
             return existing_account[0]
         else:
-            balanced_account = balanced.Account().save()
+            mango_side_account = leetchi_user(first_name=request.user.first_name,
+                                                    last_name=request.user.last_name,
+                                                    email=request.user.email,
+                                                    ip_address=get_client_ip(request),
+                                                    tag=request.user.username,
+                                                    birthday=datetime.date().today(),
+                                                    can_register_mean_of_payment=True, #@TODO gather this data from user on registration
+                                                    nationality='FR', #@TODO gather this data from user on registration
+                                                    type=leetchi_user.TYPE_CHOICES.natural)
+            mango_side_account.save(request.mango_handler)
 
-            new_account = cls()
-            new_account.user_id = user_id
-            new_account.uri = balanced_account.uri
-            new_account.is_underwritten = False
-            new_account.save()
+            mango_account = cls()
+            mango_account.user_id = user_id
+            mango_account.mango_id = mango_side_account.id
+            mango_account.save()
 
-            return new_account
+            return mango_account
 
 
 #bank card data. contains only pieces that are safe and allowed to be stored on our side
-class BankCard(models.Model):
+class MangoBankCard(models.Model):
+    mango_card_id = models.PositiveIntegerField(unique=True)
     user = models.OneToOneField(User, unique=True)
-    balanced_account = models.OneToOneField(BalancedAccount, unique=True)
-    uri = models.CharField(max_length=255, unique=True)
-    brand = models.CharField(max_length=25)
-    last_four_digits = models.CharField(max_length=4)
+    mango_account = models.OneToOneField(MangoAccount, unique=True)
+    masked_number = models.CharField(max_length=16)
     is_valid = models.BooleanField()
-    name_on_card = models.CharField(max_length=255, null=True, blank=True)
-    address_1 = models.CharField(max_length=255, null=True, blank=True)
-    address_2 = models.CharField(max_length=255, null=True, blank=True)
-    state = models.CharField(max_length=255, null=True, blank=True)
-    city = models.CharField(max_length=255, null=True, blank=True)
-    country_code = models.CharField(max_length=5, null=True, blank=True)
 
-
-#bank account data. contains only pieces that are safe and allowed to be stored on our side
-class BankAccount(models.Model):
+#bank account data (beneficiary in MangoPay terms). contains only pieces that are safe and allowed to be stored on our side
+class MangoBankAccount(models.Model):
+    mango_beneficiary_id = models.PositiveIntegerField(unique=True)
     user = models.OneToOneField(User, unique=True)
-    balanced_account = models.OneToOneField(BalancedAccount, unique=True)
-    uri = models.CharField(max_length=255, unique=True)
+    mango_account = models.OneToOneField(MangoAccount, unique=True)
     last_four = models.CharField(max_length=4)
     bank_name = models.CharField(max_length=255)
     is_valid = models.BooleanField(default=True)
 
+class MangoWithdrawal(models.Model):
+    mango_withdrawal_id = models.PositiveIntegerField(unique=True)
+    project = models.ForeignKey(Project)
+    mango_account = models.ForeignKey(MangoAccount)
+    mango_bank_account = models.ForeignKey(MangoBankAccount)
+    amount_withdrawn = models.DecimalField(decimal_places=2, max_digits=12)
+    amount_fees = models.DecimalField(decimal_places=2, max_digits=12)
+    initiated_username = models.CharField(max_length=255)
+    datetime_withdrawn = models.DateTimeField('date withdrawn', default=now())
+
+    def __unicode__(self):
+        return self.title
 
 #list of transations actually debited from pledgers bank cards. aggregates all donation transactions for one pledger one month
 class PaymentTransaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    balanced_account = models.ForeignKey(BalancedAccount, on_delete=models.PROTECT)
-    uri = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    mango_card = models.ForeignKey(MangoBankCard, on_delete=models.PROTECT)
+    mango_account = models.ForeignKey(MangoAccount, on_delete=models.PROTECT)
+    mango_contribution_id = models.IntegerField(unique=True, null=True, blank=True)
     status = models.CharField(max_length=10, choices=PAYMENT_TRANSACTION_STATUSES_CHOICES,
                               default=PAYMENT_TRANSACTION_STATUSES_CHOICES.pending)
-    balanced_status = models.CharField(max_length=25, null=True, blank=True)
-    balanced_transaction_number = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    source_uri = models.CharField(max_length=255, null=True, blank=True)
-    statement_text = models.CharField(max_length=22, null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    is_successful = models.BooleanField(default=False)
+    mango_tag = models.CharField(max_length=22, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     transaction_amount = models.DecimalField(decimal_places=2, max_digits=12,
                                              default=0) #aggregated amount of all DonationTransactions payed with this PaymentTransaction
@@ -426,12 +449,5 @@ class DonationTransaction(models.Model):
             for redonation_transaction in redonation_transactions_list:
                 redonation_transaction.transaction_status = DONATION_TRANSACTION_STATUSES_CHOICES.cancelled
                 redonation_transaction.save()
-
-
-
-
-
-
-
 
 
