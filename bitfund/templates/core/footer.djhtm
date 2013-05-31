@@ -3,8 +3,9 @@
         <ul class="footer-links">
             <li><a href="/">Home</a></li>
             <li><a href="{% url bitfund.core.views.about %}">About</a></li>
-            <li><a href="{% url bitfund.core.views.stats %}">Stats</a></li>
-            <li><a href="{% url bitfund.core.views.faq %}">FAQ</a></li>
+            <li><a href="{% url bitfund.core.views.contact %}">Contact</a></li>
+{#            <li><a href="{% url bitfund.core.views.stats %}">Stats</a></li>#}
+{#            <li><a href="{% url bitfund.core.views.faq %}">FAQ</a></li>#}
         </ul>
     </div>
 </footer>

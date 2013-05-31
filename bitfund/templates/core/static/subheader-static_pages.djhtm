@@ -4,22 +4,25 @@
             <a href="{% url bitfund.core.views.about %}">about</a>
         </li>
         <li>
-            <a href="{% url bitfund.core.views.faq %}">FAQ</a>
+            <a href="{% url bitfund.core.views.contact %}">notify me</a>
         </li>
-        <li>
-            <a href="{% url bitfund.core.views.stats %}">stats</a>
-        </li>
-        <li>
-            <a href="{% url bitfund.core.views.charts %}">charts</a>
-        </li>
-        <li>
-            <a href="{% url bitfund.core.views.terms %}">terms</a>
-        </li>
-        <li>
-            <a href="{% url bitfund.core.views.privacy %}">privacy</a>
-        </li>
-        <li>
-            <a href="{% url bitfund.core.views.fraud %}">fraud</a>
-        </li>
+{#        <li>#}
+{#            <a href="{% url bitfund.core.views.faq %}">FAQ</a>#}
+{#        </li>#}
+{#        <li>#}
+{#            <a href="{% url bitfund.core.views.stats %}">stats</a>#}
+{#        </li>#}
+{#        <li>#}
+{#            <a href="{% url bitfund.core.views.charts %}">charts</a>#}
+{#        </li>#}
+{#        <li>#}
+{#            <a href="{% url bitfund.core.views.terms %}">terms</a>#}
+{#        </li>#}
+{#        <li>#}
+{#            <a href="{% url bitfund.core.views.privacy %}">privacy</a>#}
+{#        </li>#}
+{#        <li>#}
+{#            <a href="{% url bitfund.core.views.fraud %}">fraud</a>#}
+{#        </li>#}
     </ul>
 </div>

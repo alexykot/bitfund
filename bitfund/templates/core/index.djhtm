@@ -72,6 +72,7 @@
     <h1>Fostering open world</h1>
     <h2>Monthly pledges for open projects</h2>
     <a type="button" class="about" href="{% url bitfund.core.views.about %}">About</a>
+    <a class="contact" href="{% url bitfund.core.views.contact %}">notify me</a>
 </div>
 
 <div class="available-projects">

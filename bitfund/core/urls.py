@@ -42,6 +42,7 @@ urlpatterns += patterns('bitfund.core.views',
     (r'^login/{0,}$', 'login'),
     (r'^logout/{0,}$', 'logout'),
     (r'^register/{0,}$', 'register'),
+    (r'^contact/{0,}$', 'contact'),
 
     (r'^about/{0,}$', 'about'),
     (r'^stats/{0,}$', 'stats'),
@@ -50,6 +51,7 @@ urlpatterns += patterns('bitfund.core.views',
     (r'^terms/{0,}$', 'terms'),
     (r'^privacy/{0,}$', 'privacy'),
     (r'^fraud/{0,}$', 'fraud'),
+
 
 )
 

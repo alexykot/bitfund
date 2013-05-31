@@ -265,6 +265,38 @@ def landing(request):
 
     return render_to_response('core/static/landing.djhtm', template_data, context_instance=RequestContext(request))
 
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            email   = form.cleaned_data['email']
+            name    = form.cleaned_data['name']
+            message = form.cleaned_data['message']
+
+            send_mail( ('Message at bitfund.org from %s <%s> ' % (name, email)), message, email, ['alex@bitfund.org'], fail_silently=False)
+
+            return render_to_response('core/static/contact.djhtm', {'form'         : form,
+                                                                    'message_sent' : True,
+                                                                    'request'      : request,
+                                                                     }, context_instance=RequestContext(request))
+        else :
+            return render_to_response('core/static/contact.djhtm', {'form'     : form,
+                                                                    'request'  : request,
+                                                                    }, context_instance=RequestContext(request))
+
+    else :
+        form = ContactForm()
+
+    template_data = {'contact_form'   : form,
+                     'request'   : request,
+                     'SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE': SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE,
+                     }
+
+    return render_to_response('core/static/contact.djhtm', template_data, context_instance=RequestContext(request))
+
+
+
 def about(request):
     template_data = {'request'   : request, }
 
@@ -299,3 +331,4 @@ def privacy(request):
     template_data = {'request'   : request, }
 
     return render_to_response('core/static/privacy.djhtm', template_data, context_instance=RequestContext(request))
+

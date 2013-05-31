@@ -265,6 +265,15 @@ a.about:hover {
     text-decoration: none;
 } 
 
+a.contact, a.contact:hover {
+    padding: 8px 26px;
+    position: absolute;
+    top: 42px;
+    right: 0;
+    color: #f06c0c;
+}
+
+
 button.go {
     background: #577000;
     padding: 5px 9px;

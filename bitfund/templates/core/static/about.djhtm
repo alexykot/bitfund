@@ -11,6 +11,18 @@
             <div class="row-fluid" >
                 <div class="span12">
                     <article>
+                        <h2>This is beta. This means that:</h2>
+                        <p>Everything you see is what it seems, and intended to work.</p>
+                        <p>However something may misbehave and not do what it's intended to.</p>
+                        <p>Payments are not live. It will make a look of working, but actual funds will not be transferred.</p>
+                        <p>This text below makes sense and means what it should, but will be reworded.</p>
+                    </article>
+                </div>
+            </div>
+            <div class="row-fluid" >
+                <div class="span12">
+                    <article>
+                        <h2>This is BitFund. This means that:</h2>
                         <h2>If you're a user</h2>
                         <p>You support projects you like with monthly or onetime donations.</p>
                         <p>Monthly donations are done via subscription and money change hands on 1st of each month.
@@ -48,7 +60,7 @@
                 <div class="span12">
                     <article>
                         <h2>BitFund.org is an open source project, released under GPLv3, sources and collaboration
-                            available through <a href="https://bitbucket.org/alexykot/bitfund">bitbucket.org</a>.</h2>
+                            available on <a href="https://github.com/alexykot/bitfund">github</a>.</h2>
                     </article>
                 </div>
             </div>
