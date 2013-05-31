@@ -1511,3 +1511,8 @@ select.year {
     vertical-align: bottom;
 }
 
+.blog-post{
+    width: 500px;
+    margin: auto;
+    font-family: helvetica;
+}

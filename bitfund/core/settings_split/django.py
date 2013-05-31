@@ -79,7 +79,11 @@ INSTALLED_APPS = (
     'social_auth',      # authentication via various big name sites
     'model_utils',      # models utilities
     'gravatar',         # gravatar avatars
-    "ajaxuploader",     # ajax files upload
+    'ajaxuploader',     # ajax files upload
+    'zinnia',           # blog
+    'tagging',          # WTF?
+    'django.contrib.comments', # comments
+
 
     #'selectable',       # select fields ajax autocomplete lookups
 )
@@ -127,6 +131,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     #installed processors
     'social_auth.context_processors.social_auth_by_name_backends',
     'social_auth.context_processors.social_auth_login_redirect',
+    'zinnia.context_processors.version',
 
     #custom processors
     # 'bitfund.core.context_processors.frontend_header_template_data',

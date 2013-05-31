@@ -16,10 +16,10 @@ urlpatterns = patterns('',
     # url(r'^bitfund/', include('bitfund.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    #url(r'^admin/{0,}', include(admin.site.urls)),
+    url(r'^admin/{0,}', include(admin.site.urls)),
 
     url(r'', include('social_auth.urls')),
 )
@@ -30,6 +30,28 @@ urlpatterns += patterns('',
     (r'^api/', include(ProjectNeedResource().urls)),
     (r'^api/', include(ProjectGoalResource().urls)),
     (r'^api/', include(ProjectDependenciesResource().urls)),
+)
+
+#zinnia blog
+urlpatterns += patterns('',
+    url(r'^blog/{0,}', include('zinnia.urls')),
+    url(r'^comments/{0,}', include('django.contrib.comments.urls')),
+
+    # url(r'^', include('zinnia.urls.capabilities')),
+    # url(r'^search/', include('zinnia.urls.search')),
+    # url(r'^sitemap/', include('zinnia.urls.sitemap')),
+    # url(r'^trackback/', include('zinnia.urls.trackback')),
+    # url(r'^blog/tags/', include('zinnia.urls.tags')),
+    # url(r'^blog/feeds/', include('zinnia.urls.feeds')),
+    # url(r'^blog/random/', include('zinnia.urls.random')),
+    # url(r'^blog/authors/', include('zinnia.urls.authors')),
+    # url(r'^blog/categories/', include('zinnia.urls.categories')),
+    # url(r'^blog/comments/', include('zinnia.urls.comments')),
+    # url(r'^blog/', include('zinnia.urls.entries')),
+    # url(r'^blog/', include('zinnia.urls.archives')),
+    # url(r'^blog/', include('zinnia.urls.shortlink')),
+    # url(r'^blog/', include('zinnia.urls.quick_entry')),
+
 )
 
 #MISC PAGES
