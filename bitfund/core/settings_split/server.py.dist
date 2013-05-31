@@ -72,9 +72,6 @@ STATICFILES_DIRS = (
     '/home/alexykot/Work/Projects/BitFund/Sources/source/bitfund/static/',
 )
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '!2%8m1%61x&amp;7k$+2hh!g*g(xyw4c2!p%u(m_ply=duz)+cqkmx'
-
 TEMPLATE_DIRS = (
    '/home/alexykot/Work/Projects/BitFund/Sources/source/templates',
 )

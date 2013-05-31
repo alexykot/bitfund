@@ -268,30 +268,31 @@ def landing(request):
 
 def contact(request):
     if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            email   = form.cleaned_data['email']
-            name    = form.cleaned_data['name']
-            message = form.cleaned_data['message']
+        contact_form = ContactForm(request.POST)
+        if contact_form.is_valid():
+            email   = contact_form.cleaned_data['email']
+            name    = contact_form.cleaned_data['name']
+            message = contact_form.cleaned_data['message']
 
-            send_mail( ('Message at bitfund.org from %s <%s> ' % (name, email)), message, email, ['alex@bitfund.org'], fail_silently=False)
+            send_mail( ('Message at bitfund.org from %s <%s> ' % (name, email)), message, 'alex@bitfund.org', ['alex@bitfund.org'], fail_silently=False)
 
-            return render_to_response('core/static/contact.djhtm', {'form'         : form,
+            return render_to_response('core/static/contact.djhtm', {'contact_form'         : contact_form,
                                                                     'message_sent' : True,
                                                                     'request'      : request,
                                                                      }, context_instance=RequestContext(request))
         else :
-            return render_to_response('core/static/contact.djhtm', {'form'     : form,
+            return render_to_response('core/static/contact.djhtm', {'contact_form'     : contact_form,
                                                                     'request'  : request,
                                                                     }, context_instance=RequestContext(request))
 
     else :
-        form = ContactForm()
+        contact_form = ContactForm()
 
-    template_data = {'contact_form'   : form,
+    template_data = {'contact_form'   : contact_form,
                      'request'   : request,
                      'SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE': SESSION_PARAM_PROTOTYPE_HIDDEN_ENTRANCE,
                      }
+
 
     return render_to_response('core/static/contact.djhtm', template_data, context_instance=RequestContext(request))
 

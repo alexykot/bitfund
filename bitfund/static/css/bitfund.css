@@ -266,10 +266,10 @@ a.about:hover {
 } 
 
 a.contact, a.contact:hover {
-    padding: 8px 26px;
-    position: absolute;
-    top: 42px;
-    right: 0;
+    /*padding: 8px 26px;*/
+    /*position: absolute;*/
+    /*top: 42px;*/
+    /*right: 0;*/
     color: #f06c0c;
 }
 

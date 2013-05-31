@@ -1,4 +1,3 @@
-from orca.scripts import default
 import re
 import urlparse
 from decimal import Decimal, getcontext

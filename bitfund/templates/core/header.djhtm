@@ -22,6 +22,7 @@
             {% endif %}
             <li><a href="{% url bitfund.core.views.logout %}">sign out</a></li>
         {% else %}
+            <li><a href="{% url bitfund.core.views.contact %}" style="color:#f06c0c;">notify me when it launches</a></li>
             <li>{% include "core/login/login-with-links.djhtm" %}</li>
         {% endif %}
     </ul>

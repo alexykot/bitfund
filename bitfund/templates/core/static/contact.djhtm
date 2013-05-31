@@ -10,25 +10,32 @@
             <div class="row-fluid" >
                 <div class="span12">
                     <article>
-                        <h2>To get notified when BitFund will launch or to get in contact with <a href="http://github.com/alexykot">developer</a> - use form below</h2>
+                        {% if message_sent %}
+                            <h2>Message was sent to <a href="mailto:alex@bitfund.org">alex@bitfund.org</a>.
+                                You can also get to me over <a href="http://github.com/alexykot">github</a>.
+                                Thanks for your interest, I'll get in contact if needed.</h2>
+                        {% else %}
+                            <h2>To get notified when BitFund will launch or to get in contact with me, it's
+                                <a href="http://github.com/alexykot">developer</a> - use form below</h2>
 
-                        <form action="" method="post">
-                            {% csrf_token %}
+                            <form action="" method="post">
+                                {% csrf_token %}
 
-                            <p>Your email:</p>
-                            {{ contact_form.email.errors }}
-                            <p>{{ contact_form.email }}</p>
+                                <p>Your email:</p>
+                                {{ contact_form.email.errors }}
+                                <p>{{ contact_form.email }}</p>
 
-                            <p>Your name (optional):</p>
-                            {{ contact_form.name.errors }}
-                            <p>{{ contact_form.name }}</p>
+                                <p>Your name (optional):</p>
+                                {{ contact_form.name.errors }}
+                                <p>{{ contact_form.name }}</p>
 
-                            <p>Your comment (optional):</p>
-                            {{ contact_form.message.errors }}
-                            <p>{{ contact_form.message }}</p>
+                                <p>Your comment (optional):</p>
+                                {{ contact_form.message.errors }}
+                                <p>{{ contact_form.message }}</p>
 
-                            <button type="submit" class="button button-small gray">Submit</button>
-                        </form>
+                                <button type="submit" class="button button-small gray">Submit</button>
+                            </form>
+                        {% endif %}
                     </article>
                 </div>
             </div>
