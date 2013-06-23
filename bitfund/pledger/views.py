@@ -15,7 +15,7 @@ from bitfund.core.settings_split.extensions import BALANCED
 from bitfund.core.settings_split.project import SITE_CURRENCY_SIGN
 from bitfund.pledger.forms import BankAccountBusinessUnderwritingForm, BankAccountPersonUnderwritingForm, BANK_ACCOUNT_ENTITY_TYPE_CHOICES, ProjectWithdrawFundsForm
 from bitfund.pledger.models import Profile, DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, BankCard, BankAccount, BalancedAccount
-from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data
+from bitfund.pledger.template_helpers import _prepare_user_public_template_data, _prepare_user_pledges_monthly_history_data, _prepare_project_budget_history_template_data, _generate_gravatar_url
 from bitfund.project.decorators import user_is_project_maintainer
 from bitfund.project.forms import CreateProjectForm
 from bitfund.project.lists import PROJECT_STATUS_CHOICES
@@ -38,6 +38,9 @@ def profile(request, username=None, external_service=None, external_username=Non
         #@TODO identify user by external system ID and external username
     elif request.user.is_authenticated():
         user = request.user
+
+
+    print _generate_gravatar_url(user.email)
 
     if user.id > 0 :
         profile = get_object_or_404(Profile, user_id=user.id)

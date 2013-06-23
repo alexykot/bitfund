@@ -32,6 +32,6 @@
             <span id="kf_bitfund">bitfund</span>
             <img src="{{ STATIC_URL }}img/logo.png" alt="bitfund.org" title="bitfund.org" />
         </a>
-        <a href="{% url bitfund.core.views.about %}" style="color: #DDD;">beta preview</a>
+        <a href="{% url bitfund.core.views.about %}" style="color: #DDD;">beta</a>
     </div>
 </div>

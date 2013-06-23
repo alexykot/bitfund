@@ -5,7 +5,7 @@ import math
 from django.db.models import Sum
 from django.utils.timezone import utc, now
 
-from bitfund.core.settings_split.project import CHART_IMAGE_TYPE, PROJECTS_MEDIA_DIR, CHART_PLEDGES_RGB, CHART_PLEDGES_ALPHA, CHART_PLEDGES_STYLE, CHART_REDONATIONS_RGB, CHART_OTHER_SOURCES_RGB, CHART_BACKGROUND_RGB
+from bitfund.core.settings_split.project import CHART_IMAGE_TYPE, PROJECTS_MEDIA_DIR, CHART_PLEDGES_RGB, CHART_PLEDGES_ALPHA, CHART_PLEDGES_STYLE, CHART_REDONATIONS_RGB, CHART_OTHER_SOURCES_RGB, CHART_BACKCIRCLE_RGB
 from bitfund.core.settings_split.server import MEDIA_ROOT
 from bitfund.project.forms import PledgeProjectNeedForm, PledgeNoBudgetProjectForm, PledgeProjectGoalForm
 from bitfund.project.lists import DONATION_TYPES_CHOICES
@@ -288,7 +288,7 @@ def _get_logo_relative_filename(project_key, logo_filename) :
 #                                       'other_sources_color in cairo rgbas',
 #                                       'background_color in cairo rgbas'
 #                                         )
-def _parse_request_chart_params(request):
+def _parse_request_chart_params(request, debug=False):
     if 'size' in request.GET:
         if request.GET['size'] == 'large' or request.GET['size'] == 'medium' or request.GET['size'] == 'small':
             chart_size = str(request.GET['size'])
@@ -333,19 +333,44 @@ def _parse_request_chart_params(request):
                            CHART_PLEDGES_ALPHA,
                            CHART_PLEDGES_STYLE)
 
-    if 'background_rgb' in request.GET and re.search('^[a-fA-F0-9]{6}$', request.GET['background_rgb']):
-        background_rgb = str(request.GET['background_rgb'])
+    if 'backcircle_rgb' in request.GET and re.search('^[a-fA-F0-9]{6}$', request.GET['backcircle_rgb']):
+        backcircle_rgb = str(request.GET['backcircle_rgb'])
     else:
-        background_rgb = CHART_BACKGROUND_RGB
-    background_rgb = hex_to_rgb(background_rgb)
-    background_rgbas = (round(background_rgb[0] / 255.0, 3),
-                        round(background_rgb[1] / 255.0, 3),
-                        round(background_rgb[2] / 255.0, 3),
+        backcircle_rgb = CHART_BACKCIRCLE_RGB
+    backcircle_rgb = hex_to_rgb(backcircle_rgb)
+    backcircle_rgbas = (round(backcircle_rgb[0] / 255.0, 3),
+                        round(backcircle_rgb[1] / 255.0, 3),
+                        round(backcircle_rgb[2] / 255.0, 3),
                         CHART_PLEDGES_ALPHA,
                         CHART_PLEDGES_STYLE)
 
+    if debug:
+        pledges_degrees = int(request.GET['pledges_deg'])
+        other_sources_degrees = int(request.GET['other_sources_deg'])
+        redonations_degrees = int(request.GET['redonations_deg'])
 
-    return chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas
+        background_rgb = str(request.GET['background_rgb'])
+        if re.search('^[a-fA-F0-9]{6}$', background_rgb):
+            background_rgb = hex_to_rgb(background_rgb)
+            background_rgbas = (round(background_rgb[0] / 255.0, 3),
+                                round(background_rgb[1] / 255.0, 3),
+                                round(background_rgb[2] / 255.0, 3),
+                                CHART_PLEDGES_ALPHA)
+        else:
+            background_rgbas = 'transparent'
+
+
+        return (chart_size,
+                pledges_rgbas,
+                redonations_rgbas,
+                other_sources_rgbas,
+                backcircle_rgbas,
+                background_rgbas,
+                pledges_degrees,
+                other_sources_degrees,
+                redonations_degrees)
+
+    return chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas
 
 #converts CSS RGB hex string '#FFFFFF' into a tuple (255,255,255). leading # is optional
 def hex_to_rgb(value):

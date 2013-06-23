@@ -5,6 +5,7 @@
             <li><a href="{% url bitfund.core.views.about %}">About</a></li>
             <li><a href="{% url bitfund.core.views.contact %}">Contact</a></li>
             <li><a href="/blog">Blog</a></li>
+{#            <li><a href="{% url bitfund.blog.views.list %}">Blog</a></li>#}
 {#            <li><a href="{% url bitfund.core.views.stats %}">Stats</a></li>#}
 {#            <li><a href="{% url bitfund.core.views.faq %}">FAQ</a></li>#}
         </ul>

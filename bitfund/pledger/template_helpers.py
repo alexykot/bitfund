@@ -1,15 +1,24 @@
-import calendar
+import hashlib
+import md5
 from django.db.models import Sum
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import now
 
 from bitfund.core.helpers import add_months
+from bitfund.core.settings_split.extensions import GRAVATAR_AVATAR_URL_TEMPLATE
 from bitfund.core.settings_split.project import MINIMAL_SUPPORTED_PROJECTS_COUNT_FOR_PUBLIC
-from bitfund.core.helpers import add_months
 from bitfund.pledger.models import DonationTransaction, DONATION_TRANSACTION_STATUSES_CHOICES, Profile, DONATION_TRANSACTION_TYPES_CHOICES, DonationSubscription
 from bitfund.project.lists import DONATION_TYPES_CHOICES
 from bitfund.project.models import Project
 
+
+def _generate_gravatar_url(email):
+    url = GRAVATAR_AVATAR_URL_TEMPLATE
+    hash = hashlib.md5(email).hexdigest()
+    print email
+    print hash
+
+    return url.replace(':hash', hash)
 
 def _prepare_user_public_template_data(request, user) :
     profile = Profile.objects.get(user_id=user.id)

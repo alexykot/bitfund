@@ -66,19 +66,18 @@ class Profile(User):
 #part of the social auth pipeline, creates new user profile
 #def save_user_profile(sender, user_id, user, is_new, **kwargs):
 def save_user_profile(request, *args, **kwargs):
+
     if kwargs['is_new']:
         profile = Profile()
         profile.user_id = kwargs['user'].id
         profile.api_token = Profile.generateAPIToken()
         if 'gravatar_id' in kwargs['response'] and kwargs['response']['gravatar_id'] != '':
             profile.gravatar_id = kwargs['response']['gravatar_id']
-        if 'screen_name' in kwargs['response']:
-            profile.twitter_pic_url = 'http://api.twitter.com/1/users/profile_image/' + kwargs['response'][
-                'screen_name'] + '.png?size=original'
 
         if 'twitter' in kwargs and kwargs['twitter']:
             profile.twitter_username = kwargs['username']
             profile.twitter_account_url = 'http://twitter.com/'+kwargs['username'] #this is wrong, need to figure out right way later
+            profile.twitter_pic_url = kwargs['response']['profile_image_url'].replace('_normal', '_bigger')
 
         if 'github' in kwargs and kwargs['github']:
             profile.github_username = kwargs['username']
@@ -155,7 +154,7 @@ class PaymentTransaction(models.Model):
     fees_amount = models.DecimalField(decimal_places=2, max_digits=12,
                                       default=0) # fees amount applied to this PaymentTransaction
     total_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0) # total amount debited
-    datetime_added = models.DateTimeField('date added', default=now())
+    datetime_added =models.DateTimeField('date added', default=now())
     datetime_debited = models.DateTimeField('date debited', null=True, blank=True)
 
 #donation subscriptions, storing active monthly donation subscriptions data until cancelled
@@ -428,10 +427,85 @@ class DonationTransaction(models.Model):
                 redonation_transaction.save()
 
 
-
-
-
-
-
-
-
+#
+# {'username': u'alexykot',
+#  'uid': 70379815,
+#  'twitter': True,
+#  'is_new': True,
+#  'auth': <
+# social_auth.backends.twitter.TwitterAuth
+# object
+# at
+# 0x9b9a4ec >,
+# 'new_association': False,
+#                    'user': < User: alexykot >,
+#                                    'social_user': None, 'response': {
+#                                                                                                     'follow_request_sent': False,
+#                                                                                                     'profile_use_background_image': True,
+#                                                                                                     'id': 70379815,
+#                                                                                                     'verified': False,
+#                                                                                                     'entities': {
+#                                                                                                     'description': {
+#                                                                                                     'urls': []}},
+#                                                                                                     'profile_image_url_https': 'https://twimg0-a.akamaihd.net/profile_images/3188454236/5f2a66a4a53d1dde249d56656efd2d31_normal.jpeg',
+#                                                                                                     'profile_sidebar_fill_color': 'DAECF4',
+#                                                                                                     'is_translator': False,
+#                                                                                                     'geo_enabled': True,
+#                                                                                                     'profile_text_color': '663B12',
+#                                                                                                     'followers_count': 8,
+#                                                                                                     'protected': False,
+#                                                                                                     'id_str': '70379815',
+#                                                                                                     'default_profile_image': False,
+#                                                                                                     'listed_count': 0,
+#                                                                                                     'status': {
+#                                                                                                     'favorited': False,
+#                                                                                                     'contributors': None,
+#                                                                                                     'entities': {
+#                                                                                                     'user_mentions': [],
+#                                                                                                     'hashtags': [],
+#                                                                                                     'urls': []},
+#                                                                                                     'text': 'me slowpoke \ntwitter api v1 is off now, avatar images not working :( \nfixing...',
+#                                                                                                     'created_at': 'Sat Jun 22 15:22:43 +0000 2013',
+#                                                                                                     'truncated': False,
+#                                                                                                     'retweeted': False,
+#                                                                                                     'in_reply_to_status_id_str': None,
+#                                                                                                     'coordinates': None,
+#                                                                                                     'id': 348461051043520514L,
+#                                                                                                     'source': 'web',
+#                                                                                                     'in_reply_to_status_id': None,
+#                                                                                                     'in_reply_to_screen_name': None,
+#                                                                                                     'id_str': '348461051043520514',
+#                                                                                                     'place': None,
+#                                                                                                     'retweet_count': 0,
+#                                                                                                     'geo': None,
+#                                                                                                     'in_reply_to_user_id_str': None,
+#                                                                                                     'in_reply_to_user_id': None},
+#                                                                                                     'utc_offset': 0,
+#                                                                                                     'statuses_count': 87,
+#                                                                                                     'description': None,
+#                                                                                                     'friends_count': 12,
+#                                                                                                     'location': None,
+#                                                                                                     'profile_link_color': '1F98C7',
+#                                                                                                     'profile_image_url': 'http://a0.twimg.com/profile_images/3188454236/5f2a66a4a53d1dde249d56656efd2d31_normal.jpeg',
+#                                                                                                     'notifications': False,
+#                                                                                                     'profile_background_image_url_https': 'https://twimg0-a.akamaihd.net/images/themes/theme2/bg.gif',
+#                                                                                                     'profile_background_color': 'C6E2EE',
+#                                                                                                     'profile_background_image_url': 'http://a0.twimg.com/images/themes/theme2/bg.gif',
+#                                                                                                     'screen_name': 'alexykot',
+#                                                                                                     'lang': 'ru',
+#                                                                                                     'profile_background_tile': False,
+#                                                                                                     'favourites_count': 0,
+#                                                                                                     'name': 'Alexy Kot',
+#                                                                                                     'url': None,
+#                                                                                                     'created_at': 'Mon Aug 31 12:25:10 +0000 2009',
+#                                                                                                     'contributors_enabled': False,
+#                                                                                                     'time_zone': 'London',
+#                                                                                                     'access_token': 'oauth_token_secret=Z4bqnUQUJxa37vL3IrUsHZCNjhkPlQdJyZIuWlcM2T4&oauth_token=70379815-mSbaOYvHmt9E6SX0TmnB4ZUGXV3Jxo36twFqS9NL4',
+#                                                                                                     'profile_sidebar_border_color': 'C6E2EE',
+#                                                                                                     'default_profile': False,
+#                                                                                                     'following': False}, 'backend': < social_auth.backends.twitter.TwitterBackend
+# object
+# at
+# 0xb3f97bec >, 'pipeline_index': 4, 'original_email': None, 'details': {'username': 'alexykot', 'fullname': 'Alexy Kot',
+#                                                                        'last_name': 'Kot', 'email': '',
+#                                                                        'first_name': 'Alexy'}}

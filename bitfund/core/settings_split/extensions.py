@@ -56,3 +56,5 @@ BALANCED = {
     'API_KEY': BALANCED_API_KEY,
     'MARKETPLACE_URI' : '/v1/marketplaces/TEST-MP7aWutSXeCp94yZ8E39fYZU',
     }
+
+GRAVATAR_AVATAR_URL_TEMPLATE = 'http://www.gravatar.com/avatar/:hash'

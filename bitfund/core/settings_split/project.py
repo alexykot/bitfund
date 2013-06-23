@@ -84,7 +84,7 @@ ARGB_DONUT_CHART_BACKGROUND = (0.929, 0.922, 0.922, 1, 'solid') # '#EDEBEA'
 CHART_PLEDGES_RGB = '586F05'
 CHART_REDONATIONS_RGB = '8DB308'
 CHART_OTHER_SOURCES_RGB = 'EFBC09'
-CHART_BACKGROUND_RGB = 'EDEBEA' #this means thinnest background ring in the chart, not the image background
+CHART_BACKCIRCLE_RGB = 'EDEBEA' #this means thinnest background ring in the chart, not the image background
 
 CHART_PLEDGES_ALPHA = 1.0 #0 to 1 float, alpha channel
 CHART_PLEDGES_STYLE = 'solid' #just use this,

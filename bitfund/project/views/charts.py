@@ -6,17 +6,15 @@ import cairoplot
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from bitfund.core.settings_split.project import (ARGB_DONUT_CHART_PLEDGES,
-                                           ARGB_DONUT_CHART_REDONATIONS,
-                                           ARGB_DONUT_CHART_OTHER_SOURCES,
-                                           ARGB_DONUT_CHART_BACKGROUND,
-                                           TOTAL_DEGREES,
-                                           CHART_RADIUS_LIST,
-                                           CHART_IMAGE_TYPE,
-                                           CHART_PARAMS,
-                                           MINIMAL_DEFAULT_PLEDGES_DEGREES,
-                                           MINIMAL_DEFAULT_OTHER_SOURCES_DEGREES,
-                                           MINIMAL_DEFAULT_REDONATIONS_DEGREES, CHART_INNER_RADIUS, CHART_PLEDGES_RGB, CHART_REDONATIONS_RGB, CHART_OTHER_SOURCES_RGB, CHART_BACKGROUND_RGB, CHART_PLEDGES_STYLE, CHART_PLEDGES_ALPHA)
+from bitfund.core.settings_split.project import (  TOTAL_DEGREES,
+                                                   CHART_RADIUS_LIST,
+                                                   CHART_IMAGE_TYPE,
+                                                   CHART_PARAMS,
+                                                   MINIMAL_DEFAULT_PLEDGES_DEGREES,
+                                                   MINIMAL_DEFAULT_OTHER_SOURCES_DEGREES,
+                                                   MINIMAL_DEFAULT_REDONATIONS_DEGREES,
+                                                   CHART_INNER_RADIUS
+                                                   )
 from bitfund.core.settings_split.server import MEDIA_ROOT
 from bitfund.project.decorators import disallow_not_public_unless_maintainer
 from bitfund.project.models import Project, ProjectGoal, ProjectNeed
@@ -27,9 +25,9 @@ from bitfund.project.template_helpers import _get_chart_relative_filename, hex_t
 def chart_image_project(request, project_key):
     project = get_object_or_404(Project, key=project_key)
 
-    chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas = _parse_request_chart_params(request)
+    chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas = _parse_request_chart_params(request)
 
-    chart_colors = [pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas]
+    chart_colors = [pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas]
 
     if chart_size in CHART_PARAMS['project']:
         chart_image_width = CHART_PARAMS['project'][chart_size]['w']
@@ -98,9 +96,9 @@ def chart_image_project(request, project_key):
 def chart_image_need(request, project_key, need_id):
     need = get_object_or_404(ProjectNeed, pk=need_id)
 
-    chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas = _parse_request_chart_params(request)
+    chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas = _parse_request_chart_params(request)
 
-    chart_colors = [pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas]
+    chart_colors = [pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas]
 
     if chart_size in CHART_PARAMS['need']:
         chart_image_width = CHART_PARAMS['need'][chart_size]['w']
@@ -146,9 +144,9 @@ def chart_image_goal(request, project_key, goal_key):
     project = get_object_or_404(Project, key=project_key)
     goal = get_object_or_404(ProjectGoal, project_id=project.id, key=goal_key)
 
-    chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas = _parse_request_chart_params(request)
+    chart_size, pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas = _parse_request_chart_params(request)
 
-    chart_colors = [pledges_rgbas, redonations_rgbas, other_sources_rgbas, background_rgbas]
+    chart_colors = [pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas]
 
     if chart_size in CHART_PARAMS['goal']:
         chart_image_width = CHART_PARAMS['goal'][chart_size]['w']
@@ -191,3 +189,54 @@ def chart_image_goal(request, project_key, goal_key):
     response.write(open(chart_abspathname, 'r').read())
 
     return response
+
+#http://127.0.0.1:8080/debug/chart?size=65&pledges_rgb=5369B3&redonations_rgb=7696FF&other_sources_rgb=F0EEE4&backcircle_rgb=BEBDB4&pledges_deg=120&other_sources_deg=0&redonations_deg=20&background_rgb=F0EEE4
+# C2AF13
+# 69E750
+def chart_image_debug(request):
+    (chart_size,
+     pledges_rgbas,
+     redonations_rgbas,
+     other_sources_rgbas,
+     backcircle_rgbas,
+     background_rgbas,
+     pledges_degrees,
+     other_sources_degrees,
+     redonations_degrees
+    ) = _parse_request_chart_params(request, True)
+
+    chart_colors = [pledges_rgbas, redonations_rgbas, other_sources_rgbas, backcircle_rgbas]
+    chart_image_width = chart_image_height = int(chart_size)
+
+    chart_relpathname = _get_chart_relative_filename('debug', 'custom')
+    chart_abspathname = MEDIA_ROOT+chart_relpathname
+
+    if pledges_degrees == 0 and redonations_degrees == 0 and other_sources_degrees == 0 :
+        pledges_degrees = MINIMAL_DEFAULT_PLEDGES_DEGREES
+        redonations_degrees = MINIMAL_DEFAULT_REDONATIONS_DEGREES
+        other_sources_degrees = MINIMAL_DEFAULT_OTHER_SOURCES_DEGREES
+
+    chart_data = {'1' : pledges_degrees,
+                  '2' : redonations_degrees,
+                  '3' : other_sources_degrees,
+                  '4' : max(0, (TOTAL_DEGREES-(pledges_degrees+redonations_degrees+other_sources_degrees))),
+                   }
+
+
+
+    cairoplot.donut_plot(name=chart_abspathname,
+                         data=chart_data,
+                         width=chart_image_width, height=chart_image_height,
+                         background=background_rgbas,
+                         inner_radius=CHART_INNER_RADIUS,
+                         radius_list=CHART_RADIUS_LIST,
+                         colors=chart_colors
+                         )
+
+    response = HttpResponse(mimetype='image/'+CHART_IMAGE_TYPE)
+    response['Content-Length'] = os.path.getsize(chart_abspathname)
+    response.write(open(chart_abspathname, 'r').read())
+
+    return response
+
+

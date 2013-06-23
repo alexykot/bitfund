@@ -77,6 +77,16 @@ urlpatterns += patterns('bitfund.core.views',
 
 )
 
+# urlpatterns += patterns('bitfund.blog.views',
+#     (r'^blog/{0,}$', 'list'),
+#     (r'^blog/(?P<slug>[a-zA-Z0-9-_.]{1,})/{0,}$', 'post'),
+# )
+
+urlpatterns += patterns('',
+    url(r'^debug/chart/{0,}', 'bitfund.project.views.chart_image_debug'),
+
+)
+
 #USER ACCOUNT
 urlpatterns += patterns('bitfund.pledger.views',
                         (r'^account/{0,}$', 'profile'),
@@ -168,3 +178,5 @@ if settings.DEBUG:
     urlpatterns += patterns('django.contrib.staticfiles.views',
         url(r'^static/(?P<path>.*)$', 'serve'),
     )
+
+
