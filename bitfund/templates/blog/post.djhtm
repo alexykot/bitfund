@@ -1,0 +1,75 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %} blog - {% endblock %}
+
+{% block content %}
+
+<div class="blog">
+    <section>
+        <div class="hentry">
+            <div class="entry-header">
+                <br>
+                <h2 class="entry-title">
+                    <a href="{% url bitfund.blog.views.post slug=blogpost.slug %}" title="{{ blogpost.title }}" rel="bookmark">
+                        {{ blogpost.title }}
+                    </a>
+                </h2>
+            </div>
+            <div class="entry-body">
+                <div class="entry-content">
+                    {{ blogpost.body|safe }}
+                </div>
+            </div>
+
+            <div id="comments">
+                <h3>Comments</h3>
+                {% for blogcomment in blogcomments_list %}
+                    <div id="comment-list">
+                        <div class="row">
+                            <div class="span1">
+                                {% if profile.gravatar_id %}
+                                    <img alt="{{ blogcomment.user.first_name }} {{ blogcomment.user.last_name }}"
+                                            src="https://www.gravatar.com/avatar/{{ profile.gravatar_id }}?s=128" />
+                                {% elif profile.twitter_pic_url %}
+                                    <img alt="{{ blogcomment.user.first_name }} {{ blogcomment.user.last_name }}"
+                                            src="{{ profile.twitter_pic_url }}" width="128" height="128" />
+                                {% else %}
+                                    {% load gravatar %}
+                                    <img alt="{{ blogcomment.user.first_name }} {{ blogcomment.user.last_name }}"
+                                            src="{% gravatar_for_user request.user 128 %}" />
+                                {% endif %}
+                            </div>
+                            <div class="span5">
+                                <p class="comment-info">
+                                    <span class="fn">{{ blogcomment.user.first_name }} {{ blogcomment.user.last_name }}</span>
+                                    on
+                                    <abbr title="2013-06-23T16:57:08+01:00">
+                                        {{ blogcomment.date_added|date:"DATE_FORMAT" }}
+                                    </abbr>
+                                </p>
+                                <p>{{ blogcomment.text|safe }}</p>
+                            </div>
+                        </div>
+                        <div class="row"><br></div>
+                    </div>
+
+                    <div class="entry-body">
+                        <div class="entry-content">
+
+                        </div>
+                    </div>
+                {% empty %}
+                    no comments here
+                {% endfor %}
+
+            </div>
+
+            {% if request.user.is_authenticated %}
+                {{ comment_form.as_p }}
+            {% else %}
+                <li>{% include "core/login/login-with-links.djhtm" %}</li>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

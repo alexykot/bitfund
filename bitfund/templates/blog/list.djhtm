@@ -1,0 +1,34 @@
+{% extends "core/base.djhtm" %}
+
+{% block title %} blog - {% endblock %}
+
+{% block content %}
+
+<div class="blog">
+    <section>
+        {% for blogpost in blogpost_list %}
+            <div class="entry">
+                <br>
+                <div class="entry-header">
+                    <h2 class="entry-title">
+                        <a href="{% url bitfund.blog.views.post slug=blogpost.slug %}" title="{{ blogpost.title }}" rel="bookmark">
+                            {{ blogpost.title }}
+                        </a>
+                    </h2>
+                </div>
+                <div class="entry-body">
+                    <div class="entry-content">
+                        {{ blogpost.extract|safe }}
+                    </div>
+                    <p class="continue-reading">
+                        <a href="{% url bitfund.blog.views.post slug=blogpost.slug %}"
+                           title="{{ blogpost.title }}" rel="bookmark">
+                            Continue reading
+                        </a>
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

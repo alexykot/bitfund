@@ -1,0 +1,13 @@
+The title on BitFund's home page says "Monthly pledges for open products". Why "open products" and not "opensource projects"?
+Hmm, that's a right question, so let me explain. 
+
+First, credits to Chad Whitacre, as the initial term I've seen first time in his essay on open products.
+Initial definition given in there is "Open products respect the hacker ethic, without forcing it on others.". I think this definition is not complete. 
+
+Respect for the hacker ethic explains the word "open" in "open product", but what about the other word? 
+
+Calling something a product implies that there are customers paying for it. Payment here is not necessarily a classic hard-fee. Adverts watched by the site visitors can be considered as a sort of payment, donations or soft-fees are payments also in this sense. The important thing here is that users of the product generate funding needed for product survival and development. 
+
+Opposed, if the funding is generated elsewhere, for example as a big grant from a major sponsor, or as an altruism of it's actual developers working fpr free  - the project funded this way is not a product. It is a project, maybe a successful and demanded one, but as long as those who use it do not pay for it in any way - they cannot be considered customers, and without customers a product doesn't exist.
+
+You might think that it's not an important thing to talk about, but put it this way - if there is no funding coming from the users of the software - there is no incentive for it's developers to work towards their needs. This might be okay if the software is done by developers for developers - as then users can care for themselves. But this way you would never build something that is designed by developers for everybody. Nice, polished, sleek and shiny end user products, really competitive towards the closed alternatives can be done only if the software is funded by it's users and nobody else. 
