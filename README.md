@@ -1,6 +1,5 @@
-BitFund.org is a crowdfunding service for open (source) projects. See concept description at [bitfund.org/about](http://bitfund.org/about?hidden-entrance).
+BitFund.org was a failed attempt to create a crowdfunding service for open (source) projects. Was a nice concept, didn't fly. 
 
-Project is in beta status, [available online](bitfund.org) for preview.
+Project is in long dead.
 
-Project based on django 1.4.
-Proper readme is not there yet. Talk to me for comments.
+Code was based on django 1.4.
